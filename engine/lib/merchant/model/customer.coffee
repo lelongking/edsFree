@@ -28,10 +28,10 @@ simpleSchema.customers = new SimpleSchema
     type: customerTransaction
     optional: true
 
-  merchant   : simpleSchema.DefaultMerchant()
+  merchant   : simpleSchema.DefaultMerchant
   allowDelete: simpleSchema.DefaultBoolean()
 #  customerType :
-  creator    : simpleSchema.DefaultCreator()
+  creator    : simpleSchema.DefaultCreator
   version    : { type: simpleSchema.Version }
 
 Schema.add 'customers', "Customer", class Customer

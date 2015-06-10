@@ -1,5 +1,5 @@
 simpleSchema.merchants = new SimpleSchema
-  creator     : simpleSchema.DefaultCreator()
+  creator     : simpleSchema.DefaultCreator
   version     : {type: simpleSchema.Version }
 
   name:
@@ -30,8 +30,8 @@ simpleSchema.merchants = new SimpleSchema
   warehouses                : type: [Object], defaultValue: [{}]
   "warehouses.$.name"       : type: String, defaultValue: 'Trụ Sở'
   "warehouses.$.description": type: String  , optional: true
-  "warehouses._id"          : simpleSchema.UniqueId()
-  "warehouses.createdAt"    : simpleSchema.DefaultCreatedAt()
+  "warehouses._id"          : simpleSchema.UniqueId
+  "warehouses.createdAt"    : simpleSchema.DefaultCreatedAt
 
 
   merchantSummary: type: Object, defaultValue: {}

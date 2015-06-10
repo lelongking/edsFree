@@ -4,21 +4,21 @@ simpleSchema.products = new SimpleSchema
   image       : {type: String   ,optional: true}
   groups      : {type: [String] ,defaultValue: []}
 
-  merchant    : simpleSchema.DefaultMerchant()
+  merchant    : simpleSchema.DefaultMerchant
   allowDelete : simpleSchema.DefaultBoolean()
-  creator     : simpleSchema.DefaultCreator()
+  creator     : simpleSchema.DefaultCreator
   version     : {type: simpleSchema.Version}
 
   units: type: [Object], optional: true
-  'units.$._id'        : simpleSchema.UniqueId()
-  'units.$.barcode'    : simpleSchema.Barcode()
+  'units.$._id'        : simpleSchema.UniqueId
+  'units.$.barcode'    : simpleSchema.Barcode
   'units.$.name'       : simpleSchema.OptionalString
   'units.$.conversion' : simpleSchema.DefaultNumber(1)
   'units.$.importPrice': simpleSchema.DefaultNumber()
   'units.$.salePrice'  : simpleSchema.DefaultNumber()
   'units.$.isBase'     : simpleSchema.DefaultBoolean(false)
   'units.$.allowDelete': simpleSchema.DefaultBoolean()
-  'units.$.createdAt'  : simpleSchema.DefaultCreatedAt()
+  'units.$.createdAt'  : simpleSchema.DefaultCreatedAt
 
 #  prices           : type: [Object], defaultValue: []
 #  'prices.$.branch': type: String  , optional: true

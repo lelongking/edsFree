@@ -30,17 +30,7 @@ simpleSchema.Location = new SimpleSchema
     type: [String]
     optional: true
 
-simpleSchema.UniqueId = ->
-  type: String
-  autoValue: ->
-    return Random.id() unless @isSet
-    return
 
-simpleSchema.Barcode = ->
-  type: String
-  autoValue: ->
-    return randomBarcode() unless @isSet
-    return
 
 
 simpleSchema.StringUniqueIndex   = { type: String, unique: true, index: 1 }
@@ -51,16 +41,27 @@ simpleSchema.OptionalObject      = { type: Object  , optional: true }
 simpleSchema.OptionalObjectArray = { type: [Object], optional: true }
 
 #----------------- Default Auto Value ------------------------>
+simpleSchema.UniqueId =
+  type: String
+  autoValue: ->
+    return Random.id() unless @isSet
+    return
 
-simpleSchema.DefaultMerchant = ->
+simpleSchema.Barcode =
+  type: String
+  autoValue: ->
+    return randomBarcode() unless @isSet
+    return
+
+simpleSchema.DefaultMerchant =
   type: String
   autoValue: -> Meteor.user().profile.merchant if @isInsert and not @isSet
 
-simpleSchema.DefaultCreator = ->
+simpleSchema.DefaultCreator =
   type: String
   autoValue: -> Meteor.userId() if @isInsert and not @isSet
 
-simpleSchema.DefaultCreatedAt = ->
+simpleSchema.DefaultCreatedAt =
   type: Date
   autoValue: ->
     return new Date unless @isSet

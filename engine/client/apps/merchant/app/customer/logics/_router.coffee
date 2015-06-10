@@ -1,7 +1,8 @@
 scope = logics.customerManagement
 lemon.addRoute
+  path: 'customer'
   template: 'customerManagement'
-  waitOnDependency: 'merchantEssential'
+#  waitOnDependency: 'merchantEssential'
   onBeforeAction: ->
     if @ready()
       Apps.setup(scope, Apps.Merchant.customerManagementInit, 'customerManagement')
@@ -15,8 +16,8 @@ lemon.addRoute
     Apps.setup(scope, Apps.Merchant.customerManagementReactive)
 
     return {
-      managedCustomerList : scope.managedCustomerList
-      genderSelectOptions : scope.genderSelectOptions
+#      managedCustomerList : scope.managedCustomerList
+#      genderSelectOptions : scope.genderSelectOptions
 #      allowCreate         : scope.allowCreate
     }
 , Apps.Merchant.RouterBase

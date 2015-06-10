@@ -68,5 +68,5 @@ Meteor.users.attachSchema new SimpleSchema
     type: userSession
     defaultValue: {}
 
-  creator  : simpleSchema.DefaultCreator()
+  creator  : simpleSchema.DefaultCreator
   createdAt: type: Date

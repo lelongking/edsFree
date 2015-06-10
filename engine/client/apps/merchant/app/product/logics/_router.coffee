@@ -1,5 +1,6 @@
 scope = logics.productManagement
 lemon.addRoute
+  path: 'product'
   template: 'productManagement'
 #  waitOnDependency: 'merchantEssential'
   onBeforeAction: ->
