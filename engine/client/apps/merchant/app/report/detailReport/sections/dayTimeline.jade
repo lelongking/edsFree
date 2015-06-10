@@ -1,0 +1,16 @@
+template(name="merchantReportDayTimeline")
+   .section.panel.top.panel-default
+      .panel-heading
+         span nhật ký
+      .panel-body
+         .lemon-timelime
+            each timelineRecords
+               .timeline-block(class="{{timelineMeta.color}}")
+                  .timeline-hook {{timeHook}}
+                  .timeline-thumb(class="{{timelineMeta.icon}}")
+                  .timeline-avatar
+                     +avatarImageComponent(avatar=timelineMeta.creatorAvatar alias=timelineMeta.creatorFirstName)
+                  .timeline-content
+                     span {{timelineMeta.message}}
+      .panel-footer
+         span.icon-angle-right

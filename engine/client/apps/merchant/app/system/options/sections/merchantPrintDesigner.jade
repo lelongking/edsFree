@@ -1,0 +1,34 @@
+template(name="merchantPrintDesigner")
+  .section.top.panel.panel-default.printable-area
+    .panel-heading
+      .printing-header
+        .lemon.rounded.blue.btn.icon-print-6.printDesignPreview.hide-on-print
+        if allowUpdateDesigner
+          .lemon.rounded.lime.btn.icon-ok-6.updateCompanyInfoCommand.hide-on-print
+        .rounded-location: .rounded-wrapper
+          img(src="/images/white-pixel.jpg")
+          .rounded-icon.icon-location-outline
+        .rounded-phone: .rounded-wrapper
+          img(src="/images/white-pixel.jpg")
+          .rounded-icon.icon-phone-circled
+        .branding
+          .company-name
+            input.editable.right-align(name="companyName" value="{{companyName}}")
+          .company-address
+            input.editable.right-align(name="companyAddress" value="{{contactAddress}}")
+        .info
+          .document-time <b>{{timeHM}}<sup>{{timeS}}</sup></b>, ngày <b>{{timeDMY}}</b> <b>{{fullDay}}</b>
+          .company-phone
+            input.editable(name="companyPhone" value="{{contactPhone}}" maxlength="26" size="21")
+      .printing-info
+        .document-name PHIẾU BÁN HÀNG
+    .panel-body.printing-content
+      .empty-dashed-line nội dung bản in
+      each bodySpaceIterator
+        .empty-dashed-line
+    .panel-footer.printing-footer
+      .grea-print-message
+        .rounded-gera-logo: .rounded-wrapper
+          img(src="/images/white-pixel.jpg")
+          img.rounded-img(src="/images/gera-small.png")
+        i In từ hệ thống EDS - công ty Công Nghệ Thiên Ban (0838 111 766)

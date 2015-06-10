@@ -1,0 +1,14 @@
+template(name="messenger")
+  #messenger
+    .target-caption
+      if hasTarget
+        +avatarImageComponent(avatar=avatarUrl alias=firstName)
+        span.chat-target-name {{targetName}}
+    .conversation-wrapper
+      each currentMessages
+        .message-wrapper(class="{{messageClass}}")
+          span.message {{message}}
+
+    .input-wrapper
+      input(type="text" placeholder="trò chuyện...")
+    .search-wrapper

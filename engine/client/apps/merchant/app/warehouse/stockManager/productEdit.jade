@@ -1,0 +1,48 @@
+template(name="productEdit")
+   aside.modal.swipe.left#productEdit
+      .modal-dialog.sale-bill-preview(style="width: 350px;")
+         .modal-header
+            button.close(type="button" data-dismiss="modal")
+               span(aria-hidden="true") &times;
+               span.sr-only Close
+            h4.modal-title
+               i.icon-search-8
+               |CHI TIẾT SẢN PHẨM
+         .modal-body.printable-area
+            span Mã sản phẩm: {{product.productCode}}<br/>
+            span Tên sản phẩm: {{product.name}}<br/>
+            span Quy cách: {{product.skulls}}<br/>
+            span Giá bán: {{formatNumber product.price}} vnd<br/>
+            span Người tạo: {{userNameFromId product.creator}}<br/>
+
+            ul
+               each productDetails
+                  li.order-detail
+                     .product-name <b>Ngày: {{formatDate version.createdAt}}</b>
+                     .product-price
+                        span.individual-price Đã nhập: {{formatNumber importQuality}} [{{product.skulls}}]
+                        span.final-price Giá nhập: {{formatNumber importPrice}}
+
+            .bill-summary
+               .editor-row
+                  span Tổng Nhập:
+                  span.bill-final <b>{{formatNumber product.totalQuality}} {{product.skulls}}</b>
+               .editor-row
+                  span Tồn Kho:
+                  span.bill-final <b>{{formatNumber product.inStockQuality}} {{product.skulls}}</b>
+               .editor-row
+                  span Có Thể Bán:
+                  span.bill-final <b>{{formatNumber product.availableQuality}} {{product.skulls}}</b>
+         .modal-footer
+            .editor-row
+               if updateProductPrice
+                  button.lemon.btn.lime.icon-plus-circled.showUpdateProductPrice Chỉnh giá bán
+            .editor-row(style="{{showUpdateProductPrice}}")
+               .editor-wrapper(style="width:160px")
+                  span.ilabel giá bán mới
+                  +iSpinEdit(options=productPriceOptions  class="field")
+               .editor-wrapper
+                  button.lemon.btn.pumpkin.cancelUpdateProductPrice(type='submit') Hủy
+               .editor-wrapper
+                  button.lemon.btn.lime.updateProductPrice(type='submit') Cập nhật
+

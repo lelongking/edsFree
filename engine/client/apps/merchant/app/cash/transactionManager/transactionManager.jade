@@ -1,0 +1,44 @@
+template(name="transactionManager")
+  +transactionManagerDetail(transaction=currentTransaction transactionDetail=currentTransactionDetail)
+  #header
+    .caption-row
+      .title QUẢN LÝ CÔNG NỢ
+
+    .editor-row
+      if unSecureMode
+        .editor-wrapper(style="width: 170px")
+          span.ilabel chọn khách hàng
+          +iSelect(options=customerSelectOptions class="field")
+        .editor-wrapper(style="width:170px")
+          span.ilabel tổng số tiền
+          +iSpinEdit(options=totalCashOptions  class="field")
+        .editor-wrapper(style="width:170px")
+          span.ilabel số tiền đã trả
+          +iSpinEdit(options=depositCashOptions  class="field")
+        .editor-wrapper(style="width: 90px")
+          span.ilabel ngày tạo
+          input(name="debtDate" binding="datePicker" todayHighlight="true" maxlength="20")
+        .editor-wrapper(style="width: 250px")
+          span.ilabel lý do
+          input.description(maxlength="200" value="{{newTransaction.description}}")
+        .editor-wrapper
+          button.lemon.btn.lime.icon-plus-circled.createTransaction(class="{{allowCreate}}") THÊM
+      .editor-wrapper.right
+        input.hidden.excelFileSource(type="file")
+        button.lemon.btn.blue.excel-transaction(type='submit' data-toggle="tooltip" data-container="body" data-placement="top" title="Nhập tự động")
+          span.icon-inbox-1
+      .editor-wrapper.right
+        a.lemon.btn.blue(href="/template/cong_no.csv" target="_blank" data-toggle="tooltip" data-container="body" data-palace-holder="top" title="Tải về file Mẫu")
+          span.icon-doc-text-inv-1
+
+  #content
+    +iGrid(options=gridOptions)
+
+  #footer.gray
+    ul.step-filter
+      li(class="{{activeReceivable '0'}}" data-receivable="0" data-toggle='tooltip' title="PHẢI THU"): span.icon-money
+      li(class="{{activeReceivable '1'}}" data-receivable="1" data-toggle='tooltip' title="PHẢI TRẢ"): span.icon-emo-cry
+      li.split
+      li(class="{{activeTransactionFilter '1'}}" data-filter="1" data-toggle='tooltip' title="NỢ"): span.icon-feather-1
+      li(class="{{activeTransactionFilter '2'}}" data-filter="2" data-toggle='tooltip' title="QUÁ HẠN"): span.icon-cancel-7
+      li(class="{{activeTransactionFilter '3'}}" data-filter="3" data-toggle='tooltip' title="ĐÃ KẾT THÚC"): span.icon-ok-6

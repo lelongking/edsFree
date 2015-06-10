@@ -1,0 +1,8 @@
+template(name="merchantThumbnail")
+  .col
+    .thumbnails(class="{{styles}}")
+      .right-caption {{name}}
+      .full-desc.price {{creatorName}}
+      +avatarImageComponent(avatar=undefined alias=name)
+      if isntDelete
+        .trash: i.icon-bag

@@ -1,0 +1,63 @@
+@import 'nib'
+
+.home-wrapper
+  clearfix()
+  max-width 1024px
+  margin 0 auto
+  .home-splitter
+    width 100%
+    height 1px
+    background-color #ffffff
+    position relative
+    &:before
+      content: ""
+      width 9px; height 9px
+      border-radius 50%
+      background-color #ffffff
+      absolute left 0px top -4px
+    &:after
+      content: ""
+      width 9px; height 9px
+      border-radius 50%
+      background-color #ffffff
+      absolute right 0px top -4px
+
+.lemon-field
+  position relative
+  margin-bottom 20px
+
+  .ilabel
+    absolute top -10px left 10px
+    display block
+    background-color #006dcc
+    font-size 10px
+    line-height 10px
+    padding 0 5px
+    border-radius top 2px
+
+  input
+    border none
+    border-radius 3px
+    padding 5px 10px
+    font-size 12px
+    width 100%
+
+  &.group
+    width: 100%
+    margin-left: 0
+    margin-right: 0
+    .col
+      padding 0
+      &:first-child input
+        border-radius right 0px !important
+      &:last-child input
+        border-radius left 0px !important
+      &:not(:first-child):not(:last-child) input
+        border-radius 0 !important
+      &:not(:last-child) input
+        border-right none !important
+
+
+.merchant-wizard-wrapper
+  clearfix()
+  

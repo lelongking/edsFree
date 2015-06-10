@@ -1,0 +1,40 @@
+template(name="geraProductManagement")
+  //#header
+  //  .editor-row
+  //    .editor-wrapper.dual-spacer
+  //      span.ilabel.optional nhóm sản phẩm
+  //      +iSelect(options=productGroupSelectOptions class="field")
+
+  #content.modern.product-management
+    .dual-content
+      .dual-detail-wrapper
+        .dual-detail
+          .nano: .nano-content
+            +geraProductManagementOverviewSection currentProduct
+            +geraProductManagementMerchantSection currentProduct
+      .dual-addon
+        .search-filter.icon-search-8
+          input(name='searchFilter' type="text")
+          if creationMode
+            .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createStockBtn
+        .nano: .nano-content
+          if showFilterSearch
+            .group-wrapper
+              each managedBuildInProductList
+                .caption.inner(class="{{activeClass}}")
+                  +avatarImageComponent(avatar=imageUrl alias=name instance=this)
+                  span.text
+                    |{{name}}
+                    if basicUnit
+                      |({{basicUnit}})
+          else
+            each managedBuildInProductList
+              .group-wrapper
+                .caption.group {{key}}
+                each childs
+                  .caption.inner(class="{{activeClass}}")
+                    +avatarImageComponent(avatar=imageUrl alias=name instance=this)
+                    span.text
+                      |{{name}}
+                      if basicUnit
+                        |({{basicUnit}})

@@ -1,0 +1,8 @@
+template(name="messageNotifications")
+  .dropdown-menu(role="menu")
+    .header-caption TIN NHẮN
+    ul.details
+      each topMessages
+        li
+          +avatarImageComponent(avatar=notificationSenderAvatar alias=notificationSenderAlias)
+          .content {{message}}

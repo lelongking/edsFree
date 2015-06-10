@@ -1,0 +1,50 @@
+lemon
+  defineApp: (source, destination) ->
+  defineWidget: (source, destination) ->
+  log: ->
+  sleep: (milliseconds) -> Pause in milliseconds
+  cleanSession: ->
+  logOut: ->
+  addRoute: ([routes...]) ->
+  buildRoutes: ->
+
+lemon.dependencies
+  add: ('name', [dependencies...]) ->
+  resolve: ('name') ->
+  list: (dependency) -> #List all dependencies or a dependency's resolved depends.
+
+System
+  upgrade: (step = 0.1) ->
+  @checkUpdates: ->
+
+Validation
+  isEmail: (email) ->
+
+db
+  seed: ->
+  clean: ->
+  setup: -> #equal seed(); clean()
+  migrate: -> #implementing..
+
+Schema
+  add: (name, extensionObj = undefined) ->
+  list: ->
+
+Kaizen: ->
+  #...
+
+Messenger
+  say: (message, receiver) ->
+  read: (messageId) ->
+
+Role
+  addRolesFor: (profileId, roles) ->
+  isInRole: (userId, name) ->
+  hasPermission: (profileId, name) ->
+  permissionsOf: (profile) ->
+
+simpleSchema
+
+globalTemplateHelpers
+  {{sessionGet 'name'}}
+  {{authenticated}} => Boolean

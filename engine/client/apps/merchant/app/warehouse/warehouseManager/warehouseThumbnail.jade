@@ -1,0 +1,7 @@
+template(name="warehouseThumbnail")
+  .col
+    .thumbnails(class="{{styles}}")
+      .right-caption {{name}}
+      +avatarImageComponent(avatar=undefined alias=name)
+      if isntDelete
+        .trash: i.icon-bag

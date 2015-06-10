@@ -1,0 +1,15 @@
+template(name="inventoryProductThumbnail")
+  .col
+    .thumbnails(class="#{colorClass}")
+      .left-caption {{expireDate productDetail.expire}}
+      .right-caption {{productNameFromId product}}
+      .short-desc.quality
+        .col.col-auto.pull-right(style="width:120px")
+        +iSpinEdit(options=realQualityOptions)
+      .full-desc.price {{status}} -- Tồn Kho: {{originalQuality}}
+      .single-price Đã Bán: {{saleQuality}} / Mất {{lostQuality}}
+      .full-desc.trash: a(href="#")
+        i.icon-reply-3(style="{{hideReply}}")
+        i.icon-lock(style="{{hideLock}}")
+        i.icon-ok-6(style="{{hideCheck}}")
+

@@ -1,0 +1,16 @@
+template(name="stockManager")
+  +productEdit(productDetails=currentProductDetails product=currentProduct)
+  #header
+    .caption-row
+      .title XEM TỒN KHO <small>QUẢN LÝ GIÁ BÁN</small>
+      .commands
+        |Tổng Nhập:{{totalQualityProduct}} - Tồn Kho:{{totalStockProduct}} - Loại:{{totalProduct}}
+        //+iSelect(options=warehouseSelectOptions class="field")
+
+  //.editor-row
+  //  .editor-wrapper(style="width: 200px")
+  //    span.ilabel tên đăng nhập
+  //    input(name="email")
+
+  #content
+    +iGrid(options=gridOptions)

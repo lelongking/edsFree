@@ -1,0 +1,229 @@
+@require '../lib.import.styl'
+
+horizontal-meter-theme(color)
+  background-color darken(color, 10)
+  &:before
+    box-shadow inset 0px 8px 48px darken(color, 10)
+
+.thumbnails-headers
+  &.text-title
+    .right-caption, .left-caption
+      font-size 12px
+      line-height 20px
+      .large-size
+        font-size 26px
+
+for $color in colors
+  &.thumbnails.{$color[0]}
+    background-color $color[1]
+    box-shadow inset 0px 1px 0px lighten($color[1], 5), 0px 3px 0px 0px darken($color[1], 10), 0px 5px 2px #999
+    .avatar:before
+      border-top 2px solid darken($color[1], 7)
+      box-shadow inset 0px 8px 48px darken($color[1], 7)
+    .horizontal-meter
+      horizontal-meter-theme($color[1])
+    .trash > i, .command-button
+      background-color darken($color[1], 9)
+    if lightness($color[1]) > 80
+      color #444
+    else
+      color #fff
+
+.thumbnails
+  width 100%; height 100px
+  color #696969; $noise-material(#eee)
+  position relative; float left
+  margin-bottom 7px; overflow hidden
+  border-radius 2px
+  z-index 9
+  /*outline: rgba(0, 0, 0, 0.1) solid 2px*/
+  &.click-enabled
+    cursor pointer
+
+  .right-caption
+    absolute top 2px right 5px
+    max-width 65%
+    overflow ellipsis
+
+  .left-caption
+    absolute top 2px left 5px
+    overflow ellipsis
+    max-width 65%
+
+  .avatar
+    border-radius 50%
+    width 80px; height 80px
+    absolute top 10px left 15px
+    &:before
+      content ""
+      display block
+      border-top 2px solid #ddd
+      absolute top -8px left -8px bottom -8px right -8px
+      border-radius 50%
+      box-shadow inset 0px 8px 48px #ddd
+      z-index -1
+    &.image img
+        width 100%; height 100%
+        border-radius 50%
+
+    &.letter
+      background-color #f7f7f7
+      background-image linear-gradient(top, #f7f7f7, #e7e7e7)
+      color #a7a7a7; text-transform uppercase
+      line-height 80px
+      text-align center
+      font-size 30px
+      font-weight bold
+      box-shadow 0px 3px 8px #575757, inset 0px 2px 3px #fff
+
+  .short-desc
+    overflow ellipsis
+    absolute right 5px top 20px
+    &.quality
+      font-size 40px
+      line-height 40px
+      font-weight lighter
+      &.small
+        font-size 30px
+
+  .horizontal-meter
+    horizontal-meter-theme(sky)
+    absolute top 0px left 0px
+    width 4px; height 100px
+    background-color #DAD1D1
+    /*&:before*/
+      /*content ""*/
+      /*display block*/
+      /*absolute top -5px left -2px bottom -5px right -2px*/
+      /*border-radius 2px*/
+      /*box-shadow inset 0px 8px 48px #ddd*/
+      /*z-index -1*/
+    .meter-wrapper
+      position relative
+      width 100%; height 100%
+      overflow hidden
+      .meter-progress
+        absolute bottom 0
+        width 100%; height 50%
+        background-color #ffffff
+
+  .discount
+    absolute bottom 15px right 20px
+    font-size 16px
+
+  .single-price
+    absolute bottom 23px right 5px
+    font-size 12px
+    font-weight lighter
+
+  .full-desc
+    overflow ellipsis
+    absolute left 5px bottom 0
+    font-size 20px
+    &.right
+      left auto; right 5px
+    &.price
+      right 0; left auto
+      padding 0 5px
+      font-weight lighter
+
+  .trash
+    cursor pointer
+    absolute left 10px top 10px
+    z-index 10
+    font-size 16px
+    color #fff
+    i
+      border-radius 50%
+      background-color #DBDBDB
+      height 20px; width 20px
+      text-align center
+      &:hover
+        color pumpkin
+
+  .task-cooldown
+    absolute top -7px left 13px
+    z-index 9
+
+  .task-buget
+    absolute top 0 left 95px
+    font-size 12px
+    background-color #fff
+    color #757272
+    padding 0 5px
+    border-radius bottom 2px
+
+  .task-priority
+    absolute top 0 left 140px
+    font-size 12px
+    text-transform uppercase
+    background-color #fff
+    color #757272
+    padding 0 5px
+    border-radius bottom 2px
+
+  .task-creator
+    display none
+    overflow ellipsis
+    absolute bottom 0 left 20px
+    width 60px
+    font-size 12px
+    text-align center
+    background-color #fff
+    text-transform uppercase
+    color #757272
+    padding 0 5px
+    border-radius top 2px
+
+  .task-description
+    margin 0 5px 0 100px
+    padding-top 22px
+    padding-left 3px
+    font-size 12px
+    text-align justify
+    color #FFFFFF
+    border-left solid 1px #A0A0A0
+
+  .task-media
+    bottom 1px
+    left 5px
+
+  .media-navigation
+    position absolute
+    z-index 10
+    color #ccc
+    .media-center
+      cursor pointer
+      position relative
+      border-radius 50%
+      background-color #fff
+      float left; margin 0 -2px
+      width 40px; height 40px
+      text-align center; z-index 2
+      border solid 5px #eee
+      i
+        font-size 20px
+        line-height 32px
+        padding 0 0 0 4px
+
+    .media-left
+      cursor pointer
+      float left
+      border-radius 50%
+      background-color #fff
+      width 25px; height 25px
+      line-height 25px
+      text-align center
+      position relative
+      border solid 3px #eee
+
+    .media-right
+      cursor pointer
+      position relative
+      border-radius 50%
+      background-color #fff
+      float left
+      width 25px; height 25px
+      line-height 25px
+      text-align center
+      border solid 3px #eee

@@ -1,0 +1,24 @@
+template(name="merchantTest")
+  #header
+    .caption-row: .title TEST PAGE
+    .btn.default.defferedBtn Click
+    input.defferedTxt(type="text")
+  #content.modern
+    .dual-content
+      .dual-detail-wrapper
+        .dual-detail
+          .nano: .nano-content
+            span content
+
+      .dual-addon
+        .search-filter.icon-search-8
+          +esInput(index="products" name='searchFilter' placeholder="tìm sản phẩm...")
+        .nano: .nano-content
+          +ifEsIsSearching(index="products")
+            span Đang tìm...
+          else
+            +esEach(index="products")
+              span {{name}} <br />
+          +ifEsHasNoResults(index="players")
+            span Không tìm thấy!
+

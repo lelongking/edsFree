@@ -1,0 +1,16 @@
+@require 'jeet'
+@import 'rupture'
+@import "../../styles/lib.import.styl"
+
+.igrid
+  .igrid-header
+    flex: 0 0 auto
+    span.title
+      padding-left 5px
+    span.icon
+      float right; margin-right 5px
+      font-size 16px
+  .igrid-content
+    clearfix()
+    overflow-y scroll
+    overflow-x hidden

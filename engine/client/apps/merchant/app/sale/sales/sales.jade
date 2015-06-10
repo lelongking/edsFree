@@ -1,0 +1,144 @@
+template(name="sales")
+  #header
+    .editor-row
+      .editor-wrapper.dual-spacer
+      .editor-wrapper(style="width: 200px; margin-right: 5px;")
+        span.ilabel.optional nhân viên
+        +iSelect(options=sellerSelectOptions class="field")
+      .editor-wrapper(style="width: 220px")
+        span.ilabel.optional khách hàng
+        +iSelect(options=customerSelectOptions class="field")
+
+      //.editor-wrapper(style="width: 250px")
+      //  span.ilabel sản phẩm
+      //  +iSelect(options=productSelectOptions class="field")
+      //.editor-wrapper(style="width: 100px")
+      //  span.ilabel.center số lượng
+      //  +iSpinEdit(options=productQualityOptions)
+      //.editor-wrapper(style="width: 150px")
+      //  span.ilabel.center giá bán
+      //  +iSpinEdit(options=productPriceOptions)
+      //.editor-wrapper(style="width:70px")
+      //  button.lemon.btn.lime.icon-plus-circled.addOrderDetail(class="{{allowCreateOrderDetail}}" type='submit') THÊM
+      //
+      //.editor-wrapper.right(style="width: 150px")
+      //  span.ilabel.optional giá tổng
+      //  input.quality(value="{{formatNumber finalPriceProduct}}" disabled)
+      //.editor-wrapper.right(style="width: 150px")
+      //  span.ilabel.center.optional giảm giá
+      //  +iSpinEdit(options=productDiscountCashOptions)
+      //.editor-wrapper.right(style="width:100px")
+      //  span.ilabel.center.optional giảm %
+      //  +iSpinEdit(options=productDiscountPercentOptions)
+
+  #content.modern.sales-app
+    .dual-content
+      .dual-detail-wrapper
+        .dual-detail
+          .nano: .nano-content
+            +saleDetailSection saleDetails
+
+      .dual-addon
+        .search-filter.icon-search-8
+          input(name='searchFilter' type="text" placeholder="tìm sản phẩm...")
+        .nano: .nano-content
+          if showProductFilterSearch
+            .group-wrapper
+              each allProductInCurrentWarehouse
+                .caption.advanced.inner.product-selection(class="{{productSelectionActiveClass}}")
+                  +avatarImageComponent(avatar=avatarUrl alias=name)
+                  span.text {{product.name}}
+                    .commands
+                      span.icon-right-open-big.addSaleDetail
+                  span.right-info
+                    if product.basicDetailModeEnabled
+                      i.icon-search-outline
+                    else
+                      |{{formatNumber availableUnit}}
+                    |{{unitName}}
+          else
+            each allProductInCurrentWarehouse
+              .group-wrapper
+                .caption.group {{key}}
+                each childs
+                  .caption.advanced.inner.product-selection(class="{{productSelectionActiveClass}}")
+                    +avatarImageComponent(avatar=avatarUrl alias=name)
+                    span.text {{product.name}}
+                      .commands
+                        span.icon-right-open-big.addSaleDetail
+                    //if product.basicUnit
+                    //  span.left-info
+                    span.right-info
+                      if product.basicDetailModeEnabled
+                        i.icon-search-outline
+                      else
+                        |{{formatNumber availableUnit}}
+                      |{{unitName}}
+
+  #footer.modern
+    .editor-row.extra(name='delivery')
+      .editor-wrapper.right(style="width:200px")
+        span.ilabel ghi chú
+        input.comment(value="#{deliveryDetail.comment}" tabindex="5")
+      .editor-wrapper.right(style="width:100px")
+        span.ilabel ngày giao hàng
+        input(name="deliveryDate" binding="datePicker" todayHighlight="true" maxlength="20" tabindex="4")
+      .editor-wrapper.right(style="width:300px")
+        span.ilabel địa chỉ giao hàng
+        input.deliveryAddress(value="#{deliveryDetail.deliveryAddress}" tabindex="3")
+      .editor-wrapper.right(style="width:130px")
+        span.ilabel số điện thoại
+        input.contactPhone(value="#{deliveryDetail.contactPhone}" tabindex="2")
+      .editor-wrapper.right(style="width:170px")
+        span.ilabel tên người nhận
+        input.contactName(value="#{deliveryDetail.contactName}" tabindex="1")
+
+    .editor-row.extra(name='advanced')
+      .editor-wrapper(style="width: 200px; margin-right: 5px;")
+        span.ilabel.optional nhân viên
+        +iSelect(options=sellerSelectOptions class="field")
+      .editor-wrapper(style="width: 120px")
+        span.ilabel.optional thanh toán
+        +iSelect(options=paymentMethodSelectOption class="field")
+
+      .editor-wrapper.right(style="width: 195px")
+        span.ilabel.optional phương thức giảm giá
+        +iSelect(options=billDiscountSelectOption class="field")
+      .editor-wrapper.right(style="width: 190px")
+        span.ilabel.center.optional giảm giá
+        +iSpinEdit(options=billCashDiscountOptions)
+      .editor-wrapper.right(style="width:110px")
+        span.ilabel.center.optional giảm %
+        +iSpinEdit(options=billPercentDiscountOptions)
+
+    .editor-row
+      .editor-wrapper.dual-spacer
+      .editor-wrapper(style="width: 120px")
+        span.ilabel.optional thanh toán
+        +iSelect(options=paymentMethodSelectOption class="field")
+      .editor-wrapper(style="width: 150px")
+        span.ilabel.optional giao hàng
+        +iSelect(options=paymentsDeliverySelectOption class="field")
+      .editor-wrapper(style="width: 160px")
+        span.ilabel.center tiền nhận vào
+        +iSpinEdit(options=depositOptions)
+
+      //.editor-wrapper
+      //  input(binding="switch" type="checkbox" name="advancedMode")
+
+      .editor-wrapper.pull-right
+        button.flat.btn.lime.pull-right.finish(class="{{allowSuccessOrder}}" type='submit' style="margin-right: 5px;") HOÀN TẤT
+      .editor-wrapper.pull-right
+        button.flat.btn.blue.pull-right.print-command(type='submit'): span.icon-print-6
+
+      //.editor-wrapper.pull-right(style="width: 120px")
+      //  span.ilabel.optional.right thực thu
+      //  input.quality(value="{{formatNumber currentOrder.finalPrice}}" disabled)
+      //.editor-wrapper.pull-right(style="width: 120px")
+      //  span.ilabel.right số dư
+      //  input.debit(value="{{formatNumber currentDebit}}" disabled)
+      //.col.col-auto.pull-right(style="width: 120px")
+      //  span.ilabel.center.optional tạm tính
+      //  input.quality(value="{{currentOrder.totalPrice}}")
+
+    +tabComponent(options=tabOptions)

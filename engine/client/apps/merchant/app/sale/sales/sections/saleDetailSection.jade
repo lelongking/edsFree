@@ -1,0 +1,97 @@
+template(name="saleDetailSection")
+   .section.top.panel.panel-default.printable-area
+      .panel-heading
+         .hide-on-print
+            span <b>{{timeHM}}<sup>{{timeS}}</sup></b>, ngày <b>{{timeDMY}}</b> <b>{{fullDay}}</b>
+         .show-on-print
+            +merchantPrintingHeader
+            .bill-info
+              .seller-info {{sellerName}} bán hàng
+              .bill-no {{billNo}}
+            .printing-info
+              .document-name
+                span.s4 PHIẾU BÁN HÀNG <br />
+                span.uppercase {{buyer.name}}
+              .document-info
+                .right-info
+                  if buyer.phone
+                    span {{buyer.phone}}
+                    span.icon-phone-circled <br/>
+                  if buyer.address
+                    span {{buyer.address}}
+                    span.icon-location-outline
+
+      .panel-body
+         //+gridComponent(options=saleDetailOptions wrapperClass="detail-grid row" animation="bounceInDown")
+         table.lemon-grid
+            tr.table-header
+               th.bill-name(style="width:auto") SẢN PHẨM
+               th.number.price(style="width:100px") ĐƠN GIÁ
+               th.number.quality(style="width:50px") SL
+               th.skull(style="width:100px; text-align:center") ĐƠN VỊ
+               th.number.bill-discount(style="width:100px") GIẢM GIÁ
+               th.number.final-price(style="width:140px") THÀNH TIỀN
+            each orderDetails
+               if editingMode
+                  +saleDetailEditor editingData
+               else
+                  tr.detail-row.large-name: td(colspan="3")
+                     span {{productName product}}
+                     //if product.basicUnit
+                     //   span ({{product.basicUnit}})
+                     if discountPercent
+                        span.super.s7.color-lime GIẢM GIÁ {{round discountPercent}}%
+                  tr.detail-row.click-enable(class="{{crossBillAvailableQuality.errorClass}}")
+                     td.bill-name.has-commands
+                      |{{productName product}}
+                      .commands
+                        .lemon.rounded.tiny.btn.blue.deleteOrderDetail: span.icon-minus-4
+                     td.number.price.editable-field {{formatNumber unitPrice}}
+                     td.number.quality.editable-field.error-field
+                        span
+                           |{{formatNumber unitQuality}}
+                           if crossBillAvailableQuality.invalid
+                              span.super.s7.color-lime {{crossBillAvailableQuality.crossAvailable}}
+                     td(align="center").skull {{unitName}}
+                     td.number.bill-discount.editable-field
+                        span {{formatNumber discountCash}}
+                        if discountPercent
+                           span.super.s7.color-lime -{{round discountPercent}}%
+                     td.number.final-price <b>{{formatNumber finalPrice}}</b>
+
+            tr.top-dashed.space
+               td(colspan="6" style="height: 25px")
+                  input.editable.dashed.note(name="orderDescription" value="{{orderDescription}}" placeholder="ghi chú đơn hàng" size="40" maxlength="120")
+            tr
+               td(align="center"): span NGƯỜI NHẬN
+               td
+               td.number(colspan="2"): span.s5 TỔNG CỘNG:
+               td.number(colspan="2"): span.s4 <b>{{formatNumber order.totalPrice}}</b> VNĐ
+            tr
+               td
+               td
+               td.number(colspan="2"): span.s5 CHIẾT KHẤU:
+               td.number(colspan="2"): span.s4 <b>{{formatNumber order.discountCash}}</b> VNĐ
+            tr
+               td
+               td
+               td.number(colspan="2"): span.s5 TIỀN CŨ:
+               td.number(colspan="2"): span.s4 <b>{{formatNumber customerOldDebt}}</b> VNĐ
+            tr
+               td(align="center"): span.s6.note (<i>Chữ ký và Họ Tên</i>)
+               td
+               td.number(colspan="2"): span.s5 THANH TOÁN:
+               td.number(colspan="2"): span.s4 <b>{{formatNumber order.currentDeposit}}</b> VNĐ
+            tr
+               td(colspan="2")
+               td
+               td
+               td.number(colspan="2" style="border-top: solid 1px #d7d7d7")
+                  span.s4 <b>{{formatNumber customerFinalDebt}}</b> VNĐ
+
+      .panel-footer.show-on-print
+         .grea-print-message
+            .rounded-gera-logo: .rounded-wrapper
+               img(src="/images/white-pixel.jpg")
+               img.rounded-img(src="/images/gera-small.png")
+            i In từ hệ thống EDS - công ty Công Nghệ Thiên Ban (0838 111 766)

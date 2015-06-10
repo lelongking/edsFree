@@ -1,0 +1,57 @@
+@require 'nib'
+
+collapse-transition()
+  transition all 0.15s ease
+
+placeholder($color = #999)
+  &::-moz-placeholder
+    color $color
+    opacity 1
+  &:-ms-input-placeholder
+    color $color
+  &::-webkit-input-placeholder
+    color $color
+
+unselectable()
+  -moz-user-select -moz-none
+  -khtml-user-select none
+  -webkit-user-select none
+  -ms-user-select none
+  user-select none
+
+user-select($select)
+  -webkit-user-select $select
+  -moz-user-select $select
+  -ms-user-select $select
+  -o-user-select $select
+  user-select $select
+
+$rotate($degrees)
+  -webkit-transform rotate($degrees)
+  -ms-transform rotate($degrees)
+  -o-transform rotate($degrees)
+  transform rotate($degrees)
+
+$box-shadow(shadow)
+  -webkit-box-shadow shadow
+  -moz-box-shadow shadow
+  box-shadow shadow
+
+$noise-material(color=#ffffff, material='light')
+  background: color url("/images/" + material + "-noise.png");
+
+lemon-icon($ico)
+  content $ico
+  font-family "lemon"
+  font-style normal
+  font-weight normal
+  speak none
+  display inline-block
+  text-decoration inherit
+  width 1em
+  margin-right .2em
+  text-align center
+  font-variant normal
+  text-transform none
+  line-height 1em
+  margin-left .2em

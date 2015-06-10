@@ -1,0 +1,125 @@
+@import "../../../../styles/lib.import.styl"
+
+#sidebar
+  collapse-transition()
+  position relative
+  margin-top navigation-height
+  fixed right 0
+  width sidebar-size
+  min-height 100%
+  background-color sidebar-background-color
+  z-index 999
+
+  if sidebar-border-size > 0
+    border-left solid sidebar-border-size sidebar-border-color
+
+  .collapse-toggle
+    cursor pointer
+    width 30px
+    height 30px
+    absolute top -36px
+    left -(@width+sidebar-border-size)
+    background-color #7ac5f9
+    border-radius left 2px
+    &:before
+      color #fff; font-size 14px
+      margin 8px 10px
+
+  ul.sidebar-nav
+    clearfix()
+    list-style none
+    margin 0; padding 0
+    a > i { color: #4D4748; }
+
+    li
+      float left
+      margin-bottom -1px
+      a
+        line-height 51px
+        padding 0 27px
+        i { font-size: 16px; }
+
+      &.active
+        background-color caption-background-color
+        border-left solid 1px #1D1D1D
+        border-right solid 1px #1D1D1D
+        a > i { color: #fff; }
+
+  .sidebar-caption
+    overflow ellipsis
+    height 50px
+    background-color caption-background-color
+    border-top solid 1px #2C2C2C
+    border-bottom solid 1px #070707
+    color #fff
+    font-size 20px; font-weight 300
+    text-transform uppercase
+    line-height 50px
+    padding 0 10px
+    text-align center
+
+  ul.messenger-list
+    padding 0; margin 0
+    color #fff
+    overflow-y scroll
+    overflow-x hidden
+    li
+      border-bottom solid 1px darken(sidebar-background-color, 3)
+      margin-bottom 1px
+      &:after
+        content: ""
+        width 100%
+        border-top solid 1px lighten(sidebar-background-color, 3)
+        absolute bottom -2px
+      /*border-top solid 1px lighten(sidebar-background-color, 3)*/
+      /*&:first-child*/
+        /*border-top none*/
+
+  .chat-avatar
+    user-select(none)
+    list-style: none;
+    position: relative;
+    cursor: pointer;
+    &.me input[type="file"] { display: none; }
+
+    .online-status-orb
+      width 8px; height 8px
+      absolute top 6px right 6px
+      border-radius 50%
+      background-color gray
+      &.online
+        background-color lime
+      &.idle
+        background-color carrot
+
+    .has-message-status
+      absolute right 1px top 21px
+      line-height 5px
+      font-size 13px
+      visibility hidden
+      color #dedede
+      &.active
+        visibility visible
+
+    .alias
+      pointer-events none
+      transition(left 0.15s ease)
+      absolute top 10px left 60px
+      padding 0 2px; width 80px
+      font-size 12px
+      overflow ellipsis
+      text-transform capitalize
+      color #ffffff
+
+    .avatar
+      img
+        width 50px; height 50px
+      &.letter
+        display block
+        width 50px; height 50px
+        font-size 14px; padding 5px
+        line-height 41px
+        color #ffffff; background-color #282828
+        text-align center
+        font-weight bolder
+        text-transform uppercase

@@ -1,0 +1,24 @@
+template(name="homeHeader")
+  .header-content
+    .home-branding
+      .logo-image
+        img(src="images/gera-white.png")
+      .logo-text
+        .caption enterprise<b>dual</b>strategy
+          sup.trademark TM
+        .slogan {{i18n 'slogan'}}
+
+      .social
+        a.icon-facebook-rect
+        a.icon-twitter-bird
+        a.icon-googleplus-rect
+        a.icon-linkedin-rect
+      .phone
+        i.icon-mobile
+        |+84 838-<b>111</b>-766
+
+      .languages
+        each languages
+          span {{display}}
+
+    .home-splitter

@@ -1,0 +1,177 @@
+@import 'jeet'
+@import 'rupture'
+@import "../../../styles/lib.import.styl"
+editor-font-size = 12px
+
+#container
+  width 100%; height 100%
+  padding navigation-height sidebar-size 0 0
+
+  #header
+    background-color #fff
+    border-bottom solid 1px #d7d7d7
+    .caption-row
+      clearfix()
+      padding 13px 0 5px 0
+      .title
+        float left; margin-left 10px
+        font-size 20px
+        font-weight lighter
+
+        text-transform uppercase
+        color #707070
+      .filter
+        float right
+        margin-right 5px
+    .commands
+      float left; margin-left 10px
+      .btn
+        margin-left 5px
+    .switches
+      float right
+      padding-bottom 5px
+      margin-right 5px
+
+  #content
+    height 100%
+    background-color #fff
+    margin 3px 0 1px 0
+    &.modern
+      margin 0
+  #footer
+    background #ffffff
+    padding-top 5px
+    min-height 5px
+    clearfix()
+    &.modern
+      padding-top 0
+      border-top solid 1px #d7d7d7
+    &.gray
+      /*background #f7f7f7 url(images/dot-bg.png) repeat center top*/
+      $noise-material(#f7f7f7, 'light')
+    .extra
+      display none
+      border-bottom solid 1px #dfdfdf
+
+    .editor-wrapper
+      .select2component > a
+        .select2-arrow
+          line-height 23px
+          top -15px
+          &:before
+            content '\E899'
+
+.editor-row
+  clearfix()
+  font-size editor-font-size
+
+.editor-wrapper
+  float left
+  position relative
+  padding-left 5px
+  &.right { float: right; padding-right: 5px; padding-left: 0; }
+  &.dual-spacer
+    width 260px
+    min-height 50px
+    border-right solid 1px #cfcfcf
+  &:first-child
+    padding-left 0
+
+  .field
+    width 100%
+
+  .switchery
+    margin 6px 0
+  .select2component > a
+    height 50px; font-size 14px
+    border none; border-radius 0
+    padding-top 20px
+    overflow inherit
+
+    .select2-chosen
+      margin-right 40px
+    .select2-arrow
+      border solid 3px #DFDFDF
+      background-color #FFFFFF
+      border-radius 50%
+      width 30px; height 30px; line-height 25px
+      absolute right 5px top 35px
+      z-index 99999
+      transition right 0.5s
+      &:before
+        lemon-icon('\E896')
+        margin-left 5px
+
+      > b
+        display none
+
+  .select2-dropdown-open > a
+    border none !important
+    .select2-arrow
+      right -14px
+      &:before
+        content '\E8DF' !important
+        color #D0D0D0
+
+  .input-group.bootstrap-touchspin
+    padding-top 18px
+    .bootstrap-touchspin-down, .bootstrap-touchspin-up
+      border solid 3px #DFDFDF !important
+      border-radius 50%
+      border-left-color inherit
+      border-right-color inherit
+      padding 1px !important
+    .input-group-btn:first-child
+      absolute right 53px top -14px
+    .input-group-btn:last-child
+      absolute right 20px top -14px
+
+    input
+      border none; box-shadow none
+      font-size 18px
+
+  .ilabel
+    pointer-events none
+    absolute left 10px top 4px; z-index 10
+    padding 0 4px; line-height 10px
+    font-size 11px
+    text-align center
+    color #BABABA
+    border-radius top 2px
+    /*&.optional*/
+      /*color lime;*/
+    &.center
+      left: 50%;
+      transform translate(-50%, 0)
+    &.right
+      left: auto; right: 15px
+
+.editor-wrapper
+  .btn
+    margin 5px 0; padding 4px 12px
+    border-radius 3px
+  > input
+    outline: none; border none
+    margin 15px 0 5px 0; width 100%
+    border-bottom dashed 1px orange
+    padding 0 7px 0 14px; line-height 28px
+    border-radius 3px
+    font-size: 13px
+    &:disabled
+      background-color #fff
+
+#content .detail-grid
+  margin 0; padding 4px 2px 0 2px
+  min-height 104px
+  .col, .item-wrapper
+    float: left; padding 0 2px
+    +below(1024px)
+      span(1/3)
+    +above(1024px)
+      span(1/3)
+    +above(1200px)
+      span(1/4)
+    +above(1600px)
+      span(1/5)
+    +above(1900px)
+      span(1/6)

@@ -1,0 +1,27 @@
+template(name="inventory")
+  #header
+    .caption-row: .title Kiểm Kho
+
+    .editor-row
+      .editor-wrapper.pull-right
+        button.lemon.btn.amethyst.icon-history.inventoryHistory(type='submit') LỊCH SỬ
+      .editor-wrapper(style="width: 200px")
+        span.ilabel chi nhánh
+        +iSelect(options=merchantSelectOptions class="field")
+      .editor-wrapper(style="width: 200px")
+        span.ilabel kho
+        +iSelect(options=warehouseSelectOptions class="field")
+      .editor-wrapper(style="width: 200px; {{showDescription}}")
+        span.ilabel lý do kiểm kho
+        input(name="description" maxlength="200" value="{{currentInventory.description}}")
+      .editor-wrapper(style="width:100px; {{showCreate}}")
+        button.lemon.btn.lime.icon-plus-circled.createInventory(class="{{allowCreate}}") Tạo
+      .editor-wrapper(style="width:100px; {{showDestroy}}")
+        button.lemon.btn.pumpkin.destroyInventory() Hủy
+      .editor-wrapper(style="width:100px; {{showSubmit}}")
+        button.lemon.btn.lime.icon-ok-6.submitInventory() Xác Nhận
+
+  #content
+    +iGrid(options=gridOptions)
+
+

@@ -1,0 +1,27 @@
+template(name="deliveryManagerThumbnailHeader1")
+  span.title CHỜ GIAO
+  span.icon.icon-shareable
+template(name="deliveryManagerThumbnailHeader2")
+  span.title ĐANG GIAO
+  span.icon.icon-truck-1
+template(name="deliveryManagerThumbnailHeader3")
+  span.title CHỜ KẾT THÚC
+  span.icon.icon-award
+
+template(name="deliveryManager")
+  #header
+    .caption-row
+      .title Giao Hàng
+    //.editor-row
+    //  .editor-wrapper(style="width: 200px")
+    //    span.ilabel chi nhánh
+    //    +iSelect(options=merchantSelectOptions class="field")
+    //  .editor-wrapper(style="width: 200px")
+    //    span.ilabel kho
+    //    +iSelect(options=warehouseSelectOptions class="field")
+
+  #content
+    .segments-container.size3
+      +gridComponent(options=waitingGridOptions wrapperClass="segments-column" headerTemplate="deliveryManagerThumbnailHeader1" animation="bounceInDown")
+      +gridComponent(options=deliveringGridOptions wrapperClass="segments-column" headerTemplate="deliveryManagerThumbnailHeader2" animation="bounceInDown")
+      +gridComponent(options=doneGridOptions wrapperClass="segments-column" headerTemplate="deliveryManagerThumbnailHeader3" animation="bounceInDown")

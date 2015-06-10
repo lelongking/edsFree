@@ -1,0 +1,9 @@
+template(name="gridComponent")
+  .igrid(class="{{wrapperClass}}")
+    if headerTemplate
+      .igrid-header
+        +UI.dynamic(template=headerTemplate)
+    .igrid-content
+      each dataSource
+        .item-wrapper(class="{{animationClass}}")
+          +UI.dynamic(template=itemTemplate data=this)

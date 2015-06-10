@@ -1,0 +1,47 @@
+template(name="partnerManagementNewHistoryDetails")
+  if transactionFirst
+    tr.header-row: td(colspan="5")
+      | &nbsp;
+      .bill-header <b>{{momentFormat version.createdAt 'DD/MM/YYYY'}}</b>
+
+  if isTransaction
+    tr.paid-row.top(class="{{receivableClass}}")
+      td.has-commands
+        span.note {{momentCalendar debtDate}}, {{description}}
+        .commands
+          .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
+          if isFirst
+            if showUnSubmit
+              .lemon.rounded.tiny.btn.lime.icon-ok-6.submitTransaction
+            else
+              .lemon.rounded.tiny.btn.lime.icon-ok-6.disabled
+
+      td.number(colspan="3")
+        span.icon-feather-1(class="{{finalReceivableClass}}")
+        span.s4(class="{{finalReceivableClass}}") <b>{{formatNumber latestDebtBalance}}</b>
+      td.number: span(class="{{receivableClass}}") <b>{{formatNumberAbs debtBalanceChange}}</b>
+
+  else
+    tr.header-row: td(colspan="5")
+      | &nbsp;
+      .bill-header <b>{{momentFormat version.createdAt 'DD/MM/YYYY'}}</b>, {{description}}
+      .commands
+        .lemon.rounded.tiny.btn.red.deleteHistory.icon-minus-4
+        if isFirst
+          if isSaleFirst
+            .lemon.rounded.tiny.btn.lime.icon-ok-6.submitHistory
+          else
+            .lemon.rounded.tiny.btn.lime.icon-ok-6.disabled
+
+    each newHistoryDetails
+      tr.detail-row
+        td.first-column {{buildInProductName}}
+        td.number {{quality}}
+        td(align="center") {{buildInProductUnitName}}
+        td.number {{formatNumber importPrice}}
+        td.last-column.number {{formatNumber totalPrice}}
+
+    tr.detail-row.summary-row
+      td
+      td.number(colspan="3"): span.blured-color.icon-feather-1 <b>{{formatNumber latestDebtBalance}}</b>
+      td.summary-total(align="right"): span.s5 <b>{{formatNumber debtBalanceChange}}</b>

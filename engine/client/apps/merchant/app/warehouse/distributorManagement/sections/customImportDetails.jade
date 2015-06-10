@@ -1,0 +1,46 @@
+template(name="distributorManagementCustomImportDetails")
+  tr.header-row: td(colspan="5")
+    | &nbsp;
+    .bill-header <b>{{momentFormat debtDate 'DD/MM/YYYY'}}</b>
+    .commands
+      if isCustomImportModeEnabled
+        .lemon.rounded.red.btn.animated.bounceIn.deleteCustomImport: span.icon-minus-4
+
+  each customImportDetails
+    tr.detail-row
+      td.has-commands
+        | {{productName}}
+        .commands
+          if isCustomImportModeEnabled
+            .lemon.rounded.tiny.btn.red.deleteCustomImportDetail: span.icon-minus-4
+      td.number {{formatNumber quality}}
+      td(align="center") {{skulls}}
+      td.number {{formatNumber price}}
+      td.number {{formatNumber finalPrice}}
+  if isCustomImportDetailCreator
+    +distributorManagementCustomImportDetailCreator
+  tr.detail-row.summary-row
+    td: span.note {{description}}
+    td.number(colspan="3"): span.blured-color.icon-feather-1 <b>{{formatNumber latestDebtBalance}}</b>
+    td.summary-total(align="right"): span.s5 <b>{{formatNumber debtBalanceChange}}</b>
+
+  each latestPaids
+    tr.paid-row.top(class="{{receivableClass}}")
+      td.has-commands
+        span.note {{description}}, {{momentFormat debtDate 'DD/MM/YYYY'}}
+        .commands
+          if isCustomImportModeEnabled
+            .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
+      td.number(colspan="3")
+        span.icon-feather-1
+        span.s4(class="{{finalReceivableClass}}") <b>{{formatNumberAbs latestDebtBalance}}</b>
+      td.number: span(class="{{receivableClass}}") <b>{{formatNumberAbs debtBalanceChange}}</b>
+
+
+template(name="distributorManagementCustomImportDetailCreator")
+    tr.editors.dual-border.animated.fadeIn
+      td: input(name='productName' type="text" size="10" placeholder="tên sản phẩm")
+      td: input.number(name='quality' type="text" size="10" placeholder="sl")
+      td: input(name='skulls' type="text" size="10" placeholder="quy cách" style="text-align:center")
+      td: input.number(name='price' type="text" size="10" placeholder="đơn giá")
+      td: .lemon.btn.rounded.orange.pull-right.createCustomImportDetail.icon-plus-6
