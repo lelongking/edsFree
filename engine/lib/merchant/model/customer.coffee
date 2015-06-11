@@ -1,10 +1,7 @@
 customerProfile = new SimpleSchema
-  avatar      : simpleSchema.OptionalString
-  gender      : simpleSchema.OptionalString
   address     : simpleSchema.OptionalString
   phone       : simpleSchema.OptionalString
   dateOfBirth : simpleSchema.OptionalString
-  description : simpleSchema.OptionalString
   pronoun     : simpleSchema.OptionalString
   companyName : simpleSchema.OptionalString
   email       : simpleSchema.OptionalString
@@ -16,9 +13,18 @@ customerTransaction = new SimpleSchema
 
 #----------------------------------------------------------------------------------------------------------------------
 simpleSchema.customers = new SimpleSchema
-  name   : simpleSchema.StringUniqueIndex
-  areas  : simpleSchema.OptionalStringArray
-  billNo : simpleSchema.OptionalString
+  name        : simpleSchema.StringUniqueIndex
+  description : simpleSchema.OptionalString
+
+  gender      : simpleSchema.DefaultBoolean()
+  avatar      : simpleSchema.OptionalString
+  areas       : simpleSchema.OptionalStringArray
+
+  merchant    : simpleSchema.DefaultMerchant
+  allowDelete : simpleSchema.DefaultBoolean()
+  billNo      : simpleSchema.DefaultString('001')
+  creator     : simpleSchema.DefaultCreator
+  version     : { type: simpleSchema.Version }
 
   profiles:
     type: customerProfile
@@ -28,12 +34,19 @@ simpleSchema.customers = new SimpleSchema
     type: customerTransaction
     optional: true
 
-  merchant   : simpleSchema.DefaultMerchant
-  allowDelete: simpleSchema.DefaultBoolean()
-#  customerType :
-  creator    : simpleSchema.DefaultCreator
-  version    : { type: simpleSchema.Version }
-
 Schema.add 'customers', "Customer", class Customer
-  @insideMerchant: (merchantId) -> @schema.find({parentMerchant: merchantId})
-  @insideBranch: (branchId) -> @schema.find({currentMerchant: branchId})
+  @transform: (doc) ->
+  @splitName: (fullText) ->
+    if fullText.indexOf("(") > 0
+      namePart        = fullText.substr(0, fullText.indexOf("(")).trim()
+      descriptionPart = fullText.substr(fullText.indexOf("(")).replace("(", "").replace(")", "").trim()
+      return { name: namePart, description: descriptionPart }
+    else
+      return { name: fullText }
+
+  @insert: (name, callback) ->
+    Schema.customers.insert({name: name}, callback)
+
+  @nameIsExisted: (name, merchant) ->
+    existedQuery = {name: name, merchant: merchant}
+    Schema.customers.findOne(existedQuery)

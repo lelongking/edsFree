@@ -2,13 +2,52 @@ logics.productManagement = {}
 Apps.Merchant.productManagementInit = []
 Apps.Merchant.productManagementReactive = []
 
+
+
 Apps.Merchant.productManagementInit.push (scope) ->
-  scope.managedTopSaleProducts = -> Schema.products.find()
+  scope.productManagementCreationMode = (productSearch)->
+    if ProductSearch.history[productSearch].data?.length is 1
+      nameIsExisted = ProductSearch.history[productSearch].data[0].name isnt Session.get("productManagementSearchFilter")
+    Session.set("productManagementCreationMode", nameIsExisted)
+
+  scope.createNewProduct = (template, productSearch) ->
+    fullText   = Session.get("productManagementSearchFilter")
+    newProduct = Helpers.splitName(fullText)
+    newProduct.merchant = Session.get("myProfile").merchant
+
+    existedQuery = {name: newProduct.name, merchant: newProduct.merchant}
+    if Schema.products.findOne(existedQuery)
+      template.ui.$searchFilter.notify("Sản phẩm đã tồn tại.", {position: "bottom"})
+    else
+      newProduct.units = [{name: 'MacDinh', allowDelete: false, isBase: true}]
+      newProductId = Schema.products.insert newProduct
+      if Match.test(newProductId, String)
+        Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentProduct': newProductId}})
+        ProductSearch.cleanHistory()
+
+  scope.ProductSearchFindPreviousProduct = (productSearch) ->
+    if previousRow = ProductSearch.history[productSearch].data.getPreviousBy('_id', Session.get('mySession').currentProduct)
+      Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentProduct': previousRow._id}})
+
+  scope.ProductSearchFindNextProduct = (productSearch) ->
+    if nextRow = ProductSearch.history[productSearch].data.getNextBy('_id', Session.get('mySession').currentProduct)
+      Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentProduct': nextRow._id}})
+
+
+
 
 Apps.Merchant.productManagementReactive.push (scope) ->
   scope.currentProduct = Schema.products.findOne(Session.get('mySession').currentProduct)
   Session.set "productManagementCurrentProduct", scope.currentProduct
 
+#    if Session.get("productManagementSearchFilter")?.trim().length > 1
+#      if scope.managedBranchProductList.length + scope.managedMerchantProductList > 0
+#        productNameLists = _.pluck(scope.managedBranchProductList, 'name')
+#        Session.set("productManagementCreationMode", !_.contains(productNameLists, Session.get("productManagementSearchFilter").trim()))
+#      else
+#        Session.set("productManagementCreationMode", true)
+#    else
+#      Session.set("productManagementCreationMode", false)
 
 #  merchantId = Session.get("myProfile")?.currentMerchant
 #  productId  = Session.get("mySession")?.currentProductManagementSelection

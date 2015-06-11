@@ -1,3 +1,16 @@
+Meteor.publishComposite 'productManagementCurrentProductData', (productId = null) ->
+  self = @
+  return {
+    find: ->
+      return EmptyQueryResult if !productId or self.userId
+      Schema.products.find({_id: productId})
+  }
+
+
+
+
+
+
 Meteor.publish 'products', ->
   profile = Schema.userProfiles.findOne({user: @userId})
   return [] if !profile

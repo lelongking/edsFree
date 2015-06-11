@@ -1,4 +1,6 @@
-#Apps.Merchant.productManagementInit.push (scope) ->
+Apps.Merchant.productManagementInit.push (scope) ->
+
+
 #  scope.updateBasicProductDetail = (productDetailId, template)->
 #    if productDetail = Schema.productDetails.findOne(productDetailId)
 #      $paidDate = $("[name='expireDate']").inputmask('unmaskedvalue')

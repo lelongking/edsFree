@@ -67,6 +67,12 @@ simpleSchema.DefaultCreatedAt =
     return new Date unless @isSet
     return
 
+simpleSchema.DefaultString = (value = '') ->
+  type: String
+  autoValue: ->
+    return value unless @isSet
+    return
+
 simpleSchema.DefaultBoolean = (value = true) ->
   type: Boolean
   autoValue: ->

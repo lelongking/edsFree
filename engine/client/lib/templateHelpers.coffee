@@ -1,3 +1,4 @@
+#old----------------------------------------------->
 Template.registerHelper 'systemVersion', -> Schema.systems.findOne()?.version ? '?'
 Template.registerHelper 'merchantInfo', -> Schema.merchantProfiles.findOne({merchant: Session.get("myProfile").currentMerchant})
 Template.registerHelper 'currentAppInfo', -> Session.get("currentAppInfo")

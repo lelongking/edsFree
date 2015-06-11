@@ -3,41 +3,34 @@ Apps.Merchant.customerManagementInit = []
 Apps.Merchant.customerManagementReactive = []
 
 Apps.Merchant.customerManagementReactive.push (scope) ->
-#  allowCreate = if Session.get('allowCreateNewCustomer') then '' else 'disabled'
-#  scope.allowCreate = allowCreate
-
-#  if customerId = Session.get("mySession")?.currentCustomerManagementSelection
-#    Session.set("customerManagementCurrentCustomer", Schema.customers.findOne(customerId))
-#
-#  if customer = Session.get("customerManagementCurrentCustomer")
-#    maxRecords = Session.get("customerManagementDataMaxCurrentRecords")
-#    countRecords = Schema.customSales.find({buyer: customer._id}).count()
-#    countRecords += Schema.sales.find({buyer: customer._id}).count() if customer.customSaleModeEnabled is false
-#    Session.set("showExpandSaleAndCustomSale", (maxRecords is countRecords))
-#
-#
-#    if latestCustomSale = Schema.customSales.findOne({buyer: customer._id}, {sort: {debtDate: -1}})
-#      if latestTransaction = Schema.transactions.findOne({latestSale: latestCustomSale._id}, {sort: {debtDate: -1}})
-#        $("[name=paidDate]").val(moment(latestTransaction.debtDate).format('DDMMYYYY'))
-#      else
-#        $("[name=paidDate]").val(moment(latestCustomSale.debtDate).format('DDMMYYYY'))
-#      $("[name=debtDate]").val(moment(latestCustomSale.debtDate).format('DDMMYYYY'))
-#    else
-#      $("[name=paidDate]").val('')
-#      $("[name=debtDate]").val('')
+  scope.currentCustomer = Schema.customers.findOne(Session.get('mySession').currentCustomer)
+  Session.set "customerManagementCurrentCustomer", scope.currentCustomer
 
 
-#    if latestSale = Schema.sales.findOne({buyer: customer._id}, {sort: {'version.createdAt': -1}})
-#      if latestTransaction = Schema.transactions.findOne({latestSale: latestSale._id}, {sort: {debtDate: -1}})
-#        $("[name=paidSaleDate]").val(moment(latestTransaction.debtDate).format('DDMMYYY'))
-#      else
-#        $("[name=paidSaleDate]").val(moment(latestSale.version.createdAt).format('DDMMYYY'))
-#    else
-#      $("[name=paidSaleDate]").val('')
+Apps.Merchant.customerManagementInit.push (scope) ->
+  scope.customerManagementCreationMode = (customerSearch)->
+    if CustomerSearch.getCurrentQuery().length > 0
+      if CustomerSearch.history[customerSearch].data?.length is 0 then nameIsExisted = true
+      else if CustomerSearch.history[customerSearch].data?.length is 1
+        nameIsExisted = CustomerSearch.history[customerSearch].data[0].name isnt Session.get("customerManagementSearchFilter")
+    Session.set("customerManagementCreationMode", nameIsExisted)
 
-#  if Session.get("customerManagementCurrentCustomer")
-    #customerManagementData
-#    Meteor.subscribe('customerManagementData', Session.get("customerManagementCurrentCustomer")._id)
-#    Meteor.subscribe('availableCustomSaleOf', Session.get("customerManagementCurrentCustomer")._id)
-#    Meteor.subscribe('availableSaleOf', Session.get("customerManagementCurrentCustomer")._id)
-#    Meteor.subscribe('availableReturnOf', Session.get("customerManagementCurrentCustomer")._id)
+  scope.createNewCustomer = (template, customerSearch) ->
+    fullText    = Session.get("customerManagementSearchFilter")
+    newCustomer = Customer.splitName(fullText)
+
+    if Customer.nameIsExisted(newCustomer.name, Session.get("myProfile").merchant)
+      template.ui.$searchFilter.notify("Khách hàng đã tồn tại.", {position: "bottom"})
+    else
+      newCustomerId = Schema.customers.insert newCustomer
+      if Match.test(newCustomerId, String)
+        Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentCustomer': newCustomerId}})
+        CustomerSearch.cleanHistory()
+
+  scope.CustomerSearchFindPreviousCustomer = (customerSearch) ->
+    if previousRow = CustomerSearch.history[customerSearch].data.getPreviousBy('_id', Session.get('mySession').currentCustomer)
+      Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentCustomer': previousRow._id}})
+
+  scope.CustomerSearchFindNextCustomer = (customerSearch) ->
+    if nextRow = CustomerSearch.history[customerSearch].data.getNextBy('_id', Session.get('mySession').currentCustomer)
+      Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentCustomer': nextRow._id}})

@@ -59,7 +59,7 @@ lemon.defineHyper Template.productManagementOverviewSection,
 
     "click .addProductUnit": -> scope.currentProduct.unitCreate()
     "click .deleteProductUnit": -> scope.currentProduct.unitRemove(@_id)
-    "click .productDelete": -> @remove()
+    "click .productDelete": -> scope.currentProduct.remove()
 
 #    "click .syncProductEdit": (event, template) -> scope.editProduct(template)
 

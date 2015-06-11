@@ -89,4 +89,6 @@ Schema.add 'products', "Product", class Product
 
     doc.remove = (callback)->
       if @allowDelete
-        Schema.products.update @_id, callback
+        Schema.products.remove @_id, callback
+
+  @insert: ()->

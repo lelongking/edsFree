@@ -1,43 +1,46 @@
 scope = logics.productManagement
 
 lemon.defineApp Template.productManagement,
-  topSaleProducts: -> scope.managedTopSaleProducts()
-  productFilterSearch: -> Schema.products.find()
-
-  showFilterSearch: -> Session.get("productManagementSearchFilter")?.length > 1
-  avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
+  creationMode: -> Session.get("productManagementCreationMode")
   currentProduct: -> Session.get("productManagementCurrentProduct")
+  avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
   activeClass:-> if Session.get("productManagementCurrentProduct")?._id is @._id then 'active' else ''
 
-
-
-
-  creationMode: -> Session.get("productManagementCreationMode")
-#  showDeleteBranchProduct: -> @inStockQuality == @availableQuality == @totalQuality == @salesQuality == 0
-#  showDeleteMerchantProduct: -> if @branchList?.length is 0 then true else false
-
   created: ->
-#    if currentProduct = Session.get("mySession").currentProductManagementSelection
-#      Meteor.subscribe('productManagementData', currentProduct)
-#
-#    lemon.dependencies.resolve('productManagements')
+    ProductSearch.search ''
     Session.set("productManagementSearchFilter", "")
 
+#    if currentProduct = Session.get("mySession").currentProductManagementSelection
+#      Meteor.subscribe('productManagementData', currentProduct)
+
+# loal danh sach san pham con lai
+#    lemon.dependencies.resolve('productManagements')
+
   events:
-    "input .search-filter": (event, template) ->
-      Helpers.deferredAction ->
-        Session.set("productManagementSearchFilter", template.ui.$searchFilter.val())
-      , "productManagementSearchProduct"
+    "keyup input[name='searchFilter']": (event, template) ->
+      searchFilter  = template.ui.$searchFilter.val()
+      productSearch = Helpers.Searchify searchFilter
+      Session.set("productManagementSearchFilter", searchFilter)
 
-    "keypress input[name='searchFilter']": (event, template)->
-      scope.createProduct(template) if event.which is 13 and Session.get("productManagementSearchFilter")?.trim().length > 1
+      if event.which is 17 then console.log 'up'
+      else if event.which is 38 then scope.ProductSearchFindPreviousProduct(productSearch)
+      else if event.which is 40 then scope.ProductSearchFindNextProduct(productSearch)
+      else
+        scope.createNewProduct(template, productSearch) if event.which is 13
+        ProductSearch.search productSearch
+        scope.productManagementCreationMode(productSearch)
 
-    "click .createProductBtn": (event, template) -> scope.createProduct(template)
+    "click .createProductBtn": (event, template) ->
+      fullText   = Session.get("productManagementSearchFilter")
+      productSearch = Helpers.Searchify(fullText)
+
+      scope.createNewProduct(template, productSearch)
+      ProductSearch.search productSearch
 
     "click .inner.caption": (event, template) ->
       if userId = Meteor.userId()
+        Meteor.subscribe('productManagementCurrentProductData', @_id)
         Meteor.users.update(userId, {$set: {'sessions.currentProduct': @_id}})
-#        Meteor.subscribe('productManagementData', @_id)
 
 #    "click .deleteBranchProduct":  (event, template) ->
 #      Meteor.call('deleteBranchProduct', @_id); event.stopPropagation()

@@ -23,7 +23,6 @@ jnoble:multi-styl
 waitingkuo:jade
 meteorhacks:fast-render
 meteorhacks:subs-manager
-matteodem:easy-search
 
 aldeed:simple-schema
 aldeed:collection2
@@ -31,6 +30,7 @@ matb33:collection-hooks
 dburles:collection-helpers
 reywood:publish-composite
 tmeasday:publish-counts
+meteorhacks:search-source
 
 cfs:filesystem
 cfs:standard-packages

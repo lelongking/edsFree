@@ -14,18 +14,18 @@ template(name="merchantHome")
                 .canvas-wrapper.double: .canvas
                   //.app-icon.icon-group
                   span.caption.app-name.bottom.right khách hàng
-                  .app-count {{listToFormatNumber Summary.customerList}}
+                  .app-count {{getPublishedCount 'customers'}}
                   .app-count-description khách hàng
               .tile.double.pumpkin.overlay.distributor-management(data-app="distributorManagement")
                 .canvas-wrapper: .canvas
                   //.app-icon.icon-building
-                  .app-count {{listToFormatNumber Summary.distributorList}}
+                  .app-count {{getPublishedCount 'providers'}}
                   .app-count-description công ty
                   span.caption.app-name.bottom.right nhà cung cấp
               .tile.double.belize-hole.overlay.product-management(data-app="productManagement")
                 .canvas-wrapper: .canvas
                   //.app-icon.icon-cubes
-                  .app-count {{listToFormatNumber Merchant.productList}}
+                  .app-count {{getPublishedCount 'products'}}
                   .app-count-description loại sản phẩm
                   span.caption.app-name.bottom.right sản phẩm
 
@@ -37,27 +37,27 @@ template(name="merchantHome")
                 //span.caption.app-name.bottom.right thu chi
               .tile.amethyst(data-app="sales")
                 //.app-icon.icon-basket
-                .app-count {{listToFormatNumber Summary.saleDay}}
+                .app-count {{getPublishedCount 'orders'}}
                 .app-count-description phiếu trong ngày
                 span.caption.app-name.bottom.right bán hàng
               .tile.pink(data-app="customerReturn")
                 //.app-icon.icon-reply-outline
-                .app-count {{listToFormatNumber Summary.returnCustomerDay}}
+                .app-count {{getPublishedCount 'returns'}}
                 .app-count-description phiếu trong ngày
                 span.caption.app-name.bottom.right trả hàng
               .tile.green-sea(data-app="import")
                 //.app-icon.icon-download-outline
-                .app-count {{listToFormatNumber Summary.importDay}}
+                .app-count {{getPublishedCount 'imports'}}
                 .app-count-description phiếu trong ngày
                 span.caption.app-name.bottom.right nhập kho
               .tile.pumpkin(data-app="distributorReturn")
                 //.app-icon.icon-reply-outline
-                .app-count {{listToFormatNumber Summary.returnDistributorDay}}
+                .app-count {{getPublishedCount 'returns'}}
                 .app-count-description phiếu trong ngày
                 span.caption.app-name.bottom.right trả hàng
               .tile.carrot(data-app="inventoryHistory")
                 //.app-icon.icon-edit
-                .app-count {{listToFormatNumber Summary.returnCustomerDay}}
+                .app-count {{getPublishedCount 'inventories'}}
                 .app-count-description ngày chưa cập nhật
                 span.caption.app-name.bottom.right kiểm kho
               .tile.blue
@@ -74,11 +74,12 @@ template(name="merchantHome")
                 span.caption.app-name.bottom.right thu chi
               .tile.lime(data-app="deliveryManager")
                 //.app-icon.icon-truck-1
-                .app-count {{listToFormatNumber Summary.deliveryWaiting}}
+                .app-count {{getPublishedCount 'deliveries'}}
                 .app-count-description phiếu chờ giao
                 span.caption.app-name.bottom.right giao hàng
               .tile.carrot
-                .app-icon.icon-flash-3
+                //.app-icon.icon-flash-3
+                .app-count {{getPublishedCount 'orders'}}
                 span.caption.app-name.bottom.right đơn hàng
               .tile.double.blue
                 //.app-icon.icon-award

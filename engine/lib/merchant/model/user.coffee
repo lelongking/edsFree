@@ -30,6 +30,10 @@ userSession = new SimpleSchema
     type: String
     optional: true
 
+  currentCustomer:
+    type: String
+    optional: true
+
 
 
 Meteor.users.attachSchema new SimpleSchema
