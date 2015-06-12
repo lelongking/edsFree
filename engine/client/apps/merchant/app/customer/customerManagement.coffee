@@ -47,6 +47,7 @@ lemon.defineApp Template.customerManagement,
           CustomerSearch.search customerSearch
           scope.customerManagementCreationMode(customerSearch)
       , "customerManagementSearchPeople"
+      , 50
 
     "click .createCustomerBtn": (event, template) ->
       fullText      = Session.get("customerManagementSearchFilter")

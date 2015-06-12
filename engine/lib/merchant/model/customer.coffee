@@ -36,6 +36,13 @@ simpleSchema.customers = new SimpleSchema
 
 Schema.add 'customers', "Customer", class Customer
   @transform: (doc) ->
+    doc.remove = ->
+      if @allowDelete
+        Schema.customers.remove @_id, callback
+
+  @insert: (name, description, callback) ->
+    Schema.customers.insert({name: name, description: description}, callback)
+
   @splitName: (fullText) ->
     if fullText.indexOf("(") > 0
       namePart        = fullText.substr(0, fullText.indexOf("(")).trim()
@@ -43,9 +50,6 @@ Schema.add 'customers', "Customer", class Customer
       return { name: namePart, description: descriptionPart }
     else
       return { name: fullText }
-
-  @insert: (name, callback) ->
-    Schema.customers.insert({name: name}, callback)
 
   @nameIsExisted: (name, merchant) ->
     existedQuery = {name: name, merchant: merchant}

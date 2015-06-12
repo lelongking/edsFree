@@ -44,8 +44,7 @@ simpleSchema.products = new SimpleSchema
 Schema.add 'products', "Product", class Product
   @transform: (doc) ->
     doc.unitName = doc.units[0].name if doc.units
-    doc.unitCreate = (name = 'New')->
-      Schema.products.update @_id, {$push: { units:{} }}
+    doc.unitCreate = (name = 'New')-> Schema.products.update @_id, {$push: { units:{} }}
 
     doc.unitUpdate = (unitId, option, callback) ->
       unitNameIsNotExist = true
