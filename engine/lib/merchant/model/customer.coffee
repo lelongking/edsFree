@@ -1,6 +1,10 @@
 customerProfile = new SimpleSchema
-  address     : simpleSchema.OptionalString
   phone       : simpleSchema.OptionalString
+  address     : simpleSchema.OptionalString
+  gender      : simpleSchema.DefaultBoolean()
+  billNo      : simpleSchema.DefaultString('001')
+  areas       : simpleSchema.OptionalStringArray
+
   dateOfBirth : simpleSchema.OptionalString
   pronoun     : simpleSchema.OptionalString
   companyName : simpleSchema.OptionalString
@@ -16,13 +20,9 @@ simpleSchema.customers = new SimpleSchema
   name        : simpleSchema.StringUniqueIndex
   description : simpleSchema.OptionalString
 
-  gender      : simpleSchema.DefaultBoolean()
-  avatar      : simpleSchema.OptionalString
-  areas       : simpleSchema.OptionalStringArray
-
   merchant    : simpleSchema.DefaultMerchant
+  avatar      : simpleSchema.OptionalString
   allowDelete : simpleSchema.DefaultBoolean()
-  billNo      : simpleSchema.DefaultString('001')
   creator     : simpleSchema.DefaultCreator
   version     : { type: simpleSchema.Version }
 
@@ -36,9 +36,7 @@ simpleSchema.customers = new SimpleSchema
 
 Schema.add 'customers', "Customer", class Customer
   @transform: (doc) ->
-    doc.remove = ->
-      if @allowDelete
-        Schema.customers.remove @_id, callback
+    doc.remove = -> Schema.customers.remove(@_id, callback) if @allowDelete
 
   @insert: (name, description, callback) ->
     Schema.customers.insert({name: name, description: description}, callback)

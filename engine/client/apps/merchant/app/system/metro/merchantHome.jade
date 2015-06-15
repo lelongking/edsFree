@@ -16,7 +16,7 @@ template(name="merchantHome")
                   span.caption.app-name.bottom.right khách hàng
                   .app-count {{getPublishedCount 'customers'}}
                   .app-count-description khách hàng
-              .tile.double.pumpkin.overlay.distributor-management(data-app="distributorManagement")
+              .tile.double.pumpkin.overlay.distributor-management(data-app="providerManagement")
                 .canvas-wrapper: .canvas
                   //.app-icon.icon-building
                   .app-count {{getPublishedCount 'providers'}}
@@ -30,11 +30,17 @@ template(name="merchantHome")
                   span.caption.app-name.bottom.right sản phẩm
 
             .tile-group-2
-              .tile.double.peter-river
+              .tile.peter-river
                 //.app-icon.icon-shareable
                 //.app-count 0
-                //.app-count-description phiếu trong ngày
-                //span.caption.app-name.bottom.right thu chi
+                //.app-count-description
+                span.caption.app-name.bottom.right nhân sự
+              .tile.peter-river
+                //.app-icon.icon-shareable
+                //.app-count 0
+                //.app-count-description
+                span.caption.app-name.bottom.right hệ thống
+
               .tile.amethyst(data-app="sales")
                 //.app-icon.icon-basket
                 .app-count {{getPublishedCount 'orders'}}
@@ -45,6 +51,8 @@ template(name="merchantHome")
                 .app-count {{getPublishedCount 'returns'}}
                 .app-count-description phiếu trong ngày
                 span.caption.app-name.bottom.right trả hàng
+
+
               .tile.green-sea(data-app="import")
                 //.app-icon.icon-download-outline
                 .app-count {{getPublishedCount 'imports'}}
@@ -55,23 +63,33 @@ template(name="merchantHome")
                 .app-count {{getPublishedCount 'returns'}}
                 .app-count-description phiếu trong ngày
                 span.caption.app-name.bottom.right trả hàng
+
+
+
+              .tile.blue
+                //.app-icon.icon-loop-outline
+                .app-count 0
+                .app-count-description phiếu trong ngày
+                span.caption.app-name.bottom.right nhóm s.phẩm
               .tile.carrot(data-app="inventoryHistory")
                 //.app-icon.icon-edit
                 .app-count {{getPublishedCount 'inventories'}}
                 .app-count-description ngày chưa cập nhật
                 span.caption.app-name.bottom.right kiểm kho
-              .tile.blue
-                //.app-icon.icon-loop-outline
-                //.app-count 0
-                //.app-count-description phiếu trong ngày
-                //span.caption.app-name.bottom.right chuyển kho
+
 
             .tile-group-2
-              .tile.double.peter-river(data-app="distributorManagement")
+              .tile.peter-river
+                //.app-icon.icon-shareable
+                //.app-count 0
+                //.app-count-description phiếu trong ngày
+                span.caption.app-name.bottom.right nhật ký
+              .tile.peter-river(data-app="distributorManagement")
                 //.app-icon.icon-shareable
                 .app-count 0
                 .app-count-description phiếu trong ngày
                 span.caption.app-name.bottom.right thu chi
+
               .tile.lime(data-app="deliveryManager")
                 //.app-icon.icon-truck-1
                 .app-count {{getPublishedCount 'deliveries'}}
@@ -81,12 +99,25 @@ template(name="merchantHome")
                 //.app-icon.icon-flash-3
                 .app-count {{getPublishedCount 'orders'}}
                 span.caption.app-name.bottom.right đơn hàng
-              .tile.double.blue
+
+              .tile.blue
                 //.app-icon.icon-award
                 //.app-count {{listToFormatNumber Merchant.partnerList}}
                 //.app-count-description đã liên kết
-                //span.caption.app-name.bottom.right đối tác
-              .tile.double.amethyst(data-app="merchantReport")
+                span.caption.app-name.bottom.right đối tác
+
+              .tile.blue
+                //.app-icon.icon-award
+                //.app-count {{listToFormatNumber Merchant.partnerList}}
+                //.app-count-description đã liên kết
+                span.caption.app-name.bottom.right nhóm k.hàng
+
+              .tile.amethyst(data-app="merchantReport")
+                //.app-icon.icon-chart-pie-outline
+                .app-count {{formatNumber revenueDay}}
+                .app-count-description doanh thu ngày
+                span.caption.app-name.bottom.right bảng giá
+              .tile.amethyst(data-app="merchantReport")
                 //.app-icon.icon-chart-pie-outline
                 .app-count {{formatNumber revenueDay}}
                 .app-count-description doanh thu ngày

@@ -1,0 +1,76 @@
+template(name="providerManagementImportsHistorySection")
+  .section.panel.panel-default.printable-area
+    .panel-heading
+      .show-on-print
+        +merchantPrintingHeader
+        .printing-info
+          .document-name {{name}}
+
+      table.lemon-grid: tr
+        th(style="width:auto") SẢN PHẨM
+        th.number(style="width:80px") SL
+        th(style="width:100px; text-align:center") ĐƠN VỊ
+        th.number(style="width:120px") ĐƠN GIÁ
+        th.number(style="width:175px") THÀNH TIỀN
+    .panel-body.debt-details
+      table.lemon-grid
+        +providerManagementImportHistoryHeader
+        each customImport
+          +providerManagementCustomImportDetails this
+
+        tr.editors(style="{{isCustomImportModeEnabled}}")
+          td
+            input.new-transaction-custom-import-field(name='payDescription' type="text" size="10" placeholder="ghi chú thu chi")
+          td(colspan="2")
+            input.new-transaction-custom-import-field.number(name='payAmount' type="text" size="10" placeholder="số tiền")
+          td
+            input.new-transaction-custom-import-field.number(name='paidDate' type="text" size="10" placeholder="ngày giao dịch")
+          td
+            .lemon.rounded.btn.orange.icon-money.pull-right.createTransactionOfCustomImport(class="{{allowCreateTransactionOfCustomImport}}")
+
+        tr.editors.dual-border(style="{{isCustomImportModeEnabled}}")
+          td(colspan="3")
+            input.new-bill-field(name='customImportDescription' type="text" size="10" placeholder="ghi chú đơn hàng nhập")
+          td
+            input.new-bill-field.number(name='customImportDebtDate' type="text" size="10" placeholder="ngày nhập")
+          td
+            .lemon.rounded.btn.orange.icon-tags-2.pull-right.createCustomImport(class="{{allowCreateCustomImport}}")
+
+        if customImportModeEnabled
+          tr.group-summary-row
+            td
+              .lemon.btn.lime.customImportModeDisable.icon-ok-6 Kết Sổ Cũ
+            td.number.old-debt-total(colspan="5")
+              span.s5 NỢ CŨ:
+              span.s3 <b>{{formatNumber customImportDebt}}</b> VNĐ
+
+        if showExpandImportAndCustomImport
+          tr: td(colspan="5")
+            .lemon.btn.lime.pull-right.expandImportAndCustomImport.icon-ok-6 Xem Thêm
+
+      table.lemon-grid.safe
+        +providerManagementImportHistoryHeader
+        each defaultImport
+          +providerManagementImportDetails this
+
+        tr.editors
+          td
+            input.new-transaction-import-field(name='payImportDescription' type="text" size="10" placeholder="ghi chú trả tiền")
+          td(colspan="3")
+            input.new-transaction-import-field.number(name='payImportAmount' type="text" size="10" placeholder="số tiền")
+          td
+            .lemon.rounded.btn.lime.icon-money.pull-right.createTransactionOfImport(class="{{allowCreateTransactionOfImport}}")
+
+    .panel-footer
+      .right-float
+        span.s5 TỔNG NỢ:
+        span.s3 <b>{{formatNumber finalDebtBalance}}</b> VNĐ
+
+
+template(name="providerManagementImportHistoryHeader")
+  tr
+    th(style="width:auto")
+    th(style="width:80px")
+    th(style="width:100px")
+    th(style="width:120px")
+    th(style="width:182px")

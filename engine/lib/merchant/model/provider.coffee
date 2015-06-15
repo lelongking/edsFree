@@ -1,88 +1,48 @@
+providerProfile = new SimpleSchema
+  phone          : simpleSchema.OptionalString
+  billNo         : simpleSchema.DefaultString('001')
+  representative : simpleSchema.OptionalString
+  manufacturer   : simpleSchema.OptionalString
+
+providerTransaction = new SimpleSchema
+  importPaid     : simpleSchema.DefaultNumber()
+  importDebt     : simpleSchema.DefaultNumber()
+  importTotalCash: simpleSchema.DefaultNumber()
+
+
 simpleSchema.providers = new SimpleSchema
-  parentMerchant:
-    type: String
+  name        : simpleSchema.StringUniqueIndex
+  description : simpleSchema.OptionalString
 
-  merchant:
-    type: String
+  merchant    : simpleSchema.DefaultMerchant
+  avatar      : simpleSchema.OptionalString
+  allowDelete : simpleSchema.DefaultBoolean()
+  creator     : simpleSchema.DefaultCreator
+  version     : { type: simpleSchema.Version }
 
-  creator:
-    type: String
-
-  name:
-    type: String
-
-  representative:
-    type: String
+  profiles:
+    type: providerProfile
     optional: true
 
-  phone:
-    type: String
+  transactions:
+    type: providerTransaction
     optional: true
-
-  manufacturer:
-    type: String
-    optional: true
-
-  status:
-    type: Boolean
-    defaultValue: true
-
-  allowDelete:
-    type: Boolean
-    defaultValue: true
-
-  styles:
-    type: String
-    defaultValue: Helpers.RandomColor()
-    optional: true
-
-  location: { type: simpleSchema.Location, optional: true }
-  version: { type: simpleSchema.Version }
 
 Schema.add 'providers', "Provider", class Provider
-  @insideMerchant: (merchantId) -> @schema.find({parentMerchant: merchantId}, {sort: {'version.createdAt': -1}})
-  @insideBranch: (branchId) -> @schema.find({merchant: branchId}, {sort: {'version.createdAt': -1}})
+  @transform: (doc) ->
+    doc.remove = -> Schema.providers.remove(@_id, callback) if @allowDelete
 
-  @findBy: (providerId, parentMerchantId = null)->
-    if !parentMerchantId then myProfile= Schema.userProfiles.findOne({user: Meteor.userId()})
-    @schema.findOne({
-      _id            : providerId
-      parentMerchant : parentMerchantId ? myProfile.parentMerchant
-    })
+  @insert: (name, description, callback) ->
+    Schema.providers.insert({name: name, description: description}, callback)
 
-  @canDeleteByMe: () ->
-    if userProfile = Schema.userProfiles.findOne({user: Meteor.userId()})
-      @schema.find
-        parentMerchant: userProfile.parentMerchant
-        creator       : userProfile.user
-        allowDelete   : true
-
-
-  @createNew: (name, phone, address)->
-    if userProfile = Schema.userProfiles.findOne({user: Meteor.userId()})
-      provider =
-        parentMerchant   : userProfile.parentMerchant
-        merchant         : userProfile.currentMerchant
-        creator          : userProfile.user
-        name             : name
-      provider.phone    = phone if phone
-      provider.location = {address: [address]} if address
-
-      findProvider =  Schema.providers.findOne({
-        parentMerchant: provider.parentMerchant
-        name          : provider.name
-      })
-
-      if findProvider
-        {error:'Tên nhà cung cấp bị trùng lặp.'}
-      else
-        @schema.insert provider, (error, result)-> if error then {error: error} else {}
-
-  @destroyByCreator: (providerId)->
-    provider = @schema.findOne({_id: providerId , creator: Meteor.userId()})
-    if provider.allowDelete
-      @schema.remove(providerId)
-      {}
+  @splitName: (fullText) ->
+    if fullText.indexOf("(") > 0
+      namePart        = fullText.substr(0, fullText.indexOf("(")).trim()
+      descriptionPart = fullText.substr(fullText.indexOf("(")).replace("(", "").replace(")", "").trim()
+      return { name: namePart, description: descriptionPart }
     else
-      {error:'Không thể xóa được nhà phân phối.'}
+      return { name: fullText }
 
+  @nameIsExisted: (name, merchant) ->
+    existedQuery = {name: name, merchant: merchant}
+    Schema.providers.findOne(existedQuery)

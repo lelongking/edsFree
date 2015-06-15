@@ -1,0 +1,23 @@
+template(name="providerManagement")
+  #content.modern
+    .dual-content
+      .dual-detail-wrapper
+        .dual-detail
+          .nano: .nano-content
+            +providerManagementOverviewSection currentProvider
+            //+providerManagementImportsHistorySection currentProvider
+      .dual-addon
+        .search-filter.icon-search-8
+          input(name='searchFilter' type="text" placeholder="tìm nhà cung cấp...")
+          if creationMode
+            .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createProviderBtn
+
+        .nano: .nano-content
+          .group-wrapper
+            each providerSearches
+              .caption.inner(class="{{activeClass}}")
+                +avatarImageComponent(avatar=avatarUrl alias=name instance=this)
+                span.text
+                  |{{name}}
+                  if description
+                      |({{description}})
