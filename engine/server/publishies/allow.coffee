@@ -20,23 +20,16 @@ Schema.skulls.allow
   remove: -> true
 
 Schema.products.allow
-  insert: (userId, product) -> true
-  update: (userId, product) -> true
-  remove: (userId, product) -> true
+  insert: -> true
+  update: -> true
+  remove: -> true
 
 
 #-----------------------------------------------------------------------------------------------------------------------
 Schema.customers.allow
-  insert: (userId, customer) ->
-    customerFound = Schema.customers.findOne({currentMerchant: customer.parentMerchant, name: customer.name, description: customer.description})
-    return customerFound is undefined
+  insert: -> true
   update: -> true
-  remove: (userId, customer) ->
-    anySaleFound = Schema.sales.findOne {buyer: customer._id}
-    anyCustomSaleFound = Schema.customSales.findOne {buyer: customer._id}
-    anyTransactionFound = Schema.transactions.findOne {owner: customer._id}
-    if anySaleFound or anyCustomSaleFound or anyTransactionFound then Schema.customers.update customer._id, $set:{allowDelete: false}
-    return anySaleFound is undefined and anyTransactionFound is undefined and anyCustomSaleFound is undefined
+  remove: -> true
 
 Schema.partners.allow
   insert: -> true
@@ -44,26 +37,14 @@ Schema.partners.allow
   remove: -> true
 
 Schema.distributors.allow
-  insert: (userId, distributor)->
-    findDistributor = Schema.providers.findOne({name: distributor.name, parentMerchant: distributor.parentMerchant})
-    if findDistributor then false else true
-  update: (userId, distributor)-> true
-  remove: (userId, distributor)->
-    if distributor.allowDelete
-      importFound = Schema.imports.findOne({distributor: distributor._id})
-      customImportFound = Schema.customImports.findOne({seller: distributor._id})
-      if importFound is undefined and customImportFound is undefined then true else false
+  insert: -> true
+  update: -> true
+  remove: -> true
 
 Schema.providers.allow
-  insert: (userId, provider) ->
-    if Schema.providers.findOne({
-      parentMerchant: provider.parentMerchant
-      name: provider.name
-    }) then false else true
-  update: (userId, provider) -> true
-  remove: (userId, provider) ->
-    if provider.allowDelete
-      if Schema.importDetails.findOne({provider: provider._id}) then false else true
+  insert: -> true
+  update: -> true
+  remove: -> true
 
 #-----------------------------------------------------------------------------------------------------------------------
 Schema.sales.allow
@@ -77,9 +58,9 @@ Schema.orders.allow
   remove: -> true
 
 Schema.imports.allow
-  insert: (userId, imports) -> true
-  update: (userId, imports) -> true
-  remove: (userId, imports) -> true
+  insert: -> true
+  update: -> true
+  remove: -> true
 
 Schema.deliveries.allow
   insert: -> true

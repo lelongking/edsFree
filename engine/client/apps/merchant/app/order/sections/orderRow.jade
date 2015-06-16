@@ -1,0 +1,42 @@
+template(name="orderRowEdit")
+  tr.detail-row.large-name: td(colspan="3")
+    span {{productName product}}
+    //if product.basicUnit
+    //  span ({{product.basicUnit}})
+    if discountPercent
+      span.super.s7.color-lime GIẢM GIÁ {{round discountPercent}}%
+
+  tr.editors.dual-border(class="{{crossBillAvailableQuality.errorClass}}")
+    td.bill-name.has-commands
+      |{{productName product}}
+      .commands
+        .lemon.rounded.tiny.btn.blue.animated.bounceIn.deleteOrderDetail: span.icon-minus-4
+    td.price: input(name="editPrice" min="0")
+    td.quality: input.error-field(name="editQuality" min="0")
+    td.skull(align="center") {{productUnitName productUnit}}
+    td.bill-discount: input(name="editDiscountCash" min="0")
+    td.number.final-price <b>{{formatNumber detailFinalPrice}}</b>
+
+template(name="orderRowDisplay")
+  tr.detail-row.large-name: td(colspan="3")
+    span {{productName product}}
+    //if discountCash
+    //   span.super.s7.color-lime GIẢM GIÁ {{round discountPercent}}%
+
+  tr.detail-row.click-enable(class="{{crossBillAvailableQuality.errorClass}}")
+    td.bill-name.has-commands
+      |{{productName product}}
+      .commands
+        .lemon.rounded.tiny.btn.blue.deleteOrderDetail: span.icon-minus-4
+    td.number.price.editable-field {{formatNumber price}}
+    td.number.quality.editable-field.error-field
+      span
+        |{{formatNumber quality}}
+        if crossBillAvailableQuality.invalid
+          span.super.s7.color-lime {{crossBillAvailableQuality.crossAvailable}}
+    td(align="center").skull {{productUnitName productUnit}}
+    td.number.bill-discount.editable-field
+      span {{formatNumber discountCash}}
+      //if discountPercent
+      //   span.super.s7.color-lime -{{round discountPercent}}%
+    td.number.final-price <b>{{formatNumber detailFinalPrice}}</b>

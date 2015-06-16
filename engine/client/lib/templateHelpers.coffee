@@ -1,3 +1,9 @@
+Template.registerHelper 'productName', (productId)-> Schema.products.findOne(productId)?.name ? 'Sản phẩm không tồn tại'
+Template.registerHelper 'productUnitName', (unitId)->
+  product = Schema.products.findOne({'units._id': unitId})
+  productUnit = _.findWhere(product.units, {_id: unitId})
+  productUnit.name
+
 #old----------------------------------------------->
 Template.registerHelper 'systemVersion', -> Schema.systems.findOne()?.version ? '?'
 Template.registerHelper 'merchantInfo', -> Schema.merchantProfiles.findOne({merchant: Session.get("myProfile").currentMerchant})
@@ -28,36 +34,6 @@ Template.registerHelper 'skullsNameFromId', (id) -> Schema.products.findOne(id)?
 Template.registerHelper 'userNameFromId', (id) -> Schema.userProfiles.findOne({user: id})?.fullName ? Meteor.users.findOne(id)?.emails[0].address
 Template.registerHelper 'ownerNameFromId', (id) -> Schema.customers.findOne(id)?.name
 
-Template.registerHelper 'buildInProductName', ->
-  if profile = Session.get('myProfile')
-    if buildInProduct = Schema.buildInProducts.findOne(@buildInProduct)
-      product = Schema.products.findOne({buildInProduct: buildInProduct._id, merchant: profile.currentMerchant})
-    product?.name ? buildInProduct?.name
-
-Template.registerHelper 'buildInProductUnitName', ->
-  if profile = Session.get('myProfile')
-    if @buildInProductUnit
-      if buildInProduct = Schema.buildInProductUnits.findOne(@buildInProductUnit)
-        productUnit = Schema.productUnits.findOne({buildInProductUnit: buildInProduct._id, merchant: profile.currentMerchant})
-      productUnit?.unit ? buildInProduct?.unit
-    else
-      if buildInProduct = Schema.buildInProducts.findOne(@buildInProduct)
-        product = Schema.products.findOne({buildInProduct: buildInProduct._id, merchant: profile.currentMerchant})
-      product?.basicUnit ? buildInProduct?.basicUnit
-
-
-Template.registerHelper 'productName', (productId)->
-  if product = Schema.products.findOne(productId)
-    buildInProduct = Schema.buildInProducts.findOne(product.buildInProduct) if product.buildInProduct
-    product.name ? buildInProduct?.name
-
-Template.registerHelper 'unitName', ->
-  if @unit
-    if productUnit = Schema.productUnits.findOne(@unit)
-      productUnit.unit ? Schema.buildInProductUnits.findOne(productUnit.buildInProductUnit)?.unit
-  else
-    if product = Schema.products.findOne(@product)
-      product.basicUnit ? Schema.buildInProducts.findOne(product.buildInProduct)?.basicUnit
 
 Template.registerHelper 'genderString', (gender) -> if gender then 'Nam' else 'Nữ'
 Template.registerHelper 'allowAction', (val) -> if val then '' else 'disabled'

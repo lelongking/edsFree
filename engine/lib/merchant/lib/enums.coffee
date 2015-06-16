@@ -1,3 +1,5 @@
+Apps.Merchant.Enums = {}
+
 Apps.Merchant.GenderTypes = [
   _id: false
   display: 'NỮ'

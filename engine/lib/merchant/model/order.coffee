@@ -1,204 +1,215 @@
+Enums = Apps.Merchant.Enums
+Enums.OrderType =
+  created   : 0
+  submitted : 1
+
+Enums.paymentMethod =
+  created   : 0
+  submitted : 1
+
+Enums.paymentsDelivery =
+  created   : 0
+  submitted : 1
+
+Enums.DeliveryStatus =
+  created  : 0
+  delivered: 1
+  succeed  : 2
+
 simpleSchema.orders = new SimpleSchema
-  parentMerchant:
-    type: String
+  orderName   : simpleSchema.DefaultString('ĐƠN HÀNG')
+  seller      : simpleSchema.OptionalString
+  buyer       : simpleSchema.OptionalString
 
-  merchant:
-    type: String
+  merchant        : simpleSchema.DefaultMerchant
+  allowDelete     : simpleSchema.DefaultBoolean()
+  creator         : simpleSchema.DefaultCreator
+  version         : { type: simpleSchema.Version }
 
-  warehouse:
-    type: String
+  profiles                    : type: Object , optional: true
+  'profiles.description'      : simpleSchema.OptionalString
+  'profiles.orderCode'        : simpleSchema.OptionalString
+  'profiles.orderType'        : simpleSchema.DefaultNumber(Enums.OrderType.created)
+  'profiles.paymentMethod'    : simpleSchema.DefaultNumber()
+  'profiles.paymentsDelivery' : simpleSchema.DefaultNumber()
+  'profiles.deliveryStatus'   : simpleSchema.OptionalNumber
 
-  creator:
-    type: String
-    optional: true
+  'profiles.discountCash'     : simpleSchema.DefaultNumber()
+  'profiles.depositCash'      : simpleSchema.DefaultNumber()
+  'profiles.totalPrice'       : simpleSchema.DefaultNumber()
+  'profiles.finalPrice'       : simpleSchema.DefaultNumber()
 
-  seller:
-    type: String
-    optional: true
+  details                   : type: [Object], defaultValue: []
+  'details.$._id'           : simpleSchema.UniqueId
+  'details.$.product'       : type: String
+  'details.$.productUnit'   : type: String
+  'details.$.quality'       : {type: Number, min: 0}
+  'details.$.price'         : {type: Number, min: 0}
+  'details.$.discountCash'  : simpleSchema.DefaultNumber()
+  'details.$.basicQuality'  : {type: Number, min: 0}
+  'details.$.returnQuality' : simpleSchema.DefaultNumber()
 
-  buyer:
-    type: String
-    optional: true
-
-  description:
-    type: String
-    optional: true
-
-  tabDisplay:
-    type: String
-    defaultValue: 'New Order'
-
-  orderCode:
-    type: String
-    optional: true
-
-  productCount:
-    type: Number
-    defaultValue: 0
-
-  saleCount:
-    type: Number
-    defaultValue: 0
-
-  paymentsDelivery:
-    type: Number
-    defaultValue: 0
-
-  paymentMethod:
-    type: Number
-    defaultValue: 1
-
-  billDiscount:
-    type: Boolean
-    defaultValue: false
-
-  discountCash:
-    type: Number
-    defaultValue: 0
-
-  discountPercent:
-    type: Number
-    decimal: true
-    defaultValue: 0
-
-  totalPrice:
-    type: Number
-    defaultValue: 0
-
-  finalPrice:
-    type: Number
-    defaultValue: 0
-
-  deposit:
-    type: Number
-    defaultValue: 0
-
-  debit:
-    type: Number
-    defaultValue: 0
-
-  status:
-    type: Number
-    defaultValue: 0
-
-  delivery:
-    type: String
-    optional: true
-
-  styles:
-    type: String
-    defaultValue: Helpers.RandomColor()
-    optional: true
-
-  version: { type: simpleSchema.Version }
-
-#----------------------
-  currentProduct:
-    type: String
-    defaultValue: "null"
-
-  currentUnit:
-    type: String
-    optional: true
-
-  currentQuality:
-    type: Number
-    defaultValue: 0
-    optional: true
-
-  currentPrice:
-    type: Number
-    defaultValue: 0
-    optional: true
-
-  currentTotalPrice:
-    type: Number
-    defaultValue: 0
-    optional: true
-
-  currentDiscountCash:
-    type: Number
-    defaultValue: 0
-    optional: true
-
-  currentDiscountPercent:
-    type: Number
-    decimal: true
-    defaultValue: 0
-    optional: true
-
-  currentDeposit:
-    type: Number
-    defaultValue: 0
-    optional: true
-#----------------------
-  contactName:
-    type: String
-    optional: true
-
-  contactPhone:
-    type: String
-    optional: true
-
-  deliveryAddress:
-    type: String
-    optional: true
-
-  deliveryDate:
-    type: Date
-    optional: true
-
-  comment:
-    type: String
-    optional: true
-#----------------------
-
+  deliveries                     : type: Object , optional: true
+  'deliveries.shipper'           : simpleSchema.OptionalString
+  'deliveries.buyer'             : simpleSchema.OptionalString
+  'deliveries.deliveryCode'      : simpleSchema.OptionalString
+  'deliveries.contactName'       : simpleSchema.OptionalString
+  'deliveries.description'       : simpleSchema.OptionalString
+  'deliveries.contactPhone'      : simpleSchema.OptionalString
+  'deliveries.deliveryAddress'   : simpleSchema.OptionalString
+  'deliveries.deliveryDate'      : simpleSchema.OptionalString
+  'deliveries.transportationFee' : simpleSchema.OptionalNumber
+  'deliveries.createdAt'         : simpleSchema.DefaultCreatedAt
 
 Schema.add 'orders', "Order", class Order
-  @findBy: (orderId, warehouseId = null, merchantId = null)->
-    if myProfile= Schema.userProfiles.findOne({user: Meteor.userId()})
-      @schema.findOne({
-        _id      : orderId
-        creator  : myProfile.user
-        merchant : merchantId ? myProfile.currentMerchant
-        warehouse: warehouseId ? myProfile.currentWarehouse
-        status   : 0
-      })
+  @transform: (doc) ->
+    doc.remove = -> Schema.orders.remove(@_id, callback) if @allowDelete
 
-  @myHistory: (creatorId, warehouseId = null, merchantId = null)->
-    if myProfile= Schema.userProfiles.findOne({user: Meteor.userId()})
-      @schema.find({
-        creator   : creatorId ? myProfile.user
-        warehouse : warehouseId ? myProfile.currentWarehouse
-        merchant  : merchantId ? myProfile.currentMerchant
-        status    : 0
-      })
+    doc.searchPrice = (productUnitId) ->
 
-  @createdNewBy: (buyer, myProfile = null)->
-    if !myProfile then myProfile = Schema.userProfiles.findOne({user: Meteor.userId()})
-    orderOption =
-      parentMerchant: myProfile.parentMerchant
-      merchant      : myProfile.currentMerchant
-      warehouse     : myProfile.currentWarehouse
-      creator       : myProfile.user
-      seller        : myProfile.user
-      tabDisplay    : if buyer then Helpers.shortName2(buyer.name) else 'PHIẾU BÁN HÀNG 01'
+    doc.changeBuyer = (customerId, callback)->
+      if customer = Schema.customers.findOne(customerId)
+        option = $set:{ buyer: customer._id, orderName: Helpers.shortName2(customer.name) }
+        Schema.orders.update @_id, option, callback
 
-    orderOption.buyer = buyer._id if buyer?._id
-    orderOption._id   = @schema.insert orderOption
-    return orderOption
+    doc.changePaymentsDelivery = (paymentsDeliveryId, callback)->
+      option = $set:{"profiles.paymentsDelivery": paymentsDeliveryId}
+      Schema.orders.update @_id, option, callback
 
+    doc.changePaymentMethod = (paymentMethodId, callback)->
+      option = $set:{'profiles.paymentMethod': paymentMethodId}
+      option.$set['profiles.depositCash'] =
+        if option.$set['profiles.paymentMethod'] is 0 then @profiles.finalPrice
+        else if option.$set['profiles.paymentMethod'] is 1 then 0
+      Schema.orders.update @_id, option, callback
 
-#  updateContactName     : (value)-> @schema.update(@id, {$set:{contactName:     value}})
-#  updateContactPhone    : (value)-> @schema.update(@id, {$set:{contactPhone:    value}})
-#  updateDeliveryAddress : (value)-> @schema.update(@id, {$set:{deliveryAddress: value}})
-#  updateComment         : (value)-> @schema.update(@id, {$set:{comment:         value}})
-  updateDeliveryDate    : (expire)->
-    if expire > (new Date)
-      expireDate = new Date(expire.getFullYear(), expire.getMonth(), expire.getDate())
-      option = $set: {deliveryDate: expireDate}
-    else
-      option = $unset: {deliveryDate: true}
-    @schema.update(@id, option)
+    doc.changeDepositCash = (depositCash, callback) ->
+      option = $set:{'profiles.depositCash': Math.abs(depositCash)}
+      option.$set['profiles.paymentMethod'] = if option.$set['profiles.depositCash'] > 0 then 0 else 1
+      Schema.orders.update @_id, option, callback
+
+    doc.changeDescription = (description, callback)->
+      option = $set:{'profiles.description': description}
+      Schema.orders.update @_id, option, callback
+
+    doc.recalculatePrices = (newId, newQuality, newPrice) ->
+      totalPrice = 0
+      for detail in @details
+        if detail._id is newId
+          totalPrice += newQuality * newPrice
+        else
+          totalPrice += detail.quality * detail.price
+
+      totalPrice: totalPrice
+      finalPrice: totalPrice - @discountCash
 
 
+    doc.addDetail = (productUnitId, quality = 1, price = 1, callback) ->
+      return console.log('Khong tim thay Product') if !product = Schema.products.findOne({'units._id': productUnitId})
+      return console.log('Khong tim thay ProductUnit') if !productUnit = _.findWhere(product.units, {_id: productUnitId})
+      return console.log('Price not found..') if !price = price ? product.searchPrice(productUnitId)?.sale
+      return console.log("Price invalid (#{price})") if price < 0
+      return console.log("Quality invalid (#{quality})") if quality < 1
+
+      detailFindQuery = {product: product._id, productUnit: productUnitId, price: price}
+      detailFound = _.findWhere(@details, detailFindQuery)
+      console.log doc.details, detailFindQuery, detailFound
+
+      console.log productUnit.conversion
+      if detailFound
+        detailIndex = _.indexOf(@details, detailFound)
+        updateQuery = {$inc:{}}
+        updateQuery.$inc["details.#{detailIndex}.quality"] = quality
+        updateQuery.$inc["details.#{detailIndex}.basicQuality"] = quality * productUnit.conversion
+        recalculationOrder(@_id) if Schema.orders.update(@_id, updateQuery, callback)
+
+      else
+        detailFindQuery.quality = quality
+        detailFindQuery.basicQuality = quality * productUnit.conversion
+        recalculationOrder(@_id) if Schema.orders.update(@_id, { $push: {details: detailFindQuery} }, callback)
+
+    doc.editDetail = (detailId, quality, price, callback) ->
+      for instance, i in @details
+        if instance._id is detailId
+          updateIndex = i
+          updateInstance = instance
+          conversionUnit = updateInstance.basicQuality/updateInstance.quality
+      return console.log 'OrderDetailRow not found..' if !updateInstance
+
+      newSummary = @recalculatePrices(detailId, quality, price)
+
+      predicate = $set:{}
+      predicate.$set["totalPrice"] = newSummary.totalPrice
+      predicate.$set["finalPrice"] = newSummary.finalPrice
+      predicate.$set["details.#{updateIndex}.quality"] = quality
+      predicate.$set["details.#{updateIndex}.basicQuality"] = quality * conversionUnit
+      predicate.$set["details.#{updateIndex}.price"] = price
+      Schema.orders.update @_id, predicate, callback
+
+    doc.removeDetail = (detailId, callback) ->
+      return console.log('Order không tồn tại.') if (!self = Schema.orders.findOne doc._id)
+      return console.log('OrderDetail không tồn tại.') if (!detailFound = _.findWhere(self.details, {_id: detailId}))
+      detailIndex = _.indexOf(self.details, detailFound)
+      removeDetailQuery = { $pull:{} }
+      removeDetailQuery.$pull.details = self.details[detailIndex]
+      recalculationOrder(self._id) if Schema.orders.update(self._id, removeDetailQuery, callback)
+
+
+
+    doc.submit = ->
+      return console.log('Order không tồn tại.') if (!self = Schema.orders.findOne doc._id)
+      return console.log('Order đã Submit') if self.orderType isnt Enum.orderType.created
+
+      for detail, detailIndex in self.details
+        product = Document.Product.findOne({'units._id': detail.productUnit})
+        return console.log('Khong tim thay Product') if !product
+        productUnit = _.findWhere(product.units, {_id: detail.productUnit})
+        return console.log('Khong tim thay ProductUnit') if !productUnit
+#      Meteor.call 'orderSubmit', self._id
+
+    doc.addDelivery = (option, callback) ->
+      return console.log('Order không tồn tại.') if (!self = Schema.orders.findOne doc._id)
+      return console.log('Customer không tồn tại.') if (!customer = Document.Customer.findOne(self.buyer))
+      return console.log('Delivery tồn tại.') if self.deliveryStatus
+
+      addDeliver = {$push: {}}
+      addDeliver.description        = option.description if Math.check(option.deliveryDate, String)
+      addDeliver.deliveryDate       = option.deliveryDate if Math.check(option.deliveryDate, Date)
+      addDeliver.contactName        = option.name ? customer.name
+      addDeliver.contactPhone       = option.phone ? customer.phone
+      addDeliver.deliveryAddress    = option.address ? customer.address
+      addDeliver.transportationFee  = 0
+      addDeliver.createdAt          = new Date()
+
+      Schema.orders.update self._id, addDeliver, callback
+
+    doc.deliveryReceipt = (staffId = Meteor.userId(), callback)->
+      return console.log('Order không tồn tại.') if (!self = Schema.orders.findOne doc._id)
+      return console.log('Delivery tồn tại.') unless self.deliveryStatus
+      return console.log('Delivery đang được giao.') if self.deliveryStatus isnt Enum.created
+      return console.log('Staff không tồn tại.') if !@Meteor.users.findOne(staffId)
+
+      deliveryLastIndex = self.deliveries.length - 1
+      deliveryReceiptUpdate = {$set:{}}
+      deliveryReceiptUpdate.$set['deliveries.'+deliveryLastIndex +'.shipper'] = staffId
+      Schema.orders.update self._id, deliveryReceiptUpdate, callback
+
+    doc.deliverySucceed = (staffId = Meteor.userId(), callback)->
+      deliveryLastIndex = self.deliveries.length - 1
+      deliveryReceiptUpdate = {$unset:{}}
+      deliveryReceiptUpdate.$unset['deliveries.'+deliveryLastIndex +'.shipper'] = ""
+      Schema.orders.update self._id, deliveryReceiptUpdate, callback
+
+  @insert: (buyer, seller, tabDisplay, description, callback) ->
+    newOrder = {}
+    newOrder.buyer = buyer if buyer
+    newOrder.seller= seller if seller
+    Schema.orders.insert newOrder, callback
+
+
+recalculationOrder = (orderId) ->
+  orderFound = Schema.orders.findOne(orderId)
+  totalPrice = 0
+  (totalPrice += detail.quality * detail.price) for detail in orderFound.details
+  finalPrice = totalPrice - orderFound.profiles.discountCash
+  Schema.orders.update orderFound._id, $set:{'profiles.totalPrice': totalPrice, 'profiles.finalPrice': finalPrice}

@@ -2,7 +2,7 @@ customerProfile = new SimpleSchema
   phone       : simpleSchema.OptionalString
   address     : simpleSchema.OptionalString
   gender      : simpleSchema.DefaultBoolean()
-  billNo      : simpleSchema.DefaultString('001')
+  billNo      : simpleSchema.DefaultString('000')
   areas       : simpleSchema.OptionalStringArray
 
   dateOfBirth : simpleSchema.OptionalString

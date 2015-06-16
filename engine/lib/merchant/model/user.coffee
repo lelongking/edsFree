@@ -26,9 +26,14 @@ userProfile = new SimpleSchema
     optional: true
 
 userSession = new SimpleSchema
-  currentProduct : simpleSchema.OptionalString
-  currentCustomer: simpleSchema.OptionalString
-  currentProvider: simpleSchema.OptionalString
+  currentProduct      : simpleSchema.OptionalString
+  currentProductGroup : simpleSchema.OptionalString
+  currentCustomer     : simpleSchema.OptionalString
+  currentCustomerGroup: simpleSchema.OptionalString
+  currentProvider     : simpleSchema.OptionalString
+  currentOrder        : simpleSchema.OptionalString
+  currentImport       : simpleSchema.OptionalString
+  currentReturn       : simpleSchema.OptionalString
 
 
 

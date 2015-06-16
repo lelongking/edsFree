@@ -16,5 +16,7 @@ Meteor.publish null, ->
 Meteor.publish null, -> Schema.products.find()
 Meteor.publish null, -> Schema.customers.find()
 Meteor.publish null, -> Schema.providers.find()
+Meteor.publish null, -> Schema.orders.find()
+Meteor.publish null, -> Schema.imports.find()
 Meteor.publish null, -> Meteor.users.find({_id: @userId}, {fields: {'sessions': 1} })
 

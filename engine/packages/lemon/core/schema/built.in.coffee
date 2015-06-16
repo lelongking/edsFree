@@ -39,8 +39,47 @@ simpleSchema.OptionalString      = { type: String  , optional: true }
 simpleSchema.OptionalStringArray = { type: [String], optional: true }
 simpleSchema.OptionalObject      = { type: Object  , optional: true }
 simpleSchema.OptionalObjectArray = { type: [Object], optional: true }
+simpleSchema.OptionalNumber      = { type: Number  , optional: true }
+simpleSchema.OptionalNumberArray = { type: [Number], optional: true }
 
-#----------------- Default Auto Value ------------------------>
+#----------------- Default Value ------------------------>
+simpleSchema.DefaultString = (value = '') ->
+  type: String
+  autoValue: ->
+    if @isInsert
+      return value
+    else if @isUpsert
+      return { $setOnInsert: value }
+    else if @isUpdate and @operator is "$push"
+      return value
+    return
+
+
+simpleSchema.DefaultBoolean = (value = true) ->
+  type: Boolean
+  autoValue: ->
+    if @isInsert
+      return value
+    else if @isUpsert
+      return { $setOnInsert: value }
+    else if @isUpdate and @operator is "$push"
+      return value
+    return
+
+
+simpleSchema.DefaultNumber = (number = 0)->
+  type: Number
+  autoValue: ->
+    if @isInsert
+      return number
+    else if @isUpsert
+      return { $setOnInsert: number }
+    else if @isUpdate and @operator is "$push"
+      return number
+    return
+
+
+#----------------- Auto Value ------------------------>
 simpleSchema.UniqueId =
   type: String
   autoValue: ->
@@ -67,20 +106,3 @@ simpleSchema.DefaultCreatedAt =
     return new Date unless @isSet
     return
 
-simpleSchema.DefaultString = (value = '') ->
-  type: String
-  autoValue: ->
-    return value unless @isSet
-    return
-
-simpleSchema.DefaultBoolean = (value = true) ->
-  type: Boolean
-  autoValue: ->
-    return value unless @isSet
-    return
-
-simpleSchema.DefaultNumber = (num = 0)->
-  type: Number
-  autoValue: ->
-    return num unless @isSet
-    return
