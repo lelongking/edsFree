@@ -1,164 +1,154 @@
 simpleSchema.imports = new SimpleSchema
-  merchant   : simpleSchema.DefaultMerchant
+  importName : simpleSchema.DefaultString('ĐƠN HÀNG')
   provider   : simpleSchema.OptionalString
 
-  profiles:
-    type: importProfile
-    optional: true
-
-  sessions:
-    type: Object
-    optional: true
-
-  details:
-    type: [importDetail]
-    optional: true
-
+  merchant   : simpleSchema.DefaultMerchant
   allowDelete: simpleSchema.DefaultBoolean()
   creator    : simpleSchema.DefaultCreator
   version    : { type: simpleSchema.Version }
 
+  profiles                : type: Object , optional: true
+  'profiles.description'  : simpleSchema.OptionalString
+  'profiles.importCode'   : simpleSchema.OptionalString
+  'profiles.importType'   : simpleSchema.DefaultNumber()
+
+  'profiles.discountCash' : simpleSchema.DefaultNumber()
+  'profiles.depositCash'  : simpleSchema.DefaultNumber()
+  'profiles.totalPrice'   : simpleSchema.DefaultNumber()
+  'profiles.finalPrice'   : simpleSchema.DefaultNumber()
+
+  details                   : type: [Object], defaultValue: []
+  'details.$._id'           : simpleSchema.UniqueId
+  'details.$.product'       : type: String
+  'details.$.productUnit'   : type: String
+  'details.$.quality'       : {type: Number, min: 0}
+  'details.$.price'         : {type: Number, min: 0}
+  'details.$.discountCash'  : simpleSchema.DefaultNumber()
+  'details.$.expire'        : {type: Date, optional: true}
+  'details.$.conversion'    : {type: Number, min: 1}
+  'details.$.basicQuality'  : {type: Number, min: 0}
+
+  'details.$.importQuality'       : {type: Number, min: 0}
+  'details.$.saleQuality'         : simpleSchema.DefaultNumber()
+  'details.$.returnSaleQuality'   : simpleSchema.DefaultNumber()
+  'details.$.returnImportQuality' : simpleSchema.DefaultNumber()
+  'details.$.inStockQuality'      : simpleSchema.DefaultNumber()
+  'details.$.inOderQuality'       : simpleSchema.DefaultNumber()
+  'details.$.availableQuality'    : simpleSchema.DefaultNumber()
+
+
+
 Schema.add 'imports', "Import", class Import
-  @findBy: (importId, warehouseId = null, merchantId = null)->
-    myProfile = Schema.userProfiles.findOne({user: Meteor.userId()})
-    @schema.findOne({
-      _id      : importId
-      merchant : merchantId ? myProfile.currentMerchant
-      warehouse: warehouseId ? myProfile.currentWarehouse
-    })
+  @transform: (doc) ->
+    doc.remove = (callback)-> Schema.imports.remove(@_id, callback) if @allowDelete
 
-  @myHistory: (creatorId, warehouseId = null, merchantId = null)->
-    myProfile= Schema.userProfiles.findOne({user: Meteor.userId()})
-    @schema.find({
-      $and : [
-        creator   : creatorId ? myProfile.user
-        warehouse : warehouseId ? myProfile.currentWarehouse
-        merchant  : merchantId ? myProfile.currentMerchant
-        status    : {$nin: ['unSubmit']}
-        $or : [{ finish : false }, { submitted : false}]
-      ]
-    })
+    doc.searchPrice = (productUnitId) ->
 
-  @createdNewBy: (description, distributor, partner, myProfile)->
-    if !myProfile then myProfile = Schema.userProfiles.findOne({user: Meteor.userId()})
-    importOption =
-      parentMerchant: myProfile.parentMerchant
-      merchant      : myProfile.currentMerchant
-      warehouse     : myProfile.currentWarehouse
-      creator       : myProfile.user
+    doc.changeProvider= (providerId, callback)->
+      if provider = Schema.providers.findOne(providerId)
+        option = $set:{ provider: provider._id, importName: Helpers.shortName2(provider.name) }
+        Schema.imports.update @_id, option, callback
 
-    if distributor
-      importOption.distributor = distributor._id if distributor._id
-      importOption.tabDisplay = Helpers.shortName2(distributor.name) if distributor.name
+    doc.changeDepositCash = (depositCash, callback) ->
+      option = $set:{'profiles.depositCash': Math.abs(depositCash)}
+      Schema.imports.update @_id, option, callback
 
-    if partner
-      importOption.partner = partner._id if partner._id
-      importOption.tabDisplay = Helpers.shortName2(partner.name) if partner.name
+    doc.changeDiscountCash = (discountCash, callback) ->
+      console.log discountCash
+      discountCash = if Math.abs(discountCash) > @profiles.totalPrice then @profiles.totalPrice else Math.abs(discountCash)
+      option = $set:{'profiles.discountCash': discountCash}
+      Schema.imports.update @_id, option, callback
 
-    importOption.description = description if description
-    importOption._id = @schema.insert importOption
+    doc.changeDescription = (description, callback)->
+      option = $set:{'profiles.description': description}
+      Schema.imports.update @_id, option, callback
 
-    if importOption._id then return importOption else return undefined
+    doc.addImportDetail = (productUnitId, quality = 1, price = 1, callback) ->
+      return console.log('Khong tim thay Product') if !product = Schema.products.findOne({'units._id': productUnitId})
+      return console.log('Khong tim thay ProductUnit') if !productUnit = _.findWhere(product.units, {_id: productUnitId})
+      return console.log('Price not found..') if !price = price ? product.searchPrice(productUnitId)?.sale
+      return console.log("Price invalid (#{price})") if price < 0
+      return console.log("Quality invalid (#{quality})") if quality < 1
+
+      detailFindQuery = {product: product._id, productUnit: productUnitId, price: price}
+      detailFound = _.findWhere(@details, detailFindQuery)
+
+      if detailFound
+        detailIndex = _.indexOf(@details, detailFound)
+        updateQuery = {$inc:{}}; basicQuality = quality * productUnit.conversion
+        updateQuery.$inc["details.#{detailIndex}.quality"]          = quality
+        updateQuery.$inc["details.#{detailIndex}.basicQuality"]     = basicQuality
+        updateQuery.$inc["details.#{detailIndex}.importQuality"]    = basicQuality
+        updateQuery.$inc["details.#{detailIndex}.inStockQuality"]   = basicQuality
+        updateQuery.$inc["details.#{detailIndex}.availableQuality"] = basicQuality
+        recalculationImport(@_id) if Schema.imports.update(@_id, updateQuery, callback)
+
+      else
+        detailFindQuery.quality       = quality
+        detailFindQuery.conversion    = productUnit.conversion
+        detailFindQuery.basicQuality  = quality * productUnit.conversion
+        detailFindQuery.importQuality = detailFindQuery.basicQuality
+        recalculationImport(@_id) if Schema.imports.update(@_id, { $push: {details: detailFindQuery} }, callback)
+
+    doc.editImportDetail = (detailId, quality, expire, discountCash, price, callback) ->
+      for instance, i in @details
+        if instance._id is detailId
+          updateIndex = i
+          updateInstance = instance
+          break
+      return console.log 'ImportDetailRow not found..' if !updateInstance
+
+      predicate = $set:{}
+      predicate.$set["details.#{updateIndex}.discountCash"] = discountCash  if discountCash isnt undefined
+      predicate.$set["details.#{updateIndex}.price"] = price if price isnt undefined
+      predicate.$set["details.#{updateIndex}.expire"] = expire if expire isnt undefined
+
+      if quality isnt undefined
+        basicQuality = quality * updateInstance.conversion
+        predicate.$set["details.#{updateIndex}.quality"] = quality
+        predicate.$set["details.#{updateIndex}.basicQuality"]     = basicQuality
+        predicate.$set["details.#{updateIndex}.importQuality"]    = basicQuality
+        predicate.$set["details.#{updateIndex}.inStockQuality"]   = basicQuality
+        predicate.$set["details.#{updateIndex}.availableQuality"] = basicQuality
+
+      if _.keys(predicate.$set).length > 0
+        recalculationImport(@_id) if Schema.imports.update(@_id, predicate, callback)
+
+    doc.removeImportDetail = (detailId, callback) ->
+      return console.log('Import không tồn tại.') if (!self = Schema.imports.findOne doc._id)
+      return console.log('ImportDetail không tồn tại.') if (!detailFound = _.findWhere(self.details, {_id: detailId}))
+      detailIndex = _.indexOf(self.details, detailFound)
+      removeDetailQuery = { $pull:{} }
+      removeDetailQuery.$pull.details = self.details[detailIndex]
+      recalculationImport(self._id) if Schema.imports.update(self._id, removeDetailQuery, callback)
+
+    doc.submit = ->
+      return console.log('Import không tồn tại.') if (!self = Schema.imports.findOne doc._id)
+#      return console.log('Import đã Submit') if self.orderType isnt Enum.orderType.created
+
+      for detail, detailIndex in self.details
+        product = Schema.products.findOne({'units._id': detail.productUnit})
+        return console.log('Khong tim thay Product') if !product
+        productUnit = _.findWhere(product.units, {_id: detail.productUnit})
+        return console.log('Khong tim thay ProductUnit') if !productUnit
+    #      Meteor.call 'orderSubmit', self._id
+
+  @insert: (providerId, description, callback) ->
+    newImport = {}
+    newImport.provider = providerId if providerId
+    Schema.imports.insert newImport, callback
+
+  @findNotSubmitted: -> Schema.imports.find({'profiles.importType': 0})
+  @setSession: (importId) -> Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentImport': importId}})
 
 
-
-  @findHistory: (starDate, toDate, warehouseId) ->
-    @schema.find({$and: [
-      {warehouse: warehouseId, submitted: true}
-      {'version.createdAt': {$gt: new Date(starDate.getFullYear(), starDate.getMonth(), starDate.getDate())}}
-      {'version.createdAt': {$lt: new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate()+1)}}
-    ]}, {sort: {'version.createdAt': -1}})
-
-
-importDetail = new SimpleSchema
-  _id                : simpleSchema.UniqueId
-  product            : type: String
-  productUnit        : type: String
-  quality            : type: Number
-  price              : type: Number
-  expire             : type: Date, optional: true
-  availableQuality   : simpleSchema.DefaultNumber()
-  inOderQuality      : simpleSchema.DefaultNumber()
-  inStockQuality     : simpleSchema.DefaultNumber()
-  saleQuality        : simpleSchema.DefaultNumber()
-  returnSaleQuality  : simpleSchema.DefaultNumber()
-  importQuality      : simpleSchema.DefaultNumber()
-  returnImportQuality: simpleSchema.DefaultNumber()
-
-importSession = new SimpleSchema
-  currentProduct:
-    type: String
-    optional: true
-
-  currentUnit:
-    type: String
-    optional: true
-
-  currentProvider:
-    type: String
-    optional: true
-
-  currentQuality:
-    type: Number
-    optional: true
-
-  currentImportPrice:
-    type: Number
-    optional: true
-
-  currentPrice:
-    type: Number
-    optional: true
-
-  currentExpire:
-    type: Date
-    optional: true
-
-  latestDebtBalance:
-    type: Number
-    defaultValue: 0
-
-  debtBalanceChange:
-    type: Number
-    defaultValue: 0
-
-  beforeDebtBalance:
-    type: Number
-    defaultValue: 0
-
-importProfile = new SimpleSchema
-  tabDisplay :
-    type: String
-    defaultValue: 'Nhập kho'
-
-  description:
-    type: String
-    optional: true
-
-  totalPrice:
-    type: Number
-    defaultValue: 0
-
-  deposit:
-    type: Number
-    defaultValue: 0
-
-  debit:
-    type: Number
-    defaultValue: 0
-
-  finish:
-    type: Boolean
-    defaultValue: false
-
-  submitted:
-    type: Boolean
-    defaultValue: false
-
-  systemTransaction:
-    type: String
-    optional: true
-
-  status:
-    type: String
-    defaultValue: 'new'
+recalculationImport = (orderId) ->
+  if orderFound = Schema.imports.findOne(orderId)
+    totalPrice = 0; discountCash = orderFound.profiles.discountCash
+    (totalPrice += detail.quality * detail.price) for detail in orderFound.details
+    discountCash = totalPrice if orderFound.profiles.discountCash > totalPrice
+    Schema.imports.update orderFound._id, $set:{
+      'profiles.totalPrice'  : totalPrice
+      'profiles.discountCash': discountCash
+      'profiles.finalPrice'  : totalPrice - discountCash
+    }

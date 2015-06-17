@@ -21,6 +21,7 @@ simpleSchema.orders = new SimpleSchema
   seller      : simpleSchema.OptionalString
   buyer       : simpleSchema.OptionalString
 
+  orderType       : simpleSchema.DefaultNumber(Enums.OrderType.created)
   merchant        : simpleSchema.DefaultMerchant
   allowDelete     : simpleSchema.DefaultBoolean()
   creator         : simpleSchema.DefaultCreator
@@ -29,7 +30,6 @@ simpleSchema.orders = new SimpleSchema
   profiles                    : type: Object , optional: true
   'profiles.description'      : simpleSchema.OptionalString
   'profiles.orderCode'        : simpleSchema.OptionalString
-  'profiles.orderType'        : simpleSchema.DefaultNumber(Enums.OrderType.created)
   'profiles.paymentMethod'    : simpleSchema.DefaultNumber()
   'profiles.paymentsDelivery' : simpleSchema.DefaultNumber()
   'profiles.deliveryStatus'   : simpleSchema.OptionalNumber

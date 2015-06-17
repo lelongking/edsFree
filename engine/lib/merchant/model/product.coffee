@@ -27,7 +27,7 @@ simpleSchema.products = new SimpleSchema
 #  'prices.$.sale'  : simpleSchema.DefaultNumber()
 #  'prices.$.import': simpleSchema.DefaultNumber()
 
-  qualities                        : type: [Object], defaultValue: [{}]
+  qualities                        : type: [Object], optional: true
   'qualities.$.upperGapQuality'    : simpleSchema.DefaultNumber()
   'qualities.$.availableQuality'   : simpleSchema.DefaultNumber()
   'qualities.$.inOderQuality'      : simpleSchema.DefaultNumber()
@@ -36,10 +36,6 @@ simpleSchema.products = new SimpleSchema
   'qualities.$.returnSaleQuality'  : simpleSchema.DefaultNumber()
   'qualities.$.importQuality'      : simpleSchema.DefaultNumber()
   'qualities.$.returnImportQuality': simpleSchema.DefaultNumber()
-
-#  transactions: {type: [Object] , defaultValue: []}
-#  'transactions.$._id'    : simpleSchema.DefaultNumber()
-#  'transactions.$.transactionType'    : simpleSchema.DefaultNumber()
 
 Schema.add 'products', "Product", class Product
   @transform: (doc) ->

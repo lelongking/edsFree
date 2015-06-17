@@ -4,86 +4,39 @@ template(name="import")
       .dual-detail-wrapper
         .dual-detail
           .nano: .nano-content
-            //if showEditImportCurrentProduct
-            //  +importCurrentProductOverviewSection importCurrentProduct
-            +importDetailSection importDetails
+            +importDetailSection currentImport
 
       .dual-addon
         .search-filter.icon-search-8
           input(name='searchFilter' type="text" placeholder="tìm sản phẩm...")
-          if creationMode
-            .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createProductBtn
+
         .nano: .nano-content
-          if showFilterSearch
-            .group-wrapper
-              each managedImportProductList
-                .caption.inner.product-selection(class="{{productSelectionActiveClass}}")
-                  +avatarImageComponent(avatar=avatarUrl alias=name)
-                  span.text
-                    |{{product.name}}
-                    if product.basicUnit
-                      |({{unitName}})
-                    if showAddDetail
-                      .commands
-                        if showEditProductCommand
-                          span.icon-edit.enableEditProduct
-                        span.icon-right-open-big.addImportDetail
-
-          else
-            each managedImportProductList
-              .group-wrapper
-                .caption.group {{key}}
-                each childs
-                  .caption.inner.product-selection(class="{{productSelectionActiveClass}}")
-                    +avatarImageComponent(avatar=avatarUrl alias=name)
-                    span.text
-                      |{{product.name}}
-                      if product.basicUnit
-                        |({{unitName}})
-                      if showAddDetail
-                        .commands
-                          if showEditProductCommand
-                            span.icon-edit.enableEditProduct
-                          span.icon-right-open-big.addImportDetail
-
-
-
-
+          .group-wrapper
+            each unitProductSearches
+              .caption.advanced.inner.product-selection(class="{{productSelectionActiveClass}}")
+                +avatarImageComponent(avatar=avatarUrl alias=name)
+                span.text {{name}}
+                  .commands
+                    span.icon-right-open-big.addImportDetail
+                span.right-info {{unitName}}
 
   #footer.modern
     .editor-row
       .editor-wrapper.dual-spacer
       .editor-wrapper(style="width:180px")
         span.ilabel.optional công ty cung cấp
-        +iSelect(options=distributorSelectOptions class="field")
-
-      //if showSubmit
-      .editor-wrapper.right
-        button.flat.btn.blue.icon-ok-6.submitImport(type='submit') XÁC NHẬN
-      //if showEdit
-      .editor-wrapper.right
-        button.flat.btn.carrot.icon-pencil-circled.editImport(type='submit') CHỈNH SỬA
-      //if showFinish
-      .editor-wrapper.right
-        button.flat.btn.lime.icon-award.finishImport(type='submit') HOÀN TẤT
-      .editor-wrapper.right
-        button.flat.btn.blue.print-command(type='submit'): span.icon-print-6
-      .editor-wrapper.right(style="width: 160px; padding-right: 20px")
-        span.ilabel.center tiền nhận vào
+        +iSelect(options=providerSelectOptions class="field")
+      .editor-wrapper(style="width: 160px; padding-right: 20px")
+        span.ilabel.center chiết khấu
+        +iSpinEdit(options=discountOptions)
+      .editor-wrapper(style="width: 160px; padding-right: 20px")
+        span.ilabel.center tiền nhận
         +iSpinEdit(options=depositOptions)
 
-      //.editor-wrapper.right(style="width: 120px")
-      //  span.ilabel.optional tiền còn nợ
-      //  input.debit(name='debitCash' disabled)
-      //.editor-wrapper.right(style="width: 120px")
-      //  span.ilabel.optional tổng tiền
-      //  input.totalPrice(style="text-align: center" value="{{currentImport.totalPrice}}" disabled)
-      //.editor-wrapper.right(style="width:180px")
-        //span.ilabel.optional công ty phân phối
-        //span.ilabel.optional.right: a(href="#"): i.add-distributor.icon-plus-6(data-toggle="tooltip" data-container="body" data-placement="top" title="Thêm nhà phân phối")
-        //+iSelect(options=distributorSelectOptions class="field")
-      //.editor-wrapper.right(style="width: 300px")
-        //span.ilabel description
-        //input.description(value="{{currentImport.description}}")
+
+      .editor-wrapper.right
+        button.flat.btn.lime.icon-award.importSubmitted(type='submit') HOÀN TẤT
+      .editor-wrapper.right
+        button.flat.btn.blue.print-command(type='submit'): span.icon-print-6
 
     +tabComponent(options=tabOptions)

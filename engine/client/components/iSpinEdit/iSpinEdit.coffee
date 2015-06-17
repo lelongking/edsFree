@@ -21,8 +21,11 @@ stopTrackingOptions = (context) -> context.optionsTracker.stop()
 startTrackingValue = ($element, context) ->
   $element.on 'change', (e) ->
     parsedValue = accounting.parse(e.target.value)
-    if context.data.options.reactiveSetter && isValueValid(context, parsedValue)
-      context.data.options.reactiveSetter(Number(parsedValue))
+    if context.data.options.reactiveSetter
+      parsedValue =
+        if isValueValid(context, parsedValue) then Number(parsedValue)
+        else Number(context.data.options.reactiveValue())
+      context.data.options.reactiveSetter(parsedValue)
 
 isValueValid = (context, value) ->
     value >= context.data.options.reactiveMin() &&

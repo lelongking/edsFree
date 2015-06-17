@@ -31,18 +31,14 @@ template(name="sales")
 
         .nano: .nano-content
           .group-wrapper
-            each productSaleSearches
+            each unitProductSearches
               .caption.advanced.inner.product-selection(class="{{productSelectionActiveClass}}")
                 +avatarImageComponent(avatar=avatarUrl alias=name)
                 span.text {{name}}
                   .commands
                     span.icon-right-open-big.addSaleDetail
                 span.right-info {{unitName}}
-                  //if product.basicDetailModeEnabled
-                  //  i.icon-search-outline
-                  //else
-                  //  |{{formatNumber availableUnit}}
-                  //|{{unitName}}
+
 
 
   #footer.modern

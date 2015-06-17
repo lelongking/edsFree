@@ -14,6 +14,7 @@ lemon.defineHyper Template.orderRowEdit,
     @ui.$editQuality.select()
 
   events:
+    "click .deleteOrderDetail": (event, template) -> scope.currentOrder.removeDetail(@_id)
     "keyup": (event, template) ->
       rowId = Template.currentData()._id
       details = Template.parentData().details

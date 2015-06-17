@@ -2,13 +2,11 @@ setTime = -> Session.set('realtime-now', new Date())
 scope = logics.import
 
 lemon.defineHyper Template.importDetailSection,
+  isRowEditing: -> Session.get("editingId") is @_id
+
   showProductionDate: -> if @productionDate then true else false
   showExpireDate: -> if @expire then true else false
   showDelete: -> !Session.get("currentImport")?.submitted
-  importDescription: -> Session.get("currentImportDescription") ? @import?.description
-
-  editingMode: -> Session.get("importEditingRow")?._id is @_id
-  editingData: -> Session.get("importEditingRow")
 
   oldDebt: ->
     distributor = Session.get('currentImportDistributor')
@@ -28,26 +26,20 @@ lemon.defineHyper Template.importDetailSection,
       partner.importCash + partner.loanCash - partner.saleCash - partner.paidCash + @import.totalPrice - @import.deposit
     else 0
 
-  created: -> @timeInterval = Meteor.setInterval(setTime, 1000)
+  created  : ->
+    @timeInterval = Meteor.setInterval(setTime, 1000)
   destroyed: ->
     Meteor.clearInterval(@timeInterval)
-    Session.set("currentImportDescription")
 
   events:
-    "click .detail-row": ->
-      if Session.get("currentImport")?.submitted is false
-        Session.set("importEditingRowId", @_id)
-
-    "click .deleteImportDetail": (event, template) ->
-      Schema.importDetails.remove @_id
-      scope.reCalculateImport(@import)
-
+    "click .detail-row": (event, template) -> Session.set("editingId", @_id); event.stopPropagation()
+    "keyup": (event, template) -> Session.set("editingId") if event.which is 27
+    "click .deleteImportDetail": (event, template) -> scope.currentImport.removeImportDetail(@_id)
     "keyup [name='importDescription']": (event, template)->
       Helpers.deferredAction ->
         if currentImport = Session.get('currentImport')
           description = template.ui.$importDescription.val()
-          Session.set("currentImportDescription", description)
-          Schema.imports.update currentImport._id, $set:{description: description}
+          scope.currentImport.changeDescription(description)
       , "currentImportUpdateDescription", 1000
 
 

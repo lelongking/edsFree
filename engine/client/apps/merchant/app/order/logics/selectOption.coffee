@@ -8,15 +8,6 @@ formatCustomerSearch = (item) ->
     name + desc
 
 Apps.Merchant.salesInit.push (scope) ->
-  scope.tabOptions =
-    source: Schema.orders.find()
-    currentSource: 'currentOrder'
-    caption: 'orderName'
-    key: '_id'
-    createAction  : -> Order.insert()
-    destroyAction : (instance) -> if order then Schema.orders.find().count() if order.remove() else -1
-    navigateAction: (instance) -> Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentOrder': instance._id}})
-
   scope.depositOptions =
     reactiveSetter: (val) -> scope.currentOrder.changeDepositCash(val)
     reactiveValue: -> Session.get('currentOrder')?.profiles.depositCash ? 0
@@ -61,12 +52,3 @@ Apps.Merchant.salesInit.push (scope) ->
     minimumResultsForSearch: -1
     changeAction: (e) -> scope.currentOrder.changePaymentMethod(e.added._id)
     reactiveValueGetter: -> findPaymentMethods(Session.get('currentOrder')?.profiles.paymentMethod)
-
-#---------------------
-  logics.sales.createNewOrderAndSelected = ->
-    if Session.get('myProfile') and buyer = Schema.customers.findOne(Session.get('currentOrder')?.buyer)
-      if newOrder = Order.insert(buyer, Session.get('myProfile'))
-        Session.set('currentOrder', newOrder)
-    else
-      console.log buyer, Session.get('myProfile')
-      return undefined

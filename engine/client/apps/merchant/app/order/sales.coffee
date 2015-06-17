@@ -7,7 +7,7 @@ lemon.defineApp Template.sales,
   avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
 
   created: ->
-    ProductSaleSearch.search('')
+    UnitProductSearch.search('')
     Session.setDefault('globalBarcodeInput', '')
 
 
@@ -30,40 +30,41 @@ lemon.defineApp Template.sales,
     $(document).off("keypress")
 
   events:
+    "click .print-command": (event, template) -> window.print()
     "keyup input[name='searchFilter']": (event, template) ->
       searchFilter  = template.ui.$searchFilter.val()
       productSearch = Helpers.Searchify searchFilter
-      if event.which is 17 then console.log 'up' else ProductSaleSearch.search productSearch
+      if event.which is 17 then console.log 'up' else UnitProductSearch.search productSearch
 
     "click .addSaleDetail": ->
-      scope.currentOrder.addDetail(@_id); event.stopPropagation()
+      scope.currentOrder.addImportDetail(@_id); event.stopPropagation()
 
     "click .finish": (event, template)->
       scope.currentOrder.submit()
 
-    "click .print-command": (event, template) -> window.print()
 
-    "change [name='advancedMode']": (event, template) ->
-      scope.templateInstance.ui.extras.toggleExtra 'advanced', event.target.checked
-
-    "change [name ='deliveryDate']": (event, template) -> scope.updateDeliveryDate()
-
-    'input .contactName': (event, template)->
-      Helpers.deferredAction ->
-        scope.updateDeliveryContactName(template.find(".contactName"))
-      , "salesCurrentProductSearchProduct"
-
-    'input .contactPhone': (event, template)->
-      Helpers.deferredAction ->
-        scope.updateDeliveryContactPhone(template.find(".contactPhone"))
-      , "salesCurrentProductSearchProduct"
-
-    'input .deliveryAddress': (event, template)->
-      Helpers.deferredAction ->
-        scope.updateDeliveryAddress(template.find(".deliveryAddress"))
-      , "salesCurrentProductSearchProduct"
-
-    'input .comment': (event, template)->
-      Helpers.deferredAction ->
-        scope.updateDeliveryComment(template.find(".comment"))
-      , "salesCurrentProductSearchProduct"
+#
+#    "change [name='advancedMode']": (event, template) ->
+#      scope.templateInstance.ui.extras.toggleExtra 'advanced', event.target.checked
+#
+#    "change [name ='deliveryDate']": (event, template) -> scope.updateDeliveryDate()
+#
+#    'input .contactName': (event, template)->
+#      Helpers.deferredAction ->
+#        scope.updateDeliveryContactName(template.find(".contactName"))
+#      , "salesCurrentProductSearchProduct"
+#
+#    'input .contactPhone': (event, template)->
+#      Helpers.deferredAction ->
+#        scope.updateDeliveryContactPhone(template.find(".contactPhone"))
+#      , "salesCurrentProductSearchProduct"
+#
+#    'input .deliveryAddress': (event, template)->
+#      Helpers.deferredAction ->
+#        scope.updateDeliveryAddress(template.find(".deliveryAddress"))
+#      , "salesCurrentProductSearchProduct"
+#
+#    'input .comment': (event, template)->
+#      Helpers.deferredAction ->
+#        scope.updateDeliveryComment(template.find(".comment"))
+#      , "salesCurrentProductSearchProduct"
