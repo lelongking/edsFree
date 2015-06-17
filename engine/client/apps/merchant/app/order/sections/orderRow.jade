@@ -11,10 +11,10 @@ template(name="orderRowEdit")
       |{{productName product}}
       .commands
         .lemon.rounded.tiny.btn.blue.animated.bounceIn.deleteOrderDetail: span.icon-minus-4
-    td.price: input(name="editPrice" min="0")
+    td.number.price.editable-field {{formatNumber price}}
     td.quality: input.error-field(name="editQuality" min="0")
     td.skull(align="center") {{productUnitName productUnit}}
-    td.bill-discount: input(name="editDiscountCash" min="0")
+    td.bill-discount: input(name="editDiscountCash" min="0" max="30")
     td.number.final-price <b>{{formatNumber detailFinalPrice}}</b>
 
 template(name="orderRowDisplay")

@@ -47,6 +47,7 @@ simpleSchema.orders = new SimpleSchema
   'details.$.price'         : {type: Number, min: 0}
   'details.$.discountCash'  : simpleSchema.DefaultNumber()
   'details.$.basicQuality'  : {type: Number, min: 0}
+  'details.$.conversion'    : {type: Number, min: 1}
   'details.$.returnQuality' : simpleSchema.DefaultNumber()
 
   deliveries                     : type: Object , optional: true
@@ -96,12 +97,12 @@ Schema.add 'orders', "Order", class Order
       totalPrice = 0
       for detail in @details
         if detail._id is newId
-          totalPrice += newQuality * newPrice
+          totalPrice += newQuality * ((if newPrice then newPrice else detail.price) - detail.discountCash)
         else
-          totalPrice += detail.quality * detail.price
+          totalPrice += detail.quality * (detail.price - detail.discountCash)
 
       totalPrice: totalPrice
-      finalPrice: totalPrice - @discountCash
+      finalPrice: totalPrice - @profiles.discountCash
 
 
     doc.addDetail = (productUnitId, quality = 1, price = 1, callback) ->
@@ -119,32 +120,35 @@ Schema.add 'orders', "Order", class Order
       if detailFound
         detailIndex = _.indexOf(@details, detailFound)
         updateQuery = {$inc:{}}
-        updateQuery.$inc["details.#{detailIndex}.quality"] = quality
+        updateQuery.$inc["details.#{detailIndex}.quality"]      = quality
+#        updateQuery.$inc["details.#{detailIndex}.conversion"]   = productUnit.conversion
         updateQuery.$inc["details.#{detailIndex}.basicQuality"] = quality * productUnit.conversion
         recalculationOrder(@_id) if Schema.orders.update(@_id, updateQuery, callback)
 
       else
-        detailFindQuery.quality = quality
+        detailFindQuery.quality      = quality
+        detailFindQuery.conversion   = productUnit.conversion
         detailFindQuery.basicQuality = quality * productUnit.conversion
         recalculationOrder(@_id) if Schema.orders.update(@_id, { $push: {details: detailFindQuery} }, callback)
 
-    doc.editDetail = (detailId, quality, price, callback) ->
+    doc.editDetail = (detailId, quality, discountCash, price, callback) ->
       for instance, i in @details
         if instance._id is detailId
           updateIndex = i
           updateInstance = instance
-          conversionUnit = updateInstance.basicQuality/updateInstance.quality
+          break
       return console.log 'OrderDetailRow not found..' if !updateInstance
 
-      newSummary = @recalculatePrices(detailId, quality, price)
-
       predicate = $set:{}
-      predicate.$set["totalPrice"] = newSummary.totalPrice
-      predicate.$set["finalPrice"] = newSummary.finalPrice
-      predicate.$set["details.#{updateIndex}.quality"] = quality
-      predicate.$set["details.#{updateIndex}.basicQuality"] = quality * conversionUnit
-      predicate.$set["details.#{updateIndex}.price"] = price
-      Schema.orders.update @_id, predicate, callback
+      predicate.$set["details.#{updateIndex}.discountCash"] = discountCash  if discountCash isnt undefined
+      predicate.$set["details.#{updateIndex}.price"] = price if price isnt undefined
+
+      if quality isnt undefined
+        predicate.$set["details.#{updateIndex}.quality"] = quality
+        predicate.$set["details.#{updateIndex}.basicQuality"] = quality * updateInstance.conversion
+
+      if _.keys(predicate.$set).length > 0
+        recalculationOrder(@_id) if Schema.orders.update(@_id, predicate, callback)
 
     doc.removeDetail = (detailId, callback) ->
       return console.log('Order không tồn tại.') if (!self = Schema.orders.findOne doc._id)
@@ -208,8 +212,13 @@ Schema.add 'orders', "Order", class Order
 
 
 recalculationOrder = (orderId) ->
-  orderFound = Schema.orders.findOne(orderId)
-  totalPrice = 0
-  (totalPrice += detail.quality * detail.price) for detail in orderFound.details
-  finalPrice = totalPrice - orderFound.profiles.discountCash
-  Schema.orders.update orderFound._id, $set:{'profiles.totalPrice': totalPrice, 'profiles.finalPrice': finalPrice}
+  if orderFound = Schema.orders.findOne(orderId)
+    totalPrice = 0; discountCash = 0
+    for detail in orderFound.details
+      totalPrice   += detail.quality * detail.price
+      discountCash += detail.quality * detail.discountCash
+    Schema.orders.update orderFound._id, $set:{
+      'profiles.totalPrice'  : totalPrice
+      'profiles.discountCash': discountCash
+      'profiles.finalPrice'  : totalPrice - discountCash
+    }

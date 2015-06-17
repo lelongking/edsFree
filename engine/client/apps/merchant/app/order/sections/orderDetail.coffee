@@ -7,7 +7,6 @@ lemon.defineHyper Template.saleDetailSection,
   sellerName: -> Schema.userProfiles.findOne({user: Session.get("currentOrder")?.seller})?.fullName
 
   isRowEditing: -> Session.get("editingId") is @_id
-  detailFinalPrice: -> @quality * @price - @discountCash
   customerOldDebt: -> if customer = Session.get('currentBuyer') then customer.saleDebt + customer.customSaleDebt else 0
   customerFinalDebt: ->
     if customer = Session.get('currentBuyer') and @profiles

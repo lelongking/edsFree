@@ -19,7 +19,7 @@ Apps.Merchant.salesInit.push (scope) ->
 
   scope.depositOptions =
     reactiveSetter: (val) -> scope.currentOrder.changeDepositCash(val)
-    reactiveValue: -> Session.get('currentOrder').profiles.depositCash ? 0
+    reactiveValue: -> Session.get('currentOrder')?.profiles.depositCash ? 0
     reactiveMax: -> 99999999999
     reactiveMin: -> 0
     reactiveStep: -> 1000
@@ -36,7 +36,7 @@ Apps.Merchant.salesInit.push (scope) ->
     id: '_id'
     placeholder: 'CHỌN NGƯỜI MUA'
     changeAction: (e) -> scope.currentOrder.changeBuyer(e.added._id)
-    reactiveValueGetter: -> Session.get('currentOrder').buyer ? 'skyReset'
+    reactiveValueGetter: -> Session.get('currentOrder')?.buyer ? 'skyReset'
 
   scope.paymentsDeliverySelectOptions =
     query: (query) -> query.callback
@@ -48,7 +48,7 @@ Apps.Merchant.salesInit.push (scope) ->
     placeholder: 'CHỌN SẢN PTGD'
     minimumResultsForSearch: -1
     changeAction: (e) -> scope.currentOrder.changePaymentsDelivery(e.added._id)
-    reactiveValueGetter: -> findDeliveryTypes(Session.get('currentOrder').profiles.paymentsDelivery)
+    reactiveValueGetter: -> findDeliveryTypes(Session.get('currentOrder')?.profiles.paymentsDelivery)
 
   scope.paymentMethodSelectOptions =
     query: (query) -> query.callback
@@ -60,11 +60,11 @@ Apps.Merchant.salesInit.push (scope) ->
     placeholder: 'CHỌN SẢN PTGD'
     minimumResultsForSearch: -1
     changeAction: (e) -> scope.currentOrder.changePaymentMethod(e.added._id)
-    reactiveValueGetter: -> findPaymentMethods(Session.get('currentOrder').profiles.paymentMethod)
+    reactiveValueGetter: -> findPaymentMethods(Session.get('currentOrder')?.profiles.paymentMethod)
 
 #---------------------
   logics.sales.createNewOrderAndSelected = ->
-    if Session.get('myProfile') and buyer = Schema.customers.findOne(Session.get('currentOrder').buyer)
+    if Session.get('myProfile') and buyer = Schema.customers.findOne(Session.get('currentOrder')?.buyer)
       if newOrder = Order.insert(buyer, Session.get('myProfile'))
         Session.set('currentOrder', newOrder)
     else

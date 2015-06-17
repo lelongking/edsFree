@@ -2,16 +2,21 @@ template(name="sales")
   #header
     .editor-row
       .editor-wrapper.dual-spacer
-      .editor-wrapper(style="width: 220px")
-        span.ilabel.optional khách hàng
-        +iSelect(options=customerSelectOptions class="field")
-      .editor-wrapper(style="width: 120px")
-        span.ilabel.optional thanh toán
-        +iSelect(options=paymentMethodSelectOption class="field")
-      .editor-wrapper(style="width: 150px")
-        span.ilabel.optional giao hàng
-        +iSelect(options=paymentsDeliverySelectOption class="field")
-
+      //.editor-wrapper(style="width:170px")
+      //  span.ilabel tên người nhận
+      //  input.contactName(value="#{deliveryDetail.contactName}" tabindex="1")
+      //.editor-wrapper(style="width:130px")
+      //  span.ilabel số điện thoại
+      //  input.contactPhone(value="#{deliveryDetail.contactPhone}" tabindex="2")
+      //.editor-wrapper(style="width:300px")
+      //  span.ilabel địa chỉ giao hàng
+      //  input.deliveryAddress(value="#{deliveryDetail.deliveryAddress}" tabindex="3")
+      //.editor-wrapper(style="width:100px")
+      //  span.ilabel ngày giao hàng
+      //  input(name="deliveryDate" binding="datePicker" todayHighlight="true" maxlength="20" tabindex="4")
+      //.editor-wrapper(style="width:200px")
+      //  span.ilabel ghi chú
+      //  input.comment(value="#{deliveryDetail.comment}" tabindex="5")
 
   #content.modern.sales-app
     .dual-content
@@ -41,23 +46,9 @@ template(name="sales")
 
 
   #footer.modern
-    //.editor-row.extra(name='delivery')
-    //  .editor-wrapper.right(style="width:200px")
-    //    span.ilabel ghi chú
-    //    input.comment(value="#{deliveryDetail.comment}" tabindex="5")
-    //  .editor-wrapper.right(style="width:100px")
-    //    span.ilabel ngày giao hàng
-    //    input(name="deliveryDate" binding="datePicker" todayHighlight="true" maxlength="20" tabindex="4")
-    //  .editor-wrapper.right(style="width:300px")
-    //    span.ilabel địa chỉ giao hàng
-    //    input.deliveryAddress(value="#{deliveryDetail.deliveryAddress}" tabindex="3")
-    //  .editor-wrapper.right(style="width:130px")
-    //    span.ilabel số điện thoại
-    //    input.contactPhone(value="#{deliveryDetail.contactPhone}" tabindex="2")
-    //  .editor-wrapper.right(style="width:170px")
-    //    span.ilabel tên người nhận
-    //    input.contactName(value="#{deliveryDetail.contactName}" tabindex="1")
-    //
+    .editor-row.extra(name='delivery')
+
+
     //.editor-row.extra(name='advanced')
     //  .editor-wrapper(style="width: 200px; margin-right: 5px;")
     //    span.ilabel.optional nhân viên
@@ -78,9 +69,20 @@ template(name="sales")
 
     .editor-row
       .editor-wrapper.dual-spacer
-      .editor-wrapper(style="width: 160px")
-        span.ilabel.center tiền nhận vào
+      .editor-wrapper(style="width: 200px")
+        span.ilabel.optional khách hàng
+        +iSelect(options=customerSelectOptions class="field")
+      .editor-wrapper(style="width: 120px")
+        span.ilabel.optional thanh toán
+        +iSelect(options=paymentMethodSelectOption class="field")
+      .editor-wrapper(style="width: 130px")
+        span.ilabel.optional giao hàng
+        +iSelect(options=paymentsDeliverySelectOption class="field")
+      .editor-wrapper(style="width: 145px")
+        span.ilabel.center tiền nhận
         +iSpinEdit(options=depositOptions)
+
+
       .editor-wrapper.pull-right
         button.flat.btn.lime.pull-right.finish(class="{{allowSuccessOrder}}" type='submit' style="margin-right: 5px;") HOÀN TẤT
       .editor-wrapper.pull-right
