@@ -1,0 +1,31 @@
+template(name="priceBook")
+  #content.modern.customer-management
+    .dual-content
+      .dual-detail-wrapper
+        .dual-detail
+          .nano: .nano-content
+            +priceBookOverviewSection currentPriceBook
+            +priceBookDetailSection currentPriceBook
+      .dual-addon
+        .search-filter.icon-search-8
+          input(name='searchFilter' type="text" placeholder="tìm bảng giá...")
+          if creationMode
+            .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createCustomerBtn
+
+        .nano: .nano-content
+          .group-wrapper
+            each priceBookSearches
+              .caption.inner(class="{{activeClass}}")
+                +avatarImageComponent(avatar=avatarUrl alias=firstName)
+                span.text
+                  |{{name}}
+                  if description
+                    |({{description}})
+
+
+  //#footer.modern
+  //  .editor-row
+  //    .editor-wrapper.dual-spacer
+  //    .editor-wrapper.right
+  //      span.s5 TỔNG NỢ:
+  //      span.s3 <b>{{formatNumber finalDebtBalance}}</b> VNĐ

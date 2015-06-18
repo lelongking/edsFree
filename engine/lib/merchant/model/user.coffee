@@ -32,6 +32,7 @@ userSession = new SimpleSchema
   currentCustomerGroup: simpleSchema.OptionalString
   currentProvider     : simpleSchema.OptionalString
   currentOrder        : simpleSchema.OptionalString
+  currentPriceBook    : simpleSchema.OptionalString
   currentImport       : simpleSchema.OptionalString
   currentReturn       : simpleSchema.OptionalString
 

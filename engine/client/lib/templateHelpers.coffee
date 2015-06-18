@@ -1,8 +1,12 @@
-Template.registerHelper 'productName', (productId)-> Schema.products.findOne(productId)?.name ? 'Sản phẩm không tồn tại'
+Template.registerHelper 'getSession', (sessionName)-> Session.get(sessionName)
+Template.registerHelper 'isAvatarUrl', (scope)-> if scope.avatar then AvatarImages.findOne(scope.avatar)?.url() else undefined
+Template.registerHelper 'isActiveClass', (sessionName, scope)->  if Session.get(sessionName)?._id is scope._id  then 'active' else ''
+Template.registerHelper 'productName', (productId)->  Schema.products.findOne(productId)?.name ? 'Sản phẩm không tồn tại'
 Template.registerHelper 'productUnitName', (unitId)->
   product = Schema.products.findOne({'units._id': unitId})
   productUnit = _.findWhere(product.units, {_id: unitId})
   productUnit.name
+
 
 #old----------------------------------------------->
 Template.registerHelper 'systemVersion', -> Schema.systems.findOne()?.version ? '?'

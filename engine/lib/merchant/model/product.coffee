@@ -86,4 +86,15 @@ Schema.add 'products', "Product", class Product
       if @allowDelete
         Schema.products.remove @_id, callback
 
-  @insert: ()->
+  @insert: (option = {})->
+    option.units = [{name: 'MacDinh', allowDelete: false, isBase: true}]
+    Product.setSession(newProductId) if newProductId = Schema.products.insert option
+    newProductId
+
+  @nameIsExisted: (name, merchant = null) ->
+    existedQuery = {name: name, merchant: merchant ? Meteor.user().profiles.merchant}
+    Schema.priceBooks.findOne(existedQuery)
+
+  @setSession: (currentProductId) ->
+    Meteor.subscribe('productManagementCurrentProductData', @_id) if Meteor.isClient
+    Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentProduct': currentProductId}})

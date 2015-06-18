@@ -25,6 +25,12 @@ Schema.products.allow
   remove: -> true
 
 
+Schema.priceBooks.allow
+  insert: -> true
+  update: -> true
+  remove: -> true
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 Schema.customers.allow
   insert: -> true

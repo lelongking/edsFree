@@ -21,32 +21,39 @@ lemon.defineApp Template.productManagement,
       searchFilter  = template.ui.$searchFilter.val()
       productSearch = Helpers.Searchify searchFilter
       Session.set("productManagementSearchFilter", searchFilter)
+      currentProductId = Session.get('mySession').currentProduct
 
       if event.which is 17 then console.log 'up'
-      else if event.which is 38 then scope.ProductSearchFindPreviousProduct(productSearch)
-      else if event.which is 40 then scope.ProductSearchFindNextProduct(productSearch)
+
+      else if event.which is 38
+        previousRow = ProductSearch.history[productSearch].data.getPreviousBy('_id', currentProductId)
+        Product.setSession(previousRow._id) if previousRow
+
+      else if event.which is 40
+        nextRow = ProductSearch.history[productSearch].data.getNextBy('_id', currentProductId)
+        Product.setSession(nextRow._id) if nextRow
+
       else
-        scope.createNewProduct(template, productSearch) if event.which is 13
+        if event.which is 13
+          newProduct = Helpers.splitName(searchFilter)
+          newProduct.merchant = Session.get("myProfile").merchant
+          if Product.nameIsExisted(newProduct.name, newProduct.merchant)
+            template.ui.$searchFilter.notify("Sản phẩm đã tồn tại.", {position: "bottom"})
+          else
+            ProductSearch.cleanHistory() if Match.test(Product.insert(newProduct), String)
+
         ProductSearch.search productSearch
         scope.productManagementCreationMode(productSearch)
 
     "click .createProductBtn": (event, template) ->
       fullText   = Session.get("productManagementSearchFilter")
-      productSearch = Helpers.Searchify(fullText)
+      newProduct = Helpers.splitName(fullText)
+      newProduct.merchant = Session.get("myProfile").merchant
 
-      scope.createNewProduct(template, productSearch)
-      ProductSearch.search productSearch
+      if Product.nameIsExisted(newProduct.name, newProduct.merchant)
+        template.ui.$searchFilter.notify("Sản phẩm đã tồn tại.", {position: "bottom"})
+      else
+        ProductSearch.cleanHistory() if Match.test(Product.insert(newProduct), String)
+      ProductSearch.search Helpers.Searchify(fullText)
 
-    "click .inner.caption": (event, template) ->
-      if userId = Meteor.userId()
-        Meteor.subscribe('productManagementCurrentProductData', @_id)
-        Meteor.users.update(userId, {$set: {'sessions.currentProduct': @_id}})
-
-#    "click .deleteBranchProduct":  (event, template) ->
-#      Meteor.call('deleteBranchProduct', @_id); event.stopPropagation()
-#    "click .deleteMerchantProduct":  (event, template) ->
-#      Meteor.call('deleteMerchantProduct', @_id); event.stopPropagation()
-#    "click .addBranchProduct":  (event, template) ->
-#      Meteor.call('addBranchProduct', @_id); event.stopPropagation()
-#    "click .addMerchantAndBranchProduct":  (event, template) ->
-#      Meteor.call('getBuildInProduct', @_id); event.stopPropagation()
+    "click .inner.caption": (event, template) -> Product.setSession(@_id)
