@@ -3,15 +3,27 @@
   localSearch: true
 
 @PriceBookSearch.fetchData =(searchText, options, callback) ->
-  selector = {}; options = {sort: {name: 1}, limit: 20}
+  selector = {}; options = sort: {priceBookType: 1, name: 1}
   if(searchText)
     regExp = Helpers.BuildRegExp(searchText);
     selector = {$or: [
       {name: regExp}
     ]}
-  callback(false, Schema.priceBooks.find(selector, options).fetch())
+
+  priceBookFounds = Schema.priceBooks.find(selector, options).fetch()
+  callback(false, getPriceBook(priceBookFounds))
 
 Template.registerHelper 'priceBookSearches', ->
   PriceBookSearch.getData
 #    transform : (matchText, regExp) -> matchText.replace(regExp, "<b>$&</b>")
-    sort      : {name: 1}
+    sort      : {priceBookType: 1, name: 1}
+
+getPriceBook = (priceBookFounds) ->
+  priceBookLists = []
+  priceBookFounds =_.groupBy priceBookFounds, (priceBook) ->
+    if priceBook.priceBookType is 0 then 'Cơ Bảng'
+    else if priceBook.priceBookType is 1 then 'Khách Hàng'
+    else if priceBook.priceBookType is 2 then 'Nhà Cung Cấp'
+
+  priceBookLists.push {_id: key, childs: childs} for key, childs of priceBookFounds
+  return priceBookLists

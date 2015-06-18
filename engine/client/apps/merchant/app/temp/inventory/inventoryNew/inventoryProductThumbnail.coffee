@@ -113,7 +113,6 @@ lemon.defineWidget Template.inventoryProductThumbnail,
             option.lostQuality = 0
           Schema.inventoryDetails.update @parentContext._id, $set: option
       reactiveValue: -> @parentContext.realQuality ? 0
-      #TODO : Chưa cập nhật dc max value (gia tri thay doi, ko cap nhat)
       reactiveMax: -> @parentContext.lockOriginalQuality - @parentContext.saleQuality
       reactiveMin: -> 0
       reactiveStep: -> 1

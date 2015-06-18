@@ -4,24 +4,32 @@ template(name="priceBook")
       .dual-detail-wrapper
         .dual-detail
           .nano: .nano-content
-            +priceBookOverviewSection currentPriceBook
-            +priceBookDetailSection currentPriceBook
+            +priceBookOverviewSection getSession 'currentPriceBook'
+
+            if isPriceBookType 'default'
+              +priceBookDetailSectionDefault getSession 'currentPriceBook'
+            //if isPriceBookType 'customer'
+            //  +priceBookDetailSectionCustomer {{getSession 'currentPriceBook'}}
+            //if isPriceBookType 'provider'
+            //  +priceBookDetailSectionProvider {{getSession 'currentPriceBook'}}
+
       .dual-addon
         .search-filter.icon-search-8
           input(name='searchFilter' type="text" placeholder="tìm bảng giá...")
-          if creationMode
+          if getSession 'priceBookCreationMode'
             .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createCustomerBtn
 
         .nano: .nano-content
-          .group-wrapper
-            each priceBookSearches
-              .caption.inner(class="{{activeClass}}")
-                +avatarImageComponent(avatar=avatarUrl alias=firstName)
-                span.text
-                  |{{name}}
-                  if description
-                    |({{description}})
-
+          each priceBookSearches
+            .group-wrapper
+              .caption.group {{_id}}
+              each childs
+                .caption.inner(class="{{activeClass 'currentPriceBook'}}")
+                  +avatarImageComponent(avatar=avatarUrl alias=firstName)
+                  span.text
+                    |{{name}}
+                    if description
+                      |({{description}})
 
   //#footer.modern
   //  .editor-row

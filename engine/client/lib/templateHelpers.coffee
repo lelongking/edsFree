@@ -1,6 +1,9 @@
 Template.registerHelper 'getSession', (sessionName)-> Session.get(sessionName)
-Template.registerHelper 'isAvatarUrl', (scope)-> if scope.avatar then AvatarImages.findOne(scope.avatar)?.url() else undefined
-Template.registerHelper 'isActiveClass', (sessionName, scope)->  if Session.get(sessionName)?._id is scope._id  then 'active' else ''
+
+Template.registerHelper 'firstName', -> Helpers.firstName(@name)
+Template.registerHelper 'avatarUrl', -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
+Template.registerHelper 'activeClass', (sessionName)-> if Session.get(sessionName)?._id is @_id  then 'active' else ''
+
 Template.registerHelper 'productName', (productId)->  Schema.products.findOne(productId)?.name ? 'Sản phẩm không tồn tại'
 Template.registerHelper 'productUnitName', (unitId)->
   product = Schema.products.findOne({'units._id': unitId})

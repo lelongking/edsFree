@@ -20,7 +20,6 @@ lemon.defineHyper Template.agencyProductManagementDetailEditor,
 
   events:
     "keyup input[name]": (event, template) ->
-      #TODO: Kiem tra trung ten & unit!
       if Session.get(scope.agencyProductManagementBranchProduct)?.basicDetailModeEnabled
         productDetail = @
         if event.which is 13

@@ -6,6 +6,6 @@ Meteor.startup ->
   Tracker.autorun ->
     if Meteor.userId()
       user = Meteor.user()
-      Session.set 'myProfile', user.profile
+      Session.set 'myProfile', user.profiles
       Session.set 'mySession', user.sessions
-      Session.set 'merchant', Schema.merchants.findOne(user.profile?.merchant)
+      Session.set 'merchant', Schema.merchants.findOne(user.profiles?.merchant)

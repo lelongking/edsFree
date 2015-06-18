@@ -24,7 +24,6 @@ lemon.defineHyper Template.agencyProductManagementUnitEditor,
 
   events:
     "keyup input[name]": (event, template) ->
-      #TODO: Kiem tra trung ten & unit!
       productUnit = @
       branchProductUnit = Schema.branchProductUnits.findOne({productUnit: @_id, merchant: Session.get('myProfile').currentMerchant})
       if event.which is 13

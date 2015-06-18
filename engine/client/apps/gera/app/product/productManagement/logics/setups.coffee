@@ -120,7 +120,6 @@ Apps.Gera.productManagementInit.push (scope) ->
 
 
   scope.createGeraProductUnit = (geraProduct)->
-    #TODO: Chinh lai truong hop bi trung randomBarcode()
     if geraProduct.basicUnit
       buildInProductUnit =
         creator       : Session.get('myProfile').user
@@ -131,7 +130,6 @@ Apps.Gera.productManagementInit.push (scope) ->
       Session.set("geraProductManagementUnitEditingRowId", buildInProductUnit._id )
 
   scope.updateGeraProductUnit = (buildInProductUnit, template)->
-    #TODO: Chinh lai truong hop bi trung randomBarcode()
     unit                  = template.ui.$unit.val()
     barcode               = template.ui.$barcode.val()
     conversionQualityText = template.ui.$conversionQuality.inputmask('unmaskedvalue')

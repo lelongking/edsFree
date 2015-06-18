@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Todo EdsFree" pattern="((file[edsFree]:engine/client/*||file[edsFree]:engine/server/*||file[edsFree]:engine/public/*)&amp;&amp;!file[edsFree]:engine/packages/*&amp;&amp;!file[edsFree]:engine/packages//*||file[edsFree]:engine/lib/*||file[edsFree]:engine/public//*||file[edsFree]:engine/lib//*||file[edsFree]:engine/client//*||file[edsFree]:engine/server//*)&amp;&amp;!file[edsFree]:engine/client/lib/plugins//*" />
+</component>

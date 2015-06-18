@@ -1,6 +1,5 @@
 #Apps.Agency.agencyProductManagementInit.push (scope) ->
 #  scope.createProductUnit = (product, profile) ->
-#    #TODO: Chinh lai truong hop bi trung randomBarcode()
 #    if !product.buildInProduct and product.basicUnit and profile
 #      productUnit =
 #        parentMerchant   : product.parentMerchant

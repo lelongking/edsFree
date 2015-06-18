@@ -7,6 +7,26 @@ Apps.Merchant.priceBookReactive.push (scope) ->
   Session.set "currentPriceBook", scope.currentPriceBook
 
 Apps.Merchant.priceBookInit.push (scope) ->
+  scope.getPriceBookPrevious = (search) ->
+    PriceBookSearch.history[search].data.getPreviousBy('_id', Session.get('mySession').currentPriceBook)
+
+  scope.getPriceBookNext     = (search) ->
+    PriceBookSearch.history[search].data.getNextBy('_id', Session.get('mySession').currentPriceBook)
+
+  scope.searchPriceBookSearchAndCreate = (event, template)->
+    searchFilter  = template.ui.$searchFilter.val()
+    priceBookSearch = Helpers.Searchify searchFilter
+    Session.set("priceBookSearchFilter", searchFilter)
+
+    if event.which is 17 then console.log 'up'
+    else if event.which is 38
+      PriceBook.setSession(previousRow._id) if previousRow = scope.getPriceBookPrevious(priceBookSearch)
+    else if event.which is 40
+      PriceBook.setSession(nextRow._id) if nextRow = scope.getPriceBookNext(priceBookSearch)
+    else
+      scope.createNewPriceBook(template, searchFilter) if event.which is 13
+      PriceBookSearch.search priceBookSearch
+
   scope.createNewPriceBook = (template, searchFilter) ->
     if PriceBook.nameIsExisted(searchFilter, Session.get("myProfile").merchant)
       template.ui.$searchFilter.notify("Bảng giá đã tồn tại.", {position: "bottom"})
@@ -15,14 +35,6 @@ Apps.Merchant.priceBookInit.push (scope) ->
       if Match.test(newPriceBookId, String)
         PriceBook.setSession(newPriceBookId)
         PriceBookSearch.cleanHistory()
-
-  scope.PriceBookSearchFindPreviousPriceBook = (priceBookSearch) ->
-    if previousRow = PriceBookSearch.history[priceBookSearch].data.getPreviousBy('_id', Session.get('mySession').currentPriceBook)
-      PriceBook.setSession(previousRow._id)
-
-  scope.PriceBookSearchFindNextPriceBook = (priceBookSearch) ->
-    if nextRow = PriceBookSearch.history[priceBookSearch].data.getNextBy('_id', Session.get('mySession').currentPriceBook)
-      PriceBook.setSession(nextRow._id)
 
 #  scope.checkAllowUpdateOverview = (template) ->
 #    Session.set "priceBookManagementShowEditCommand",

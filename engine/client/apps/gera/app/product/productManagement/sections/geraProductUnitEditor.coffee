@@ -17,7 +17,6 @@ lemon.defineHyper Template.geraProductManagementUnitEditor,
 
   events:
     "keyup input[name]": (event, template) ->
-      #TODO: Kiem tra trung ten & unit!
       buildInProductUnit = @
       if event.which is 13
         scope.updateGeraProductUnit(buildInProductUnit, template)

@@ -65,10 +65,10 @@ Meteor.users.attachSchema new SimpleSchema
     optional: true
     blackbox: true
 
-  profile:
+  profiles:
     type: userProfile
     optional: true
-  "profile.name": cloneName
+  "profiles.name": cloneName
 
   sessions:
     type: userSession
