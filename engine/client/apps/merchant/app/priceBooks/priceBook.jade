@@ -5,13 +5,8 @@ template(name="priceBook")
         .dual-detail
           .nano: .nano-content
             +priceBookOverviewSection getSession 'currentPriceBook'
+            +priceBookDetailSection getSession 'currentPriceBook'
 
-            if isPriceBookType 'default'
-              +priceBookDetailSectionDefault getSession 'currentPriceBook'
-            //if isPriceBookType 'customer'
-            //  +priceBookDetailSectionCustomer {{getSession 'currentPriceBook'}}
-            //if isPriceBookType 'provider'
-            //  +priceBookDetailSectionProvider {{getSession 'currentPriceBook'}}
 
       .dual-addon
         .search-filter.icon-search-8

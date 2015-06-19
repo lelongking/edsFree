@@ -13,6 +13,4 @@ lemon.addRoute
       @next()
   data: ->
     Apps.setup(scope, Apps.Merchant.priceBookReactive)
-    return {
-    }
 , Apps.Merchant.RouterBase

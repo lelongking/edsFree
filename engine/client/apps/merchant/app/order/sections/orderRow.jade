@@ -1,6 +1,6 @@
 template(name="orderRowEdit")
   tr.detail-row.large-name: td(colspan="3")
-    span {{productName product}}
+    span {{getProductName product}}
     //if product.basicUnit
     //  span ({{product.basicUnit}})
     if discountPercent
@@ -8,24 +8,24 @@ template(name="orderRowEdit")
 
   tr.editors.dual-border(class="{{crossBillAvailableQuality.errorClass}}")
     td.bill-name.has-commands
-      |{{productName product}}
+      |{{getProductName product}}
       .commands
         .lemon.rounded.tiny.btn.blue.animated.bounceIn.deleteOrderDetail: span.icon-minus-4
     td.number.price.editable-field {{formatNumber price}}
     td.quality: input.error-field(name="editQuality" min="0")
-    td.skull(align="center") {{productUnitName productUnit}}
+    td.skull(align="center") {{getProductUnitName productUnit}}
     td.bill-discount: input(name="editDiscountCash" min="0" max="30")
     td.number.final-price <b>{{formatNumber detailFinalPrice}}</b>
 
 template(name="orderRowDisplay")
   tr.detail-row.large-name: td(colspan="3")
-    span {{productName product}}
+    span {{getProductName product}}
     //if discountCash
     //   span.super.s7.color-lime GIẢM GIÁ {{round discountPercent}}%
 
   tr.detail-row.click-enable(class="{{crossBillAvailableQuality.errorClass}}")
     td.bill-name.has-commands
-      |{{productName product}}
+      |{{getProductName product}}
       .commands
         .lemon.rounded.tiny.btn.blue.deleteOrderDetail: span.icon-minus-4
     td.number.price.editable-field {{formatNumber price}}
@@ -34,7 +34,7 @@ template(name="orderRowDisplay")
         |{{formatNumber quality}}
         if crossBillAvailableQuality.invalid
           span.super.s7.color-lime {{crossBillAvailableQuality.crossAvailable}}
-    td(align="center").skull {{productUnitName productUnit}}
+    td(align="center").skull {{getProductUnitName productUnit}}
     td.number.bill-discount.editable-field
       span {{formatNumber discountCash}}
       //if discountPercent

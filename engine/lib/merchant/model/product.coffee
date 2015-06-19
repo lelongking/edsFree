@@ -9,7 +9,7 @@ simpleSchema.products = new SimpleSchema
   creator     : simpleSchema.DefaultCreator
   version     : {type: simpleSchema.Version}
 
-  units: type: [Object], optional: true
+  units                : type: [Object], optional: true
   'units.$._id'        : type: String
   'units.$.barcode'    : simpleSchema.Barcode
   'units.$.name'       : simpleSchema.OptionalString
@@ -18,8 +18,19 @@ simpleSchema.products = new SimpleSchema
   'units.$.allowDelete': simpleSchema.DefaultBoolean()
   'units.$.createdAt'  : simpleSchema.DefaultCreatedAt
 
+  'units.$.priceBooks'               : type: [Object], optional: true
+  'units.$.priceBooks.$.priceBook'   : type: String
+  'units.$.priceBooks.$.salePrice'   : type: Number, optional: true
+  'units.$.priceBooks.$.importPrice' : type: Number, optional: true
+
   'units.$.importPrice': simpleSchema.DefaultNumber()
   'units.$.salePrice'  : simpleSchema.DefaultNumber()
+
+  priceBooks                 : type: [String], optional: true
+  'priceBooks.$.unit'        : type: String
+  'priceBooks.$.priceBook'   : type: String
+  'priceBooks.$.salePrice'   : type: Number, optional: true
+  'priceBooks.$.importPrice' : type: Number, optional: true
 
   qualities                        : type: [Object], optional: true
   'qualities.$.upperGapQuality'    : simpleSchema.DefaultNumber()
@@ -35,9 +46,12 @@ Schema.add 'products', "Product", class Product
   @transform: (doc) ->
     doc.unitName = doc.units[0].name if doc.units.length > 0
     doc.unitCreate = (name = 'New')->
+      priceBookBasic = Schema.priceBooks.findOne({priceBookType: 0, merchant: Session.get('myProfile').merchant})
+      priceBook = [{priceBook: priceBookBasic._id, salePrice: 0, importPrice: 0}]
+
       productUnitId = Random.id()
-      if Schema.products.update(@_id, {$push: { units: {_id: productUnitId} }})
-        PriceBook.insertDetailByProductUnit(productUnitId)
+      if Schema.products.update(@_id, {$push: { units: {_id: productUnitId, priceBooks: priceBook } }})
+        PriceBook.addProductUnit(productUnitId)
 
     doc.unitUpdate = (unitId, option, callback) ->
       unitNameIsNotExist = true
@@ -49,6 +63,10 @@ Schema.add 'products', "Product", class Product
           updateIndex = i
           updateInstance = instance
 
+          priceBookBasic = Schema.priceBooks.findOne({priceBookType: 0, merchant: Session.get('myProfile').merchant})
+          for priceBook, index in instance.priceBooks
+            updatePriceBook = index if priceBook.priceBook is priceBookBasic._id
+
 
       unitUpdateQuery = $set:{}
       if option.name and unitNameIsNotExist
@@ -58,14 +76,15 @@ Schema.add 'products', "Product", class Product
         unitUpdateQuery.$set["units.#{updateIndex}.barcode"] = option.barcode
 
       if option.importPrice and option.importPrice >= 0
-        unitUpdateQuery.$set["units.#{updateIndex}.importPrice"] = option.importPrice
+        unitUpdateQuery.$set["units.#{updateIndex}.priceBooks.#{updatePriceBook}.importPrice"] = option.importPrice
 
       if option.salePrice and option.salePrice >= 0
-        unitUpdateQuery.$set["units.#{updateIndex}.salePrice"] = option.salePrice
+        unitUpdateQuery.$set["units.#{updateIndex}.priceBooks.#{updatePriceBook}.salePrice"] = option.salePrice
 
       if updateInstance.allowDelete and option.conversion and option.conversion >= 1
         unitUpdateQuery.$set["units.#{updateIndex}.conversion"] = option.conversion
 
+      console.log unitUpdateQuery
       Schema.products.update(@_id, unitUpdateQuery, callback) unless _.isEmpty(unitUpdateQuery.$set)
 
     doc.unitRemove = (unitId, callback)->
@@ -78,17 +97,22 @@ Schema.add 'products', "Product", class Product
       if removeInstance and removeInstance.allowDelete and !removeInstance.isBase
         removeUnitQuery = { $pull:{ units: @units[removeIndex] } }
         if Schema.products.update(@_id, removeUnitQuery, callback) is 1
-          PriceBook.removeDetailByProductUnit(removeInstance._id)
+          PriceBook.removeProductUnit(removeInstance._id)
 
     doc.remove = (callback)->
       if @allowDelete
-        Schema.products.remove @_id, callback
+        if Schema.products.remove @_id, callback
+          PriceBook.removeProductUnit(productUnit._id) for productUnit in @units
 
   @insert: (option = {})->
+    priceBookBasic = Schema.priceBooks.findOne({priceBookType: 0, merchant: Session.get('myProfile').merchant})
+    priceBook = [{priceBook: priceBookBasic._id, salePrice: 0, importPrice: 0}]
+
     productUnitId = Random.id()
-    option.units = [{_id: productUnitId, name: 'MacDinh', allowDelete: false, isBase: true}]
+    option.units = [{_id: productUnitId, name: 'MacDinh', allowDelete: false, isBase: true, priceBooks: priceBook}]
+
     if newProductId = Schema.products.insert option
-      PriceBook.insertDetailByProductUnit(productUnitId); Product.setSession(newProductId)
+      PriceBook.addProductUnit(productUnitId); Product.setSession(newProductId)
     newProductId
 
   @nameIsExisted: (name, merchant = null) ->

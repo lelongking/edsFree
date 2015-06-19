@@ -9,7 +9,7 @@ template(name="distributorManagementImportDetails")
 
   each importDetails
     tr.detail-row
-      td.first-column {{productName product}}
+      td.first-column {{getProductName product}}
       td.number {{quality}}
       td(align="center") {{unitName}}
       td.number {{formatNumber importPrice}}
@@ -41,7 +41,7 @@ template(name="distributorManagementImportDetails")
           .bill-header <b>Trả Hàng: {{momentCalendar version.createdAt}}</b> {{comment}}
       each returnDetails
         tr.detail-row.edit-detail
-          td {{productName product}}
+          td {{getProductName product}}
           td.number {{formatNumber unitReturnQuality}}
           td(align="center") {{unitName}}
           td.number {{formatNumber unitReturnsPrice}}

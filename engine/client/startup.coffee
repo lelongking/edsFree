@@ -9,3 +9,4 @@ Meteor.startup ->
       Session.set 'myProfile', user.profiles
       Session.set 'mySession', user.sessions
       Session.set 'merchant', Schema.merchants.findOne(user.profiles?.merchant)
+      Session.set 'priceBookBasic', Schema.priceBooks.findOne({priceBookType: 0, merchant: user.profiles?.merchant})

@@ -41,7 +41,7 @@ template(name="productManagementOverviewSection")
           th.number(style="width:150px") GIÁ NHẬP
           th.number(style="width:150px") GIÁ BÁN
 
-        each units
+        each productUnits
           if unitEditingMode
             +productManagementUnitEditor unitEditingData
           else

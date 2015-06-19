@@ -5,23 +5,17 @@ lemon.defineHyper Template.productManagementOverviewSection,
   avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
   unitEditingMode: -> Session.get("productManagementUnitEditingRow")?._id is @_id
   unitEditingData: -> Session.get("productManagementUnitEditingRow")
-#
-#  productCode: -> @productCode ? Schema.buildInProductUnits.findOne(@buildInProductUnit)?.productCode
-#  unit: -> @unit ? Schema.buildInProductUnits.findOne(@buildInProductUnit)?.unit
-#  conversionQuality: -> @conversionQuality ? Schema.buildInProductUnits.findOne(@buildInProductUnit)?.conversionQuality
-#
-#  basicDetailModeEnabled: -> Session.get('productManagementCurrentProduct')?.basicDetailModeEnabled
-#  hasUnit: -> Schema.productUnits.findOne({product: @_id})
-#  productUnitList: -> Schema.productUnits.find({product: @_id})
-#
-#  showEditCommand: -> Session.get "productManagementShowEditCommand"
-#  showDeleteCommand: -> Session.get('productManagementCurrentProduct')?.allowDelete
-#  showCreateUnitMode: ->
-#    if Session.get('productManagementCurrentProduct')?.buildInProduct then false
-#    else if Session.get('productManagementCurrentProduct')?.basicUnit then true else false
-#  showDeleteUnit: -> !@buildInProductUnit and @allowDelete
-#
-#
+
+  productUnits: ->
+    console.log @units
+    for productUnit in @units
+      for item in productUnit.priceBooks
+        if item.priceBook is Session.get('priceBookBasic')._id
+          productUnit.salePrice   = item.salePrice
+          productUnit.importPrice = item.importPrice
+    @units
+
+
 #  name: ->
 #    Meteor.setTimeout ->
 #      scope.overviewTemplateInstance.ui.$productName.change()
@@ -60,16 +54,6 @@ lemon.defineHyper Template.productManagementOverviewSection,
     "click .addProductUnit": -> scope.currentProduct.unitCreate()
     "click .deleteProductUnit": -> scope.currentProduct.unitRemove(@_id)
     "click .productDelete": -> scope.currentProduct.remove()
-
-#    "click .syncProductEdit": (event, template) -> scope.editProduct(template)
-
-#    "click .add-basicDetail": ->
-#      product = Session.get('productManagementCurrentProduct')
-#      branchProductSummary = Session.get('productManagementBranchProductSummary')
-#      scope.addBasicProductDetail(@, product, branchProductSummary, Session.get('myProfile'))
-#
-#    "input .editable": (event, template) -> scope.checkValidEditProduct(template)
-#    "keyup input.editable": (event, template) -> scope.checkValidAndUpdateProduct(event, template)
 
     "click .unitEditBarcode": ->
       unitEditing = @; unitEditing.select = "Barcode"

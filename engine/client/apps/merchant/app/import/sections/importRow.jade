@@ -1,19 +1,19 @@
 template(name="importRowEdit")
   tr.editors.dual-border
     td.note.has-commands
-      |{{productName product}}
+      |{{getProductName product}}
       .commands
         .lemon.rounded.tiny.btn.blue.animated.bounceIn.deleteImportDetail: span.icon-minus-4
     td: input(name="editExpireDate" min="0")
     td.number: input(name="editImportQuality" min="0")
-    td(align="center") {{productUnitName productUnit}}
+    td(align="center") {{getProductUnitName productUnit}}
     td.editable-field.number {{formatNumber price}}
     td.note.number <b>{{formatNumber detailFinalPrice}}</b>
 
 template(name="importRowDisplay")
   tr.detail-row.click-enable
     td.has-commands
-      |{{productName product}}
+      |{{getProductName product}}
       .commands
         .lemon.rounded.tiny.btn.blue.deleteImportDetail: span.icon-minus-4
     td(align="center")
@@ -22,6 +22,6 @@ template(name="importRowDisplay")
       else
         |Không
     td.number.editable-field {{formatNumber quality}}
-    td(align="center") {{productUnitName productUnit}}
+    td(align="center") {{getProductUnitName productUnit}}
     td.editable-field.number {{formatNumber price}}
     td.number <b>{{formatNumber detailFinalPrice}}</b>

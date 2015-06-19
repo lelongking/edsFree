@@ -19,6 +19,7 @@ customerTransaction = new SimpleSchema
 simpleSchema.customers = new SimpleSchema
   name        : simpleSchema.StringUniqueIndex
   description : simpleSchema.OptionalString
+  group       : simpleSchema.OptionalString
 
   merchant    : simpleSchema.DefaultMerchant
   avatar      : simpleSchema.OptionalString

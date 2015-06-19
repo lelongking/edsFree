@@ -18,7 +18,7 @@ template(name="partnerManagementOldHistoryDetails")
 
     each oldHistoryDetails
       tr.detail-row
-        td.first-column {{productName product}}
+        td.first-column {{getProductName product}}
         td.number {{quality}}
         td(align="center") {{unitName}}
         td.number {{formatNumber importPrice}}
