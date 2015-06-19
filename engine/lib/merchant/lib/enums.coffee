@@ -40,6 +40,26 @@ Apps.Merchant.DiscountTypes = [
   display: 'GIẢM GIÁ THEO PHIẾU'
 ]
 
+Apps.Merchant.PriceBookTypes = [
+  _id: 0
+  display: 'TOÀN BỘ'
+,
+  _id: 1
+  display: 'KHÁCH HÀNG'
+#,
+#  _id: 2
+#  display: 'NHÓM KHÁCH HÀNG'
+,
+  _id: 3
+  display: 'NHÀ CUNG CẤP'
+#,
+#  _id: 4
+#  display: 'NHÓM NHÀ CUNG CẤP'
+]
+
+
+
+
 Apps.Merchant.TimesUseProduct = [
   _id: 0
   timeDate: 1*7

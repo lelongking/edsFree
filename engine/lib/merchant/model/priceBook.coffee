@@ -12,6 +12,13 @@ simpleSchema.priceBooks = new SimpleSchema
 
 Schema.add 'priceBooks', "PriceBook", class PriceBook
   @transform: (doc) ->
+    doc.changeOwner = (ownerId) ->
+      Schema.priceBooks.update @_id, {$set: {owners: [ownerId]}} if @priceBookType isnt 0
+
+    doc.changePriceBookType = (priceBookType) ->
+      if _.contains([1, 2, 3, 4], priceBookType) and @priceBookType isnt 0
+        Schema.priceBooks.update @_id, { $set: {priceBookType: priceBookType}, $unset: {owners: ""} }
+
     doc.updateProductUnitPrice = (productUnitId, salePrice, importPrice, callback) ->
       priceBookId = @_id; priceBookType = @priceBookType; priceBookIndex = undefined; productUnitIndex = undefined
       product = Schema.products.findOne({'units._id': productUnitId, merchant: Session.get('merchant')._id})
@@ -59,7 +66,7 @@ Schema.add 'priceBooks', "PriceBook", class PriceBook
 
   @insert: (name) -> Schema.priceBooks.insert {name: name} if name
 
-  @removeProductUnit: (productUnitId)->
+  @reUpdateByRemoveProductUnit: (productUnitId)->
     if userId = Meteor.userId()
       merchantId = Meteor.users.findOne(userId).profiles.merchant
       product = Schema.products.findOne({'units._id': productUnitId, merchant: merchantId})

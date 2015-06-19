@@ -38,7 +38,7 @@ lemon.defineHyper Template.priceBookDetailSection,
                 owners        : priceBook.owners[0]
                 priceBookType : 2
                 merchant      : Session.get('merchant')._id})
-              if item.priceBook is priceBookGroup._id
+              if priceBookGroup and item.priceBook is priceBookGroup._id
                 salePriceTemp   = item.salePrice
                 break
 
@@ -62,7 +62,7 @@ lemon.defineHyper Template.priceBookDetailSection,
                 owners        : priceBook.owners[0]
                 priceBookType : 4
                 merchant      : Session.get('merchant')._id})
-              if item.priceBook is priceBookGroup._id
+              if priceBookGroup and item.priceBook is priceBookGroup._id
                 importPriceTemp = item.importPrice
                 break
 

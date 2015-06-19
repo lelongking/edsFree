@@ -14,5 +14,11 @@ template(name="priceBookOverviewSection")
           .lemon.btn.rounded.lime.icon-ok-6.syncCustomerEdit
         if showDeleteCommand
           .lemon.btn.rounded.red.icon-minus-4.priceBookDelete
-    .panel-footer
-      span.icon-angle-right
+
+    .panel-footer.has-details
+      .editor-wrapper(style="width: 200px")
+        span.ilabel.optional bảng giá theo
+        +iSelect(options=priceBookTypeSelects class="field")
+      .editor-wrapper(style="width: 300px")
+        span.ilabel.optional đối tượng áp dụng
+        +iSelect(options=priceBookOwnerSelects class="field")

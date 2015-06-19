@@ -97,12 +97,12 @@ Schema.add 'products', "Product", class Product
       if removeInstance and removeInstance.allowDelete and !removeInstance.isBase
         removeUnitQuery = { $pull:{ units: @units[removeIndex] } }
         if Schema.products.update(@_id, removeUnitQuery, callback) is 1
-          PriceBook.removeProductUnit(removeInstance._id)
+          PriceBook.reUpdateByRemoveProductUnit(removeInstance._id)
 
     doc.remove = (callback)->
       if @allowDelete
         if Schema.products.remove @_id, callback
-          PriceBook.removeProductUnit(productUnit._id) for productUnit in @units
+          PriceBook.reUpdateByRemoveProductUnit(productUnit._id) for productUnit in @units
 
   @insert: (option = {})->
     priceBookBasic = Schema.priceBooks.findOne({priceBookType: 0, merchant: Session.get('myProfile').merchant})

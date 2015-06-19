@@ -5,9 +5,9 @@
 scope = logics.priceBook
 
 lemon.defineHyper Template.priceBookOverviewSection,
-  avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
-  showEditCommand: -> Session.get "priceBookManagementShowEditCommand"
-  showDeleteCommand: -> Session.get("priceBookManagementCurrentPriceBook")?.allowDelete
+  priceBookTypeSelects : -> scope.priceBookTypeSelectOptions
+  priceBookOwnerSelects: -> scope.priceBookOwnerSelectOptions
+
   name: ->
     Meteor.setTimeout ->
       scope.overviewTemplateInstance.ui.$priceBookName.change()

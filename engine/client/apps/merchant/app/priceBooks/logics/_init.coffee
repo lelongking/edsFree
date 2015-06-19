@@ -7,9 +7,8 @@ Apps.Merchant.priceBookReactive.push (scope) ->
   Session.set "currentPriceBook", scope.currentPriceBook
 
 Apps.Merchant.priceBookInit.push (scope) ->
-  scope.getPriceBookPrevious = (search) ->
+  scope.getPriceBookPrevious = (search, current) ->
     PriceBookSearch.history[search].data.getPreviousBy('_id', Session.get('mySession').currentPriceBook)
-
   scope.getPriceBookNext     = (search) ->
     PriceBookSearch.history[search].data.getNextBy('_id', Session.get('mySession').currentPriceBook)
 
@@ -35,6 +34,11 @@ Apps.Merchant.priceBookInit.push (scope) ->
       if Match.test(newPriceBookId, String)
         PriceBook.setSession(newPriceBookId)
         PriceBookSearch.cleanHistory()
+        PriceBookSearch.search PriceBookSearch.getCurrentQuery()
+
+
+
+
 
 #  scope.checkAllowUpdateOverview = (template) ->
 #    Session.set "priceBookManagementShowEditCommand",
