@@ -2,7 +2,7 @@ scope = logics.customerReturn
 
 customerReturnRoute =
   template: 'customerReturn',
-  waitOnDependency: 'merchantEssential'
+#  waitOnDependency: 'merchantEssential'
   onBeforeAction: ->
     if @ready()
       Apps.setup(scope, Apps.Merchant.customerReturnInit, 'customerReturn')
