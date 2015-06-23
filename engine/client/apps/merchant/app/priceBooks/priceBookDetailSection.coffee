@@ -25,12 +25,10 @@ lemon.defineHyper Template.priceBookDetailSection,
         if priceBook.priceBookType is 1 or priceBook.priceBookType is 2
           unit.salePriceBasic = unit.salePrice
           salePriceTemp = undefined
-
           for item in unit.priceBooks
             if priceBook._id is item.priceBook
               salePriceTemp = item.salePrice
               break
-
           if salePriceTemp is undefined
             if priceBook.priceBookType is 1 and priceBook.owners?[0]
               priceBookGroup = Schema.priceBooks.findOne({
@@ -41,20 +39,15 @@ lemon.defineHyper Template.priceBookDetailSection,
               if priceBookGroup and item.priceBook is priceBookGroup._id
                 salePriceTemp   = item.salePrice
                 break
-
           unit.salePrice = salePriceTemp if salePriceTemp isnt undefined
-
-
         else if priceBook.priceBookType is 3 or priceBook.priceBookType is 4
           unit.importPriceBasic = unit.importPrice
           importPriceTemp = undefined
-
           for item in unit.priceBooks
             if priceBook._id is item.priceBook
               console.log item.importPrice
               importPriceTemp = item.importPrice
               break
-
           if importPriceTemp is undefined and priceBook.owners?[0]
             if priceBook.priceBookType is 1 and priceBook.owners?[0]
               priceBookGroup = Schema.priceBooks.findOne({
@@ -65,10 +58,8 @@ lemon.defineHyper Template.priceBookDetailSection,
               if priceBookGroup and item.priceBook is priceBookGroup._id
                 importPriceTemp = item.importPrice
                 break
-
           unit.importPrice = importPriceTemp if importPriceTemp isnt undefined
 
-        console.log unit
         productLists.push(unit)
 
     scope.allProductUnits = productLists

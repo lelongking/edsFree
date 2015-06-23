@@ -23,28 +23,56 @@ simpleSchema.products = new SimpleSchema
   'units.$.priceBooks.$.salePrice'   : type: Number, optional: true
   'units.$.priceBooks.$.importPrice' : type: Number, optional: true
 
-  'units.$.importPrice': simpleSchema.DefaultNumber()
-  'units.$.salePrice'  : simpleSchema.DefaultNumber()
-
-  priceBooks                 : type: [String], optional: true
-  'priceBooks.$.unit'        : type: String
-  'priceBooks.$.priceBook'   : type: String
-  'priceBooks.$.salePrice'   : type: Number, optional: true
-  'priceBooks.$.importPrice' : type: Number, optional: true
-
-  qualities                        : type: [Object], optional: true
+  qualities                        : type: [Object], defaultValue: [{}]
   'qualities.$.upperGapQuality'    : simpleSchema.DefaultNumber()
+
   'qualities.$.availableQuality'   : simpleSchema.DefaultNumber()
   'qualities.$.inOderQuality'      : simpleSchema.DefaultNumber()
   'qualities.$.inStockQuality'     : simpleSchema.DefaultNumber()
+
   'qualities.$.saleQuality'        : simpleSchema.DefaultNumber()
   'qualities.$.returnSaleQuality'  : simpleSchema.DefaultNumber()
+
   'qualities.$.importQuality'      : simpleSchema.DefaultNumber()
   'qualities.$.returnImportQuality': simpleSchema.DefaultNumber()
+
+findPrice = (priceBookId, priceBookList, priceType = 'sale') ->
+  if priceType is 'sale'
+    for priceBook in priceBookList
+      return priceBook.salePrice if priceBook.priceBook is priceBookId
+    return undefined
+  else if priceType is 'import'
+    for priceBook in priceBookList
+      return priceBook.importPrice if priceBook.priceBook is priceBookId
+    return undefined
 
 Schema.add 'products', "Product", class Product
   @transform: (doc) ->
     doc.unitName = doc.units[0].name if doc.units.length > 0
+
+    doc.getPrice = (productUnitId, ownerId, priceType = 'sale') ->
+      priceFound = undefined; merchantId = Session.get('merchant')._id
+      for unit in @units
+        if unit._id is productUnitId
+          if priceType is 'sale'
+            buyer = Schema.customers.findOne({_id: ownerId, merchant: merchantId})
+            if buyer
+              priceBookOfBuyer = PriceBook.findOneByUnitAndBuyer(buyer._id, merchantId)
+              priceBookOfBuyerGroup = PriceBook.findOneByUnitAndBuyerGroup(buyer.group, merchantId)
+              priceFound = findPrice(priceBookOfBuyer._id, unit.priceBooks, priceType) if priceBookOfBuyer
+              priceFound = findPrice(priceBookOfBuyerGroup._id, unit.priceBooks, priceType) if priceBookOfBuyerGroup and priceFound is undefined
+            priceFound = findPrice(Session.get('priceBookBasic')._id, unit.priceBooks, priceType) if priceFound is undefined
+
+          else if priceType is 'import'
+            provider = Schema.providers.findOne({_id: ownerId, merchant: Session.get('merchant')._id})
+            if provider
+              priceBookOfProvider = PriceBook.findOneByUnitAndProvider(provider._id, merchantId)
+              priceBookOfProviderGroup = PriceBook.findOneByUnitAndProviderGroup(provider.group, merchantId)
+              priceFound = findPrice(priceBookOfProvider._id, unit.priceBooks, priceType) if priceBookOfProvider
+              priceFound = findPrice(priceBookOfProviderGroup._id, unit.priceBooks, priceType) if priceBookOfProviderGroup and priceFound is undefined
+            priceFound = findPrice(Session.get('priceBookBasic')._id, unit.priceBooks, priceType) if priceFound is undefined
+          return priceFound
+
     doc.unitCreate = (name = 'New')->
       priceBookBasic = Schema.priceBooks.findOne({priceBookType: 0, merchant: Session.get('myProfile').merchant})
       priceBook = [{priceBook: priceBookBasic._id, salePrice: 0, importPrice: 0}]

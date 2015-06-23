@@ -62,7 +62,29 @@ Schema.add 'priceBooks', "PriceBook", class PriceBook
           console.log unitUpdateQuery
           Schema.products.update(product._id, unitUpdateQuery, callback) unless _.isEmpty(unitUpdateQuery.$push)
 
+  @findOneByUnitAndBuyer = (buyerId, merchantId = Session.get('merchant')._id) ->
+    Schema.priceBooks.findOne({
+      owners        : buyerId
+      priceBookType : 1
+      merchant      : merchantId})
 
+  @findOneByUnitAndBuyerGroup = (buyerGroupId, merchantId = Session.get('merchant')._id) ->
+    Schema.priceBooks.findOne({
+      owners        : buyerGroupId
+      priceBookType : 2
+      merchant      : merchantId})
+
+  @findOneByUnitAndProvider = (providerId, merchantId = Session.get('merchant')._id) ->
+    Schema.priceBooks.findOne({
+      owners        : providerId
+      priceBookType : 3
+      merchant      : merchantId})
+
+  @findOneByUnitAndProviderGroup = (providerGroupId, merchantId = Session.get('merchant')._id) ->
+    Schema.priceBooks.findOne({
+      owners        : providerGroupId
+      priceBookType : 4
+      merchant      : merchantId})
 
   @insert: (name) -> Schema.priceBooks.insert {name: name} if name
 

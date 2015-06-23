@@ -1,6 +1,8 @@
 simpleSchema.imports = new SimpleSchema
   importName : simpleSchema.DefaultString('ĐƠN HÀNG')
   provider   : simpleSchema.OptionalString
+  importCode : simpleSchema.OptionalString
+  importType : simpleSchema.DefaultNumber()
 
   merchant   : simpleSchema.DefaultMerchant
   allowDelete: simpleSchema.DefaultBoolean()
@@ -9,9 +11,6 @@ simpleSchema.imports = new SimpleSchema
 
   profiles                : type: Object , optional: true
   'profiles.description'  : simpleSchema.OptionalString
-  'profiles.importCode'   : simpleSchema.OptionalString
-  'profiles.importType'   : simpleSchema.DefaultNumber()
-
   'profiles.discountCash' : simpleSchema.DefaultNumber()
   'profiles.depositCash'  : simpleSchema.DefaultNumber()
   'profiles.totalPrice'   : simpleSchema.DefaultNumber()
@@ -36,18 +35,29 @@ simpleSchema.imports = new SimpleSchema
   'details.$.inOderQuality'       : simpleSchema.DefaultNumber()
   'details.$.availableQuality'    : simpleSchema.DefaultNumber()
 
-
-
 Schema.add 'imports', "Import", class Import
   @transform: (doc) ->
-    doc.remove = (callback)-> Schema.imports.remove(@_id, callback) if @allowDelete
-
-    doc.searchPrice = (productUnitId) ->
+    doc.test = ->
+      console.log doc
+      console.log @
 
     doc.changeProvider= (providerId, callback)->
-      if provider = Schema.providers.findOne(providerId)
-        option = $set:{ provider: provider._id, importName: Helpers.shortName2(provider.name) }
-        Schema.imports.update @_id, option, callback
+      provider = Schema.providers.findOne(providerId)
+      if provider
+        totalPrice = 0; discountCash = 0
+        predicate = $set:{ provider: provider._id, importName: Helpers.shortName2(provider.name) }
+
+        for instance, index in @details
+          product = Schema.products.findOne(instance.product)
+          productPrice  = product.getPrice(instance.productUnit, provider._id, 'import')
+          totalPrice   += instance.quality * productPrice
+          discountCash += instance.quality * instance.discountCash
+          predicate.$set["details.#{index}.price"] = productPrice
+
+        predicate.$set["profiles.totalPrice"]   = totalPrice
+        predicate.$set["profiles.discountCash"] = discountCash
+        predicate.$set["profiles.finalPrice"]   = totalPrice - discountCash
+        Schema.imports.update @_id, predicate, callback
 
     doc.changeDepositCash = (depositCash, callback) ->
       option = $set:{'profiles.depositCash': Math.abs(depositCash)}
@@ -59,14 +69,16 @@ Schema.add 'imports', "Import", class Import
       option = $set:{'profiles.discountCash': discountCash}
       Schema.imports.update @_id, option, callback
 
-    doc.changeDescription = (description, callback)->
-      option = $set:{'profiles.description': description}
-      Schema.imports.update @_id, option, callback
+    doc.addImportDetail = (productUnitId, quality = 1, callback) ->
+      product = Schema.products.findOne({'units._id': productUnitId})
+      return console.log('Khong tim thay Product') if !product
 
-    doc.addImportDetail = (productUnitId, quality = 1, price = 1, callback) ->
-      return console.log('Khong tim thay Product') if !product = Schema.products.findOne({'units._id': productUnitId})
-      return console.log('Khong tim thay ProductUnit') if !productUnit = _.findWhere(product.units, {_id: productUnitId})
-      return console.log('Price not found..') if !price = price ? product.searchPrice(productUnitId)?.sale
+      productUnit = _.findWhere(product.units, {_id: productUnitId})
+      return console.log('Khong tim thay ProductUnit') if !productUnit
+
+      price = product.getPrice(productUnitId, @provider, 'import')
+      return console.log('Price not found..') if !price
+
       return console.log("Price invalid (#{price})") if price < 0
       return console.log("Quality invalid (#{quality})") if quality < 1
 
@@ -120,26 +132,39 @@ Schema.add 'imports', "Import", class Import
       detailIndex = _.indexOf(self.details, detailFound)
       removeDetailQuery = { $pull:{} }
       removeDetailQuery.$pull.details = self.details[detailIndex]
-      recalculationImport(self._id) if Schema.imports.update(self._id, removeDetailQuery, callback)
+      recalculationImport(@_id) if Schema.imports.update(@_id, removeDetailQuery, callback)
 
-    doc.submit = ->
-      return console.log('Import không tồn tại.') if (!self = Schema.imports.findOne doc._id)
-#      return console.log('Import đã Submit') if self.orderType isnt Enum.orderType.created
+    doc.changeDescription = (description, callback)->
+      option = $set:{'profiles.description': description}
+      Schema.imports.update @_id, option, callback
+
+    doc.importSubmit = ->
+      self = Schema.imports.findOne({_id: doc._id})
+      return console.log('Import không tồn tại.') if !self
+      #      return console.log('Import đã Submit') if self.orderType isnt Enum.orderType.created
 
       for detail, detailIndex in self.details
         product = Schema.products.findOne({'units._id': detail.productUnit})
         return console.log('Khong tim thay Product') if !product
         productUnit = _.findWhere(product.units, {_id: detail.productUnit})
         return console.log('Khong tim thay ProductUnit') if !productUnit
-    #      Meteor.call 'orderSubmit', self._id
+
+      Meteor.call 'importSubmitted', self._id, (error, result) -> if error then console.log error
+
+
+    doc.remove = (callback)-> Schema.imports.remove(@_id, callback)
 
   @insert: (providerId, description, callback) ->
     newImport = {}
     newImport.provider = providerId if providerId
+    newImport['profiles.description'] = description if description
     Schema.imports.insert newImport, callback
 
-  @findNotSubmitted: -> Schema.imports.find({'profiles.importType': 0})
-  @setSession: (importId) -> Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentImport': importId}})
+  @findNotSubmitted: ->
+    Schema.imports.find({importType: 0})
+
+  @setSession: (importId) ->
+    Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentImport': importId}})
 
 
 recalculationImport = (orderId) ->

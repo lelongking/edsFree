@@ -12,4 +12,4 @@ Meteor.methods
       updateQuery.$inc["qualities.#{detailIndex}.inStockQuality"]  = detail.inStockQuality
       updateQuery.$inc["qualities.#{detailIndex}.importQuality"]   = detail.importQuality
       Schema.products.update detail.product, updateQuery
-    Schema.imports.update importId, {$set:{'profiles.importType': 1}}
+    Schema.imports.update importId, {$set:{importType: 1}}

@@ -1,4 +1,4 @@
-lemon.defineApp Template.deliveryManager,
+lemon.defineApp Template.delivery,
   activeDeliveryFilter: (status)-> return 'active' if Session.get('deliveryFilter') is status
   events:
     "click [data-filter]": (event, template) ->

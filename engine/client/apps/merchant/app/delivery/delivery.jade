@@ -1,0 +1,20 @@
+template(name="deliveryThumbnailHeader1")
+  span.title CHỜ GIAO
+  span.icon.icon-shareable
+template(name="deliveryThumbnailHeader2")
+  span.title ĐANG GIAO
+  span.icon.icon-truck-1
+template(name="deliveryThumbnailHeader3")
+  span.title CHỜ KẾT THÚC
+  span.icon.icon-award
+
+template(name="delivery")
+  #header
+    .caption-row
+      .title Giao Hàng
+
+  #content
+    .segments-container.size3
+      +gridComponent(options=waitingGridOptions wrapperClass="segments-column" headerTemplate="deliveryThumbnailHeader1" animation="bounceInDown")
+      +gridComponent(options=deliveringGridOptions wrapperClass="segments-column" headerTemplate="deliveryThumbnailHeader2" animation="bounceInDown")
+      +gridComponent(options=doneGridOptions wrapperClass="segments-column" headerTemplate="deliveryThumbnailHeader3" animation="bounceInDown")

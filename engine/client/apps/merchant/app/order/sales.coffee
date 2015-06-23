@@ -37,10 +37,10 @@ lemon.defineApp Template.sales,
       if event.which is 17 then console.log 'up' else UnitProductSearch.search productSearch
 
     "click .addSaleDetail": ->
-      scope.currentOrder.addImportDetail(@_id); event.stopPropagation()
+      scope.currentOrder.addDetail(@_id); event.stopPropagation()
 
     "click .finish": (event, template)->
-      scope.currentOrder.submit()
+      scope.currentOrder.orderSubmit()
 
 
 #

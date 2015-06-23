@@ -51,8 +51,8 @@ simpleSchema.orders = new SimpleSchema
   'details.$.returnQuality' : simpleSchema.DefaultNumber()
 
   deliveries                     : type: Object , optional: true
+  'deliveries.status'            : simpleSchema.DefaultNumber(1)
   'deliveries.shipper'           : simpleSchema.OptionalString
-  'deliveries.buyer'             : simpleSchema.OptionalString
   'deliveries.deliveryCode'      : simpleSchema.OptionalString
   'deliveries.contactName'       : simpleSchema.OptionalString
   'deliveries.description'       : simpleSchema.OptionalString
@@ -64,17 +64,32 @@ simpleSchema.orders = new SimpleSchema
 
 Schema.add 'orders', "Order", class Order
   @transform: (doc) ->
-    doc.remove = -> Schema.orders.remove(@_id, callback) if @allowDelete
-
-    doc.searchPrice = (productUnitId) ->
+    doc.remove = -> Schema.orders.remove @_id if @allowDelete
 
     doc.changeBuyer = (customerId, callback)->
-      if customer = Schema.customers.findOne(customerId)
-        option = $set:{ buyer: customer._id, orderName: Helpers.shortName2(customer.name) }
-        Schema.orders.update @_id, option, callback
+      customer = Schema.customers.findOne(customerId)
+      if customer
+        totalPrice = 0; discountCash = 0
+        predicate = $set:{ buyer: customer._id, orderName: Helpers.shortName2(customer.name) }
+
+        for instance, index in @details
+          product = Schema.products.findOne(instance.product)
+          productPrice  = product.getPrice(instance.productUnit, customer._id, 'sale')
+          totalPrice   += instance.quality * productPrice
+          discountCash += instance.quality * instance.discountCash
+          predicate.$set["details.#{index}.price"] = productPrice
+
+        predicate.$set["profiles.totalPrice"]   = totalPrice
+        predicate.$set["profiles.discountCash"] = discountCash
+        predicate.$set["profiles.finalPrice"]   = totalPrice - discountCash
+        Schema.orders.update @_id, predicate, callback
 
     doc.changePaymentsDelivery = (paymentsDeliveryId, callback)->
-      option = $set:{"profiles.paymentsDelivery": paymentsDeliveryId}
+      option = $set:{
+        'profiles.paymentsDelivery': paymentsDeliveryId
+        'deliveries.status' : paymentsDeliveryId
+        'deliveries.shipper': @creator
+      }
       Schema.orders.update @_id, option, callback
 
     doc.changePaymentMethod = (paymentMethodId, callback)->
@@ -105,18 +120,22 @@ Schema.add 'orders', "Order", class Order
       finalPrice: totalPrice - @profiles.discountCash
 
 
-    doc.addDetail = (productUnitId, quality = 1, price = 1, callback) ->
-      return console.log('Khong tim thay Product') if !product = Schema.products.findOne({'units._id': productUnitId})
-      return console.log('Khong tim thay ProductUnit') if !productUnit = _.findWhere(product.units, {_id: productUnitId})
-      return console.log('Price not found..') if !price = price ? product.searchPrice(productUnitId)?.sale
+    doc.addDetail = (productUnitId, quality = 1, callback) ->
+      product = Schema.products.findOne({'units._id': productUnitId})
+      return console.log('Khong tim thay Product') if !product
+
+      productUnit = _.findWhere(product.units, {_id: productUnitId})
+      return console.log('Khong tim thay ProductUnit') if !productUnit
+
+      price = product.getPrice(productUnitId, @buyer, 'sale')
+      return console.log('Price not found..') if !price
+
       return console.log("Price invalid (#{price})") if price < 0
       return console.log("Quality invalid (#{quality})") if quality < 1
 
       detailFindQuery = {product: product._id, productUnit: productUnitId, price: price}
       detailFound = _.findWhere(@details, detailFindQuery)
-      console.log doc.details, detailFindQuery, detailFound
 
-      console.log productUnit.conversion
       if detailFound
         detailIndex = _.indexOf(@details, detailFound)
         updateQuery = {$inc:{}}
@@ -160,16 +179,17 @@ Schema.add 'orders', "Order", class Order
 
 
 
-    doc.submit = ->
+    doc.orderSubmit = ->
       return console.log('Order không tồn tại.') if (!self = Schema.orders.findOne doc._id)
-      return console.log('Order đã Submit') if self.orderType isnt Enum.orderType.created
+      return console.log('Order đã Submit') if self.orderType isnt 0
 
       for detail, detailIndex in self.details
-        product = Document.Product.findOne({'units._id': detail.productUnit})
+        product = Schema.products.findOne({'units._id': detail.productUnit})
         return console.log('Khong tim thay Product') if !product
         productUnit = _.findWhere(product.units, {_id: detail.productUnit})
         return console.log('Khong tim thay ProductUnit') if !productUnit
-#      Meteor.call 'orderSubmit', self._id
+
+      Meteor.call 'orderSubmitted', self._id, (error, result) -> if error then console.log error
 
     doc.addDelivery = (option, callback) ->
       return console.log('Order không tồn tại.') if (!self = Schema.orders.findOne doc._id)
@@ -210,6 +230,11 @@ Schema.add 'orders', "Order", class Order
     newOrder.seller= seller if seller
     Schema.orders.insert newOrder, callback
 
+  @findNotSubmitted: ->
+    Schema.orders.find({orderType: 0})
+
+  @setSession: (orderId) ->
+    Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentOrder': orderId}})
 
 recalculationOrder = (orderId) ->
   if orderFound = Schema.orders.findOne(orderId)

@@ -4,13 +4,13 @@ Apps.Merchant.salesReactiveRun = []
 
 Apps.Merchant.salesInit.push (scope) ->
   scope.tabOptions =
-    source: Schema.orders.find()
+    source: Schema.orders.find({orderType: 0})
     currentSource: 'currentOrder'
     caption: 'orderName'
     key: '_id'
     createAction  : -> Order.insert()
-    destroyAction : (instance) -> if order then Schema.orders.find().count() if order.remove() else -1
-    navigateAction: (instance) -> Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentOrder': instance._id}})
+    destroyAction : (instance) -> if instance then instance.remove(); Order.findNotSubmitted().count() else -1
+    navigateAction: (instance) -> Order.setSession(instance._id)
 
 
 

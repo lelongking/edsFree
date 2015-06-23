@@ -1,38 +1,8 @@
 scope = logics.import
 
 lemon.defineApp Template.import,
-  avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
-#  showEditImportCurrentProduct: ->
-#    if product = Session.get('importCurrentProduct')
-#      if product.price > 0 and product.importPrice > 0
-#        if Session.get('showEditProduct') then true else false
-#      else true
-#    else false
-#
-#  productSelectionActiveClass: ->
-#    if currentImport = Session.get('currentImport')
-#      if @unit
-#        if currentImport.currentUnit is @unit._id then 'active' else ''
-#      else if !currentImport.currentUnit
-#        if @product._id is currentImport.currentProduct then 'active' else ''
-
-  created: ->
-    UnitProductSearch.search('')
-#    lemon.dependencies.resolve('importManagement')
-#    Session.set("importManagementSearchFilter", "")
-#    if Session.get("mySession")
-#      if currentImport = Schema.imports.findOne(Session.get("mySession").currentImport)
-#        Session.set('currentImport', currentImport)
-#        Meteor.subscribe('importDetails', currentImport._id)
-#
-#        Session.set('importCurrentProduct', Schema.products.findOne currentImport.currentProduct)
-#        scope.currentImportDetails = ImportDetail.findBy(currentImport._id)
-
-  rendered: ->
-    scope.templateInstance = @
-#    @ui.$depositCash.inputmask("numeric", {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: " VNĐ", integerDigits:11})
-#    @ui.$depositCash.val Session.get('currentImport')?.deposit ? 0
-
+  created: ->  UnitProductSearch.search('')
+  rendered: -> scope.templateInstance = @
   events:
     "click .print-command": -> window.print()
 
@@ -55,7 +25,7 @@ lemon.defineApp Template.import,
         else
           Import.setSession(Import.insert())
 
-        Meteor.call 'importSubmitted', currentImport._id, (error, result) -> if error then console.log error
+        scope.currentImport.importSubmit()
 
 
 

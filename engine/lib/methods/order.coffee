@@ -1,15 +1,20 @@
 Meteor.methods
-  orderSubmitted: (importId)->
+  orderSubmitted: (orderId)->
     userProfile = Meteor.users.findOne(Meteor.userId())
     return {valid: false, error: 'user not found!'} if !userProfile
 
-    importFound = Schema.imports.findOne({_id: importId, 'profiles.importType': 0})
-    return {valid: false, error: 'import not found!'} if !importFound
+    orderFound = Schema.orders.findOne({_id: orderId, orderType: 0})
+    return {valid: false, error: 'order not found!'} if !orderFound
 
-    for detail in importFound.details
+    console.log 'methods', orderFound
+    for detail in orderFound.details
       detailIndex = 0; updateQuery = {$inc:{}}
-      updateQuery.$inc["qualities.#{detailIndex}.availableQuality"]= detail.availableQuality
-      updateQuery.$inc["qualities.#{detailIndex}.inStockQuality"]  = detail.inStockQuality
-      updateQuery.$inc["qualities.#{detailIndex}.importQuality"]   = detail.importQuality
+      updateQuery.$inc["qualities.#{detailIndex}.saleQuality"]     = detail.basicQuality
+      updateQuery.$inc["qualities.#{detailIndex}.availableQuality"]= -detail.basicQuality
+      updateQuery.$inc["qualities.#{detailIndex}.inStockQuality"]  = -detail.basicQuality
       Schema.products.update detail.product, updateQuery
-    Schema.imports.update importId, {$set:{'profiles.importType': 1}}
+
+    if orderFound.profiles.paymentsDelivery
+      Schema.orders.update orderFound._id, {$set:{orderType: 2}}
+    else
+      Schema.orders.update orderFound._id, {$set:{orderType: 1}}
