@@ -26,7 +26,6 @@ meteorhacks:subs-manager
 
 aldeed:simple-schema
 aldeed:collection2
-matb33:collection-hooks
 dburles:collection-helpers
 reywood:publish-composite
 tmeasday:publish-counts

@@ -1,4 +1,4 @@
-lemon.defineApp Template.customerManagementNavigationPartial,
+lemon.defineApp Template.priceBookNavigationPartial,
   events:
     "click .customerToSales": (event, template) ->
       if customer = Session.get("customerManagementCurrentCustomer")

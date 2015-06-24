@@ -5,12 +5,12 @@ Meteor.publish null, ->
   return collections if !merchantId
 
   Counts.publish @, 'products', Schema.products.find({merchant: merchantId})
-  Counts.publish @, 'productGroups', Schema.productGroups.find({merchant: merchantId})
+#  Counts.publish @, 'productGroups', Schema.productGroups.find({merchant: merchantId})
   Counts.publish @, 'customers', Schema.customers.find({merchant: merchantId})
   #  Counts.publish @, 'customerGroups', Schema.customerGroups.find({merchant: merchantId})
   Counts.publish @, 'providers', Schema.providers.find({merchant: merchantId})
 
-  Counts.publish @, 'users', Meteor.users.find({'merchantId': merchantId})
+  Counts.publish @, 'users', Meteor.users.find({merchant: merchantId})
   Counts.publish @, 'priceBooks', Schema.priceBooks.find({merchant: merchantId})
 
   #  Counts.publish @, 'inventories', Schema.providers.find({merchant: profile.merchant})
@@ -18,7 +18,7 @@ Meteor.publish null, ->
   Counts.publish @, 'orders', Schema.orders.find({orderType:{$in: [1,2]}, merchant: merchantId})
   Counts.publish @, 'deliveries', Schema.orders.find({orderType:2, 'deliveries.status': {$in: [1,2,3,4]}, merchant: merchantId})
   Counts.publish @, 'orderReturns', Schema.returns.find({merchant: merchantId})
-  #  Counts.publish @, 'imports', Schema.imports.find({merchant: merchantId})
+  Counts.publish @, 'imports', Schema.imports.find({merchant: merchantId})
   #  Counts.publish @, 'importReturns', Schema.providers.find({merchant: profile.merchant})
 
 

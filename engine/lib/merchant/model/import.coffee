@@ -37,10 +37,6 @@ simpleSchema.imports = new SimpleSchema
 
 Schema.add 'imports', "Import", class Import
   @transform: (doc) ->
-    doc.test = ->
-      console.log doc
-      console.log @
-
     doc.changeProvider= (providerId, callback)->
       provider = Schema.providers.findOne(providerId)
       if provider

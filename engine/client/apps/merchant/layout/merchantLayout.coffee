@@ -8,13 +8,18 @@ arrangeSideBar = (context) ->
 startHomeTracker = ->
   Apps.Merchant.homeTracker = Tracker.autorun ->
     if Session.get("myProfile")
-      merchantProfile = Schema.merchantProfiles.findOne({merchant: Session.get("myProfile").currentMerchant})
-      return if !merchantProfile
-      if !merchantProfile.merchantRegistered
-        if merchantProfile.user is Meteor.userId()
-          Router.go('/merchantWizard')
-        else
-          Router.go('/')
+      Router.go('/merchant')
+    else
+      Router.go('/')
+
+#    if Session.get("myProfile")
+#      merchantProfile = Schema.merchantProfiles.findOne({merchant: Session.get("myProfile").currentMerchant})
+#      return if !merchantProfile
+#      if !merchantProfile.merchantRegistered
+#        if merchantProfile.user is Meteor.userId()
+#          Router.go('/merchantWizard')
+#        else
+#          Router.go('/')
 
 destroyHomeTracker = -> Apps.Merchant.homeTracker.stop()
 

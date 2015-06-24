@@ -37,7 +37,7 @@ Apps.Merchant.customerReturnInit.push (scope) ->
     scope.tabOptions =
       source: Schema.returns.find({creator: Session.get('myProfile').user, status: 0, returnMethods: 0})
       currentSource: 'currentCustomerReturn'
-      caption: 'tabDisplay'
+      caption: 'returnName'
       key: '_id'
       createAction: -> createReturnAndSelected()
       destroyAction: (instance) -> destroyReturnAndDetail(scope, instance._id)

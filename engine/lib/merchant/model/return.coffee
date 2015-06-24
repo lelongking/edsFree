@@ -1,6 +1,7 @@
 simpleSchema.returns = new SimpleSchema
   returnName  : simpleSchema.DefaultString('Trả hàng')
   returnType  : simpleSchema.DefaultNumber()
+  status      : simpleSchema.DefaultNumber()
   owner       : simpleSchema.OptionalString
 
   merchant    : simpleSchema.DefaultMerchant
@@ -34,3 +35,22 @@ simpleSchema.returns = new SimpleSchema
 
 Schema.add 'returns', "Return", class Return
   @transform: (doc) ->
+    doc.remove = -> Schema.returns.remove @_id if @allowDelete
+
+  @insert: (returnType = 'customer')->
+    Schema.returns.insert {}
+
+  @findNotSubmitOf: (returnType = 'customer')->
+    if returnType is 'customer'
+      Schema.returns.find({returnType: 0})
+    else if returnType is 'provider'
+      Schema.returns.find({returnType: 1})
+
+  @setReturnSession: (returnId, returnType = 'customer')->
+    if returnType is 'customer'
+      updateSession = $set: {'sessions.currentCustomerReturn': returnId}
+    else if returnType is 'provider'
+      updateSession = $set: {'sessions.currentProviderReturn': returnId}
+
+    Meteor.users.update Meteor.userId(), updateSession
+
