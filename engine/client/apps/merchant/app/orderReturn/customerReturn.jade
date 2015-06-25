@@ -7,22 +7,21 @@ template(name="customerReturn")
       .dual-detail-wrapper
         .dual-detail
           .nano: .nano-content
-            +customerReturnDetailSection currentCustomerReturn
+            +customerReturnDetailSection getSession 'currentCustomerReturn'
 
       .dual-addon
         .search-filter.icon-search-8
           input(name='searchFilter' type="text" placeholder="tìm sản phẩm...")
         .nano: .nano-content
           .group-wrapper
-            each allReturnProduct
-              .caption.advanced.inner
+            each unitProductSearches
+              .caption.advanced.inner.product-selection(class="{{productSelectionActiveClass}}")
                 +avatarImageComponent(avatar=avatarUrl alias=name)
-                span.text
-                  | <b>{{product.name}}</b>
-                  if product.basicUnit
-                      | ({{unitName}})
+                span.text {{name}}
                   .commands
                     span.icon-right-open-big.addReturnDetail
+                span.right-info {{unitName}}
+
   #footer.modern
     .editor-wrapper.dual-spacer
     .editor-row
@@ -30,6 +29,6 @@ template(name="customerReturn")
         span.ilabel.optional khách hàng
         +iSelect(options=customerSelectOptions class="field")
       .editor-wrapper.pull-right
-        button.lemon.btn.lime.pull-right.submitReturn(class="{{allowSuccessReturn}}" type='submit' style="margin-right: 5px;") HOÀN TẤT
+        button.lemon.btn.lime.pull-right.returnSubmit(class="{{allowSuccessReturn}}" type='submit' style="margin-right: 5px;") HOÀN TẤT
 
     +tabComponent(options=tabOptions)

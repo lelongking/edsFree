@@ -6,7 +6,6 @@ lemon.defineHyper Template.saleDetailSection,
   billNo: -> Helpers.orderCodeCreate(Session.get('currentBuyer')?.billNo ? '0000')
   sellerName: -> Schema.userProfiles.findOne({user: Session.get("currentOrder")?.seller})?.fullName
 
-  isRowEditing: -> Session.get("editingId") is @_id
   customerOldDebt: -> if customer = Session.get('currentBuyer') then customer.saleDebt + customer.customSaleDebt else 0
   customerFinalDebt: ->
     if customer = Session.get('currentBuyer') and @profiles

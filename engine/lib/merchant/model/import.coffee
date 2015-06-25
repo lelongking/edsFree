@@ -22,10 +22,10 @@ simpleSchema.imports = new SimpleSchema
   'details.$.productUnit'   : type: String
   'details.$.quality'       : {type: Number, min: 0}
   'details.$.price'         : {type: Number, min: 0}
+  'details.$.basicQuality'  : {type: Number, min: 0}
+  'details.$.conversion'    : {type: Number, min: 1}
   'details.$.discountCash'  : simpleSchema.DefaultNumber()
   'details.$.expire'        : {type: Date, optional: true}
-  'details.$.conversion'    : {type: Number, min: 1}
-  'details.$.basicQuality'  : {type: Number, min: 0}
 
   'details.$.importQuality'       : {type: Number, min: 0}
   'details.$.saleQuality'         : simpleSchema.DefaultNumber()
@@ -34,6 +34,10 @@ simpleSchema.imports = new SimpleSchema
   'details.$.inStockQuality'      : simpleSchema.DefaultNumber()
   'details.$.inOderQuality'       : simpleSchema.DefaultNumber()
   'details.$.availableQuality'    : simpleSchema.DefaultNumber()
+
+  'details.$.returnDetails'               : type: [Object], optional: true
+  'details.$.returnDetails.$._id'         : type: String
+  'details.$.returnDetails.$.basicQuality': type: Number, optional: true
 
 Schema.add 'imports', "Import", class Import
   @transform: (doc) ->

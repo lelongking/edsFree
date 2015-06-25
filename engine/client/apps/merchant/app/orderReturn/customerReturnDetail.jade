@@ -1,0 +1,30 @@
+template(name="customerReturnDetailSection")
+   .section.top.panel.panel-default.printable-area
+      .panel-heading
+         .hide-on-print
+            span <b>{{timeHM}}<sup>{{timeS}}</sup></b>, ngày <b>{{timeDMY}}</b> <b>{{fullDay}}</b>
+         .show-on-print
+            +merchantPrintingHeader
+            .printing-info
+               .document-name PHIẾU TRẢ HÀNG
+
+      .panel-body
+         table.lemon-grid
+            tr.table-header
+               th.bill-name(style="width:auto") SẢN PHẨM
+               th.price(style="width:110px") ĐƠN GIÁ
+               th.quality(style="width:70px") S.LƯỢNG
+               th.skull(style="width:70px; text-align:center") ĐƠN VỊ
+               th.number.final-price(style="width:140px") THÀNH TIỀN
+
+            each details
+               if isRowEditing
+                  +customerReturnRowEdit
+               else
+                  +customerReturnRowDisplay
+
+
+      .panel-footer
+         input.editable.dashed.note(name="returnDescription"  value="{{profiles.description}}" placeholder="ghi chú đơn hàng" size="40" maxlength="120")
+         .right-float
+            span.s3 <b>{{formatNumber debtBalanceChange}}</b> VNĐ

@@ -7,7 +7,6 @@ lemon.defineHyper Template.priceBookDetailSection,
     return true if bookType is 'customer' and (priceType is 1 or priceType is 2)
     return true if bookType is 'provider' and (priceType is 3 or priceType is 4)
 
-  isRowEditing: -> Session.get("editingId") is @_id
   allProductUnits: ->
     productLists = []; priceBook = Session.get("currentPriceBook")
     for product in Schema.products.find({}, {sort: {name: 1}}).fetch()

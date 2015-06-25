@@ -15,7 +15,7 @@ lemon.defineApp Template.import,
       scope.currentImport.addImportDetail(@_id)
       event.stopPropagation()
 
-    'click .importSubmitted': (event, template)->
+    'click .importSubmit': (event, template)->
       if currentImport = Session.get('currentImport')
         importLists = Import.findNotSubmitted().fetch()
         if nextRow = importLists.getNextBy("_id", currentImport._id)

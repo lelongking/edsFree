@@ -16,7 +16,6 @@ customerReturnRoute =
       tabOptions                 : scope.tabOptions
       customerSelectOptions      : scope.customerSelectOptions
       allReturnProduct           : scope.managedReturnProductList
-
     }
 
 lemon.addRoute [customerReturnRoute], Apps.Merchant.RouterBase

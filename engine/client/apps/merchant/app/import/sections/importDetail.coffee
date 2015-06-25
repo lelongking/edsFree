@@ -2,8 +2,6 @@ setTime = -> Session.set('realtime-now', new Date())
 scope = logics.import
 
 lemon.defineHyper Template.importDetailSection,
-  isRowEditing: -> Session.get("editingId") is @_id
-
   showProductionDate: -> if @productionDate then true else false
   showExpireDate: -> if @expire then true else false
   showDelete: -> !Session.get("currentImport")?.submitted

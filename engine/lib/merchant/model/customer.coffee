@@ -1,19 +1,8 @@
 customerProfile = new SimpleSchema
-  phone       : simpleSchema.OptionalString
-  address     : simpleSchema.OptionalString
-  gender      : simpleSchema.DefaultBoolean()
-  billNo      : simpleSchema.DefaultString('000')
-  areas       : simpleSchema.OptionalStringArray
 
-  dateOfBirth : simpleSchema.OptionalString
-  pronoun     : simpleSchema.OptionalString
-  companyName : simpleSchema.OptionalString
-  email       : simpleSchema.OptionalString
 
 customerTransaction = new SimpleSchema
-  salePaid     : simpleSchema.DefaultNumber()
-  saleDebt     : simpleSchema.DefaultNumber()
-  saleTotalCash: simpleSchema.DefaultNumber()
+
 
 #----------------------------------------------------------------------------------------------------------------------
 simpleSchema.customers = new SimpleSchema
@@ -21,19 +10,33 @@ simpleSchema.customers = new SimpleSchema
   description : simpleSchema.OptionalString
   group       : simpleSchema.OptionalString
 
+  salePaid     : simpleSchema.DefaultNumber()
+  saleDebt     : simpleSchema.DefaultNumber()
+  saleTotalCash: simpleSchema.DefaultNumber()
+
   merchant    : simpleSchema.DefaultMerchant
   avatar      : simpleSchema.OptionalString
   allowDelete : simpleSchema.DefaultBoolean()
   creator     : simpleSchema.DefaultCreator
   version     : { type: simpleSchema.Version }
 
-  profiles:
-    type: customerProfile
-    optional: true
+  profiles               : type: Object, optional: true
+  'profiles.phone'       : simpleSchema.OptionalString
+  'profiles.address'     : simpleSchema.OptionalString
+  'profiles.gender'      : simpleSchema.DefaultBoolean()
+  'profiles.billNo'      : simpleSchema.DefaultString('000')
+  'profiles.areas'       : simpleSchema.OptionalStringArray
 
-  transactions:
-    type: customerTransaction
-    optional: true
+  'profiles.dateOfBirth' : simpleSchema.OptionalString
+  'profiles.pronoun'     : simpleSchema.OptionalString
+  'profiles.companyName' : simpleSchema.OptionalString
+  'profiles.email'       : simpleSchema.OptionalString
+
+  productTraded: type: [Object], defaultValue: []
+  'productTraded.$.product'       : type: String
+  'productTraded.$.productUnit'   : type: String
+  'productTraded.$.saleQuality'   : type: Number
+  'productTraded.$.returnQuality' : type: Number
 
 Schema.add 'customers', "Customer", class Customer
   @transform: (doc) ->

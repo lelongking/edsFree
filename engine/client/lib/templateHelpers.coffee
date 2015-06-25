@@ -1,5 +1,7 @@
 Template.registerHelper 'getSession', (sessionName)-> Session.get(sessionName)
 
+Template.registerHelper 'isRowEditing', -> Session.get("editingId") is @_id
+
 Template.registerHelper 'firstName', -> Helpers.firstName(@name)
 Template.registerHelper 'avatarUrl', -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
 Template.registerHelper 'activeClass', (sessionName)-> if Session.get(sessionName)?._id is @_id  then 'active' else ''
@@ -13,7 +15,6 @@ Template.registerHelper 'getProductUnitName', (unitId)->
 
 #old----------------------------------------------->
 Template.registerHelper 'systemVersion', -> Schema.systems.findOne()?.version ? '?'
-Template.registerHelper 'merchantInfo', -> Schema.merchantProfiles.findOne({merchant: Session.get("myProfile").currentMerchant})
 Template.registerHelper 'currentAppInfo', -> Session.get("currentAppInfo")
 Template.registerHelper 'appCollapseClass', -> if Session.get('collapse') then 'icon-angle-double-left' else 'icon-angle-double-right'
 
@@ -38,7 +39,6 @@ Template.registerHelper 'momentCalendar', (date) -> moment(date).calendar()
 Template.registerHelper 'productNameFromId', (id) -> Schema.products.findOne(id)?.name
 Template.registerHelper 'productCodeFromId', (id) -> Schema.products.findOne(id)?.productCode
 Template.registerHelper 'skullsNameFromId', (id) -> Schema.products.findOne(id)?.skulls
-Template.registerHelper 'userNameFromId', (id) -> Schema.userProfiles.findOne({user: id})?.fullName ? Meteor.users.findOne(id)?.emails[0].address
 Template.registerHelper 'ownerNameFromId', (id) -> Schema.customers.findOne(id)?.name
 
 

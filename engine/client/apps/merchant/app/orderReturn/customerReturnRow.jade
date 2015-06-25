@@ -1,0 +1,40 @@
+template(name="customerReturnRowEdit")
+  tr.detail-row.large-name: td(colspan="3")
+    span {{getProductName product}}
+    //if product.basicUnit
+    //  span ({{product.basicUnit}})
+    if discountPercent
+      span.super.s7.color-lime GIẢM GIÁ {{round discountPercent}}%
+
+  tr.editors.dual-border(class="{{crossReturnAvailableQuality.errorClass}}")
+    td.bill-name.has-commands
+      |{{getProductName product}}
+      .commands
+        .lemon.rounded.tiny.btn.blue.animated.bounceIn.deleteReturnDetail: span.icon-minus-4
+    td.price.editable-field {{formatNumber price}}
+    td.quality: input.error-field(name="editQuality" min="0")
+    td(align="center").skull {{getProductUnitName productUnit}}
+    td.final-price.note.number <b>{{formatNumber finalPrice}}</b>
+
+template(name="customerReturnRowDisplay")
+  tr.detail-row.large-name: td(colspan="3")
+    span {{getProductName product}}
+    //if product.basicUnit
+    //   span ({{product.basicUnit}})
+    if discountPercent
+      span.super.s7.color-lime GIẢM GIÁ {{round discountPercent}}%
+
+  tr.detail-row.click-enable(class="{{crossReturnAvailableQuality.errorClass}}")
+    td.bill-name.has-commands
+      |{{getProductName product}}
+      .commands
+        .lemon.rounded.tiny.btn.blue.deleteReturnDetail: span.icon-minus-4
+    td.price.editable-field {{formatNumber price}}
+    td.quality.editable-field.error-field
+      span
+        |{{formatNumber quality}}
+        //if crossReturnAvailableQuality.invalid
+        //  span.super.s7.color-lime {{crossReturnAvailableQuality.crossAvailable}}
+        span.super.s7.color-lime 20
+    td(align="center").skull {{getProductUnitName productUnit}}
+    td.final-price.number <b>{{formatNumber finalPrice}}</b>

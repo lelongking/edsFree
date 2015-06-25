@@ -45,10 +45,13 @@ simpleSchema.orders = new SimpleSchema
   'details.$.productUnit'   : type: String
   'details.$.quality'       : {type: Number, min: 0}
   'details.$.price'         : {type: Number, min: 0}
-  'details.$.discountCash'  : simpleSchema.DefaultNumber()
   'details.$.basicQuality'  : {type: Number, min: 0}
   'details.$.conversion'    : {type: Number, min: 1}
-  'details.$.returnQuality' : simpleSchema.DefaultNumber()
+  'details.$.discountCash'  : simpleSchema.DefaultNumber()
+
+  'details.$.returnDetails'               : type: [Object], optional: true
+  'details.$.returnDetails.$._id'         : type: String
+  'details.$.returnDetails.$.basicQuality': type: Number, optional: true
 
   deliveries                     : type: Object , optional: true
   'deliveries.status'            : simpleSchema.DefaultNumber(1)
