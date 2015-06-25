@@ -1,20 +1,24 @@
+Enums = Apps.Merchant.Enums
 simpleSchema.imports = new SimpleSchema
   importName : simpleSchema.DefaultString('ĐƠN HÀNG')
   provider   : simpleSchema.OptionalString
   importCode : simpleSchema.OptionalString
-  importType : simpleSchema.DefaultNumber()
+  importType : simpleSchema.DefaultNumber(Enums.getValue('ImportTypes', 'initialize'))
+
+  description  : simpleSchema.OptionalString
+  discountCash : simpleSchema.DefaultNumber()
+  depositCash  : simpleSchema.DefaultNumber()
+  totalPrice   : simpleSchema.DefaultNumber()
+  finalPrice   : simpleSchema.DefaultNumber()
+
+  accounting          : type: String  , optional: true
+  accountingConfirm   : type: Boolean , optional: true
+  accountingConfirmAt : type: Date    , optional: true
 
   merchant   : simpleSchema.DefaultMerchant
   allowDelete: simpleSchema.DefaultBoolean()
   creator    : simpleSchema.DefaultCreator
   version    : { type: simpleSchema.Version }
-
-  profiles                : type: Object , optional: true
-  'profiles.description'  : simpleSchema.OptionalString
-  'profiles.discountCash' : simpleSchema.DefaultNumber()
-  'profiles.depositCash'  : simpleSchema.DefaultNumber()
-  'profiles.totalPrice'   : simpleSchema.DefaultNumber()
-  'profiles.finalPrice'   : simpleSchema.DefaultNumber()
 
   details                   : type: [Object], defaultValue: []
   'details.$._id'           : simpleSchema.UniqueId
@@ -41,33 +45,38 @@ simpleSchema.imports = new SimpleSchema
 
 Schema.add 'imports', "Import", class Import
   @transform: (doc) ->
-    doc.changeProvider= (providerId, callback)->
-      provider = Schema.providers.findOne(providerId)
-      if provider
-        totalPrice = 0; discountCash = 0
-        predicate = $set:{ provider: provider._id, importName: Helpers.shortName2(provider.name) }
+    doc.changeField = (field = undefined, value = undefined)->
+      if field isnt undefined and value isnt undefined
+        optionUpdate = $set: {}
 
-        for instance, index in @details
-          product = Schema.products.findOne(instance.product)
-          productPrice  = product.getPrice(instance.productUnit, provider._id, 'import')
-          totalPrice   += instance.quality * productPrice
-          discountCash += instance.quality * instance.discountCash
-          predicate.$set["details.#{index}.price"] = productPrice
+        if field is 'provider'
+          if provider = Schema.providers.findOne(value)
+            totalPrice = 0; discountCash = 0
+            optionUpdate.$set.provider   = provider._id
+            optionUpdate.$set.importName = Helpers.shortName2(provider.name)
 
-        predicate.$set["profiles.totalPrice"]   = totalPrice
-        predicate.$set["profiles.discountCash"] = discountCash
-        predicate.$set["profiles.finalPrice"]   = totalPrice - discountCash
-        Schema.imports.update @_id, predicate, callback
+            for instance, index in @details
+              product = Schema.products.findOne(instance.product)
+              productPrice  = product.getPrice(instance.productUnit, provider._id, 'import')
+              totalPrice   += instance.quality * productPrice
+              discountCash += instance.quality * instance.discountCash
+              optionUpdate.$set["details.#{index}.price"] = productPrice
 
-    doc.changeDepositCash = (depositCash, callback) ->
-      option = $set:{'profiles.depositCash': Math.abs(depositCash)}
-      Schema.imports.update @_id, option, callback
+            optionUpdate.$set.totalPrice   = totalPrice
+            optionUpdate.$set.discountCash = discountCash
+            optionUpdate.$set.finalPrice   = totalPrice - discountCash
 
-    doc.changeDiscountCash = (discountCash, callback) ->
-      console.log discountCash
-      discountCash = if Math.abs(discountCash) > @profiles.totalPrice then @profiles.totalPrice else Math.abs(discountCash)
-      option = $set:{'profiles.discountCash': discountCash}
-      Schema.imports.update @_id, option, callback
+        else if field is 'discountCash'
+          discountCash = if Math.abs(value) > @totalPrice then @totalPrice else Math.abs(value)
+          optionUpdate.$set.discountCash = discountCash
+
+        else if field is 'depositCash'
+          optionUpdate.$set.depositCash = Math.abs(value)
+
+        else if field is 'description'
+          optionUpdate.$set.description = value
+
+        Schema.imports.update(@_id, optionUpdate) if _.keys(optionUpdate.$set).length > 0
 
     doc.addImportDetail = (productUnitId, quality = 1, callback) ->
       product = Schema.products.findOne({'units._id': productUnitId})
@@ -134,10 +143,6 @@ Schema.add 'imports', "Import", class Import
       removeDetailQuery.$pull.details = self.details[detailIndex]
       recalculationImport(@_id) if Schema.imports.update(@_id, removeDetailQuery, callback)
 
-    doc.changeDescription = (description, callback)->
-      option = $set:{'profiles.description': description}
-      Schema.imports.update @_id, option, callback
-
     doc.importSubmit = ->
       self = Schema.imports.findOne({_id: doc._id})
       return console.log('Import không tồn tại.') if !self
@@ -150,14 +155,12 @@ Schema.add 'imports', "Import", class Import
         return console.log('Khong tim thay ProductUnit') if !productUnit
 
       Meteor.call 'importSubmitted', self._id, (error, result) -> if error then console.log error
-
-
-    doc.remove = (callback)-> Schema.imports.remove(@_id, callback)
+    doc.remove = -> Schema.imports.remove(@_id)
 
   @insert: (providerId, description, callback) ->
     newImport = {}
     newImport.provider = providerId if providerId
-    newImport['profiles.description'] = description if description
+    newImport[description] = description if description
     Schema.imports.insert newImport, callback
 
   @findNotSubmitted: ->
@@ -169,11 +172,11 @@ Schema.add 'imports', "Import", class Import
 
 recalculationImport = (orderId) ->
   if orderFound = Schema.imports.findOne(orderId)
-    totalPrice = 0; discountCash = orderFound.profiles.discountCash
+    totalPrice = 0; discountCash = orderFound.discountCash
     (totalPrice += detail.quality * detail.price) for detail in orderFound.details
-    discountCash = totalPrice if orderFound.profiles.discountCash > totalPrice
+    discountCash = totalPrice if orderFound.discountCash > totalPrice
     Schema.imports.update orderFound._id, $set:{
-      'profiles.totalPrice'  : totalPrice
-      'profiles.discountCash': discountCash
-      'profiles.finalPrice'  : totalPrice - discountCash
+      totalPrice  : totalPrice
+      discountCash: discountCash
+      finalPrice  : totalPrice - discountCash
     }

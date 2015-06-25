@@ -61,11 +61,11 @@ Apps.Merchant.staffManagementInit.push (scope) ->
 
   scope.genderSelectOptions =
     query: (query) -> query.callback
-      results: Apps.Merchant.GenderTypes
+      results: Apps.Merchant.Enums.GenderTypes
       text: 'id'
     initSelection: (element, callback) ->
-      callback _.findWhere(Apps.Merchant.GenderTypes, {_id: Session.get("staffManagementCurrentStaff")?.gender})
-    reactiveValueGetter: -> _.findWhere(Apps.Merchant.GenderTypes, {_id: Session.get("staffManagementCurrentStaff")?.gender})
+      callback _.findWhere(Apps.Merchant.Enums.GenderTypes, {_id: Session.get("staffManagementCurrentStaff")?.gender})
+    reactiveValueGetter: -> _.findWhere(Apps.Merchant.Enums.GenderTypes, {_id: Session.get("staffManagementCurrentStaff")?.gender})
     changeAction: (e) ->
       Schema.userProfiles.update Session.get("staffManagementCurrentStaff")._id, $set: {gender: e.added._id}
 

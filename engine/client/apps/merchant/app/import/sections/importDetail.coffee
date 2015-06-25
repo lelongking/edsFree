@@ -37,7 +37,7 @@ lemon.defineHyper Template.importDetailSection,
       Helpers.deferredAction ->
         if currentImport = Session.get('currentImport')
           description = template.ui.$importDescription.val()
-          scope.currentImport.changeDescription(description)
+          scope.currentImport.changeField('description', description)
       , "currentImportUpdateDescription", 1000
 
 

@@ -1,3 +1,4 @@
+Enums = Apps.Merchant.Enums
 simpleSchema.products = new SimpleSchema
   name        : {type: String   ,unique  : true, index: 1}
   description : {type: String   ,optional: true}
@@ -23,16 +24,23 @@ simpleSchema.products = new SimpleSchema
   'units.$.priceBooks.$.salePrice'   : type: Number, optional: true
   'units.$.priceBooks.$.importPrice' : type: Number, optional: true
 
+  'units.$.quality'                       : type: Object, optional: true
+  'units.$.quality.$.upperGapQuality'     : simpleSchema.DefaultNumber()
+  'units.$.quality.$.inStockQuality'      : simpleSchema.DefaultNumber()
+  'units.$.quality.$.inOderQuality'       : simpleSchema.DefaultNumber()
+  'units.$.quality.$.availableQuality'    : simpleSchema.DefaultNumber()
+  'units.$.quality.$.saleQuality'         : simpleSchema.DefaultNumber()
+  'units.$.quality.$.returnSaleQuality'   : simpleSchema.DefaultNumber()
+  'units.$.quality.$.importQuality'       : simpleSchema.DefaultNumber()
+  'units.$.quality.$.returnImportQuality' : simpleSchema.DefaultNumber()
+
   qualities                        : type: [Object], defaultValue: [{}]
   'qualities.$.upperGapQuality'    : simpleSchema.DefaultNumber()
-
   'qualities.$.availableQuality'   : simpleSchema.DefaultNumber()
   'qualities.$.inOderQuality'      : simpleSchema.DefaultNumber()
   'qualities.$.inStockQuality'     : simpleSchema.DefaultNumber()
-
   'qualities.$.saleQuality'        : simpleSchema.DefaultNumber()
   'qualities.$.returnSaleQuality'  : simpleSchema.DefaultNumber()
-
   'qualities.$.importQuality'      : simpleSchema.DefaultNumber()
   'qualities.$.returnImportQuality': simpleSchema.DefaultNumber()
 
@@ -78,7 +86,7 @@ Schema.add 'products', "Product", class Product
       priceBook = [{priceBook: priceBookBasic._id, salePrice: 0, importPrice: 0}]
 
       productUnitId = Random.id()
-      if Schema.products.update(@_id, {$push: { units: {_id: productUnitId, priceBooks: priceBook } }})
+      if Schema.products.update(@_id, {$push: { units: {_id: productUnitId, priceBooks: priceBook , quality: {}} }})
         PriceBook.addProductUnit(productUnitId)
 
     doc.unitUpdate = (unitId, option, callback) ->
@@ -137,7 +145,7 @@ Schema.add 'products', "Product", class Product
     priceBook = [{priceBook: priceBookBasic._id, salePrice: 0, importPrice: 0}]
 
     productUnitId = Random.id()
-    option.units = [{_id: productUnitId, name: 'MacDinh', allowDelete: false, isBase: true, priceBooks: priceBook}]
+    option.units = [{_id: productUnitId, name: 'MacDinh', allowDelete: false, isBase: true, priceBooks: priceBook, quality: {}}]
 
     if newProductId = Schema.products.insert option
       PriceBook.addProductUnit(productUnitId); Product.setSession(newProductId)

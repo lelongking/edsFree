@@ -20,5 +20,5 @@ Apps.Merchant.importInit.push (scope) ->
     formatResult: formatProviderSearch
     id: '_id'
     placeholder: 'CHỌN NHÀ PHÂN PHỐI'
-    changeAction: (e) -> scope.currentImport.changeProvider(e.added._id)
+    changeAction: (e) -> scope.currentImport.changeField('provider', e.added._id)
     reactiveValueGetter: -> Session.get('currentImport')?.provider ? 'skyReset'

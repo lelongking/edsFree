@@ -3,6 +3,9 @@ Apps.Home = {}
 Apps.Merchant = {}
 Apps.Gera = {}
 Apps.Agency = {}
+Apps.Merchant.Enums =
+  getObject : (key, value = 'value') -> _.indexBy(Apps.Merchant.Enums[key], value)
+  getValue  : (key, value) -> (_.indexBy(Apps.Merchant.Enums[key], 'value'))[value]?._id
 
 Helpers.Searchify = (source) ->
   source.toLowerCase()

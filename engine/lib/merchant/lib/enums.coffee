@@ -1,6 +1,4 @@
-Apps.Merchant.Enums = {}
-
-Apps.Merchant.GenderTypes = [
+Apps.Merchant.Enums.GenderTypes = [
   _id: false
   display: 'NỮ'
 ,
@@ -8,117 +6,157 @@ Apps.Merchant.GenderTypes = [
   display: 'NAM'
 ]
 
-Apps.Merchant.PaymentMethods = [
-  _id: 0
+#----------Order---------->
+Apps.Merchant.Enums.OrderTypes = [
+  _id    : 0
+  value  : 'initialize'
+  display: 'moi tao'
+,
+  _id    : 1
+  value  : 'checked'
+  display: 'da kiem tra'
+,
+  _id    : 2
+  value  : 'confirmed'
+  display: 'nhan vien xac nhan'
+,
+  _id    : 3
+  value  : 'accounting'
+  display: 'ke toan xac nhan'
+,
+  _id    : 4
+  value  : 'export'
+  display: 'kho xuat hang'
+,
+  _id    : 5
+  value  : 'import'
+  display: 'kho nhan hang'
+,
+  _id    : 6
+  value  : 'success'
+  display: 'ket thuc'
+]
+
+Apps.Merchant.Enums.PaymentMethods = [
+  _id    : 0
+  value  : 'direct'
   display: 'TIỀN MẶT'
 ,
   _id: 1
+  value  : 'debt'
   display: 'GHI NỢ'
 ]
 
-Apps.Merchant.ReturnMethods = [
-  _id: 0
-  display: 'KHÁCH HÀNG'
-,
-  _id: 1
-  display: 'NHÀ CUNG CẤP'
-]
-
-Apps.Merchant.DeliveryTypes = [
-  _id: 0
+Apps.Merchant.Enums.DeliveryTypes = [
+  _id    : 0
+  value  :'direct'
   display: 'TRỰC TIẾP'
 ,
-  _id: 1
+  _id    : 1
+  value  :'delivery'
   display: 'GIAO HÀNG'
 ]
 
-Apps.Merchant.DiscountTypes = [
-  _id: false
-  display: 'GIẢM GIÁ TÙY CHỌN'
+#----------Delivery---------->
+Apps.Merchant.Enums.DeliveryStatus =[
+  _id    : 0
+  value  :'unDelivered'
+  display: 'chua giao hang'
 ,
-  _id: true
-  display: 'GIẢM GIÁ THEO PHIẾU'
+  _id    : 1
+  value  :'delivered'
+  display: 'dang giao hang'
+,
+  _id    : 2
+  value  :'failDelivery'
+  display: 'giao hang that bai'
+,
+  _id    : 3
+  value  :'successDelivery'
+  display: 'giao hang thanh cong'
 ]
 
-Apps.Merchant.PriceBookTypes = [
-  _id: 0
+
+#----------Price-Book---------->
+Apps.Merchant.Enums.PriceBookTypes = [
+  _id    : 0
+  value  : 'all'
   display: 'TOÀN BỘ'
 ,
-  _id: 1
+  _id    : 1
+  value  : 'customer'
   display: 'KHÁCH HÀNG'
 #,
-#  _id: 2
+#  _id    : 2
+#  value  : 'customerGroup'
 #  display: 'NHÓM KHÁCH HÀNG'
 ,
   _id: 3
+  value  : 'provider'
   display: 'NHÀ CUNG CẤP'
 #,
-#  _id: 4
+#  _id    : 4
+#  value  : 'providerGroup'
 #  display: 'NHÓM NHÀ CUNG CẤP'
 ]
 
 
-
-
-Apps.Merchant.TimesUseProduct = [
-  _id: 0
-  timeDate: 1*7
-  display: '1 tuần'
+#----------Import---------->
+Apps.Merchant.Enums.ImportTypes = [
+  _id    : 0
+  value  : 'initialize'
+  display: 'moi tao'
 ,
-  _id: 1
-  timeDate: 2*7
-  display: '2 tuần'
+  _id    : 1
+  value  : 'checked'
+  display: 'da kiem tra'
 ,
-  _id: 2
-  timeDate: 1*30
-  display: '1 tháng'
+  _id    : 2
+  value  : 'confirmed'
+  display: 'nhan vien xac nhan'
 ,
-  _id: 3
-  timeDate: 2*30
-  display: '2 tháng'
+  _id    : 3
+  value  : 'accounting'
+  display: 'ke toan xac nhan'
 ,
-  _id: 4
-  timeDate: 3*30
-  display: '3 tháng'
-,
-  _id: 5
-  timeDate: 6*30
-  display: '6 tháng'
-,
-  _id: 7
-  timeDate: 9*30
-  display: '9 tháng'
-,
-  _id: 8
-  timeDate: 1*365
-  display: '1 năm'
-,
-  _id: 9
-  timeDate: 2*365
-  display: '2 năm'
-,
-  _id: 10
-  timeDate: 3*365
-  display: '3 năm'
+  _id    : 4
+  value  : 'success'
+  display: 'ket thuc'
 ]
 
-#Apps.Merchant.SaleStatus = [
-#  _id: 0
-#  display: 'New Sale'
-#,
-#  _id: 1
-#  display: 'Sale Accounting'
-#,
-#  _id: 2
-#  display: 'Sale Delivery'
-#,
-#  _id: 3
-#  display: 'Sale Export'
-#,
-#  _id: 4
-#  display: 'Sale Import'
-#,
-#  _id: 5
-#  display: 'Sale Success'
-#,
-#]
+#----------Transaction---------->
+Apps.Merchant.Enums.TransactionTypes = [
+  _id    : 0
+  value  : 'provider'
+  display: 'moi tao'
+,
+  _id    : 1
+  value  : 'customer'
+  display: 'da kiem tra'
+,
+  _id    : 2
+  value  : 'other'
+  display: 'nhan vien xac nhan'
+]
+
+Apps.Merchant.Enums.TransactionStatuses = [
+  _id    : 0
+  value  : 'initialize'
+  display: 'moi tao'
+,
+  _id    : 1
+  value  : 'confirmed'
+  display: 'da kiem tra'
+,
+  _id    : 2
+  value  : 'tracking'
+  display: 'nhan vien xac nhan'
+,
+  _id    : 3
+  value  : 'closed'
+  display: 'nhan vien xac nhan'
+]
+
+
+
+

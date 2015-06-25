@@ -1,69 +1,68 @@
 Enums = Apps.Merchant.Enums
-Enums.OrderType =
-  created   : 0
-  submitted : 1
-
-Enums.paymentMethod =
-  created   : 0
-  submitted : 1
-
-Enums.paymentsDelivery =
-  created   : 0
-  submitted : 1
-
-Enums.DeliveryStatus =
-  created  : 0
-  delivered: 1
-  succeed  : 2
 
 simpleSchema.orders = new SimpleSchema
-  orderName   : simpleSchema.DefaultString('ĐƠN HÀNG')
-  seller      : simpleSchema.OptionalString
-  buyer       : simpleSchema.OptionalString
+  merchant    : simpleSchema.DefaultMerchant
+  allowDelete : simpleSchema.DefaultBoolean()
+  creator     : simpleSchema.DefaultCreator
+  version     : { type: simpleSchema.Version }
 
-  orderType       : simpleSchema.DefaultNumber(Enums.OrderType.created)
-  merchant        : simpleSchema.DefaultMerchant
-  allowDelete     : simpleSchema.DefaultBoolean()
-  creator         : simpleSchema.DefaultCreator
-  version         : { type: simpleSchema.Version }
+  seller           : simpleSchema.OptionalString
+  buyer            : simpleSchema.OptionalString
+  orderName        : simpleSchema.DefaultString('ĐƠN HÀNG')
+  description      : simpleSchema.OptionalString
 
-  profiles                    : type: Object , optional: true
-  'profiles.description'      : simpleSchema.OptionalString
-  'profiles.orderCode'        : simpleSchema.OptionalString
-  'profiles.paymentMethod'    : simpleSchema.DefaultNumber()
-  'profiles.paymentsDelivery' : simpleSchema.DefaultNumber()
-  'profiles.deliveryStatus'   : simpleSchema.OptionalNumber
+  depositCash  : simpleSchema.DefaultNumber()
+  discountCash : simpleSchema.DefaultNumber()
+  totalPrice   : simpleSchema.DefaultNumber()
+  finalPrice   : simpleSchema.DefaultNumber()
 
-  'profiles.discountCash'     : simpleSchema.DefaultNumber()
-  'profiles.depositCash'      : simpleSchema.DefaultNumber()
-  'profiles.totalPrice'       : simpleSchema.DefaultNumber()
-  'profiles.finalPrice'       : simpleSchema.DefaultNumber()
+  orderCode        : simpleSchema.OptionalString
+  orderType        : type: Number, defaultValue: Enums.getValue('OrderTypes', 'initialize')
+  paymentMethod    : type: Number, defaultValue: Enums.getValue('PaymentMethods', 'direct')
+  paymentsDelivery : type: Number, defaultValue: Enums.getValue('DeliveryTypes', 'direct')
+
+  #xac nhan tien khi tao phieu
+  accounting          : type: String  , optional: true
+  accountingConfirm   : type: Boolean , optional: true
+  accountingConfirmAt : type: Date    , optional: true
+
+  #xac nhan xuat kho khi giao hang
+  export          : type: String  , optional: true
+  exportConfirm   : type: Boolean , optional: true
+  exportConfirmAt : type: Date    , optional: true
+
+  #xac nhan nhap kho khi giao hang that bai
+  import          : type: String  , optional: true
+  importConfirm   : type: Boolean , optional: true
+  importConfirmAt : type: Date    , optional: true
+
+  #khi co xac nhan thu tien va xuat kho, moi co the tiep tuc chuyen sang che do di giao hang
+  delivery                     : type: Object , optional: true
+  'delivery.deliveryCode'      : simpleSchema.OptionalString
+  'delivery.status'            : simpleSchema.DefaultNumber(Enums.getValue('DeliveryStatus', 'unDelivered'))
+  'delivery.shipper'           : simpleSchema.OptionalString
+  'delivery.createdAt'         : simpleSchema.DefaultCreatedAt
+
+  'delivery.contactName'       : simpleSchema.OptionalString
+  'delivery.contactPhone'      : simpleSchema.OptionalString
+  'delivery.deliveryAddress'   : simpleSchema.OptionalString
+  'delivery.deliveryDate'      : simpleSchema.OptionalString
+  'delivery.description'       : simpleSchema.OptionalString
+  'delivery.transportationFee' : simpleSchema.OptionalNumber
 
   details                   : type: [Object], defaultValue: []
   'details.$._id'           : simpleSchema.UniqueId
   'details.$.product'       : type: String
   'details.$.productUnit'   : type: String
-  'details.$.quality'       : {type: Number, min: 0}
-  'details.$.price'         : {type: Number, min: 0}
-  'details.$.basicQuality'  : {type: Number, min: 0}
-  'details.$.conversion'    : {type: Number, min: 1}
+  'details.$.quality'       : type: Number, min: 0
+  'details.$.price'         : type: Number, min: 0
+  'details.$.basicQuality'  : type: Number, min: 0
+  'details.$.conversion'    : type: Number, min: 1
   'details.$.discountCash'  : simpleSchema.DefaultNumber()
 
   'details.$.returnDetails'               : type: [Object], optional: true
   'details.$.returnDetails.$._id'         : type: String
   'details.$.returnDetails.$.basicQuality': type: Number, optional: true
-
-  deliveries                     : type: Object , optional: true
-  'deliveries.status'            : simpleSchema.DefaultNumber(1)
-  'deliveries.shipper'           : simpleSchema.OptionalString
-  'deliveries.deliveryCode'      : simpleSchema.OptionalString
-  'deliveries.contactName'       : simpleSchema.OptionalString
-  'deliveries.description'       : simpleSchema.OptionalString
-  'deliveries.contactPhone'      : simpleSchema.OptionalString
-  'deliveries.deliveryAddress'   : simpleSchema.OptionalString
-  'deliveries.deliveryDate'      : simpleSchema.OptionalString
-  'deliveries.transportationFee' : simpleSchema.OptionalNumber
-  'deliveries.createdAt'         : simpleSchema.DefaultCreatedAt
 
 Schema.add 'orders', "Order", class Order
   @transform: (doc) ->
@@ -90,8 +89,8 @@ Schema.add 'orders', "Order", class Order
     doc.changePaymentsDelivery = (paymentsDeliveryId, callback)->
       option = $set:{
         'profiles.paymentsDelivery': paymentsDeliveryId
-        'deliveries.status' : paymentsDeliveryId
-        'deliveries.shipper': @creator
+        'delivery.status' : paymentsDeliveryId
+        'delivery.shipper': @creator
       }
       Schema.orders.update @_id, option, callback
 
@@ -180,19 +179,9 @@ Schema.add 'orders', "Order", class Order
       removeDetailQuery.$pull.details = self.details[detailIndex]
       recalculationOrder(self._id) if Schema.orders.update(self._id, removeDetailQuery, callback)
 
-
-
-    doc.orderSubmit = ->
-      return console.log('Order không tồn tại.') if (!self = Schema.orders.findOne doc._id)
-      return console.log('Order đã Submit') if self.orderType isnt 0
-
-      for detail, detailIndex in self.details
-        product = Schema.products.findOne({'units._id': detail.productUnit})
-        return console.log('Khong tim thay Product') if !product
-        productUnit = _.findWhere(product.units, {_id: detail.productUnit})
-        return console.log('Khong tim thay ProductUnit') if !productUnit
-
-      Meteor.call 'orderSubmitted', self._id, (error, result) -> if error then console.log error
+    doc.orderConfirm = ->
+      Meteor.call 'orderConfirmed', @_id, (error, result) ->
+        if error then console.log error
 
     doc.addDelivery = (option, callback) ->
       return console.log('Order không tồn tại.') if (!self = Schema.orders.findOne doc._id)
@@ -210,21 +199,22 @@ Schema.add 'orders', "Order", class Order
 
       Schema.orders.update self._id, addDeliver, callback
 
+
     doc.deliveryReceipt = (staffId = Meteor.userId(), callback)->
       return console.log('Order không tồn tại.') if (!self = Schema.orders.findOne doc._id)
       return console.log('Delivery tồn tại.') unless self.deliveryStatus
       return console.log('Delivery đang được giao.') if self.deliveryStatus isnt Enum.created
       return console.log('Staff không tồn tại.') if !@Meteor.users.findOne(staffId)
 
-      deliveryLastIndex = self.deliveries.length - 1
+      deliveryLastIndex = self.delivery.length - 1
       deliveryReceiptUpdate = {$set:{}}
-      deliveryReceiptUpdate.$set['deliveries.'+deliveryLastIndex +'.shipper'] = staffId
+      deliveryReceiptUpdate.$set['delivery.'+deliveryLastIndex +'.shipper'] = staffId
       Schema.orders.update self._id, deliveryReceiptUpdate, callback
 
     doc.deliverySucceed = (staffId = Meteor.userId(), callback)->
-      deliveryLastIndex = self.deliveries.length - 1
+      deliveryLastIndex = self.delivery.length - 1
       deliveryReceiptUpdate = {$unset:{}}
-      deliveryReceiptUpdate.$unset['deliveries.'+deliveryLastIndex +'.shipper'] = ""
+      deliveryReceiptUpdate.$unset['delivery.'+deliveryLastIndex +'.shipper'] = ""
       Schema.orders.update self._id, deliveryReceiptUpdate, callback
 
   @insert: (buyer, seller, tabDisplay, description, callback) ->

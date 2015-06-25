@@ -14,8 +14,8 @@ Apps.Merchant.importInit.push (scope) ->
     navigateAction: (instance) -> Import.setSession(instance._id)
 
   scope.depositOptions =
-    reactiveSetter: (val) -> scope.currentImport.changeDepositCash(val)
-    reactiveValue: -> Session.get('currentImport')?.profiles.depositCash ? 0
+    reactiveSetter: (val) -> scope.currentImport.changeField('depositCash', val)
+    reactiveValue: -> Session.get('currentImport')?.depositCash ? 0
     reactiveMax: -> 99999999999
     reactiveMin: -> 0
     reactiveStep: -> 1000
@@ -23,9 +23,9 @@ Apps.Merchant.importInit.push (scope) ->
       forcestepdivisibility: 'none'
 
   scope.discountOptions =
-    reactiveSetter: (val) -> scope.currentImport.changeDiscountCash(val)
-    reactiveValue: -> Session.get('currentImport')?.profiles.discountCash ? 0
-    reactiveMax: -> Session.get('currentImport')?.profiles.totalPrice ? 0
+    reactiveSetter: (val) -> scope.currentImport.changeField('discountCash', val)
+    reactiveValue: -> Session.get('currentImport')?.discountCash ? 0
+    reactiveMax: -> Session.get('currentImport')?.totalPrice ? 0
     reactiveMin: -> 0
     reactiveStep: -> 1000
     others:
