@@ -1,0 +1,22 @@
+template(name="customerGroupOverviewSection")
+  .section.top.panel.panel-default
+    input.hidden.avatarFile(type="file")
+    .panel-heading
+      +avatarImageComponent(avatar=avatarUrl alias=firstName)
+      .caption
+        input.editable.dashed(name="customerGroupName" value="{{name}}" maxlength="50")
+        span.blured-color ({{customerCount}} khách hàng)
+
+      .sub1: input.editable.dashed(value="{{customerCount}} khách hàng")
+      .sub2: input.editable.dashed(name="customerGroupDescription" value="{{description}}" maxlength="100" size="50" placeholder="ghi chú")
+      .commands
+        if getSession 'customerGroupShowEditCommand'
+          .lemon.btn.rounded.lime.icon-ok-6.syncCustomerEdit
+        if allowDelete
+          .lemon.btn.rounded.red.icon-minus-4.customerDelete
+
+    if customerSelectedCount
+      .panel-footer.has-details
+        .editor-wrapper(style="width: 200px; padding-left: 5px;")
+          span.ilabel.optional chuyển nhóm
+          +iSelect(options=customerGroupSelects class="field")

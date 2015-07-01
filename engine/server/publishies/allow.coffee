@@ -87,12 +87,12 @@ Schema.customers.allow
   update: -> true
   remove: -> true
 
-#Schema.partners.allow
-#  insert: -> true
-#  update: -> true
-#  remove: -> true
+Schema.customerGroups.allow
+  insert: -> true
+  update: -> true
+  remove: -> true
 
-#Schema.distributors.allow
+#Schema.partners.allow
 #  insert: -> true
 #  update: -> true
 #  remove: -> true
@@ -102,12 +102,6 @@ Schema.providers.allow
   update: -> true
   remove: -> true
 
-#-----------------------------------------------------------------------------------------------------------------------
-#Schema.sales.allow
-#  insert: -> true
-#  update: -> true
-#  remove: -> true
-#
 Schema.orders.allow
   insert: -> true
   update: -> true

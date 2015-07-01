@@ -1,7 +1,8 @@
 simpleSchema.productGroups = new SimpleSchema
   name        : simpleSchema.StringUniqueIndex
+  nameSearch  : simpleSchema.searchSource('name')
   description : simpleSchema.OptionalString
-  productList: type: [String], defaultValue: []
+  productList : type: [String], defaultValue: []
   priceBook   : simpleSchema.OptionalString
 
   merchant    : simpleSchema.DefaultMerchant

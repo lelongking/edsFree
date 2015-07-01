@@ -1,0 +1,39 @@
+template(name="customerGroupDetailSection")
+  .section.panel.panel-default.printable-area
+    .panel-heading
+      .show-on-print
+        +merchantPrintingHeader
+        .printing-info
+          .document-name {{name}}
+
+      table.lemon-grid: tr
+        th(style="width:auto") TÊN KHÁCH HÀNG
+        th(style="width:150px; text-align:center") Ngày Giao Dịch Cuối
+        th.number(style="width:150px") Giá Trị Toa
+        th.number(style="width:200px") TỔNG TIỀN
+    .panel-body.debt-details
+      table.lemon-grid
+        +customerGroupHeader
+        each customerLists
+          tr.detail-row(class="{{selected}}")
+            td.command.icon-ok-6
+            td {{name}}
+            td 15/10/2015
+            td.number 250000
+            td.number 300000
+
+
+
+    .panel-footer
+      .right-float
+        span.s5 TỔNG NỢ:
+        span.s3 <b>{{formatNumber finalDebtBalance}}</b> VNĐ
+        //h3 Tổng tiền: {{formatNumber totalPurchases}} VNĐ
+
+template(name="customerGroupHeader")
+  tr
+    th(style="width:30px")
+    th(style="width:auto")
+    th(style="width:150px")
+    th(style="width:150px")
+    th(style="width:200px")

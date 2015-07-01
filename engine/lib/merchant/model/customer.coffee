@@ -1,12 +1,7 @@
-customerProfile = new SimpleSchema
 
-
-customerTransaction = new SimpleSchema
-
-
-#----------------------------------------------------------------------------------------------------------------------
 simpleSchema.customers = new SimpleSchema
   name        : simpleSchema.StringUniqueIndex
+  nameSearch  : simpleSchema.searchSource('name')
   description : simpleSchema.OptionalString
   group       : simpleSchema.OptionalString
 
@@ -40,10 +35,10 @@ simpleSchema.customers = new SimpleSchema
 
 Schema.add 'customers', "Customer", class Customer
   @transform: (doc) ->
-    doc.remove = -> Schema.customers.remove(@_id, callback) if @allowDelete
+    doc.remove = -> Schema.customers.remove(@_id) if @allowDelete
 
-  @insert: (name, description, callback) ->
-    Schema.customers.insert({name: name, description: description}, callback)
+  @insert: (name, description) ->
+    Schema.customers.insert({name: name, description: description})
 
   @splitName: (fullText) ->
     if fullText.indexOf("(") > 0

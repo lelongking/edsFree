@@ -1,9 +1,14 @@
 simpleSchema.priceBooks = new SimpleSchema
-  name          : {type: String ,unique  : true, index: 1}
-  description   : {type: String ,optional: true}
-  priceBookType : {type: Number ,defaultValue: 1}
-  productUnits  : {type: [String] ,optional: true}
-  owners        : {type: [String] ,optional: true}
+  name            : type: String ,unique  : true, index: 1
+  description     : type: String ,optional: true
+  priceBookType   : type: Number ,defaultValue: 1
+  productUnits    : type: [String] ,optional: true
+  owners          : type: [String] ,optional: true
+
+  childPriceBooks : type: [String] , optional: true
+  parentPriceBook : type: String   ,optional: true
+
+
 
   merchant    : simpleSchema.DefaultMerchant
   allowDelete : simpleSchema.DefaultBoolean()

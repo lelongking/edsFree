@@ -12,6 +12,7 @@ providerTransaction = new SimpleSchema
 
 simpleSchema.providers = new SimpleSchema
   name        : simpleSchema.StringUniqueIndex
+  nameSearch  : simpleSchema.searchSource('name')
   description : simpleSchema.OptionalString
 
   merchant    : simpleSchema.DefaultMerchant

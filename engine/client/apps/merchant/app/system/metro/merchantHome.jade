@@ -30,11 +30,11 @@ template(name="merchantHome")
                   span.caption.app-name.bottom.right sản phẩm
 
             .tile-group-2
-              .tile.peter-river
+              .tile.peter-river(data-app="customerGroup")
                 //.app-icon.icon-shareable
-                //.app-count 0
-                //.app-count-description
-                span.caption.app-name.bottom.right nhân sự
+                .app-count {{getPublishedCount 'customerGroups'}}
+                .app-count-description NHÓM
+                span.caption.app-name.bottom.right khách hàng
               .tile.peter-river
                 //.app-icon.icon-shareable
                 //.app-count 0

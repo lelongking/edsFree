@@ -37,7 +37,7 @@ Apps.Merchant.merchantOptionsInit.push (scope) ->
     display: "mẫu in"
     icon: "blue icon-clipboard"
     template: "merchantPrintDesigner"
-    data: scope.myMerchantProfile
+    data: undefined
   ]
 
   settings.apps = [

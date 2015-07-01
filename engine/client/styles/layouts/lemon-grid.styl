@@ -34,8 +34,12 @@ grid-left-border-width = 2px
 
   //Hover colors----------------------------------------------------
   tr
-    &.detail-row:hover
+    &.detail-row:hover, &.detail-row.selected:hover
       background-color #C9EAFF !important
+    &.detail-row td.command:hover
+      color #2e8bcc
+    &.detail-row.selected td.command:hover
+      color #CACACA
     &.paid-row.receive:hover
       background-color lighten(lime, 40) !important
     &.paid-row.paid:hover
@@ -65,6 +69,11 @@ grid-left-border-width = 2px
           margin-left 5px
   tr.detail-row
     background-color #F7F7F7
+    &.selected
+      background-color #ECECEC !important
+      td.command
+        color #2e8bcc
+        border-left: solid 2px #7ac5f9 !important
     &:nth-child(odd)
       background-color #FFFFFF
     &:not(:first-child)
@@ -72,6 +81,8 @@ grid-left-border-width = 2px
     td:first-child
       padding-left 5px
       border-left solid grid-left-border-width orange
+    td.command
+      color #D8D8D8
     &.errors .error-field
       color pumpkin !important
   tr.summary-row

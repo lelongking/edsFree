@@ -43,6 +43,11 @@ simpleSchema.OptionalNumber      = { type: Number  , optional: true }
 simpleSchema.OptionalNumberArray = { type: [Number], optional: true }
 
 #----------------- Default Value ------------------------>
+simpleSchema.searchSource = (field) ->
+  type: String
+  autoValue: ->
+    return Helpers.Searchify(@field(field).value) if @field(field).isSet
+
 simpleSchema.DefaultString = (value = '') ->
   type: String
   autoValue: ->

@@ -1,6 +1,7 @@
 Enums = Apps.Merchant.Enums
 simpleSchema.products = new SimpleSchema
   name        : {type: String   ,unique  : true, index: 1}
+  nameSearch  : simpleSchema.searchSource('name')
   description : {type: String   ,optional: true}
   image       : {type: String   ,optional: true}
   groups      : {type: [String] ,defaultValue: []}
@@ -22,7 +23,9 @@ simpleSchema.products = new SimpleSchema
   'units.$.priceBooks'               : type: [Object], optional: true
   'units.$.priceBooks.$.priceBook'   : type: String
   'units.$.priceBooks.$.salePrice'   : type: Number, optional: true
+  'units.$.priceBooks.$.discountSalePrice'   : type: Number, optional: true
   'units.$.priceBooks.$.importPrice' : type: Number, optional: true
+  'units.$.priceBooks.$.discountImportPrice' : type: Number, optional: true
 
   'units.$.quality'                       : type: Object, optional: true
   'units.$.quality.$.upperGapQuality'     : simpleSchema.DefaultNumber()

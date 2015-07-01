@@ -1,3 +1,4 @@
+Enums = Apps.Merchant.Enums
 simpleSchema.transactions = new SimpleSchema
   transactionName   : simpleSchema.DefaultString('ĐƠN HÀNG')
   transactionCode   : simpleSchema.OptionalString
