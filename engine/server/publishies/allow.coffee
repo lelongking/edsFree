@@ -75,6 +75,11 @@ Schema.products.allow
   update: -> true
   remove: -> true
 
+Schema.productGroups.allow
+  insert: -> true
+  update: -> true
+  remove: -> true
+
 Schema.priceBooks.allow
   insert: -> true
   update: -> true

@@ -1,0 +1,50 @@
+template(name="productGroup")
+  #content.modern.product-management
+    .dual-content
+      .dual-detail-wrapper
+        .dual-detail
+          .nano: .nano-content
+            +productGroupOverviewSection getSession 'currentProductGroup'
+            +productGroupDetailSection getSession 'currentProductGroup'
+      .dual-addon
+        .search-filter.icon-search-8
+          input(name='searchFilter' type="text" placeholder="tìm nhóm sản phẩm ...")
+          if getSession 'productGroupCreationMode'
+            .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createProductGroupBtn
+
+        .nano: .nano-content
+          .list
+            each productGroupLists
+              .doc-item
+                .avatar-wrapper: .avatar-image(class="missing"
+                style="background-image:url('')") A
+                .doc-info
+                  .title {{name}}
+                  .sub-title {{productCount}} khách hàng
+
+            //.doc-item
+            //  .avatar-wrapper: .avatar-image(class="missing"
+            //  style="background-image:url('')") A
+            //  .doc-info
+            //    .title Thuốc Trừ Sâu Anvlin
+            //    .sub-title 25,000 VNĐ
+            //  .time-stamp.icon-angle-right
+            //  .price-stamp.icon-ticket 200 Chai
+            //
+            //.doc-item
+            //  .avatar-wrapper: .avatar-image(class="missing"
+            //  style="background-image:url('')") H
+            //  .doc-info
+            //    .title Sữa Rửa Mặt Thế Hệ Mới HDC
+            //    .sub-title 3,250,000 VNĐ
+            //  .time-stamp.icon-angle-right
+            //  .price-stamp.icon-ticket 200 Thùng
+
+
+
+  //#footer.modern
+  //  .editor-row
+  //    .editor-wrapper.dual-spacer
+  //    .editor-wrapper.right
+  //      span.s5 TỔNG NỢ:
+  //      span.s3 <b>{{formatNumber finalDebtBalance}}</b> VNĐ

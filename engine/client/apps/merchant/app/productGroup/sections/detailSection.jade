@@ -1,4 +1,4 @@
-template(name="customerGroupDetailSection")
+template(name="productGroupDetailSection")
   .section.panel.panel-default.printable-area
     .panel-heading
       .show-on-print
@@ -8,22 +8,20 @@ template(name="customerGroupDetailSection")
 
       table.lemon-grid: tr
         th(style="width:20px")
-        th(style="width:auto") TÊN KHÁCH HÀNG
-        th(style="width:110px; text-align:center") GD GẦN NHẤT
-        th.number(style="width:110px") GIÁ TRỊ PHIẾU
-        th.number(style="width:140px") TỔNG TIỀN
+        th(style="width:auto") TÊN SẢN PHẨM
+        th(style="width:80px; text-align:center") HẾT HẠN
+        th(style="width:80px; text-align:center") CÒN LẠI
+        th.number(style="width:160px") HÀNG TỒN KHO
     .panel-body.debt-details
       table.lemon-grid
-        +customerGroupHeader
-        each customerLists
+        +productGroupHeader
+        each productLists
           tr.detail-row(class="{{selected}}")
             td.command.icon-ok-6
             td {{name}}
             td(style="text-align:center") 15/10/2015
-            td.number 6.250.000 VNĐ
-            td.number 415.300.000 VNĐ
-
-
+            td(style="text-align:center") 30 Ngày
+            td.number 100 Thùng - 100 Chai
 
     .panel-footer
       .right-float
@@ -31,10 +29,10 @@ template(name="customerGroupDetailSection")
         span.s3 <b>{{formatNumber finalDebtBalance}}</b> VNĐ
         //h3 Tổng tiền: {{formatNumber totalPurchases}} VNĐ
 
-template(name="customerGroupHeader")
+template(name="productGroupHeader")
   tr
     th(style="width:30px")
     th(style="width:auto")
-    th(style="width:90px")
-    th(style="width:120px")
-    th(style="width:150px")
+    th(style="width:80px")
+    th(style="width:80px")
+    th(style="width:170px")

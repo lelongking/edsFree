@@ -2,9 +2,9 @@ Enums = Apps.Merchant.Enums
 simpleSchema.products = new SimpleSchema
   name        : {type: String   ,unique  : true, index: 1}
   nameSearch  : simpleSchema.searchSource('name')
-  description : {type: String   ,optional: true}
-  image       : {type: String   ,optional: true}
-  groups      : {type: [String] ,defaultValue: []}
+  description : {type: String ,optional: true}
+  image       : {type: String ,optional: true}
+  group       : {type: String ,optional: true}
 
   merchant    : simpleSchema.DefaultMerchant
   allowDelete : simpleSchema.DefaultBoolean()

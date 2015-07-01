@@ -66,11 +66,10 @@ template(name="merchantHome")
 
 
 
-              .tile.blue
-                //.app-icon.icon-loop-outline
-                .app-count 0
-                .app-count-description phiếu trong ngày
-                span.caption.app-name.bottom.right nhóm s.phẩm
+              .tile.peter-river(data-app="productGroup")
+                .app-count {{getPublishedCount 'productGroups'}}
+                .app-count-description NHÓM
+                span.caption.app-name.bottom.right sản phẩm
               .tile.carrot(data-app="inventory")
                 //.app-icon.icon-edit
                 .app-count {{getPublishedCount 'inventories'}}
