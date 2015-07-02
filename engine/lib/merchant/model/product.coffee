@@ -20,12 +20,18 @@ simpleSchema.products = new SimpleSchema
   'units.$.allowDelete': simpleSchema.DefaultBoolean()
   'units.$.createdAt'  : simpleSchema.DefaultCreatedAt
 
-  'units.$.priceBooks'               : type: [Object], optional: true
-  'units.$.priceBooks.$.priceBook'   : type: String
-  'units.$.priceBooks.$.salePrice'   : type: Number, optional: true
-  'units.$.priceBooks.$.discountSalePrice'   : type: Number, optional: true
-  'units.$.priceBooks.$.importPrice' : type: Number, optional: true
-  'units.$.priceBooks.$.discountImportPrice' : type: Number, optional: true
+  'units.$.priceBooks'                      : type: [Object], optional: true
+  'units.$.priceBooks.$.priceBook'          : type: String
+
+  'units.$.priceBooks.$.basicSale'          : type: Number, optional: true
+  'units.$.priceBooks.$.salePrice'          : type: Number, optional: true
+  'units.$.priceBooks.$.discountSalePrice'  : type: Number, optional: true
+  'units.$.priceBooks.$.updateSalePriceAt'  : type: Date  , optional: true
+
+  'units.$.priceBooks.$.basicImport'         : type: Number, optional: true
+  'units.$.priceBooks.$.importPrice'        : type: Number, optional: true
+  'units.$.priceBooks.$.discountImportPrice': type: Number, optional: true
+  'units.$.priceBooks.$.updateImportPriceAt': type: Date  , optional: true
 
   'units.$.quality'                       : type: Object, optional: true
   'units.$.quality.$.upperGapQuality'     : simpleSchema.DefaultNumber()

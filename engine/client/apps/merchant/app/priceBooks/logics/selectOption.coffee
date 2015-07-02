@@ -1,21 +1,4 @@
-formatDefaultSearch  = (item) -> "#{item.display}" if item
 findPriceBookTypes   = (priceBookTypeId)-> _.findWhere(Apps.Merchant.PriceBookTypes, {_id: priceBookTypeId})
-Apps.Merchant.priceBookInit.push (scope) ->
-  scope.priceBookTypeSelectOptions =
-    query: (query) -> query.callback
-      results: Apps.Merchant.PriceBookTypes
-      text: '_id'
-    initSelection: (element, callback) -> callback findPriceBookTypes(Session.get('currentPriceBook').priceBookType)
-    formatSelection: formatDefaultSearch
-    formatResult: formatDefaultSearch
-    placeholder: 'LOẠI BẢN GIÁ THEO'
-    minimumResultsForSearch: -1
-    changeAction: (e) ->
-      scope.currentPriceBook.changePriceBookType(e.added._id)
-      PriceBookSearch.search PriceBookSearch.getCurrentQuery()
-      PriceBookSearch.cleanHistory()
-    reactiveValueGetter: -> findPriceBookTypes(Session.get('currentPriceBook').priceBookType)
-
 priceBookOwnerSearch  = (query) ->
   if Session.get("currentPriceBook").priceBookType is 0
     [{_id: 0, name: 'TOÀN BỘ'}]
@@ -62,22 +45,34 @@ Apps.Merchant.priceBookInit.push (scope) ->
         else Session.get('currentPriceBook').owners[0]
 
 
-#    query: (query) -> query.callback
-#      results: Schema.customers.find().fetch()
-#    initSelection: (element, callback) -> callback Session.get('currentRoleSelection')
-#    changeAction: (e) ->
-#      currentRoles = Session.get('currentRoleSelection')
-#      currentRoles = currentRoles ? []
-#
-#      currentRoles.push e.added if e.added
-#      if e.removed
-#        removedItem = _.findWhere(currentRoles, {_id: e.removed._id})
-#        currentRoles.splice currentRoles.indexOf(removedItem), 1
-#
-#      Session.set('currentRoleSelection', currentRoles)
-#    reactiveValueGetter: -> Session.get('currentRoleSelection')
-#    formatSelection: formatRoleSelect
-#    formatResult: formatRoleSelect
-#    others:
-#      multiple: true
-#      maximumSelectionSize: 3
+priceBookSearch  = (query) ->
+  lists = []
+  if Session.get("currentPriceBook").priceBookType is 0
+    customerGroups = Schema.customerGroups.find({$or: [{name: Helpers.BuildRegExp(query.term), isBase: false}]}).fetch()
+    customers = Schema.customers.find({$or: [{name: Helpers.BuildRegExp(query.term)}]}).fetch()
+    lists = _.union(customerGroups, customers)
+
+  else if Session.get("currentPriceBook").priceBookType is 2
+    if customerGroup = Schema.customerGroups.findOne(Session.get("currentPriceBook").owner)
+      lists = Schema.customers.find({$or: [{name: Helpers.BuildRegExp(query.term), _id:{$in:customerGroup.customers}}]}).fetch()
+
+  lists
+
+
+formatPriceBookSearch = (item) ->
+  if item
+    return "#{item.name}" if item.model is 'customers'
+    return "Nhóm - #{item.name}" if item.model is 'customerGroups'
+
+Apps.Merchant.priceBookInit.push (scope) ->
+  scope.priceBookSelectOptions =
+    query: (query) -> query.callback
+      results: priceBookSearch(query)
+      text: 'name'
+    initSelection: (element, callback) -> callback 'skyReset'
+    formatSelection: formatPriceBookSearch
+    formatResult: formatPriceBookSearch
+    id: '_id'
+    placeholder: 'CHỌN NHÓM HOẶC KHÁCH HÀNG'
+    changeAction: (e) -> scope.currentPriceBook.changePriceProductTo(e.added._id, e.added.model)
+    reactiveValueGetter: -> 'skyReset'

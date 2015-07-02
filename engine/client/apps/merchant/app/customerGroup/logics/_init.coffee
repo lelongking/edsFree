@@ -6,11 +6,11 @@ Apps.Merchant.customerGroupReactive = []
 Apps.Merchant.customerGroupReactive.push (scope) ->
   customerGroup = Schema.customerGroups.findOne(Session.get('mySession').currentCustomerGroup)
   customerGroup = Schema.customerGroups.findOne({isBase: true, merchant: Merchant.getId()}) unless customerGroup
-  customerGroup.customerCount = if customerGroup.customers then customerGroup.customers.length else 0
-
-  scope.currentCustomerGroup = customerGroup
-  Session.set "currentCustomerGroup", scope.currentCustomerGroup
-  Session.set "customerSelectLists", Session.get('mySession').customerSelected?[Session.get('currentCustomerGroup')._id] ? []
+  if customerGroup
+    customerGroup.customerCount = if customerGroup.customers then customerGroup.customers.length else 0
+    scope.currentCustomerGroup = customerGroup
+    Session.set "currentCustomerGroup", scope.currentCustomerGroup
+    Session.set "customerSelectLists", Session.get('mySession').customerSelected?[Session.get('currentCustomerGroup')._id] ? []
 
 
 

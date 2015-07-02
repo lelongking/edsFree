@@ -1,0 +1,42 @@
+template(name="priceBookDetailProvider")
+  .section.panel.panel-default.printable-area
+    .panel-heading
+      .show-on-print
+        +merchantPrintingHeader
+        .printing-info
+          .document-name {{name}}
+
+      table.lemon-grid: tr
+        th(style="width:auto") TÊN SẢN PHẨM
+        th.number(style="width:100px") ĐƠN VỊ
+        th.date(style="width:110px") MÃ VẠCH
+        th.number(style="width:80px") NGÀY LẬP
+        th.number(style="width:120px") GIÁ NHẬP
+        th.number(style="width:120px") GIÁ BÁN
+
+    .panel-body.debt-details
+      table.lemon-grid
+        tr
+          th(style="width:30px")
+          th(style="width:auto")
+          th(style="width:70px")
+          th(style="width:90px")
+          th(style="width:90px")
+          th(style="width:120px")
+          th(style="width:130px")
+
+        each allProductUnits
+          tr.detail-row(class="{{productSelected}}")
+            td.command.icon-ok-6
+            td.first-column {{productName}}
+            td.date {{productUnitName}}
+            td.number {{barcode}}
+            td.date {{momentFormat createdAt "DD/MM/YYYY"}}
+            td.number {{formatNumber importPrice}} VNĐ
+            td.number {{formatNumber salePrice}} VNĐ
+
+    .panel-footer
+      .right-float
+        span.s5 TỔNG NỢ:
+        span.s3 <b>{{formatNumber finalDebtBalance}}</b> VNĐ
+        //h3 Tổng tiền: {{formatNumber totalPurchases}} VNĐ

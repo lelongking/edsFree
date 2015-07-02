@@ -9,6 +9,7 @@ extendObject = (source, destination) ->
 generateSchema = (name, defination = {}) ->
   Schema[name] = new Meteor.Collection name,
     transform: (doc) ->
+      doc.model = name
       defination.transform?(doc)
       doc
 

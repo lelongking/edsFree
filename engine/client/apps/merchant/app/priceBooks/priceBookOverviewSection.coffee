@@ -5,9 +5,8 @@
 scope = logics.priceBook
 
 lemon.defineHyper Template.priceBookOverviewSection,
-  priceBookTypeSelects : -> scope.priceBookTypeSelectOptions
-  priceBookOwnerSelects: -> scope.priceBookOwnerSelectOptions
-
+  priceBookSelectOptions : -> scope.priceBookSelectOptions
+  priceProductSelectedCount: -> Session.get("priceProductLists")?.length > 0
   name: ->
     Meteor.setTimeout ->
       scope.overviewTemplateInstance.ui.$priceBookName.change()

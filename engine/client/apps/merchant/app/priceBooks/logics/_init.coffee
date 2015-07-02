@@ -3,8 +3,12 @@ Apps.Merchant.priceBookInit = []
 Apps.Merchant.priceBookReactive = []
 
 Apps.Merchant.priceBookReactive.push (scope) ->
-  scope.currentPriceBook = Schema.priceBooks.findOne(Session.get('mySession').currentPriceBook)
-  Session.set "currentPriceBook", scope.currentPriceBook
+  priceBook = Schema.priceBooks.findOne(Session.get('mySession').currentPriceBook)
+  priceBook = Schema.priceBooks.findOne({isBase: true, merchant: Merchant.getId()}) unless priceBook
+  if priceBook
+    scope.currentPriceBook = priceBook
+    Session.set "currentPriceBook", scope.currentPriceBook
+    Session.set "priceProductLists", Session.get('mySession').productUnitSelected?[Session.get('currentPriceBook')._id] ? []
 
 Apps.Merchant.priceBookInit.push (scope) ->
   scope.getPriceBookPrevious = (search, current) ->

@@ -37,8 +37,9 @@ userSession = new SimpleSchema
   currentCustomerReturn : simpleSchema.OptionalString
   currentProviderReturn : simpleSchema.OptionalString
 
-  customerSelected: type: Object, blackbox: true, optional: true
-  productSelected: type: Object, blackbox: true, optional: true
+  customerSelected      : type: Object, blackbox: true, optional: true
+  productSelected       : type: Object, blackbox: true, optional: true
+  productUnitSelected   : type: Object, blackbox: true, optional: true
 
 Meteor.users.attachSchema new SimpleSchema
   username:

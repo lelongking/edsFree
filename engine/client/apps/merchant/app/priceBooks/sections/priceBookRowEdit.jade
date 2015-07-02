@@ -1,5 +1,6 @@
 template(name="priceBookRowEdit")
   tr.editors.dual-border
+    td.command.icon-ok-6
     td.first-column {{productName}}
     td(align="center") {{productUnitName}}
     td.number {{barcode}}
@@ -18,18 +19,39 @@ template(name="priceBookRowEdit")
 
 template(name="priceBookRowDisplay")
   tr.detail-row.click-enable
+    td.command.icon-ok-6
     td.first-column {{productName}}
     td(align="center") {{productUnitName}}
     td.number {{barcode}}
-    td(align="center") {{momentFormat createdAt "DD/MM/YYYY"}}
+    td.number {{momentFormat createdAt "DD/MM/YYYY"}}
 
     if isPriceBookType 'default'
-      td.number {{formatNumber importPrice}}
-      td.number {{formatNumber salePrice}}
+      td.number {{formatNumber importPrice}} VNĐ
+      td.number {{formatNumber salePrice}} VNĐ
     if isPriceBookType 'customer'
-      td.number {{formatNumber salePriceBasic}}
-      td.number {{formatNumber salePrice}}
+      td.number {{formatNumber salePriceBasic}} VNĐ
+      td.number {{formatNumber salePrice}} VNĐ
     if isPriceBookType 'provider'
-      td.number {{formatNumber importPriceBasic}}
-      td.number {{formatNumber importPrice}}
+      td.number {{formatNumber importPriceBasic}} VNĐ
+      td.number {{formatNumber importPrice}} VNĐ
 
+
+template(name="priceBookDefaultRowEdit")
+  tr.editors.dual-border
+    td.command
+    td.first-column {{productName}}
+    td.date {{productUnitName}}
+    td.number {{barcode}}
+    td.date {{momentFormat createdAt "DD/MM/YYYY"}}
+    td.number: input(name="editImportQuality" min="0")
+    td.number: input(name="editSaleQuality" min="0")
+
+template(name="priceBookCustomerRowEdit")
+  tr.editors.dual-border
+    if isGroup
+      td.command
+    td.first-column {{productName}}
+    td.date {{productUnitName}}
+    td.number {{formatNumber salePrice}} VNĐ
+    td.number {{formatNumber discountSalePrice}} VNĐ
+    td.number: input(name="editSaleQuality" min="0")
