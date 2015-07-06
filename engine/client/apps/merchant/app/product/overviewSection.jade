@@ -4,23 +4,17 @@ template(name="productManagementOverviewSection")
     .panel-heading
       +avatarImageComponent(avatar=avatarUrl alias=name)
       .caption
-        input.editable.dashed(name="productName" value="{{name}}" maxlength="50")
+        input.editable.dashed(name="productName" value="{{name}}" maxlength="50" placeholder="tên của sản phẩm"
+        data-toggle="tooltip" data-container="body" data-placement="right" title="tên của sản phẩm")
         if basicUnit
           span.blured-color ({{basicUnit}})
           if basicDetailModeEnabled
             .lemon.rounded.tiny.btn.lime.add-basicDetail: span.icon-plus-6
-      .sub1: input.editable.dashed(name="productPrice" value="{{price}}" maxlength="20" placeholder="thông tin sản phẩm"
-      data-toggle="tooltip" data-container="body" data-placement="right" title="thông tin sản phẩm")
+      .sub1: input.editable.dashed(name="productPrice" value="{{formatNumber currentProduct.getPrice}} VNĐ" maxlength="20" placeholder="giá bán"
+      data-toggle="tooltip" data-container="body" data-placement="right" title="giá bán")
 
-      //.sub2: input.editable.dashed(name="importPrice" value="{{importPrice}}" maxlength="20" style="width: 125px" placeholder="giá nhập"
-      //data-toggle="tooltip" data-container="body" data-placement="right" title="thông tin của sản phẩm")
-
-      //if buildInProduct
-      //  .sub3: span(style="position:absolute; left: 80px; top: 80px"
-      //  placeholder="mã sản phẩm" data-toggle="tooltip" data-container="body" data-placement="right" title="mã sản phẩm") {{productCode}}
-      //else
-      //  .sub3: input.editable(style="position:absolute; left: 75px; top: 80px" name="productCode" value="{{productCode}}" maxlength="20" size="20"
-      //  placeholder="mã sản phẩm" data-toggle="tooltip" data-container="body" data-placement="right" title="mã sản phẩm")
+      .sub2: input.editable.dashed(name="importPrice" value="{{currentProduct.unitName}}" maxlength="20" style="width: 125px" placeholder="đơn vị tính"
+      data-toggle="tooltip" data-container="body" data-placement="right" title="đơn vị tính nhỏ nhất")
 
       .commands
         //if showCreateUnitMode
@@ -30,34 +24,129 @@ template(name="productManagementOverviewSection")
         if allowDelete
           .lemon.btn.rounded.red.icon-minus-4.productDelete
 
-    .panel-body
-      table.lemon-grid
-        tr.table-header
-          th.has-commands(style="width:150px")
-            span MÃ VẠCH
-            .commands: .lemon.rounded.tiny.btn.lime.addProductUnit: span.icon-plus-6
-          th(style="width:auto; min-width: 110px") ĐƠN VỊ TÍNH
-          th(style="width:100px") QUI ĐỔI
-          th.number(style="width:150px") GIÁ NHẬP
-          th.number(style="width:150px") GIÁ BÁN
+    .panel-footer
+      .region
+        .title.productUnit
+          span.s5.note.icon-angle-right <b>ĐƠN VỊ TÍNH</b>
 
-        each productUnits
-          if unitEditingMode
-            +productManagementUnitEditor unitEditingData
-          else
-            tr.detail-row.click-enable
-              td.unitEditBarcode.has-commands
-                span {{barcode}}
-                .commands
-                  if allowDelete
-                    .lemon.rounded.tiny.btn.blue.deleteProductUnit: span.icon-minus-4
-              td.unitEditName {{name}}
-              if isBase
-                td.unitEditConversion Mặc Định
-              else
-                td.unitEditConversion {{conversion}} {{currentProduct.unitName}}
-              td.unitEditImportPrice.number {{formatNumber importPrice}} VNĐ
-              td.unitEditSalePrice.number {{formatNumber salePrice}} VNĐ
-    //
-    //.panel-footer
-    //  span.icon-angle-right
+        if getSession 'productManagementIsShowProductUnit'
+          +overviewProductUnit this
+
+
+
+    .panel-footer
+      .region
+        .title.productInventory
+          span.s5.note.icon-angle-right <b>TỒN KHO ĐẦU KỲ</b>
+
+        if getSession 'productManagementIsShowProductInventory'
+          .detail-wrapper
+            span.icon-ok-6
+            span Bán hàng trước, nhập tồn kho sau.
+
+          .detail-wrapper
+            span.icon-ok-6
+            span Nhập tồn kho ngay lúc này:
+
+          .detail-wrapper
+            each currentProduct.units
+              form.form-inline: .form-group: .input-group
+                .input-group-addon Tồn kho
+                input.date(type="text" class="form-control" id="exampleInputAmount" placeholder="Số lượng")
+                .input-group-addon(style="width: 80px") {{name}}
+                input.date(type="text" class="form-control" id="exampleInputAmount" placeholder="Ngày hết hạn")
+
+      //.right-float
+      //  span.s5.note <b>TỔNG TỒN</b>/ TỔNG NHẬP:
+      //  span.s3 <b>{{formatNumber inStockQuality}}</b>
+      //  span.s5 /{{formatNumber totalQuality}} <b>{{basicUnit}}</b>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      //.region.unitManagement
+      //  .title: span.icon-right-open-big Thêm đơn vị tính
+      //  .description-wrapper
+      //    |Sản phẩm này có đơn vị tính nào khác không ?
+      //    label.radio-inline: input(checked type="radio" name="unitOption" style=" width: 20px; height: 15px") Có
+      //    label.radio-inline: input(type="radio" name="unitOption" style=" width: 20px; height: 15px") Không
+      //  .command-wrapper
+          //|Đơn vị nhỏ nhất của {{name}} là {{currentProduct.unitName}} :
+          //table
+          //  tr
+          //    th(style="width:20px")
+          //    th(style="width:50px")
+          //    th(style="width:20px")
+          //    th(style="width:50px")
+          //    th(style="width:80px")
+          //    th(style="width:80px")
+          //    th(style="width:80px")
+          //
+          //  tr.detail-row
+          //    td.date 1
+          //    td.date
+          //      input.error-field(style="width:100%" name="productPrice" value="Thùng" maxlength="20" placeholder="tên đơn vị tính"
+          //      data-toggle="tooltip" data-container="body" data-placement="bottom" title="tên đơn vị tính")
+          //    td.date =
+          //    td.date
+          //      input.error-field(style="width:100%" name="productPrice" value="1" maxlength="20" placeholder="quy đổi"
+          //      data-toggle="tooltip" data-container="body" data-placement="bottom" title="quy đổi")
+          //    td(style="position: relative;")
+          //      span {{currentProduct.unitName}}
+          //      .commands(style="position: absolute; top: 0px; right: 10px")
+          //        .lemon.rounded.tiny.btn.blue
+          //          span(class="icon-plus-6" data-placement="right" data-toggle="tooltip" data-container="body"
+          //          placeholder="thêm đơn vị tính mới" title="thêm mới vị tính mới" )
+          //    td.number 25000 VND
+          //    td.number 0 VND
+
+
+
+      //
+      //
+      //
+      //.region.inventoryInitial
+      //  .title: span.icon-right-open-big Tồn kho đầu kỳ
+      //  .description-wrapper
+      //    .radio: label: input(checked type="radio" name="inventoryOption" style=" width: 20px; height: 15px")
+      //      |Bán hàng trước, kiểm kho và nhập tồn đẩu kỷ sau.
+      //    .radio: label
+      //      input(type="radio" name="inventoryOption" style=" width: 20px; height: 15px")
+      //        |Nhập số lượng tồn kho đầu kỳ ngay lúc này.
+      //  .command-wrapper
+      //    table
+      //      tr
+      //        th(style="width: 150px")
+      //        th(style="width: 50px")
+      //        th(style="width: 20px")
+      //
+      //      each units
+      //        tr.detail-row
+      //          td.date: +iSpinEdit(options=depositOptions)
+      //          td.date
+      //            input.error-field(style="width:100%" name="productPrice" value="0" maxlength="20" placeholder="tên đơn vị tính"
+      //              data-toggle="tooltip" data-container="body" data-placement="bottom" title="tên đơn vị tính")
+      //          td.date {{currentProduct.unitName}}
+

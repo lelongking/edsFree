@@ -48,9 +48,10 @@ Apps.Merchant.priceBookInit.push (scope) ->
 priceBookSearch  = (query) ->
   lists = []
   if Session.get("currentPriceBook").priceBookType is 0
-    customerGroups = Schema.customerGroups.find({$or: [{name: Helpers.BuildRegExp(query.term), isBase: false}]}).fetch()
-    customers = Schema.customers.find({$or: [{name: Helpers.BuildRegExp(query.term)}]}).fetch()
-    lists = _.union(customerGroups, customers)
+    customerGroups = Schema.customerGroups.find({$or: [{name: Helpers.BuildRegExp(query.term), isBase: false, merchant: Merchant.getId()}]}).fetch()
+    customers = Schema.customers.find({$or: [{name: Helpers.BuildRegExp(query.term), merchant: Merchant.getId()}]}).fetch()
+    providers = Schema.providers.find({$or: [{name: Helpers.BuildRegExp(query.term), merchant: Merchant.getId()}]}).fetch()
+    lists = _.union(customerGroups, customers, providers)
 
   else if Session.get("currentPriceBook").priceBookType is 2
     if customerGroup = Schema.customerGroups.findOne(Session.get("currentPriceBook").owner)

@@ -158,5 +158,13 @@ Apps.Merchant.Enums.TransactionStatuses = [
 ]
 
 
-
-
+#----------Product---------->
+Apps.Merchant.Enums.ProductStatuses = [
+  _id    : 0
+  value  : 'initialize'
+  display: 'moi tao'
+,
+  _id    : 1
+  value  : 'confirmed'
+  display: 'da kiem tra'
+]

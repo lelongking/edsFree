@@ -1,0 +1,67 @@
+template(name="overviewProductUnit")
+  .detail-wrapper
+    span.icon-ok-6(class="{{allowCreateUnit}}")
+    span Thêm đơn vị tính cho {{name}}
+
+    each currentProduct.units
+      unless isBase
+        +productUnitDetail this
+    if isNotLimitUnit
+      +productUnitCreateUnit this
+
+
+  .detail-wrapper
+    .productUnit-table-group.row
+      each productUnitTables
+        .col.col-sm-4.col-md-3.col-lg-2
+          .package-block
+            .title {{name}}
+            .features
+              li.icon-group
+                if isProduct
+                  span {{barcode}}
+                else
+                  span {{barcode}}
+              li.icon-location-1
+                if isProduct
+                  span {{importPrice}}
+                else
+                  span {{formatNumber importPrice}} VNĐ
+              li.icon-home-4
+                if isProduct
+                  span {{saleQuality}}
+                else
+                  span {{formatNumber saleQuality}} VNĐ
+
+template(name="productUnitDetail")
+  form.form-inline: .form-group
+    .input-group
+      input.form-control.editable.dashed(data-toggle="tooltip" data-container="body" data-placement="right"
+      placeholder="tên đơn vị tính" title="Tên đơn vị tính" value="{{name}}" name="productUnitName")
+
+      .input-group-addon(data-toggle="tooltip" data-container="body" data-placement="right" title="Quy cách") =
+
+      input.form-control.editable.dashed(data-toggle="tooltip" data-container="body" data-placement="right"
+      placeholder="tên đơn vị tính" title="Quy cánh" value="{{conversion}}" name="productUnitConversion")
+
+      .input-group-addon {{currentProduct.unitName}}
+
+    .lemon.rounded.btn.blue.icon-minus-4.deleteProductUnit
+      span(data-toggle="tooltip" data-container="body" data-placement="right" title="Xóa đơn vị tính mới tạo")
+
+
+template(name="productUnitCreateUnit")
+  form.form-inline: .form-group
+    .input-group
+      input.form-control.editable.dashed(data-toggle="tooltip" data-container="body" data-placement="right"
+      placeholder="tên đơn vị tính mới" title="Tên đơn vị tính mới" name="unitName")
+
+      .input-group-addon(data-toggle="tooltip" data-container="body" data-placement="right" title="Quy cách") =
+
+      input.form-control.editable.dashed(data-toggle="tooltip" data-container="body" data-placement="right"
+      placeholder="số lượng quy đổi" title="Quy đổi" name="unitConversion")
+
+      .input-group-addon {{currentProduct.unitName}}
+
+    .lemon.rounded.btn.blue.icon-plus-6.addProductUnit
+      span(data-toggle="tooltip" data-container="body" data-placement="right" title="Thêm mới vị tính mới")

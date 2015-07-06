@@ -6,8 +6,19 @@ lemon.defineHyper Template.productManagementOverviewSection,
   unitEditingMode: -> Session.get("productManagementUnitEditingRow")?._id is @_id
   unitEditingData: -> Session.get("productManagementUnitEditingRow")
 
+
+
+  depositOptions:
+    reactiveSetter: (val) ->
+    reactiveValue: -> Session.get('test') ? 0
+    reactiveMax: -> 1000
+    reactiveMin: -> 0
+    reactiveStep: -> 10
+    others:
+      forcestepdivisibility: 'none'
+
   productUnits: ->
-    console.log @units
+#    console.log @units
     for productUnit in @units
       for item in productUnit.priceBooks
         if item.priceBook is Session.get('priceBookBasic')._id
@@ -37,6 +48,8 @@ lemon.defineHyper Template.productManagementOverviewSection,
 #    @importPrice
 #
   rendered: ->
+    Session.set('productManagementIsShowProductUnit', false)
+    Session.set('productManagementIsShowProductInventory', false)
     scope.overviewTemplateInstance = @
     @ui.$productName.autosizeInput({space: 10})
 #    @ui.$productPrice.inputmask("numeric",   {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: " VNĐ", integerDigits:11, rightAlign:false})
@@ -51,26 +64,37 @@ lemon.defineHyper Template.productManagementOverviewSection,
           Schema.products.update(Session.get('productManagementCurrentProduct')._id, {$set: {image: fileObj._id}})
           AvatarImages.findOne(Session.get('productManagementCurrentProduct').image)?.remove()
 
-    "click .addProductUnit": -> scope.currentProduct.unitCreate()
-    "click .deleteProductUnit": -> scope.currentProduct.unitRemove(@_id)
-    "click .productDelete": -> scope.currentProduct.remove()
 
-    "click .unitEditBarcode": ->
-      unitEditing = @; unitEditing.select = "Barcode"
-      Session.set("productManagementUnitEditingRow", unitEditing)
+    "click .title.productUnit": (event, template)->
+      Session.set('productManagementIsShowProductUnit', !Session.get('productManagementIsShowProductUnit'))
 
-    "click .unitEditName": ->
-      unitEditing = @; unitEditing.select = "Name"
-      Session.set("productManagementUnitEditingRow", unitEditing)
+    "click .title.productInventory": (event, template)->
+      Session.set('productManagementIsShowProductInventory', !Session.get('productManagementIsShowProductInventory'))
 
-    "click .unitEditConversion": ->
-      unitEditing = @; unitEditing.select = if @isBase then 'SalePrice' else "Conversion"
-      Session.set("productManagementUnitEditingRow", unitEditing)
 
-    "click .unitEditImportPrice": ->
-      unitEditing = @; unitEditing.select = "ImportPrice"
-      Session.set("productManagementUnitEditingRow", unitEditing)
 
-    "click .unitEditSalePrice": ->
-      unitEditing = @; unitEditing.select = "SalePrice"
-      Session.set("productManagementUnitEditingRow", unitEditing)
+
+
+#    "click .addProductUnit": -> scope.currentProduct.unitCreate()
+#    "click .deleteProductUnit": -> scope.currentProduct.unitRemove(@_id)
+#    "click .productDelete": -> scope.currentProduct.remove()
+#
+#    "click .unitEditBarcode": ->
+#      unitEditing = @; unitEditing.select = "Barcode"
+#      Session.set("productManagementUnitEditingRow", unitEditing)
+#
+#    "click .unitEditName": ->
+#      unitEditing = @; unitEditing.select = "Name"
+#      Session.set("productManagementUnitEditingRow", unitEditing)
+#
+#    "click .unitEditConversion": ->
+#      unitEditing = @; unitEditing.select = if @isBase then 'SalePrice' else "Conversion"
+#      Session.set("productManagementUnitEditingRow", unitEditing)
+#
+#    "click .unitEditImportPrice": ->
+#      unitEditing = @; unitEditing.select = "ImportPrice"
+#      Session.set("productManagementUnitEditingRow", unitEditing)
+#
+#    "click .unitEditSalePrice": ->
+#      unitEditing = @; unitEditing.select = "SalePrice"
+#      Session.set("productManagementUnitEditingRow", unitEditing)

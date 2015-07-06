@@ -1,11 +1,14 @@
 Enums = Apps.Merchant.Enums
 simpleSchema.products = new SimpleSchema
-  name        : {type: String   ,unique  : true, index: 1}
-  nameSearch  : simpleSchema.searchSource('name')
-  description : {type: String ,optional: true}
-  image       : {type: String ,optional: true}
-  group       : {type: String ,optional: true}
+  name            : {type: String   ,unique  : true, index: 1}
+  nameSearch      : simpleSchema.searchSource('name')
+  description     : {type: String ,optional: true}
+  image           : {type: String ,optional: true}
+  group           : {type: String ,optional: true}
+  inventoryInitial: simpleSchema.DefaultBoolean(false)
 
+
+  status      : {type: Number , defaultValue: Enums.getValue('ProductStatuses', 'initialize')}
   merchant    : simpleSchema.DefaultMerchant
   allowDelete : simpleSchema.DefaultBoolean()
   creator     : simpleSchema.DefaultCreator
@@ -14,8 +17,8 @@ simpleSchema.products = new SimpleSchema
   units                : type: [Object], optional: true
   'units.$._id'        : type: String
   'units.$.barcode'    : simpleSchema.Barcode
-  'units.$.name'       : simpleSchema.OptionalString
-  'units.$.conversion' : simpleSchema.DefaultNumber(1)
+  'units.$.name'       : type: String
+  'units.$.conversion' : type: Number
   'units.$.isBase'     : simpleSchema.DefaultBoolean(false)
   'units.$.allowDelete': simpleSchema.DefaultBoolean()
   'units.$.createdAt'  : simpleSchema.DefaultCreatedAt
@@ -65,38 +68,74 @@ findPrice = (priceBookId, priceBookList, priceType = 'sale') ->
 
 Schema.add 'products', "Product", class Product
   @transform: (doc) ->
-    doc.unitName = doc.units[0].name if doc.units.length > 0
+    doc.unitName = -> doc.units[0].name if doc.units.length > 0
 
     doc.getPrice = (productUnitId, ownerId, priceType = 'sale') ->
-      priceFound = undefined; merchantId = Session.get('merchant')._id
-      for unit in @units
-        if unit._id is productUnitId
-          if priceType is 'sale'
-            buyer = Schema.customers.findOne({_id: ownerId, merchant: merchantId})
-            if buyer
-              priceBookOfBuyer = PriceBook.findOneByUnitAndBuyer(buyer._id, merchantId)
-              priceBookOfBuyerGroup = PriceBook.findOneByUnitAndBuyerGroup(buyer.group, merchantId)
-              priceFound = findPrice(priceBookOfBuyer._id, unit.priceBooks, priceType) if priceBookOfBuyer
-              priceFound = findPrice(priceBookOfBuyerGroup._id, unit.priceBooks, priceType) if priceBookOfBuyerGroup and priceFound is undefined
-            priceFound = findPrice(Session.get('priceBookBasic')._id, unit.priceBooks, priceType) if priceFound is undefined
+      priceFound = undefined; merchantId = Merchant.getId()
+      if productUnitId is undefined and ownerId is undefined
+        for unit in @units
+          if unit.isBase
+            priceFound = 0
+            if priceBookBasic = Schema.priceBooks.findOne({priceBookType: 0, merchant: merchantId})
+              priceFound = findPrice(priceBookBasic._id, unit.priceBooks, priceType)
+      else
+        for unit in @units
+          if unit._id is productUnitId
+            if priceType is 'sale'
+              buyer = Schema.customers.findOne({_id: ownerId, merchant: merchantId})
+              if buyer
+                priceBookOfBuyer = PriceBook.findOneByUnitAndBuyer(buyer._id, merchantId)
+                priceBookOfBuyerGroup = PriceBook.findOneByUnitAndBuyerGroup(buyer.group, merchantId)
+                priceFound = findPrice(priceBookOfBuyer._id, unit.priceBooks, priceType) if priceBookOfBuyer
+                priceFound = findPrice(priceBookOfBuyerGroup._id, unit.priceBooks, priceType) if priceBookOfBuyerGroup and priceFound is undefined
+              priceFound = findPrice(Session.get('priceBookBasic')._id, unit.priceBooks, priceType) if priceFound is undefined
 
-          else if priceType is 'import'
-            provider = Schema.providers.findOne({_id: ownerId, merchant: Session.get('merchant')._id})
-            if provider
-              priceBookOfProvider = PriceBook.findOneByUnitAndProvider(provider._id, merchantId)
-              priceBookOfProviderGroup = PriceBook.findOneByUnitAndProviderGroup(provider.group, merchantId)
-              priceFound = findPrice(priceBookOfProvider._id, unit.priceBooks, priceType) if priceBookOfProvider
-              priceFound = findPrice(priceBookOfProviderGroup._id, unit.priceBooks, priceType) if priceBookOfProviderGroup and priceFound is undefined
-            priceFound = findPrice(Session.get('priceBookBasic')._id, unit.priceBooks, priceType) if priceFound is undefined
-          return priceFound
+            else if priceType is 'import'
+              provider = Schema.providers.findOne({_id: ownerId, merchant: Session.get('merchant')._id})
+              if provider
+                priceBookOfProvider = PriceBook.findOneByUnitAndProvider(provider._id, merchantId)
+                priceBookOfProviderGroup = PriceBook.findOneByUnitAndProviderGroup(provider.group, merchantId)
+                priceFound = findPrice(priceBookOfProvider._id, unit.priceBooks, priceType) if priceBookOfProvider
+                priceFound = findPrice(priceBookOfProviderGroup._id, unit.priceBooks, priceType) if priceBookOfProviderGroup and priceFound is undefined
+              priceFound = findPrice(Session.get('priceBookBasic')._id, unit.priceBooks, priceType) if priceFound is undefined
 
-    doc.unitCreate = (name = 'New')->
-      priceBookBasic = Schema.priceBooks.findOne({priceBookType: 0, merchant: Session.get('myProfile').merchant})
-      priceBook = [{priceBook: priceBookBasic._id, salePrice: 0, importPrice: 0}]
+      return priceFound
 
-      productUnitId = Random.id()
-      if Schema.products.update(@_id, {$push: { units: {_id: productUnitId, priceBooks: priceBook , quality: {}} }})
-        PriceBook.addProductUnit(productUnitId)
+    doc.unitCreate = (name, conversion = 1)->
+      unitNameIsExisted = false; conversion = Number(conversion)
+      (unitNameIsExisted = true if unit.name is name) for unit in @units
+      return if isNaN(conversion)
+
+      unless unitNameIsExisted
+        priceBookBasic = Schema.priceBooks.findOne({priceBookType: 0, merchant: Merchant.getId()})
+        for unit in @units
+          if unit.isBase
+            salePrice   = findPrice(priceBookBasic._id, unit.priceBooks, 'sale')
+            importPrice = findPrice(priceBookBasic._id, unit.priceBooks, 'import')
+
+        priceBook = [{
+          priceBook: priceBookBasic._id
+          basicSale  : salePrice * conversion
+          salePrice  : salePrice * conversion
+          basicImport: importPrice * conversion
+          importPrice: importPrice * conversion
+          discountSalePrice  : 0
+          updateSalePriceAt  : new Date()
+          discountImportPrice: 0
+          updateImportPriceAt: new Date()
+        }]
+
+        productUnitId = Random.id()
+        productUnit =
+          _id       : productUnitId
+          name      : name
+          conversion: conversion
+          priceBooks: priceBook
+          quality   : {}
+
+        if Schema.products.update(@_id, {$push: { units: productUnit }})
+          PriceBook.addProductUnit(productUnitId)
+          return true
 
     doc.unitUpdate = (unitId, option, callback) ->
       unitNameIsNotExist = true
@@ -154,7 +193,7 @@ Schema.add 'products', "Product", class Product
     priceBook = [{priceBook: priceBookBasic._id, salePrice: 0, importPrice: 0}]
 
     productUnitId = Random.id()
-    option.units = [{_id: productUnitId, name: 'MacDinh', allowDelete: false, isBase: true, priceBooks: priceBook, quality: {}}]
+    option.units = [{_id: productUnitId, name: 'Chai', allowDelete: false, isBase: true, priceBooks: priceBook, quality: {}}]
 
     if newProductId = Schema.products.insert option
       PriceBook.addProductUnit(productUnitId); Product.setSession(newProductId)
