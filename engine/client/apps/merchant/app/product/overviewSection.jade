@@ -27,62 +27,15 @@ template(name="productManagementOverviewSection")
     .panel-footer
       .region
         .title.productUnit
-          span.s5.note.icon-angle-right <b>ĐƠN VỊ TÍNH</b>
+          if getSession 'productManagementIsShowProductUnit'
+            span.s5.note.icon-angle-right <b>Thu gọn</b>
+          else
+            span.s5.note.icon-angle-right <b>Thông tin chi tiết</b>
 
         if getSession 'productManagementIsShowProductUnit'
           +overviewProductUnit this
-
-
-
-    .panel-footer
-      .region
-        .title.productInventory
-          span.s5.note.icon-angle-right <b>TỒN KHO ĐẦU KỲ</b>
-
-        if getSession 'productManagementIsShowProductInventory'
-          .detail-wrapper
-            span.icon-ok-6
-            span Bán hàng trước, nhập tồn kho sau.
-
-          .detail-wrapper
-            span.icon-ok-6
-            span Nhập tồn kho ngay lúc này:
-
-          .detail-wrapper
-            each currentProduct.units
-              form.form-inline: .form-group: .input-group
-                .input-group-addon Tồn kho
-                input.date(type="text" class="form-control" id="exampleInputAmount" placeholder="Số lượng")
-                .input-group-addon(style="width: 80px") {{name}}
-                input.date(type="text" class="form-control" id="exampleInputAmount" placeholder="Ngày hết hạn")
-
-      //.right-float
-      //  span.s5.note <b>TỔNG TỒN</b>/ TỔNG NHẬP:
-      //  span.s3 <b>{{formatNumber inStockQuality}}</b>
-      //  span.s5 /{{formatNumber totalQuality}} <b>{{basicUnit}}</b>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+          +overviewProductInventory this
+          .right-float: .lemon.btn.lime.pull-right.icon-ok-6 Hoàn Tất
 
 
 

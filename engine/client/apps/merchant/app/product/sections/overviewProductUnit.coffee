@@ -7,6 +7,7 @@ lemon.defineHyper Template.overviewProductUnit,
   productUnitTables : ->
     unitTable = []
     product =
+      class       : 'product'
       isProduct   : true
       name        : scope.currentProduct.name
       barcode     : 'Mã Vạch'
@@ -16,6 +17,7 @@ lemon.defineHyper Template.overviewProductUnit,
 
     for unit in scope.currentProduct.units
       productUnit =
+        class       : 'unit'
         isProduct   : false
         name        : unit.name
         barcode     : unit.barcode
@@ -32,11 +34,42 @@ lemon.defineHyper Template.overviewProductUnit,
       Session.set('productManagementAllowAddUnit', !Session.get('productManagementAllowAddUnit'))
 
 
+lemon.defineHyper Template.overviewProductInventoryDetail,
+  currentProduct: -> scope.currentProduct
+  quality: -> 0
+  rendered: -> $("[name=deliveryDate]").datepicker()
+  events:
+    "keyup [name='unitQuality']": (event, template) ->
+      $quality = $(template.find("[name='unitQuality']"))
+      if isNaN(Number($quality.val())) then $quality.val(@conversion)
+
+
+lemon.defineHyper Template.overviewProductInventory,
+  currentProduct: -> scope.currentProduct
+  isImport: (status)->
+    if status is 'sale'
+      if Session.get('productManagementAllowInventory') then '' else 'selected'
+    else
+      if Session.get('productManagementAllowInventory') then 'selected' else ''
+
+  rendered: ->
+    Session.set('productManagementAllowInventory', true)
+
+  events:
+    "click .denyInventory": (event, template) -> Session.set('productManagementAllowInventory', false)
+    "click .allowInventory": (event, template) -> Session.set('productManagementAllowInventory', true)
+
 lemon.defineHyper Template.productUnitDetail,
   currentProduct: -> scope.currentProduct
   events:
-    "keyup input.editable": (event, template) ->
+    "keyup [name='productUnitName']": (event, template) ->
       console.log $(template.find("[name='productUnitName']")).val()
+      scope.currentProduct.unitUpdate(@_id, {name: $(template.find("[name='productUnitName']")).val()})
+
+    "keyup [name='productUnitConversion']": (event, template) ->
+      $conversion = $(template.find("[name='productUnitConversion']"))
+      if isNaN(Number($conversion.val())) then $conversion.val(@conversion)
+      else scope.currentProduct.unitUpdate(@_id, {conversion: $conversion.val()})
 
     "click .deleteProductUnit": (event, template) -> scope.deleteNewProductUnit(@, event, template)
 

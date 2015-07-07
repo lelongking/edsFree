@@ -8,8 +8,13 @@ package-theme(color)
   .features li .command
     background-color color
 
+
+
+.section .region .title span
+  cursor: pointer
+
 .section .region .detail-wrapper
-  padding: 10px 0 0 20px
+  padding: 10px
 
   .input-group-addon
     padding-top: 14px;
@@ -33,21 +38,22 @@ package-theme(color)
       color: #2e8bcc
 
   .productUnit-table-group
-    padding: 15px 15px 0 15px
+    padding: 0 15px
 
     .col { padding-left: 2px; padding-right: 2px; }
     .package-block
       cursor pointer
       border-radius 3px
       overflow hidden
-      .title { background: #78CFBF; }
+      .title { background: #DBDBDB; }
 
       .title, .footer
-        color #FEFEFE
+        color #5C5C5C
         text-transform capitalize
         line-height 2.5
         position relative
         text-align center
+        font-size 15px
 
       .content
         position: relative
@@ -80,9 +86,10 @@ package-theme(color)
 
       .features
         list-style-type none
-        background #ECECEC
-        text-align left
+        background #EFEFF4
+        text-align center
         color #9C9C9C
+        &.product {text-align: right}
 
         li
           position relative
