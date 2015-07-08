@@ -251,7 +251,7 @@ Schema.add 'products', "Product", class Product
         importFound.addImportDetail(detail._id, detail.quality) for detail in inventoryDetails
         Meteor.call 'importInventory', importFound._id, (error, result) ->
         Schema.products.update @_id, $set:{inventoryInitial: true, allowDelete: false, status: Enums.getValue('ProductStatuses', 'confirmed')}
-        #TODO: chua tinh tru kho khi ban hang truoc
+#        #TODO: chua tinh tru kho khi ban hang truoc
 
 
 

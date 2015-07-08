@@ -59,6 +59,7 @@ simpleSchema.orders = new SimpleSchema
   'details.$.basicQuality'  : type: Number, min: 0
   'details.$.conversion'    : type: Number, min: 1
   'details.$.discountCash'  : simpleSchema.DefaultNumber()
+  'details.$.isExport'      : simpleSchema.DefaultBoolean(false)
 
   'details.$.returnDetails'               : type: [Object], optional: true
   'details.$.returnDetails.$._id'         : type: String
@@ -145,7 +146,6 @@ Schema.add 'orders', "Order", class Order
 #        updateQuery.$inc["details.#{detailIndex}.conversion"]   = productUnit.conversion
         updateQuery.$inc["details.#{detailIndex}.basicQuality"] = quality * productUnit.conversion
         recalculationOrder(@_id) if Schema.orders.update(@_id, updateQuery, callback)
-
       else
         detailFindQuery.quality      = quality
         detailFindQuery.conversion   = productUnit.conversion
@@ -180,8 +180,16 @@ Schema.add 'orders', "Order", class Order
       recalculationOrder(self._id) if Schema.orders.update(self._id, removeDetailQuery, callback)
 
     doc.orderConfirm = ->
-      Meteor.call 'orderConfirmed', @_id, (error, result) ->
-        if error then console.log error
+      orderId = @_id
+      if Schema.orders.update(orderId, $set:{orderType: Enums.getValue('OrderTypes','checked')})
+        Meteor.call 'orderSellerConfirmed', orderId, (error, result) ->
+          console.log result, 'seller'
+          Meteor.call 'orderAccountingConfirmed', orderId, (error, result) ->
+            console.log result, 'accounting'
+            Meteor.call 'orderExportConfirmed', orderId, (error, result) ->
+              console.log result, 'export'
+              Meteor.call 'orderSuccessConfirmed', orderId, (error, result) ->
+                console.log result, 'success'
 
     doc.addDelivery = (option, callback) ->
       return console.log('Order không tồn tại.') if (!self = Schema.orders.findOne doc._id)
@@ -236,7 +244,7 @@ recalculationOrder = (orderId) ->
       totalPrice   += detail.quality * detail.price
       discountCash += detail.quality * detail.discountCash
     Schema.orders.update orderFound._id, $set:{
-      'totalPrice'  : totalPrice
-      'discountCash': discountCash
-      'finalPrice'  : totalPrice - discountCash
+      totalPrice    : totalPrice
+      discountCash  : discountCash
+      finalPrice    : totalPrice - discountCash
     }

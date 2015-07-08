@@ -14,19 +14,18 @@ template(name="productManagementImportDetails")
         td.number {{formatNumber price}}
         td.number {{formatNumber totalPrice}}
 
-    //+productManagementReturnDetails returnDetails
-    //
-    //if isShowDisableMode
-    //  each saleDetails
-    //    tr.detail-row
-    //      td.first-column
-    //       span.icon-forward-3 {{buyerName}}
-    //      td(align="center") {{momentFormat version.createdAt "DD/MM/YYYY"}}
-    //      td.number {{unitSaleQuality}}
-    //      td(align="center") {{unitName}}
-    //      td.number {{conversionQuality}}
-    //      td.number {{formatNumber unitPrice}}
-    //      td.number {{formatNumber finalPrice}}
+                    //+productManagementReturnDetails returnDetails
+
+      each saleDetails
+        tr.detail-row
+          td.first-column
+           span.icon-forward-3 {{buyerName}}
+          td(align="center") {{momentFormat version.createdAt "DD/MM/YYYY"}}
+          td.number {{unitSaleQuality}}
+          td(align="center") {{unitName}}
+          td.number {{conversionQuality}}
+          td.number {{formatNumber unitPrice}}
+          td.number {{formatNumber finalPrice}}
 
 
 template(name="productManagementReturnDetails")

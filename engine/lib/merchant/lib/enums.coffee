@@ -17,7 +17,7 @@ Apps.Merchant.Enums.OrderTypes = [
   display: 'da kiem tra'
 ,
   _id    : 2
-  value  : 'confirmed'
+  value  : 'seller'
   display: 'nhan vien xac nhan'
 ,
   _id    : 3

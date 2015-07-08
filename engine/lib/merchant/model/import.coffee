@@ -31,13 +31,18 @@ simpleSchema.imports = new SimpleSchema
   'details.$.discountCash'  : simpleSchema.DefaultNumber()
   'details.$.expire'        : {type: Date, optional: true}
 
+  'details.$.orderId'             : type: [Object], defaultValue: []
+  'details.$.orderId.$._id'       : type: String
+  'details.$.orderId.$.quality'   : type: Number
+
+
   'details.$.importQuality'       : {type: Number, min: 0}
   'details.$.saleQuality'         : simpleSchema.DefaultNumber()
   'details.$.returnSaleQuality'   : simpleSchema.DefaultNumber()
   'details.$.returnImportQuality' : simpleSchema.DefaultNumber()
-  'details.$.inStockQuality'      : simpleSchema.DefaultNumber()
+  'details.$.inStockQuality'      : {type: Number, min: 0}
   'details.$.inOderQuality'       : simpleSchema.DefaultNumber()
-  'details.$.availableQuality'    : simpleSchema.DefaultNumber()
+  'details.$.availableQuality'    : {type: Number, min: 0}
 
   'details.$.returnDetails'               : type: [Object], optional: true
   'details.$.returnDetails.$._id'         : type: String
@@ -106,12 +111,13 @@ Schema.add 'imports', "Import", class Import
         recalculationImport(@_id) if Schema.imports.update(@_id, updateQuery, callback)
 
       else
+        detailFindQuery.orderId           = []
         detailFindQuery.quality           = quality
         detailFindQuery.conversion        = productUnit.conversion
         detailFindQuery.basicQuality      = quality * productUnit.conversion
         detailFindQuery.importQuality     = detailFindQuery.basicQuality
         detailFindQuery.availableQuality  = detailFindQuery.basicQuality
-        detailFindQuery.inStockQuality    = detailFindQuery.inStockQuality
+        detailFindQuery.inStockQuality    = detailFindQuery.basicQuality
         if Schema.imports.update(@_id, { $push: {details: detailFindQuery} }, callback)
           recalculationImport(@_id); product.unitDenyDelete(productUnitId)
 

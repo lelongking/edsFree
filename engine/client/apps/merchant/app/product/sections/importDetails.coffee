@@ -4,6 +4,10 @@ lemon.defineWidget Template.productManagementImportDetails,
   isProduct: -> @product is Session.get("productManagementCurrentProduct")._id
   providerName: -> Template.parentData().importName
   totalPrice: -> @price * @quality
+
+  saleDetails: ->
+    Schema.orders.find({'details.productUnit'}).fetch()
+
 #  unitSaleQuality: -> Math.round(@quality/@conversionQuality*100)/100
 #  isShowDisableMode: -> !Session.get("productManagementCurrentProduct")?.basicDetailModeEnabled
 #

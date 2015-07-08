@@ -34,8 +34,9 @@ subtractQualityOnSales = (importDetails, saleDetail) ->
 
   return transactionQuality == saleDetail.basicQuality
 
+Enums = Apps.Merchant.Enums
 Meteor.methods
-  orderConfirmed: (orderId)->
+  orderSellerConfirmed: (orderId)->
     user = Meteor.users.findOne(Meteor.userId())
     return {valid: false, error: 'user not found!'} if !user
 
@@ -58,7 +59,7 @@ Meteor.methods
       updateQuery.$inc["qualities.#{detailIndex}.availableQuality"] = -detail.basicQuality
       Schema.products.update detail.product, updateQuery
 
-    Schema.orders.update orderFound._id, $set: {orderType: Enums.getValue('OrderTypes', 'confirmed')}
+    Schema.orders.update orderFound._id, $set: {orderType: Enums.getValue('OrderTypes', 'seller')}
 
   orderAccountingConfirmed: (orderId, transactionId)->
     user = Meteor.users.findOne(Meteor.userId())
@@ -67,7 +68,8 @@ Meteor.methods
     orderQuery =
       _id       : orderId
       merchant  : user.profiles.merchant
-      orderType : Enums.getValue('OrderTypes', 'confirmed')
+      orderType : Enums.getValue('OrderTypes', 'seller')
+    console.log orderQuery
     orderFound = Schema.orders.findOne orderQuery
     return {valid: false, error: 'order not found!'} if !orderFound
 
@@ -88,6 +90,45 @@ Meteor.methods
       orderType : Enums.getValue('OrderTypes', 'accounting')
     orderFound = Schema.orders.findOne orderQuery
     return {valid: false, error: 'order not found!'} if !orderFound
+
+    for orderDetail in orderFound.details
+      if product = Schema.products.findOne({'units._id': orderDetail.productUnit})
+        detailIndex = 0; updateQuery = {$inc:{}}
+        updateQuery.$inc["qualities.#{detailIndex}.saleQuality"]    = orderDetail.basicQuality
+        updateQuery.$inc["qualities.#{detailIndex}.inOderQuality"]  = -orderDetail.basicQuality
+        updateQuery.$inc["qualities.#{detailIndex}.inStockQuality"] = -orderDetail.basicQuality
+        Schema.products.update product._id, updateQuery
+
+        if product.inventoryInitial
+          basicImport = Schema.imports.find({
+            importType           : Enums.getValue('ImportTypes', 'inventorySuccess')
+            'details.productUnit': orderDetail.productUnit
+            inStockQuality       : {$gt: 0}
+          }).fetch()
+          combinedImports = basicImport
+
+          transactionQuality = 0
+          for currentImport in combinedImports
+            for importDetail, index in currentImport.details
+              if importDetail.productUnit is orderDetail.productUnit
+                requiredQuality = orderDetail.basicQuality - transactionQuality
+                if importDetail.inStockQuality > requiredQuality
+                  takenQuality = requiredQuality
+                else
+                  takenQuality = importDetail.inStockQuality
+
+                updateImport = $inc:{}, $push:{}
+                updateImport.$inc["details.#{index}.saleQuality"]       = takenQuality
+                updateImport.$inc["details.#{index}.inStockQuality"]    = -takenQuality
+                updateImport.$inc["details.#{index}.availableQuality"]  = -takenQuality
+                updateImport.$push["details.#{index}.orderId"]  = {_id: orderFound._id, quality: takenQuality}
+
+                Schema.imports.update currentImport._id, updateImport
+
+                transactionQuality += takenQuality
+                break if transactionQuality == orderDetail.basicQuality
+            break if transactionQuality == orderDetail.basicQuality
+
 
     orderUpdate = $set:
       orderType      : Enums.getValue('OrderTypes', 'export')

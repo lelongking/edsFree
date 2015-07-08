@@ -40,7 +40,7 @@ lemon.defineApp Template.sales,
       scope.currentOrder.addDetail(@_id); event.stopPropagation()
 
     "click .finish": (event, template)->
-      scope.currentOrder.orderSubmit()
+      scope.currentOrder.orderConfirm()
 
 
 #
