@@ -36,8 +36,9 @@ Apps.Merchant.importReactive.push (scope) ->
     scope.currentImport = Schema.imports.findOne Session.get('mySession').currentImport
     Session.set 'currentImport', scope.currentImport
 
-  if newProviderId = Session.get('currentImport')?.provider
-    if !(oldProviderId = Session.get('currentProvider')?._id) or oldProviderId isnt newProviderId
-      Session.set('currentProvider', Schema.providers.findOne newProviderId)
+  newProviderId = Session.get('currentImport')?.provider
+  oldProviderId = Session.get('currentProvider')?._id
+  if newProviderId
+    Session.set('currentProvider', Schema.providers.findOne newProviderId) if !oldProviderId or oldProviderId isnt newProviderId
   else
     Session.set 'currentProvider'

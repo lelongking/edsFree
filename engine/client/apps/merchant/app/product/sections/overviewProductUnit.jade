@@ -10,13 +10,19 @@ template(name="overviewProductInventory")
   if getSession 'productManagementAllowInventory'
     .detail-wrapper
       each currentProduct.units
-        +overviewProductInventoryDetail this
-
+        if currentProduct.inventoryInitial
+          form.form-inline: .form-group: .input-group
+            .input-group-addon(style="width: 100px") {{importUnit.quality}}
+            .input-group-addon(style="width: 100px") {{name}}
+            .input-group-addon(style="width: 100px") --/--/----
+            .input-group-addon(style="width: 100px") Hết hạn
+        else
+          +overviewProductInventoryDetail this
 
 template(name="overviewProductInventoryDetail")
   form.form-inline: .form-group: .input-group
     input.form-control.editable.dashed(data-toggle="tooltip" data-container="body" data-placement="right"
-    placeholder="Số lượng" title="Số lượng" name="unitQuality" value="0")
+    placeholder="Số lượng" title="Số lượng" name="unitQuality" value="{{quality}}")
     .input-group-addon(style="width: 100px") {{name}}
 
     input.form-control.editable.dashed(data-toggle="tooltip" data-container="body" data-placement="right"
@@ -42,21 +48,22 @@ template(name="overviewProductUnit")
           .package-block
             .title {{name}}
             .features(class="{{class}}")
-              li
-                if isProduct
-                  span {{barcode}} :
-                else
-                  span {{barcode}}
-              li
-                if isProduct
-                  span {{importPrice}} :
-                else
-                  span {{formatNumber importPrice}} VNĐ
-              li
-                if isProduct
-                  span {{saleQuality}} :
-                else
-                  span {{formatNumber saleQuality}} VNĐ
+              if isProduct
+                li: span {{barcode}} :
+                li: span {{saleQuality}} :
+                li: span {{importPrice}} :
+              else
+                +productUnitTableDetail this
+
+template(name="productUnitTableDetail")
+  li: span {{barcode}}
+  li: span {{formatNumber saleQuality}} VNĐ
+  if isEditImportPrice
+    li(style="padding-top: 4px; padding-bottom: 2px;")
+      input.form-control.editable.dashed(name="editImportQuality" value="{{formatNumber importPrice}} VNĐ")
+  else
+    li: span {{formatNumber importPrice}} VNĐ
+
 
 template(name="productUnitDetail")
   form.form-inline: .form-group

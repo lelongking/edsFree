@@ -36,14 +36,15 @@ lemon.defineApp Template.productManagement,
       else
         if event.which is 13
           newProduct = Helpers.splitName(searchFilter)
-          newProduct.merchant = Session.get("myProfile").merchant
-          if Product.nameIsExisted(newProduct.name, newProduct.merchant)
-            template.ui.$searchFilter.notify("Sản phẩm đã tồn tại.", {position: "bottom"})
-          else
-            ProductSearch.cleanHistory() if Match.test(Product.insert(newProduct), String)
+          unless newProduct.name is ""
+            newProduct.merchant = Session.get("myProfile").merchant
+            if Product.nameIsExisted(newProduct.name, newProduct.merchant)
+              template.ui.$searchFilter.notify("Sản phẩm đã tồn tại.", {position: "bottom"})
+            else
+              ProductSearch.cleanHistory() if Match.test(Product.insert(newProduct), String)
 
+        ProductSearch.cleanHistory()
         ProductSearch.search productSearch
-        scope.productManagementCreationMode(productSearch)
 
     "click .createProductBtn": (event, template) ->
       fullText   = Session.get("productManagementSearchFilter")
@@ -56,4 +57,6 @@ lemon.defineApp Template.productManagement,
         ProductSearch.cleanHistory() if Match.test(Product.insert(newProduct), String)
       ProductSearch.search Helpers.Searchify(fullText)
 
-    "click .inner.caption": (event, template) -> Product.setSession(@_id)
+    "click .inner.caption": (event, template) ->
+      Product.setSession(@_id)
+      Session.set('productManagementIsShowProductUnit', false)

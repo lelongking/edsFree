@@ -1,11 +1,12 @@
 scope = logics.productManagement
+Enums = Apps.Merchant.Enums
 
 lemon.defineHyper Template.productManagementOverviewSection,
   currentProduct: -> scope.currentProduct
-  avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
-  unitEditingMode: -> Session.get("productManagementUnitEditingRow")?._id is @_id
-  unitEditingData: -> Session.get("productManagementUnitEditingRow")
-
+  isShowSubmit: ->
+    if scope.currentProduct.status isnt Enums.getValue('ProductStatuses', 'confirmed') then true
+    else if Session.get('productManagementAllowInventory') is false then false
+    else if scope.currentProduct.inventoryInitial is false then true
 
 
   depositOptions:
@@ -18,7 +19,6 @@ lemon.defineHyper Template.productManagementOverviewSection,
       forcestepdivisibility: 'none'
 
   productUnits: ->
-#    console.log @units
     for productUnit in @units
       for item in productUnit.priceBooks
         if item.priceBook is Session.get('priceBookBasic')._id
@@ -27,11 +27,11 @@ lemon.defineHyper Template.productManagementOverviewSection,
     @units
 
 
-#  name: ->
-#    Meteor.setTimeout ->
-#      scope.overviewTemplateInstance.ui.$productName.change()
-#    , 50 if scope.overviewTemplateInstance
-#    @name
+  name: ->
+    Meteor.setTimeout ->
+      scope.overviewTemplateInstance.ui.$productName.change()
+    , 50 if scope.overviewTemplateInstance
+    @name
 #
 #  price: ->
 #    Meteor.setTimeout ->
@@ -71,30 +71,44 @@ lemon.defineHyper Template.productManagementOverviewSection,
     "click .title.productInventory": (event, template)->
       Session.set('productManagementIsShowProductInventory', !Session.get('productManagementIsShowProductInventory'))
 
+    "click .productDelete": (event, template) ->
+
+      if @allowDelete
+        scope.currentProduct.remove()
+        Product.setSession(Schema.products.findOne()._id)
+        ProductSearch.cleanHistory()
+        ProductSearch.search()
 
 
+    "click .submitInventory": (event, template) ->
+      if Session.get('productManagementAllowInventory')
+        inventoryDetails = Session.get('productManagementInventoryDetails')
+        scope.currentProduct.submitInventory(inventoryDetails) if inventoryDetails
+      else
+        scope.currentProduct.productConfirm()
 
 
-#    "click .addProductUnit": -> scope.currentProduct.unitCreate()
-#    "click .deleteProductUnit": -> scope.currentProduct.unitRemove(@_id)
-#    "click .productDelete": -> scope.currentProduct.remove()
-#
-#    "click .unitEditBarcode": ->
-#      unitEditing = @; unitEditing.select = "Barcode"
-#      Session.set("productManagementUnitEditingRow", unitEditing)
-#
-#    "click .unitEditName": ->
-#      unitEditing = @; unitEditing.select = "Name"
-#      Session.set("productManagementUnitEditingRow", unitEditing)
-#
-#    "click .unitEditConversion": ->
-#      unitEditing = @; unitEditing.select = if @isBase then 'SalePrice' else "Conversion"
-#      Session.set("productManagementUnitEditingRow", unitEditing)
-#
-#    "click .unitEditImportPrice": ->
-#      unitEditing = @; unitEditing.select = "ImportPrice"
-#      Session.set("productManagementUnitEditingRow", unitEditing)
-#
-#    "click .unitEditSalePrice": ->
-#      unitEditing = @; unitEditing.select = "SalePrice"
-#      Session.set("productManagementUnitEditingRow", unitEditing)
+    "keyup .panel-heading input.editable": (event, template) ->
+      #TODO: lam lai cho hoan chinh phan cap nha, tim kiem
+      if Session.get("productManagementCurrentProduct")
+        if event.which is 13
+          $productName    = template.ui.$productName
+          $salePrice      = template.ui.$productPrice
+          $basicUnitName  = template.ui.$productBasicUnit
+
+          if $productName.val().length > 0
+            productFound = Schema.products.findOne {name: $productName.val(), merchant: Merchant.getId()}
+
+          if $productName.val() is 0
+            $productName.notify("Tên sản phẩm không thể để trống.", {position: "right"})
+          else if productFound and productFound._id isnt scope.currentProduct._id
+            $productName.notify("Tên sản phẩm đã tồn tại.", {position: "right"})
+#            $productName.val scope.currentProduct.name
+          else
+            Schema.products.update scope.currentProduct._id, {$set: {name: $productName.val()}}
+
+          updateOption = {name: $basicUnitName.val(), salePrice: accounting.parse($salePrice.val())}
+          scope.currentProduct.unitUpdate scope.currentProduct.basicUnit(), updateOption
+
+          ProductSearch.cleanHistory()
+          ProductSearch.search(ProductSearch.getCurrentQuery())

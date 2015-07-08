@@ -1,13 +1,5 @@
 providerProfile = new SimpleSchema
-  phone          : simpleSchema.OptionalString
-  billNo         : simpleSchema.DefaultString('001')
-  representative : simpleSchema.OptionalString
-  manufacturer   : simpleSchema.OptionalString
 
-providerTransaction = new SimpleSchema
-  importPaid     : simpleSchema.DefaultNumber()
-  importDebt     : simpleSchema.DefaultNumber()
-  importTotalCash: simpleSchema.DefaultNumber()
 
 
 simpleSchema.providers = new SimpleSchema
@@ -15,19 +7,21 @@ simpleSchema.providers = new SimpleSchema
   nameSearch  : simpleSchema.searchSource('name')
   description : simpleSchema.OptionalString
 
+  phone          : simpleSchema.OptionalString
+  billNo         : simpleSchema.DefaultString('000')
+  representative : simpleSchema.OptionalString
+  manufacturer   : simpleSchema.OptionalString
+
+  paidCash  : simpleSchema.DefaultNumber()
+  debtCash  : simpleSchema.DefaultNumber()
+  loanCash  : simpleSchema.DefaultNumber()
+  totalCash : simpleSchema.DefaultNumber()
+
   merchant    : simpleSchema.DefaultMerchant
   avatar      : simpleSchema.OptionalString
   allowDelete : simpleSchema.DefaultBoolean()
   creator     : simpleSchema.DefaultCreator
   version     : { type: simpleSchema.Version }
-
-  profiles:
-    type: providerProfile
-    optional: true
-
-  transactions:
-    type: providerTransaction
-    optional: true
 
 Schema.add 'providers', "Provider", class Provider
   @transform: (doc) ->

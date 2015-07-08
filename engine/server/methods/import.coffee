@@ -112,28 +112,28 @@ Meteor.methods
         Schema.imports.update importId, $set:{submitted: false}
         return 'Phieu Co The Duoc Chinh Sua'
 
-  importSubmit: (importId)->
-    currentImport = Schema.imports.findOne({_id: importId, finish: false, submitted: false})
-    if currentImport and (currentImport.distributor or currentImport.partner)
-      importDetails = Schema.importDetails.find({import: importId}).fetch()
-      if importDetails.length > 0
-        if currentImport.partner
-          importPartner = Schema.partners.findOne(currentImport.partner)
-          merchantProfile = Schema.merchantProfiles.findOne({merchant: importPartner.parentMerchant}) if importPartner
-          partnerMerchantProfile = Schema.merchantProfiles.findOne({merchant: importPartner.buildIn}) if importPartner?.buildIn
-
-          if partnerMerchantProfile
-            productId = _.intersection(merchantProfile.geraProductList, partnerMerchantProfile.geraProductList)
-          else
-            productId = merchantProfile.geraProductList
-
-          for importDetail in importDetails
-            unless _.contains(productId, importDetail.buildInProduct)
-              throw new Meteor.Error('importError', 'Phiếu chi tiết chưa được xác nhận'); return
-
-        Schema.importDetails.update(importDetail._id, $set: {submitted: true}) for importDetail in importDetails
-        Schema.imports.update importId, $set:{submitted: true}
-        return 'Duoc Xac Nhan, Cho Duyet Cua Quan Ly'
+#  importSubmit: (importId)->
+#    currentImport = Schema.imports.findOne({_id: importId, finish: false, submitted: false})
+#    if currentImport and (currentImport.distributor or currentImport.partner)
+#      importDetails = Schema.importDetails.find({import: importId}).fetch()
+#      if importDetails.length > 0
+#        if currentImport.partner
+#          importPartner = Schema.partners.findOne(currentImport.partner)
+#          merchantProfile = Schema.merchantProfiles.findOne({merchant: importPartner.parentMerchant}) if importPartner
+#          partnerMerchantProfile = Schema.merchantProfiles.findOne({merchant: importPartner.buildIn}) if importPartner?.buildIn
+#
+#          if partnerMerchantProfile
+#            productId = _.intersection(merchantProfile.geraProductList, partnerMerchantProfile.geraProductList)
+#          else
+#            productId = merchantProfile.geraProductList
+#
+#          for importDetail in importDetails
+#            unless _.contains(productId, importDetail.buildInProduct)
+#              throw new Meteor.Error('importError', 'Phiếu chi tiết chưa được xác nhận'); return
+#
+#        Schema.importDetails.update(importDetail._id, $set: {submitted: true}) for importDetail in importDetails
+#        Schema.imports.update importId, $set:{submitted: true}
+#        return 'Duoc Xac Nhan, Cho Duyet Cua Quan Ly'
 
   importFinish: (importId)->
     if profile = Schema.userProfiles.findOne({user: Meteor.userId()})

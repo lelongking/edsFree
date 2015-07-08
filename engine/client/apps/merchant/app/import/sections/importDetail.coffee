@@ -6,23 +6,8 @@ lemon.defineHyper Template.importDetailSection,
   showExpireDate: -> if @expire then true else false
   showDelete: -> !Session.get("currentImport")?.submitted
 
-  oldDebt: ->
-    distributor = Session.get('currentImportDistributor')
-    partner = Session.get('currentImportPartner')
-
-    if @import?.distributor and distributor then distributor.importDebt + distributor.customImportDebt
-    else if @import?.partner and partner then partner.importCash + partner.loanCash - partner.saleCash - partner.paidCash
-    else 0
-
-  finalDebt: ->
-    distributor = Session.get('currentImportDistributor')
-    partner = Session.get('currentImportPartner')
-
-    if @import?.distributor and distributor
-      distributor.importDebt + distributor.customImportDebt + @import.totalPrice - @import.deposit
-    else if @import?.partner and partner
-      partner.importCash + partner.loanCash - partner.saleCash - partner.paidCash + @import.totalPrice - @import.deposit
-    else 0
+  oldDebt: -> Session.get('currentProvider')?.totalCash ? 0
+  finalDebt: -> Session.get('currentProvider').totalCash + Session.get("currentImport").finalPrice - Session.get("currentImport").depositCash
 
   created  : ->
     @timeInterval = Meteor.setInterval(setTime, 1000)

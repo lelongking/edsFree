@@ -6,14 +6,11 @@ template(name="productManagementOverviewSection")
       .caption
         input.editable.dashed(name="productName" value="{{name}}" maxlength="50" placeholder="tên của sản phẩm"
         data-toggle="tooltip" data-container="body" data-placement="right" title="tên của sản phẩm")
-        if basicUnit
-          span.blured-color ({{basicUnit}})
-          if basicDetailModeEnabled
-            .lemon.rounded.tiny.btn.lime.add-basicDetail: span.icon-plus-6
+
       .sub1: input.editable.dashed(name="productPrice" value="{{formatNumber currentProduct.getPrice}} VNĐ" maxlength="20" placeholder="giá bán"
       data-toggle="tooltip" data-container="body" data-placement="right" title="giá bán")
 
-      .sub2: input.editable.dashed(name="importPrice" value="{{currentProduct.unitName}}" maxlength="20" style="width: 125px" placeholder="đơn vị tính"
+      .sub2: input.editable.dashed(name="productBasicUnit" value="{{currentProduct.unitName}}" maxlength="20" style="width: 125px" placeholder="đơn vị tính"
       data-toggle="tooltip" data-container="body" data-placement="right" title="đơn vị tính nhỏ nhất")
 
       .commands
@@ -35,71 +32,6 @@ template(name="productManagementOverviewSection")
         if getSession 'productManagementIsShowProductUnit'
           +overviewProductUnit this
           +overviewProductInventory this
-          .right-float: .lemon.btn.lime.pull-right.icon-ok-6 Hoàn Tất
 
-
-
-      //.region.unitManagement
-      //  .title: span.icon-right-open-big Thêm đơn vị tính
-      //  .description-wrapper
-      //    |Sản phẩm này có đơn vị tính nào khác không ?
-      //    label.radio-inline: input(checked type="radio" name="unitOption" style=" width: 20px; height: 15px") Có
-      //    label.radio-inline: input(type="radio" name="unitOption" style=" width: 20px; height: 15px") Không
-      //  .command-wrapper
-          //|Đơn vị nhỏ nhất của {{name}} là {{currentProduct.unitName}} :
-          //table
-          //  tr
-          //    th(style="width:20px")
-          //    th(style="width:50px")
-          //    th(style="width:20px")
-          //    th(style="width:50px")
-          //    th(style="width:80px")
-          //    th(style="width:80px")
-          //    th(style="width:80px")
-          //
-          //  tr.detail-row
-          //    td.date 1
-          //    td.date
-          //      input.error-field(style="width:100%" name="productPrice" value="Thùng" maxlength="20" placeholder="tên đơn vị tính"
-          //      data-toggle="tooltip" data-container="body" data-placement="bottom" title="tên đơn vị tính")
-          //    td.date =
-          //    td.date
-          //      input.error-field(style="width:100%" name="productPrice" value="1" maxlength="20" placeholder="quy đổi"
-          //      data-toggle="tooltip" data-container="body" data-placement="bottom" title="quy đổi")
-          //    td(style="position: relative;")
-          //      span {{currentProduct.unitName}}
-          //      .commands(style="position: absolute; top: 0px; right: 10px")
-          //        .lemon.rounded.tiny.btn.blue
-          //          span(class="icon-plus-6" data-placement="right" data-toggle="tooltip" data-container="body"
-          //          placeholder="thêm đơn vị tính mới" title="thêm mới vị tính mới" )
-          //    td.number 25000 VND
-          //    td.number 0 VND
-
-
-
-      //
-      //
-      //
-      //.region.inventoryInitial
-      //  .title: span.icon-right-open-big Tồn kho đầu kỳ
-      //  .description-wrapper
-      //    .radio: label: input(checked type="radio" name="inventoryOption" style=" width: 20px; height: 15px")
-      //      |Bán hàng trước, kiểm kho và nhập tồn đẩu kỷ sau.
-      //    .radio: label
-      //      input(type="radio" name="inventoryOption" style=" width: 20px; height: 15px")
-      //        |Nhập số lượng tồn kho đầu kỳ ngay lúc này.
-      //  .command-wrapper
-      //    table
-      //      tr
-      //        th(style="width: 150px")
-      //        th(style="width: 50px")
-      //        th(style="width: 20px")
-      //
-      //      each units
-      //        tr.detail-row
-      //          td.date: +iSpinEdit(options=depositOptions)
-      //          td.date
-      //            input.error-field(style="width:100%" name="productPrice" value="0" maxlength="20" placeholder="tên đơn vị tính"
-      //              data-toggle="tooltip" data-container="body" data-placement="bottom" title="tên đơn vị tính")
-      //          td.date {{currentProduct.unitName}}
-
+          if isShowSubmit
+            .right-float: .lemon.btn.lime.pull-right.icon-ok-6.submitInventory Hoàn Tất

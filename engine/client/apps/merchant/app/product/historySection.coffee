@@ -1,30 +1,19 @@
-#scope = logics.productManagement
+scope = logics.productManagement
 #
-#lemon.defineHyper Template.productManagementSalesHistorySection,
-#  basicDetailModeEnabled: -> Session.get("productManagementBranchProductSummary")?.basicDetailModeEnabled
-#  isShowDisableMode: ->
-#    branchProduct = Session.get("productManagementBranchProductSummary")
-#    if branchProduct.totalQuality >= (branchProduct.salesQuality - branchProduct.returnQualityByCustomer) then true else false
-#  buyerName: -> Schema.customers.findOne(Schema.sales.findOne(@sale)?.buyer)?.name
-#  unitSaleQuality: -> Math.round(@quality/@conversionQuality*100)/100
-#  productSaleQuality: -> @salesQuality - @returnQualityByCustomer
+lemon.defineHyper Template.productManagementSalesHistorySection,
+  saleQuality   : -> @qualities?[0].saleQuality ? 0
+  inStockQuality: -> @qualities?[0].inStockQuality ? 0
+  importQuality : -> @qualities?[0].importQuality ? 0
 #
-#  basicDetail: ->
-#    if product = Session.get("productManagementCurrentProduct")
-#      productDetailFound = Schema.productDetails.find({product: product._id, import: {$exists: false}})
-#      return {
-#        isShowDetail: if @basicDetailModeEnabled then true else productDetailFound.count() > 0
-#        detail: productDetailFound
-#      }
-#
-#  newImport: ->
-#    if product = Session.get("productManagementCurrentProduct")
-#      allProductDetail = Schema.productDetails.find({product: product._id, import: {$exists: true}}).fetch()
-#      currentImport = Schema.imports.find({_id: {$in: _.union(_.pluck(allProductDetail, 'import'))}}, {sort: {'version.createdAt': 1}})
-#      return {
-#        isShowDetail: if currentImport.count() > 0 then true else false
-#        detail: currentImport
-#      }
+  newImport: ->
+    if product = Session.get("productManagementCurrentProduct")
+      option = sort: {'version.createdAt': 1}
+      selector = {'details.product': product._id}
+      currentImport = Schema.imports.find(selector, option)
+      return {
+        isShowDetail: if currentImport.count() > 0 then true else false
+        detail: currentImport
+      }
 #
 #  allSaleDetails: -> Schema.saleDetails.find({product: @_id})
 #

@@ -103,6 +103,14 @@ Apps.Merchant.Enums.PriceBookTypes = [
 
 #----------Import---------->
 Apps.Merchant.Enums.ImportTypes = [
+  _id    : -2
+  value  : 'inventorySuccess'
+  display: 'xac nhan ton kho dau ky'
+,
+  _id    : -1
+  value  : 'inventory'
+  display: 'dau ky'
+,
   _id    : 0
   value  : 'initialize'
   display: 'moi tao'

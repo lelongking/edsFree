@@ -1,15 +1,15 @@
 Enums = Apps.Merchant.Enums
 simpleSchema.imports = new SimpleSchema
-  importName : simpleSchema.DefaultString('ĐƠN HÀNG')
+  importName : type: String, defaultValue: 'ĐƠN HÀNG'
   provider   : simpleSchema.OptionalString
   importCode : simpleSchema.OptionalString
-  importType : simpleSchema.DefaultNumber(Enums.getValue('ImportTypes', 'initialize'))
+  importType : type: Number, defaultValue: Enums.getValue('ImportTypes', 'initialize')
 
   description  : simpleSchema.OptionalString
-  discountCash : simpleSchema.DefaultNumber()
-  depositCash  : simpleSchema.DefaultNumber()
-  totalPrice   : simpleSchema.DefaultNumber()
-  finalPrice   : simpleSchema.DefaultNumber()
+  discountCash : type: Number, defaultValue: 0
+  depositCash  : type: Number, defaultValue: 0
+  totalPrice   : type: Number, defaultValue: 0
+  finalPrice   : type: Number, defaultValue: 0
 
   accounting          : type: String  , optional: true
   accountingConfirm   : type: Boolean , optional: true
@@ -69,6 +69,7 @@ Schema.add 'imports', "Import", class Import
         else if field is 'discountCash'
           discountCash = if Math.abs(value) > @totalPrice then @totalPrice else Math.abs(value)
           optionUpdate.$set.discountCash = discountCash
+          optionUpdate.$set.finalPrice   = @totalPrice - discountCash
 
         else if field is 'depositCash'
           optionUpdate.$set.depositCash = Math.abs(value)
@@ -105,11 +106,15 @@ Schema.add 'imports', "Import", class Import
         recalculationImport(@_id) if Schema.imports.update(@_id, updateQuery, callback)
 
       else
-        detailFindQuery.quality       = quality
-        detailFindQuery.conversion    = productUnit.conversion
-        detailFindQuery.basicQuality  = quality * productUnit.conversion
-        detailFindQuery.importQuality = detailFindQuery.basicQuality
-        recalculationImport(@_id) if Schema.imports.update(@_id, { $push: {details: detailFindQuery} }, callback)
+        detailFindQuery.quality           = quality
+        detailFindQuery.conversion        = productUnit.conversion
+        detailFindQuery.basicQuality      = quality * productUnit.conversion
+        detailFindQuery.importQuality     = detailFindQuery.basicQuality
+        detailFindQuery.availableQuality  = detailFindQuery.basicQuality
+        detailFindQuery.inStockQuality    = detailFindQuery.inStockQuality
+        if Schema.imports.update(@_id, { $push: {details: detailFindQuery} }, callback)
+          recalculationImport(@_id); product.unitDenyDelete(productUnitId)
+
 
     doc.editImportDetail = (detailId, quality, expire, discountCash, price, callback) ->
       for instance, i in @details
@@ -144,7 +149,12 @@ Schema.add 'imports', "Import", class Import
       recalculationImport(@_id) if Schema.imports.update(@_id, removeDetailQuery, callback)
 
     doc.importSubmit = ->
-      self = Schema.imports.findOne({_id: doc._id})
+      importQuery =
+        _id        : doc._id
+        creator    : Meteor.userId()
+        merchant   : Merchant.getId()
+        importType : Enums.getValue('ImportTypes', 'initialize')
+      self = Schema.imports.findOne importQuery
       return console.log('Import không tồn tại.') if !self
       #      return console.log('Import đã Submit') if self.orderType isnt Enum.orderType.created
 
@@ -154,14 +164,24 @@ Schema.add 'imports', "Import", class Import
         productUnit = _.findWhere(product.units, {_id: detail.productUnit})
         return console.log('Khong tim thay ProductUnit') if !productUnit
 
-      Meteor.call 'importSubmitted', self._id, (error, result) -> if error then console.log error
+      if Schema.imports.update(self._id, $set:{importType : Enums.getValue('ImportTypes', 'checked')})
+        Meteor.call 'importConfirmed', self._id, (error, result) ->
+          if result
+            console.log result
+            Meteor.call 'importAccountingConfirmed', self._id, (error, result) ->
+              if result
+                console.log result
+
+
     doc.remove = -> Schema.imports.remove(@_id)
 
-  @insert: (providerId, description, callback) ->
+  @insert: (providerId, description, importName, callback) ->
     newImport = {}
-    newImport.provider = providerId if providerId
-    newImport[description] = description if description
-    Schema.imports.insert newImport, callback
+    newImport.provider    = providerId if providerId
+    newImport.description = description if description
+    newImport.importName  = importName if importName
+    newImport.importType  = -1 if importName and !providerId
+    return Schema.imports.insert newImport, callback
 
   @findNotSubmitted: ->
     Schema.imports.find({importType: 0})
@@ -172,7 +192,7 @@ Schema.add 'imports', "Import", class Import
 
 recalculationImport = (orderId) ->
   if orderFound = Schema.imports.findOne(orderId)
-    totalPrice = 0; discountCash = orderFound.discountCash
+    totalPrice = 0; discountCash = orderFound.discountCash ? 0
     (totalPrice += detail.quality * detail.price) for detail in orderFound.details
     discountCash = totalPrice if orderFound.discountCash > totalPrice
     Schema.imports.update orderFound._id, $set:{

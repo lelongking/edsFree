@@ -19,8 +19,8 @@ simpleSchema.products = new SimpleSchema
   'units.$.barcode'    : simpleSchema.Barcode
   'units.$.name'       : type: String
   'units.$.conversion' : type: Number
-  'units.$.isBase'     : simpleSchema.DefaultBoolean(false)
-  'units.$.allowDelete': simpleSchema.DefaultBoolean()
+  'units.$.isBase'     : type: Boolean, defaultValue: false
+  'units.$.allowDelete': type: Boolean, defaultValue: true
   'units.$.createdAt'  : simpleSchema.DefaultCreatedAt
 
   'units.$.priceBooks'                      : type: [Object], optional: true
@@ -69,6 +69,9 @@ findPrice = (priceBookId, priceBookList, priceType = 'sale') ->
 Schema.add 'products', "Product", class Product
   @transform: (doc) ->
     doc.unitName = -> doc.units[0].name if doc.units.length > 0
+    doc.basicUnit= -> doc.units[0]._id if doc.units.length > 0
+
+    doc.changeName = (name)->
 
     doc.getPrice = (productUnitId, ownerId, priceType = 'sale') ->
       priceFound = undefined; merchantId = Merchant.getId()
@@ -127,16 +130,17 @@ Schema.add 'products', "Product", class Product
 
         productUnitId = Random.id()
         productUnit =
-          _id       : productUnitId
-          name      : name
-          conversion: conversion
-          priceBooks: priceBook
-          quality   : {}
+          _id         : productUnitId
+          name        : name
+          conversion  : conversion
+          priceBooks  : priceBook
+          isBase      : false
+          allowDelete : true
+          quality     : {}
 
         if Schema.products.update(@_id, {$push: { units: productUnit }})
           PriceBook.addProductUnit(productUnitId)
           return true
-
 
     doc.unitUpdate = (unitId, option, callback) ->
       unitNameIsNotExist = true
@@ -155,67 +159,70 @@ Schema.add 'products', "Product", class Product
               priceBookBasicIndex = index
               unitPriceBookBasic  = priceBook
 
+      if updateInstance
+        unitUpdateQuery = $set:{}
+        if option.name and unitNameIsNotExist
+          unitUpdateQuery.$set["units.#{updateUnitIndex}.name"] = option.name
 
-      unitUpdateQuery = $set:{}
-      if option.name and unitNameIsNotExist
-        unitUpdateQuery.$set["units.#{updateUnitIndex}.name"] = option.name
+        if option.barcode and barcodeIsNotExit
+          unitUpdateQuery.$set["units.#{updateUnitIndex}.barcode"] = option.barcode
 
-      if option.barcode and barcodeIsNotExit
-        unitUpdateQuery.$set["units.#{updateUnitIndex}.barcode"] = option.barcode
+        if option.conversion
+          if updateInstance.allowDelete and updateInstance.isBase is false and option.conversion and option.conversion >= 1
+            unitUpdateQuery.$set["units.#{updateUnitIndex}.conversion"] = option.conversion
 
-      if option.conversion
-        if updateInstance.allowDelete and updateInstance.isBase is false and option.conversion and option.conversion >= 1
-          unitUpdateQuery.$set["units.#{updateUnitIndex}.conversion"] = option.conversion
-
-          for priceBook, priceBookIndex in updateInstance.priceBooks
-            console.log unitPriceBookBasic
-
-            priceBookQuery = "units.#{updateUnitIndex}.priceBooks.#{priceBookIndex}"
-            unitUpdateQuery.$set["#{priceBookQuery}.basicSale"]         = unitPriceBookBasic.salePrice * option.conversion
-            unitUpdateQuery.$set["#{priceBookQuery}.salePrice"]         = unitPriceBookBasic.salePrice * option.conversion
-            unitUpdateQuery.$set["#{priceBookQuery}.discountSalePrice"] = 0
-            unitUpdateQuery.$set["#{priceBookQuery}.updateSalePriceAt"] = new Date()
-
-            unitUpdateQuery.$set["#{priceBookQuery}.basicImport"]         = unitPriceBookBasic.importPrice * option.conversion
-            unitUpdateQuery.$set["#{priceBookQuery}.importPrice"]         = unitPriceBookBasic.importPrice * option.conversion
-            unitUpdateQuery.$set["#{priceBookQuery}.discountImportPrice"] = 0
-            unitUpdateQuery.$set["#{priceBookQuery}.updateImportPriceAt"] = new Date()
-
-
-      else
-        if option.importPrice and option.importPrice >= 0
-          if updateInstance.isBase
-            for unit, unitIndex in @units
-              for priceBook, priceBookIndex in unit.priceBooks
-                priceBookQuery = "units.#{unitIndex}.priceBooks.#{priceBookIndex}"
-                unitUpdateQuery.$set["#{priceBookQuery}.basicImport"]         = option.importPrice * unit.conversion
-                unitUpdateQuery.$set["#{priceBookQuery}.importPrice"]         = option.importPrice * unit.conversion
-                unitUpdateQuery.$set["#{priceBookQuery}.discountImportPrice"] = 0
-                unitUpdateQuery.$set["#{priceBookQuery}.updateImportPriceAt"] = new Date()
-          else
             for priceBook, priceBookIndex in updateInstance.priceBooks
               priceBookQuery = "units.#{updateUnitIndex}.priceBooks.#{priceBookIndex}"
-              unitUpdateQuery.$set["#{priceBookQuery}.importPrice"]         = option.importPrice
-              unitUpdateQuery.$set["#{priceBookQuery}.discountImportPrice"] = priceBook.basicImport - option.importPrice
-              unitUpdateQuery.$set["#{priceBookQuery}.updateImportPriceAt"] = new Date()
-
-        if option.salePrice and option.salePrice >= 0
-          if updateInstance.isBase
-            for unit, unitIndex in @units
-              for priceBook, priceBookIndex in unit.priceBooks
-                priceBookQuery = "units.#{unitIndex}.priceBooks.#{priceBookIndex}"
-                unitUpdateQuery.$set["#{priceBookQuery}.basicSale"]         = option.salePrice * unit.conversion
-                unitUpdateQuery.$set["#{priceBookQuery}.salePrice"]         = option.salePrice * unit.conversion
-                unitUpdateQuery.$set["#{priceBookQuery}.discountSalePrice"] = 0
-                unitUpdateQuery.$set["#{priceBookQuery}.updateSalePriceAt"] = new Date()
-          else
-            for priceBook, priceBookIndex in updateInstance.priceBooks
-              priceBookQuery = "units.#{updateUnitIndex}.priceBooks.#{priceBookIndex}"
-              unitUpdateQuery.$set["#{priceBookQuery}.salePrice"]         = option.salePrice
-              unitUpdateQuery.$set["#{priceBookQuery}.discountSalePrice"] = priceBook.basicImport - option.importPrice
+              unitUpdateQuery.$set["#{priceBookQuery}.basicSale"]         = unitPriceBookBasic.salePrice * option.conversion
+              unitUpdateQuery.$set["#{priceBookQuery}.salePrice"]         = unitPriceBookBasic.salePrice * option.conversion
+              unitUpdateQuery.$set["#{priceBookQuery}.discountSalePrice"] = 0
               unitUpdateQuery.$set["#{priceBookQuery}.updateSalePriceAt"] = new Date()
 
-      Schema.products.update(@_id, unitUpdateQuery, callback) unless _.isEmpty(unitUpdateQuery.$set)
+              unitUpdateQuery.$set["#{priceBookQuery}.basicImport"]         = unitPriceBookBasic.importPrice * option.conversion
+              unitUpdateQuery.$set["#{priceBookQuery}.importPrice"]         = unitPriceBookBasic.importPrice * option.conversion
+              unitUpdateQuery.$set["#{priceBookQuery}.discountImportPrice"] = 0
+              unitUpdateQuery.$set["#{priceBookQuery}.updateImportPriceAt"] = new Date()
+
+        else
+          if option.importPrice and option.importPrice >= 0
+            if updateInstance.isBase
+              for unit, unitIndex in @units
+                for priceBook, priceBookIndex in unit.priceBooks
+                  priceBookQuery = "units.#{unitIndex}.priceBooks.#{priceBookIndex}"
+                  unitUpdateQuery.$set["#{priceBookQuery}.basicImport"]         = option.importPrice * unit.conversion
+                  unitUpdateQuery.$set["#{priceBookQuery}.importPrice"]         = option.importPrice * unit.conversion
+                  unitUpdateQuery.$set["#{priceBookQuery}.discountImportPrice"] = 0
+                  unitUpdateQuery.$set["#{priceBookQuery}.updateImportPriceAt"] = new Date()
+            else
+              for priceBook, priceBookIndex in updateInstance.priceBooks
+                priceBookQuery = "units.#{updateUnitIndex}.priceBooks.#{priceBookIndex}"
+                unitUpdateQuery.$set["#{priceBookQuery}.importPrice"]         = option.importPrice
+                unitUpdateQuery.$set["#{priceBookQuery}.discountImportPrice"] = priceBook.basicImport - option.importPrice
+                unitUpdateQuery.$set["#{priceBookQuery}.updateImportPriceAt"] = new Date()
+
+          if option.salePrice and option.salePrice >= 0
+            if updateInstance.isBase
+              for unit, unitIndex in @units
+                for priceBook, priceBookIndex in unit.priceBooks
+                  priceBookQuery = "units.#{unitIndex}.priceBooks.#{priceBookIndex}"
+                  unitUpdateQuery.$set["#{priceBookQuery}.basicSale"]         = option.salePrice * unit.conversion
+                  unitUpdateQuery.$set["#{priceBookQuery}.salePrice"]         = option.salePrice * unit.conversion
+                  unitUpdateQuery.$set["#{priceBookQuery}.discountSalePrice"] = 0
+                  unitUpdateQuery.$set["#{priceBookQuery}.updateSalePriceAt"] = new Date()
+            else
+              for priceBook, priceBookIndex in updateInstance.priceBooks
+                priceBookQuery = "units.#{updateUnitIndex}.priceBooks.#{priceBookIndex}"
+                unitUpdateQuery.$set["#{priceBookQuery}.salePrice"]         = option.salePrice
+                unitUpdateQuery.$set["#{priceBookQuery}.discountSalePrice"] = priceBook.basicImport - option.importPrice
+                unitUpdateQuery.$set["#{priceBookQuery}.updateSalePriceAt"] = new Date()
+
+        Schema.products.update(@_id, unitUpdateQuery, callback) unless _.isEmpty(unitUpdateQuery.$set)
+
+    doc.unitDenyDelete = (unitId)->
+      ((updateUnitIndex = index) if instance._id is unitId) for instance, index in @units
+      unitUpdateQuery = $set:{}
+      unitUpdateQuery.$set["units.#{updateUnitIndex}.allowDelete"] = false if updateUnitIndex
+      Schema.products.update(@_id, unitUpdateQuery) unless _.isEmpty(unitUpdateQuery.$set)
 
     doc.unitRemove = (unitId, callback)->
       for instance, i in @units
@@ -234,12 +241,44 @@ Schema.add 'products', "Product", class Product
         if Schema.products.remove @_id, callback
           PriceBook.reUpdateByRemoveProductUnit(productUnit._id) for productUnit in @units
 
+    doc.productConfirm = ->
+      if @status is Enums.getValue('ProductStatuses', 'initialize')
+        Schema.products.update @_id, $set:{status: Enums.getValue('ProductStatuses', 'confirmed')}
+
+    doc.submitInventory = (inventoryDetails)->
+      importId = Import.insert(null, 'Ton kho dau ky', 'Ton kho')
+      if importFound = Schema.imports.findOne(importId)
+        importFound.addImportDetail(detail._id, detail.quality) for detail in inventoryDetails
+        Meteor.call 'importInventory', importFound._id, (error, result) ->
+        Schema.products.update @_id, $set:{inventoryInitial: true, allowDelete: false, status: Enums.getValue('ProductStatuses', 'confirmed')}
+        #TODO: chua tinh tru kho khi ban hang truoc
+
+
+
   @insert: (option = {})->
-    priceBookBasic = Schema.priceBooks.findOne({priceBookType: 0, merchant: Session.get('myProfile').merchant})
-    priceBook = [{priceBook: priceBookBasic._id, salePrice: 0, importPrice: 0}]
+    priceBookBasic = Schema.priceBooks.findOne({priceBookType: 0, merchant: Merchant.getId()})
+    priceBook = [{
+      priceBook: priceBookBasic._id
+      basicSale           : 0
+      salePrice           : 0
+      discountSalePrice   : 0
+      updateSalePriceAt   : new Date()
+      basicImport         : 0
+      importPrice         : 0
+      discountImportPrice : 0
+      updateImportPriceAt : new Date()
+    }]
 
     productUnitId = Random.id()
-    option.units = [{_id: productUnitId, name: 'Chai', allowDelete: false, isBase: true, priceBooks: priceBook, quality: {}}]
+    option.units = [{
+      _id         : productUnitId
+      name        : 'Chai'
+      allowDelete : false
+      isBase      : true
+      conversion  : 1
+      priceBooks  : priceBook
+      quality     : {}
+    }]
 
     if newProductId = Schema.products.insert option
       PriceBook.addProductUnit(productUnitId); Product.setSession(newProductId)

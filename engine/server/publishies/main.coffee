@@ -6,21 +6,22 @@ Meteor.publish null, ->
 
   Counts.publish @, 'products', Schema.products.find({merchant: merchantId})
   Counts.publish @, 'productGroups', Schema.productGroups.find({isBase: false, merchant: merchantId})
+
   Counts.publish @, 'customers', Schema.customers.find({merchant: merchantId})
   Counts.publish @, 'customerReturns', Schema.returns.find({returnType: 0, merchant: merchantId})
   Counts.publish @, 'customerGroups', Schema.customerGroups.find({isBase: false, merchant: merchantId})
-  Counts.publish @, 'providers', Schema.providers.find({merchant: merchantId})
-  Counts.publish @, 'providerReturns', Schema.returns.find({returnType: 1, merchant: merchantId})
 
-  Counts.publish @, 'users', Meteor.users.find({merchant: merchantId})
-  Counts.publish @, 'priceBooks', Schema.priceBooks.find({merchant: merchantId})
-
-  #  Counts.publish @, 'inventories', Schema.providers.find({merchant: profile.merchant})
-
-  Counts.publish @, 'imports', Schema.imports.find({merchant: merchantId})
   Counts.publish @, 'orders', Schema.orders.find({orderType:{$in: [1,2]}, merchant: merchantId})
   Counts.publish @, 'deliveries', Schema.orders.find({orderType:2, 'deliveries.status': {$in: [1,2,3,4]}, merchant: merchantId})
 
+  Counts.publish @, 'providers', Schema.providers.find({merchant: merchantId})
+  Counts.publish @, 'providerReturns', Schema.returns.find({returnType: 1, merchant: merchantId})
+
+  Counts.publish @, 'imports', Schema.imports.find({merchant: merchantId})
+  Counts.publish @, 'inventories', Schema.inventories.find({merchant: merchantId})
+
+  Counts.publish @, 'users', Meteor.users.find({merchant: merchantId})
+  Counts.publish @, 'priceBooks', Schema.priceBooks.find({merchant: merchantId})
 
   collections.push Schema.merchants.find({_id: merchantId})
   collections.push Schema.products.find()
@@ -35,5 +36,3 @@ Meteor.publish null, ->
   collections.push Meteor.users.find({_id: @userId}, {fields: {profiles: 1, sessions: 1} })
 
   return collections
-
-
