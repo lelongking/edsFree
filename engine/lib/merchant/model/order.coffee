@@ -6,10 +6,10 @@ simpleSchema.orders = new SimpleSchema
   creator     : simpleSchema.DefaultCreator
   version     : { type: simpleSchema.Version }
 
-  seller           : simpleSchema.OptionalString
-  buyer            : simpleSchema.OptionalString
-  orderName        : simpleSchema.DefaultString('ĐƠN HÀNG')
-  description      : simpleSchema.OptionalString
+  seller      : simpleSchema.OptionalString
+  buyer       : simpleSchema.OptionalString
+  orderName   : simpleSchema.DefaultString('ĐƠN HÀNG')
+  description : simpleSchema.OptionalString
 
   depositCash  : simpleSchema.DefaultNumber()
   discountCash : simpleSchema.DefaultNumber()
@@ -81,33 +81,33 @@ Schema.add 'orders', "Order", class Order
           discountCash += instance.quality * instance.discountCash
           predicate.$set["details.#{index}.price"] = productPrice
 
-        predicate.$set["profiles.totalPrice"]   = totalPrice
-        predicate.$set["profiles.discountCash"] = discountCash
-        predicate.$set["profiles.finalPrice"]   = totalPrice - discountCash
+        predicate.$set.totalPrice   = totalPrice
+        predicate.$set.discountCash = discountCash
+        predicate.$set.finalPrice   = totalPrice - discountCash
         Schema.orders.update @_id, predicate, callback
 
     doc.changePaymentsDelivery = (paymentsDeliveryId, callback)->
       option = $set:{
-        'profiles.paymentsDelivery': paymentsDeliveryId
+        'paymentsDelivery': paymentsDeliveryId
         'delivery.status' : paymentsDeliveryId
         'delivery.shipper': @creator
       }
       Schema.orders.update @_id, option, callback
 
     doc.changePaymentMethod = (paymentMethodId, callback)->
-      option = $set:{'profiles.paymentMethod': paymentMethodId}
-      option.$set['profiles.depositCash'] =
-        if option.$set['profiles.paymentMethod'] is 0 then @profiles.finalPrice
-        else if option.$set['profiles.paymentMethod'] is 1 then 0
+      option = $set:{'paymentMethod': paymentMethodId}
+      option.$set['depositCash'] =
+        if option.$set['paymentMethod'] is 0 then @finalPrice
+        else if option.$set['paymentMethod'] is 1 then 0
       Schema.orders.update @_id, option, callback
 
     doc.changeDepositCash = (depositCash, callback) ->
-      option = $set:{'profiles.depositCash': Math.abs(depositCash)}
-      option.$set['profiles.paymentMethod'] = if option.$set['profiles.depositCash'] > 0 then 0 else 1
+      option = $set:{'depositCash': Math.abs(depositCash)}
+      option.$set.paymentMethod = if option.$set.depositCash > 0 then 0 else 1
       Schema.orders.update @_id, option, callback
 
     doc.changeDescription = (description, callback)->
-      option = $set:{'profiles.description': description}
+      option = $set:{'description': description}
       Schema.orders.update @_id, option, callback
 
     doc.recalculatePrices = (newId, newQuality, newPrice) ->
@@ -119,7 +119,7 @@ Schema.add 'orders', "Order", class Order
           totalPrice += detail.quality * (detail.price - detail.discountCash)
 
       totalPrice: totalPrice
-      finalPrice: totalPrice - @profiles.discountCash
+      finalPrice: totalPrice - @discountCash
 
 
     doc.addDetail = (productUnitId, quality = 1, callback) ->
@@ -236,7 +236,7 @@ recalculationOrder = (orderId) ->
       totalPrice   += detail.quality * detail.price
       discountCash += detail.quality * detail.discountCash
     Schema.orders.update orderFound._id, $set:{
-      'profiles.totalPrice'  : totalPrice
-      'profiles.discountCash': discountCash
-      'profiles.finalPrice'  : totalPrice - discountCash
+      'totalPrice'  : totalPrice
+      'discountCash': discountCash
+      'finalPrice'  : totalPrice - discountCash
     }

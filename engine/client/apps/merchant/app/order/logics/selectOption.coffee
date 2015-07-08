@@ -1,6 +1,8 @@
+Enums = Apps.Merchant.Enums
+
 formatDefaultSearch  = (item) -> "#{item.display}" if item
-findPaymentMethods   = (paymentMethodId)-> _.findWhere(Apps.Merchant.PaymentMethods, {_id: paymentMethodId})
-findDeliveryTypes    = (deliveryTypeId)-> _.findWhere(Apps.Merchant.DeliveryTypes, {_id: deliveryTypeId})
+findPaymentMethods   = (paymentMethodId)-> _.findWhere(Enums.PaymentMethods, {_id: paymentMethodId})
+findDeliveryTypes    = (deliveryTypeId)-> _.findWhere(Enums.DeliveryTypes, {_id: deliveryTypeId})
 customerSearch       = (query) -> CustomerSearch.search(query.term); CustomerSearch.getData({sort: {name: 1}})
 formatCustomerSearch = (item) ->
   if item
@@ -10,7 +12,7 @@ formatCustomerSearch = (item) ->
 Apps.Merchant.salesInit.push (scope) ->
   scope.depositOptions =
     reactiveSetter: (val) -> scope.currentOrder.changeDepositCash(val)
-    reactiveValue: -> Session.get('currentOrder')?.profiles.depositCash ? 0
+    reactiveValue: -> Session.get('currentOrder')?.depositCash ? 0
     reactiveMax: -> 99999999999
     reactiveMin: -> 0
     reactiveStep: -> 1000
@@ -31,24 +33,24 @@ Apps.Merchant.salesInit.push (scope) ->
 
   scope.paymentsDeliverySelectOptions =
     query: (query) -> query.callback
-      results: Apps.Merchant.DeliveryTypes
+      results: Enums.DeliveryTypes
       text: '_id'
-    initSelection: (element, callback) -> callback findDeliveryTypes(Session.get('currentOrder')?.profiles.paymentsDelivery)
+    initSelection: (element, callback) -> callback findDeliveryTypes(Session.get('currentOrder')?.paymentsDelivery)
     formatSelection: formatDefaultSearch
     formatResult: formatDefaultSearch
     placeholder: 'CHỌN SẢN PTGD'
     minimumResultsForSearch: -1
     changeAction: (e) -> scope.currentOrder.changePaymentsDelivery(e.added._id)
-    reactiveValueGetter: -> findDeliveryTypes(Session.get('currentOrder')?.profiles.paymentsDelivery)
+    reactiveValueGetter: -> findDeliveryTypes(Session.get('currentOrder')?.paymentsDelivery)
 
   scope.paymentMethodSelectOptions =
     query: (query) -> query.callback
-      results: Apps.Merchant.PaymentMethods
+      results: Enums.PaymentMethods
       text: '_id'
-    initSelection: (element, callback) -> callback findPaymentMethods(Session.get('currentOrder')?.profiles.paymentMethod)
+    initSelection: (element, callback) -> callback findPaymentMethods(Session.get('currentOrder')?.paymentMethod)
     formatSelection: formatDefaultSearch
     formatResult: formatDefaultSearch
     placeholder: 'CHỌN SẢN PTGD'
     minimumResultsForSearch: -1
     changeAction: (e) -> scope.currentOrder.changePaymentMethod(e.added._id)
-    reactiveValueGetter: -> findPaymentMethods(Session.get('currentOrder')?.profiles.paymentMethod)
+    reactiveValueGetter: -> findPaymentMethods(Session.get('currentOrder')?.paymentMethod)

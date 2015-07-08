@@ -4,12 +4,12 @@ scope = logics.sales
 lemon.defineHyper Template.saleDetailSection,
   buyer: -> Session.get('currentBuyer')
   billNo: -> Helpers.orderCodeCreate(Session.get('currentBuyer')?.billNo ? '0000')
-  sellerName: -> Schema.userProfiles.findOne({user: Session.get("currentOrder")?.seller})?.fullName
+#  sellerName: -> Schema.userProfiles.findOne({user: Session.get("currentOrder")?.seller})?.fullName
 
   customerOldDebt: -> if customer = Session.get('currentBuyer') then customer.saleDebt + customer.customSaleDebt else 0
   customerFinalDebt: ->
-    if customer = Session.get('currentBuyer') and @profiles
-      customer.saleDebt + customer.customSaleDebt + @profiles.finalPrice - @profiles.depositCash
+    if customer = Session.get('currentBuyer')
+      customer.saleDebt + customer.customSaleDebt + @finalPrice - @depositCash
     else 0
 
   created   : -> @timeInterval = Meteor.setInterval(setTime, 1000)

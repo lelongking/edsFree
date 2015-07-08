@@ -6,7 +6,8 @@ template(name="orderRowEdit")
     if discountPercent
       span.super.s7.color-lime GIẢM GIÁ {{round discountPercent}}%
 
-  tr.editors.dual-border(class="{{crossBillAvailableQuality.errorClass}}")
+  //tr.editors.dual-border(class="{{crossBillAvailableQuality.errorClass}}")
+  tr.editors.dual-border
     td.bill-name.has-commands
       |{{getProductName product}}
       .commands
@@ -23,7 +24,8 @@ template(name="orderRowDisplay")
     //if discountCash
     //   span.super.s7.color-lime GIẢM GIÁ {{round discountPercent}}%
 
-  tr.detail-row.click-enable(class="{{crossBillAvailableQuality.errorClass}}")
+  //tr.detail-row.click-enable(class="{{crossBillAvailableQuality.errorClass}}")
+  tr.detail-row.click-enable
     td.bill-name.has-commands
       |{{getProductName product}}
       .commands
@@ -32,8 +34,8 @@ template(name="orderRowDisplay")
     td.number.quality.editable-field.error-field
       span
         |{{formatNumber quality}}
-        if crossBillAvailableQuality.invalid
-          span.super.s7.color-lime {{crossBillAvailableQuality.crossAvailable}}
+        //if crossBillAvailableQuality.invalid
+        //  span.super.s7.color-lime {{crossBillAvailableQuality.crossAvailable}}
     td(align="center").skull {{getProductUnitName productUnit}}
     td.number.bill-discount.editable-field
       span {{formatNumber discountCash}}

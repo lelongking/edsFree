@@ -12,7 +12,7 @@ lemon.defineApp Template.import,
       if event.which is 17 then console.log 'up' else UnitProductSearch.search productSearch
 
     'click .addImportDetail': (event, template)->
-      scope.currentImport.addImportDetail(@_id)
+      scope.currentImport.addImportDetail(@_id) if @inventoryInitial
       event.stopPropagation()
 
     'click .importSubmit': (event, template)->

@@ -20,6 +20,10 @@ template(name="import")
                     span.icon-right-open-big.addImportDetail
                 span.right-info {{unitName}}
 
+                unless inventoryInitial
+                  span.right-info(data-toggle="tooltip" data-container="body" data-placement="right" title="Quay về sản phẩm hoàn tất nhập tồn đầu kỳ."
+                  style="left: 28px; width: 150px;") Chưa tồn kho đầu kỳ
+
   #footer.modern
     .editor-row
       .editor-wrapper.dual-spacer

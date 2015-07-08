@@ -15,6 +15,8 @@
       unit.unitName = unit.name
       unit.name     = product.name
       unit.avatar   = product.avatar
+      unit.status   = product.status
+      unit.inventoryInitial = product.inventoryInitial
       productLists.push(unit)
 
   callback(false, productLists)
