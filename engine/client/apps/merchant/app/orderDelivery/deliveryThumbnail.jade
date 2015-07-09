@@ -1,6 +1,6 @@
 template(name="deliveryThumbnail")
   .thumbnails(class="#{styles}")
-    .right-caption {{showStatus deliveries.status}}
+    .right-caption {{showStatus delivery.status}}
     +avatarImageComponent(avatar=avatarUrl alias=customerAlias)
     //.short-desc.quality
     //  button.btn.btn-default.unSuccessDelivery(style="{{hideButtonUnSuccess status}}") {{buttonUnSuccessText status}}

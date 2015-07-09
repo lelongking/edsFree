@@ -246,7 +246,7 @@ Schema.add 'products', "Product", class Product
         Schema.products.update @_id, $set:{status: Enums.getValue('ProductStatuses', 'confirmed')}
 
     doc.submitInventory = (inventoryDetails)->
-      importId = Import.insert(null, 'Ton kho dau ky', 'Ton kho')
+      importId = Import.insert(null, null, 'Tồn kho đầu kỳ')
       if importFound = Schema.imports.findOne(importId)
         importFound.addImportDetail(detail._id, detail.quality) for detail in inventoryDetails
         Meteor.call 'importInventory', importFound._id, (error, result) ->

@@ -7,14 +7,25 @@ lemon.defineHyper Template.productManagementSalesHistorySection,
 #
   newImport: ->
     if product = Session.get("productManagementCurrentProduct")
-      option = sort: {'version.createdAt': 1}
+      option = sort: {importType: 1 , 'version.createdAt': -1}
       selector = {'details.product': product._id}
       currentImport = Schema.imports.find(selector, option)
       return {
         isShowDetail: if currentImport.count() > 0 then true else false
         detail: currentImport
       }
-#
+
+  allSaleDetails: ->
+    details = []; productId = @_id
+    for order in Schema.orders.find({'details.product': productId}).fetch()
+      for detail in order.details
+        if detail.product is productId
+          detail.buyer = order.buyer
+          details.push detail
+    return details
+
+  totalPrice: -> @price * @quality
+
 #  allSaleDetails: -> Schema.saleDetails.find({product: @_id})
 #
 #  events:

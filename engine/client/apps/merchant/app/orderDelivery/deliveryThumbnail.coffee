@@ -1,13 +1,13 @@
 lemon.defineWidget Template.deliveryThumbnail,
-#  showSelectCommand:  -> @deliveries.status is 1 ko co nhan giao hang
-  showStartCommand:   -> @deliveries.status is 1
-  showConfirmCommand: -> @deliveries.status is 2
-  showFinishCommand:  -> @deliveries.status is 3 or @deliveries.status is 4
-  showCancelCommand:  -> _.contains([2, 3, 4], @deliveries.status)
+#  showSelectCommand:  -> @delivery.status is 1 ko co nhan giao hang
+  showStartCommand:   -> @delivery.status is 1
+  showConfirmCommand: -> @delivery.status is 2
+  showFinishCommand:  -> @delivery.status is 3 or @delivery.status is 4
+  showCancelCommand:  -> _.contains([2, 3, 4], @delivery.status)
 
-#  showAccountingCommand:  -> @deliveries.status is 5
-#  showExportCommand:      -> @deliveries.status is 2
-#  showImportCommand:      -> @deliveries.status is 8
+#  showAccountingCommand:  -> @delivery.status is 5
+#  showExportCommand:      -> @delivery.status is 2
+#  showImportCommand:      -> @delivery.status is 8
 
   showStatus: (status) ->
     switch status
@@ -36,25 +36,25 @@ lemon.defineWidget Template.deliveryThumbnail,
 #      Meteor.call "updateDelivery", @_id, 'select', (error, result) -> console.log error if error
 
     "click .start-command": -> #đang giao hàng
-      Schema.orders.update @_id, {$set:{'deliveries.status': 2}}
+      Schema.orders.update @_id, {$set:{'delivery.status': 2}}
 
     "click .fail-command": ->
-      if @deliveries.status is 2
-        Schema.orders.update @_id, {$set:{'deliveries.status': 3}}
+      if @delivery.status is 2
+        Schema.orders.update @_id, {$set:{'delivery.status': 3}}
 
     "click .success-command": ->
-      if @deliveries.status is 2
-        Schema.orders.update @_id, {$set:{'deliveries.status': 4}}
+      if @delivery.status is 2
+        Schema.orders.update @_id, {$set:{'delivery.status': 4}}
 
     "click .finish-command": ->
-      if _.contains([3, 4], @deliveries.status)
-        Schema.orders.update @_id, {$set:{'deliveries.status': 5}}
+      if _.contains([3, 4], @delivery.status)
+        Schema.orders.update @_id, {$set:{'delivery.status': 5}}
 
     "click .cancel-command": (event, template) ->
-      if _.contains([3, 4], @deliveries.status)
-        Schema.orders.update @_id, {$set:{'deliveries.status': 2}}
-      else if @deliveries.status is 2
-        Schema.orders.update @_id, {$set:{'deliveries.status': 1}}
+      if _.contains([3, 4], @delivery.status)
+        Schema.orders.update @_id, {$set:{'delivery.status': 2}}
+      else if @delivery.status is 2
+        Schema.orders.update @_id, {$set:{'delivery.status': 1}}
 
 #    "click .accounting-command": ->
 #      Meteor.call 'confirmReceiveSale', @sale, (error, result) -> if error then console.log error

@@ -99,14 +99,15 @@ Meteor.methods
         updateQuery.$inc["qualities.#{detailIndex}.inStockQuality"] = -orderDetail.basicQuality
         Schema.products.update product._id, updateQuery
 
+
         if product.inventoryInitial
           basicImport = Schema.imports.find({
-            importType           : Enums.getValue('ImportTypes', 'inventorySuccess')
-            'details.productUnit': orderDetail.productUnit
-            inStockQuality       : {$gt: 0}
-          }).fetch()
+            importType              : $in:[Enums.getValue('ImportTypes', 'inventorySuccess'), Enums.getValue('ImportTypes', 'success')]
+            'details.productUnit'   : orderDetail.productUnit
+            'details.inStockQuality': {$gt: 0}
+          }, {sort: {importType: 1} }).fetch()
           combinedImports = basicImport
-
+          console.log combinedImports
           transactionQuality = 0
           for currentImport in combinedImports
             for importDetail, index in currentImport.details
@@ -117,11 +118,20 @@ Meteor.methods
                 else
                   takenQuality = importDetail.inStockQuality
 
-                updateImport = $inc:{}, $push:{}
+                order =
+                  _id         : orderFound._id
+                  buyer       : orderFound.buyer
+                  productUnit : orderDetail.productUnit
+                  quality     : takenQuality/orderDetail.conversion
+                  salePrice   : orderDetail.price
+                  basicQuality: takenQuality
+                  createdAt   : new Date()
+
+                updateImport = {$inc:{}, $push:{}}
+                updateImport.$push["details.#{index}.orderId"]          = order
                 updateImport.$inc["details.#{index}.saleQuality"]       = takenQuality
                 updateImport.$inc["details.#{index}.inStockQuality"]    = -takenQuality
                 updateImport.$inc["details.#{index}.availableQuality"]  = -takenQuality
-                updateImport.$push["details.#{index}.orderId"]  = {_id: orderFound._id, quality: takenQuality}
 
                 Schema.imports.update currentImport._id, updateImport
 

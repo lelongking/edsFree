@@ -31,10 +31,14 @@ simpleSchema.imports = new SimpleSchema
   'details.$.discountCash'  : simpleSchema.DefaultNumber()
   'details.$.expire'        : {type: Date, optional: true}
 
-  'details.$.orderId'             : type: [Object], defaultValue: []
-  'details.$.orderId.$._id'       : type: String
-  'details.$.orderId.$.quality'   : type: Number
-
+  'details.$.orderId'               : type: [Object], defaultValue: []
+  'details.$.orderId.$._id'         : type: String
+  'details.$.orderId.$.buyer'       : type: String
+  'details.$.orderId.$.productUnit' : type: String
+  'details.$.orderId.$.quality'     : type: Number
+  'details.$.orderId.$.salePrice'   : type: Number
+  'details.$.orderId.$.basicQuality': type: Number
+  'details.$.orderId.$.createdAt'   : type: Date
 
   'details.$.importQuality'       : {type: Number, min: 0}
   'details.$.saleQuality'         : simpleSchema.DefaultNumber()
@@ -172,11 +176,9 @@ Schema.add 'imports', "Import", class Import
 
       if Schema.imports.update(self._id, $set:{importType : Enums.getValue('ImportTypes', 'checked')})
         Meteor.call 'importConfirmed', self._id, (error, result) ->
-          if result
-            console.log result
-            Meteor.call 'importAccountingConfirmed', self._id, (error, result) ->
-              if result
-                console.log result
+          if result then console.log result
+          Meteor.call 'importAccountingConfirmed', self._id, (error, result) ->
+            if result then console.log result
 
 
     doc.remove = -> Schema.imports.remove(@_id)

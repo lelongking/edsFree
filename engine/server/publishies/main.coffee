@@ -1,3 +1,4 @@
+Enums = Apps.Merchant.Enums
 Meteor.publish null, ->
   collections = []
   return collections if !@userId
@@ -12,12 +13,12 @@ Meteor.publish null, ->
   Counts.publish @, 'customerGroups', Schema.customerGroups.find({isBase: false, merchant: merchantId})
 
   Counts.publish @, 'orders', Schema.orders.find({orderType:{$in: [1,2]}, merchant: merchantId})
-  Counts.publish @, 'deliveries', Schema.orders.find({orderType:2, 'deliveries.status': {$in: [1,2,3,4]}, merchant: merchantId})
+  Counts.publish @, 'deliveries', Schema.orders.find({orderType:2, 'delivery.status': {$in: [1,2,3,4]}, merchant: merchantId})
 
   Counts.publish @, 'providers', Schema.providers.find({merchant: merchantId})
   Counts.publish @, 'providerReturns', Schema.returns.find({returnType: 1, merchant: merchantId})
 
-  Counts.publish @, 'imports', Schema.imports.find({merchant: merchantId})
+  Counts.publish @, 'imports', Schema.imports.find({importType: Enums.getValue('ImportTypes', 'success'),  merchant: merchantId})
   Counts.publish @, 'inventories', Schema.inventories.find({merchant: merchantId})
 
   Counts.publish @, 'users', Meteor.users.find({merchant: merchantId})

@@ -7,17 +7,6 @@ Apps.Merchant.Enums =
   getObject : (key, value = 'value') -> _.indexBy(Apps.Merchant.Enums[key], value)
   getValue  : (key, value) -> (_.indexBy(Apps.Merchant.Enums[key], 'value'))[value]?._id
 
-Helpers.Searchify = (source) ->
-  source.toLowerCase()
-  .replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a")
-  .replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e")
-  .replace(/ì|í|ị|ỉ|ĩ/g, "i")
-  .replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o")
-  .replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u")
-  .replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y")
-  .replace(/đ/g, "d")
-  .replace(/-+-/g, "-").replace(/^\-+|\-+$/g, "")
-
 Helpers.shortName = (fullName, maxlength = 6) ->
   return undefined if !fullName
   splited = fullName?.split(' ')
@@ -37,85 +26,9 @@ Helpers.shortName2 = (fullName, word = 2) ->
   else
     fullName
 
-Helpers.searchProduct = (cursorProduct, products)->
-  cursorProduct.forEach(
-    (product) ->
-      if product.buildInProduct
-        if buildInProduct = Schema.buildInProducts.findOne(product.buildInProduct)
-          product.productCode = buildInProduct.productCode
-          product.basicUnit = buildInProduct.basicUnit
-
-          product.name  = buildInProduct.name if !product.name
-          product.image = buildInProduct.image if !product.image
-          product.description = buildInProduct.description if !product.description
-
-          products.push product
-      else
-        products.push product
-  )
-
-Helpers.searchBranchProduct = (cursorProduct, branchProductListId, branchProductList, merchantProductList)->
-  cursorProduct.forEach(
-    (product) ->
-      if product.buildInProduct
-        if buildInProduct = Schema.buildInProducts.findOne(product.buildInProduct)
-          product.productCode = buildInProduct.productCode
-          product.basicUnit = buildInProduct.basicUnit
-
-          product.name  = buildInProduct.name if !product.name
-          product.image = buildInProduct.image if !product.image
-          product.description = buildInProduct.description if !product.description
-
-          if _.contains(branchProductListId, product._id)
-            branchProductList.push product
-          else
-            merchantProductList.push product
-      else
-        if _.contains(branchProductListId, product._id)
-          branchProductList.push product
-        else
-          merchantProductList.push product
-  )
-
-
-Helpers.searchProductUnit = (product, productUnits)->
-  productUnits.push {product: product}
-  Schema.productUnits.find({product: product._id}).forEach(
-    (unit)->
-      if !unit.unit and unit.buildInProductUnit
-        if buildInProductUnit = Schema.buildInProductUnits.findOne(unit.buildInProductUnit)
-          unit.unit = buildInProductUnit.unit
-      productUnits.push {product: product, unit: unit}
-  )
-
 Helpers.respectName = (fullName, gender) -> "#{if gender then 'Anh' else 'Chị'} #{fullName.split(' ').pop()}"
 Helpers.firstName = (fullName) -> fullName?.split(' ').pop()
 
-Helpers.Number = (numberText) -> number = Number(numberText); if isNaN(number) then number = 0 else Math.floor(number)
-
-Helpers.createSaleCode = (buyerId)->
-#  date = new Date()
-#  day = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  oldSale = Schema.sales.findOne({buyer: buyerId},{sort: {'version.createdAt': -1}})
-#  oldSale = Schema.sales.findOne({buyer: buyerId, 'version.createdAt': {$gt: day}},{sort: {'version.createdAt': -1}})
-  if oldSale
-    code = Number(oldSale.orderCode.substring(oldSale.orderCode.length-4))+1
-    if 99 < code < 999 then code = "0#{code}"
-    if 9 < code < 100 then code = "00#{code}"
-    if code < 10 then code = "000#{code}"
-    orderCode = "#{code}"
-#    orderCode = "#{Helpers.FormatDate()}-#{code}"
-  else
-    orderCode = "0001"
-#    orderCode = "#{Helpers.FormatDate()}-0001"
-  orderCode
-
-Helpers.orderCodeCreate = (text)->
-  code = Number(text)+1
-  if 99 < code < 999 then code = "0#{code}"
-  if 9 < code < 100 then code = "00#{code}"
-  if code < 10 then code = "000#{code}"
-  return code
 
 colors = ['green', 'light-green', 'yellow', 'orange', 'blue', 'dark-blue', 'lime', 'pink', 'red', 'purple', 'dark',
           'gray', 'magenta', 'teal', 'turquoise', 'green-sea', 'emeral', 'nephritis', 'peter-river', 'belize-hole',
@@ -207,20 +120,7 @@ Helpers.isEmail = (email)->
   reg.test(email)
 
 Helpers.randomBarcode = (prefix="0", length=10)->
-  prefix += Math.floor(Math.random() * 10) for i in [0...length]
+  for i in [0...length]
+    prefix += Math.floor(Math.random() * 10)
+
   prefix
-
-Helpers.splitName = (fullText) ->
-  if fullText.indexOf("(") > 0
-    namePart        = fullText.substr(0, fullText.indexOf("(")).trim()
-    descriptionPart = fullText.substr(fullText.indexOf("(")).replace("(", "").replace(")", "").trim()
-    return { name: namePart, description: descriptionPart }
-  else
-    return { name: fullText }
-
-
-Helpers.BuildRegExp = (searchText) ->
-  words   = searchText.trim().split(/[ \-\:]+/)
-  exps    = _.map words, (word) -> "(?=.*" + word + ")"
-  fullExp = exps.join('') + ".+"
-  new RegExp(fullExp, "i")

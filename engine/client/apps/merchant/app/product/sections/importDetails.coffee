@@ -3,10 +3,16 @@ scope = logics.productManagement
 lemon.defineWidget Template.productManagementImportDetails,
   isProduct: -> @product is Session.get("productManagementCurrentProduct")._id
   providerName: -> Template.parentData().importName
-  totalPrice: -> @price * @quality
+  totalPrice: -> (@price ? @salePrice) * @quality
+  isInventory: -> Template.parentData().importType is -2
 
-  saleDetails: ->
-    Schema.orders.find({'details.productUnit'}).fetch()
+#    if orderFound = Schema.orders.findOne({_id:order._id, 'details.productUnit': productUnitId})
+
+#    order
+#    order = {}
+#    if orderFound = Schema.orders.findOne({_id:order._id, 'details.productUnit': productUnitId})
+#      for detail in orderFound.details
+#        saleDetails.push detail if detail.productUnit is productUnitId
 
 #  unitSaleQuality: -> Math.round(@quality/@conversionQuality*100)/100
 #  isShowDisableMode: -> !Session.get("productManagementCurrentProduct")?.basicDetailModeEnabled

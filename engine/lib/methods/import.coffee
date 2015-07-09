@@ -58,4 +58,4 @@ Meteor.methods
     importFound = Schema.imports.findOne importQuery
     return {valid: false, error: 'import not found!'} if !importFound
 
-    Schema.imports.update importFound._id, $set:{orderType: Enums.getValue('ImportTypes', 'success')}
+    Schema.imports.update importFound._id, $set:{importType: Enums.getValue('ImportTypes', 'success')}

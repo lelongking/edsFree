@@ -9,11 +9,10 @@ template(name="productManagementSalesHistorySection")
     .panel-body.debt-details
       table.lemon-grid.safe
         tr
-          th(style="width:auto") NHÀ CUNG CẤP/K.HÀNG
-          th(style="width:100px; text-align:center") HẠN/GD
+          th(style="width:auto") ĐỐI TÁC
+          th(style="width:100px; text-align:center") THỜI GIAN
           th.number(style="width:50px") SL
           th(style="width:80px; text-align:center") ĐƠN VỊ
-          th.number(style="width:60px") QUI ĐỔI
           th.number(style="width:100px") GIÁ
           th.number(style="width:120px") TỔNG TIỀN
 
@@ -47,9 +46,25 @@ template(name="productManagementSalesHistorySection")
         if newImport.isShowDetail
           each newImport.detail
             +productManagementImportDetails this
+        else
+          //td.has-commands(colspan="7")
+          //  | &nbsp;
+          //  .bill-header <b>{{momentFormat version.createdAt "DD/MM/YYYY"}}</b>
+          //  .commands(style="left: 80px; top:0px; font-style: italic; color:#7ac5f9") <b>{{description}}</b>
+
+          each allSaleDetails
+            tr.detail-row
+              td.first-column.has-commands
+                span.icon-forward-3 {{getBuyerName buyer}}
+                .commands Ngày Bán
+              td(align="center") {{momentFormat createdAt "DD/MM/YYYY"}}
+              td.number {{quality}}
+              td(align="center") {{getProductUnitName productUnit}}
+              td.number {{formatNumber price}}
+              td.number {{formatNumber totalPrice}}
 
     .panel-footer
-      if basicDetailModeEnabled
+      unless inventoryInitial
         .right-float
           span.s5.note <b>TỔNG BÁN</b>/ TỔNG TỒN:
           span.s3 <b>{{formatNumber saleQuality}}</b>
