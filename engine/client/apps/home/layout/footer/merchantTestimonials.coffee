@@ -44,7 +44,9 @@ navigateComment = (step = 1)->
   Sky.helpers.animateUsing("#home-comment-wrapper", "fadeIn")
 
 lemon.defineWidget Template.merchantTestimonials,
-  currentComment: -> comments[Session.get('currentCommentPosition')]
+  helpers:
+    currentComment: -> comments[Session.get('currentCommentPosition')]
+
   created: -> Session.set('currentCommentPosition', 0)
   events:
     'click .nextCommand': -> navigateComment()

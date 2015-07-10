@@ -1,5 +1,6 @@
 lemon.defineWidget Template.homeHeader,
-  languages: -> i18n.languages
+  helpers:
+    languages: -> i18n.languages
 
   created: -> Session.setDefault('loginValid', 'invalid')
   rendered: -> $(@find("#authAlias")).val($.cookie('lastAuthAlias'))

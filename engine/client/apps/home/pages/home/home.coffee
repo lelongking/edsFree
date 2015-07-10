@@ -27,13 +27,14 @@ animateBackgroundColor = ->
   currentIndex = 0 if currentIndex > colors.length
 
 lemon.defineWidget Template.home,
-  registerValid: ->
-    if Session.get('registerAccountValid') == Session.get('registerSecretValid') == 'valid'
-      'valid'
-    else
-      'invalid'
-  registerSecretValid: -> Session.get('registerSecretValid')
-  termButtonActive: -> if Session.get('topPanelMinimize') then '' else 'reading'
+  helpers:
+    registerValid: ->
+      if Session.get('registerAccountValid') == Session.get('registerSecretValid') == 'valid'
+        'valid'
+      else
+        'invalid'
+    registerSecretValid: -> Session.get('registerSecretValid')
+    termButtonActive: -> if Session.get('topPanelMinimize') then '' else 'reading'
 
   created: -> Router.go('/merchant') unless Meteor.userId() is null or (Session.get('autoNatigateDashboardOff'))
   rendered: ->
