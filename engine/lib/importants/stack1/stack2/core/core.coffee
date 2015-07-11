@@ -7,6 +7,57 @@ Apps.Merchant.Enums =
   getObject : (key, value = 'value') -> _.indexBy(Apps.Merchant.Enums[key], value)
   getValue  : (key, value) -> (_.indexBy(Apps.Merchant.Enums[key], 'value'))[value]?._id
 
+Helpers.Searchify = (source) ->
+  source.toLowerCase()
+  .replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a")
+  .replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e")
+  .replace(/ì|í|ị|ỉ|ĩ/g, "i")
+  .replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o")
+  .replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u")
+  .replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y")
+  .replace(/đ/g, "d")
+  .replace(/-+-/g, "-").replace(/^\-+|\-+$/g, "")
+
+Helpers.Number = (numberText) -> number = Number(numberText); if isNaN(number) then number = 0 else Math.floor(number)
+
+Helpers.splitName = (fullText) ->
+  if fullText.indexOf("(") > 0
+    namePart        = fullText.substr(0, fullText.indexOf("(")).trim()
+    descriptionPart = fullText.substr(fullText.indexOf("(")).replace("(", "").replace(")", "").trim()
+    return { name: namePart, description: descriptionPart }
+  else
+    return { name: fullText }
+
+Helpers.BuildRegExp = (searchText) ->
+  words   = searchText.trim().split(/[ \-\:]+/)
+  exps    = _.map words, (word) -> "(?=.*" + word + ")"
+  fullExp = exps.join('') + ".+"
+  new RegExp(fullExp, "i")
+
+Helpers.createSaleCode = (buyerId)->
+#  date = new Date()
+#  day = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  oldSale = Schema.sales.findOne({buyer: buyerId},{sort: {'version.createdAt': -1}})
+  #  oldSale = Schema.sales.findOne({buyer: buyerId, 'version.createdAt': {$gt: day}},{sort: {'version.createdAt': -1}})
+  if oldSale
+    code = Number(oldSale.orderCode.substring(oldSale.orderCode.length-4))+1
+    if 99 < code < 999 then code = "0#{code}"
+    if 9 < code < 100 then code = "00#{code}"
+    if code < 10 then code = "000#{code}"
+    orderCode = "#{code}"
+#    orderCode = "#{Helpers.FormatDate()}-#{code}"
+  else
+    orderCode = "0001"
+  #    orderCode = "#{Helpers.FormatDate()}-0001"
+  orderCode
+
+Helpers.orderCodeCreate = (text)->
+  code = Number(text)+1
+  if 99 < code < 999 then code = "0#{code}"
+  if 9 < code < 100 then code = "00#{code}"
+  if code < 10 then code = "000#{code}"
+  return code
+
 Helpers.shortName = (fullName, maxlength = 6) ->
   return undefined if !fullName
   splited = fullName?.split(' ')
@@ -77,6 +128,7 @@ Helpers.FormatDate = (format = 0, dateObj = new Date())->
   switch format
     when 0 then "#{curr_Day}#{curr_Month}#{curr_Tear.substring(2,4)}"
     when 1 then "#{curr_Day}-#{curr_Month}-#{curr_Tear}"
+
 Helpers.RemoveVnSigns = (source) ->
   str = source
 
@@ -102,6 +154,7 @@ Helpers.deferredAction = (action, uniqueName, timeOut = 200) ->
   , timeOut
 
   Apps.currentDefferedActionName = uniqueName if uniqueName
+
 Helpers.animateUsing = (selector, animationType) ->
   $element = $(selector)
   $element.removeClass()
@@ -114,6 +167,7 @@ Helpers.excuteAfterAnimate = ($element, pureClass, animationType, commands) ->
   .one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', -> commands())
 
 Helpers.arrangeAppLayout = Component.helpers.arrangeAppLayout
+
 Helpers.isEmail = (email)->
   reg = /^\w+[\+\.\w-]*@([\w-]+\.)*\w+[\w-]*\.([a-z]{2,4}|\d+)$/i
 #  reg1= /^[0-9A-Za-z]+[0-9A-Za-z_]*@[\w\d.]+.\w{2,4}$/
