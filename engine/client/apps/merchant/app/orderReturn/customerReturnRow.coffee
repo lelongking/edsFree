@@ -1,35 +1,36 @@
 scope = logics.customerReturn
 lemon.defineHyper Template.customerReturnRowEdit,
-  finalPrice: -> @quality * (@price - @discountCash)
-#  crossReturnAvailableQuality: ->
-#    returnDetail = @
-#    if currentReturn = Session.get('currentCustomerReturn')
-#      currentProduct = []
-#      Schema.sales.find({buyer: currentReturn.customer}).forEach(
-#        (sale)->
-#          Schema.saleDetails.find({sale: sale._id, product: returnDetail.product}).forEach(
-#            (saleDetail)-> currentProduct.push saleDetail
-#          )
-#      )
-#      sameProducts = Schema.returnDetails.find({return: returnDetail.return, product: returnDetail.product}).fetch()
-#
-#      crossProductQuality = 0
-#      currentProductQuality = 0
-#      crossProductQuality += item.returnQuality for item in sameProducts
-#      currentProductQuality += (item.quality - item.returnQuality) for item in currentProduct
-#
-#      crossAvailable = currentProductQuality - crossProductQuality
-#      if crossAvailable < 0
-#        crossAvailable = Math.ceil(Math.abs(crossAvailable/returnDetail.conversionQuality))*(-1)
-#      else
-#        Math.ceil(Math.abs(crossAvailable/returnDetail.conversionQuality))
-#
-#      return {
-#        crossAvailable: crossAvailable
-#        isValid: crossAvailable > 0
-#        invalid: crossAvailable < 0
-#        errorClass: if crossAvailable >= 0 then '' else 'errors'
-#      }
+  helpers:
+    finalPrice: -> @quality * (@price - @discountCash)
+  #  crossReturnAvailableQuality: ->
+  #    returnDetail = @
+  #    if currentReturn = Session.get('currentCustomerReturn')
+  #      currentProduct = []
+  #      Schema.sales.find({buyer: currentReturn.customer}).forEach(
+  #        (sale)->
+  #          Schema.saleDetails.find({sale: sale._id, product: returnDetail.product}).forEach(
+  #            (saleDetail)-> currentProduct.push saleDetail
+  #          )
+  #      )
+  #      sameProducts = Schema.returnDetails.find({return: returnDetail.return, product: returnDetail.product}).fetch()
+  #
+  #      crossProductQuality = 0
+  #      currentProductQuality = 0
+  #      crossProductQuality += item.returnQuality for item in sameProducts
+  #      currentProductQuality += (item.quality - item.returnQuality) for item in currentProduct
+  #
+  #      crossAvailable = currentProductQuality - crossProductQuality
+  #      if crossAvailable < 0
+  #        crossAvailable = Math.ceil(Math.abs(crossAvailable/returnDetail.conversionQuality))*(-1)
+  #      else
+  #        Math.ceil(Math.abs(crossAvailable/returnDetail.conversionQuality))
+  #
+  #      return {
+  #        crossAvailable: crossAvailable
+  #        isValid: crossAvailable > 0
+  #        invalid: crossAvailable < 0
+  #        errorClass: if crossAvailable >= 0 then '' else 'errors'
+  #      }
 
   rendered: ->
     @ui.$editQuality.inputmask "numeric",

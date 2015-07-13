@@ -1,10 +1,11 @@
 scope = logics.sales
 
 lemon.defineApp Template.sales,
-  productTextSearch: -> ProductSaleSearch?.getCurrentQuery() ? ''
-  allowCreateOrderDetail: -> if !scope.currentProduct then 'disabled'
-  allowSuccessOrder: -> if Session.get('allowSuccess') then '' else 'disabled'
-  avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
+  helpers:
+    productTextSearch: -> ProductSaleSearch?.getCurrentQuery() ? ''
+    allowCreateOrderDetail: -> if !scope.currentProduct then 'disabled'
+    allowSuccessOrder: -> if Session.get('allowSuccess') then '' else 'disabled'
+    avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
 
   created: ->
     UnitProductSearch.search('')

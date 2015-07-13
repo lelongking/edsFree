@@ -6,7 +6,7 @@ lemon.defineWidget Template.providerManagementCustomImportDetails,
   finalReceivableClass: -> if @latestDebtBalance >= 0 then 'receive' else 'paid'
   latestPaids: -> Schema.transactions.find {latestImport: @_id}, {sort: {'version.createdAt': 1}}
   customImportDetails: ->
-    customImportId = UI._templateInstance().data._id
+    customImportId = Template.instance().data._id
     Schema.customImportDetails.find({customImport: customImportId})
 
   isCustomImportModeEnabled: ->

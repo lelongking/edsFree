@@ -1,16 +1,17 @@
 scope = logics.productGroup
 
 lemon.defineApp Template.productGroup,
-  productGroupLists: ->
-    console.log 'reactive....'
-    selector = {}; options  = {sort: {isBase: 1, nameSearch: 1}}; searchText = Session.get("productGroupSearchFilter")
-    if(searchText)
-      regExp = Helpers.BuildRegExp(searchText);
-      selector = {$or: [
-        {name: regExp}
-      ]}
-    scope.productGroupLists = Schema.productGroups.find(selector, options).fetch()
-    scope.productGroupLists
+  helpers:
+    productGroupLists: ->
+      console.log 'reactive....'
+      selector = {}; options  = {sort: {isBase: 1, nameSearch: 1}}; searchText = Session.get("productGroupSearchFilter")
+      if(searchText)
+        regExp = Helpers.BuildRegExp(searchText);
+        selector = {$or: [
+          {name: regExp}
+        ]}
+      scope.productGroupLists = Schema.productGroups.find(selector, options).fetch()
+      scope.productGroupLists
 
   created: ->
     Session.set("productGroupSearchFilter", "")

@@ -5,14 +5,15 @@
 scope = logics.priceBook
 
 lemon.defineHyper Template.priceBookOverviewSection,
-  priceBookSelectOptions : -> scope.priceBookSelectOptions
-  priceProductSelectedCount: -> Session.get("priceProductLists")?.length > 0
-  name: ->
-    Meteor.setTimeout ->
-      scope.overviewTemplateInstance.ui.$priceBookName.change()
-    ,50 if scope.overviewTemplateInstance
-    @name
-  firstName: -> Helpers.firstName(@name)
+  helpers:
+    priceBookSelectOptions : -> scope.priceBookSelectOptions
+    priceProductSelectedCount: -> Session.get("priceProductLists")?.length > 0
+    name: ->
+      Meteor.setTimeout ->
+        scope.overviewTemplateInstance.ui.$priceBookName.change()
+      ,50 if scope.overviewTemplateInstance
+      @name
+    firstName: -> Helpers.firstName(@name)
 
   rendered: ->
     scope.overviewTemplateInstance = @

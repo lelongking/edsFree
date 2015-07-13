@@ -24,7 +24,6 @@ Package.onUse(function(api) {
 
     //Component system
     'core/component/core.coffee',
-    'core/component/widget.coffee',
     'core/component/app.coffee',
 
     //Database operations

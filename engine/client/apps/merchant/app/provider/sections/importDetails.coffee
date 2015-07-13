@@ -28,11 +28,11 @@ lemon.defineWidget Template.providerManagementImportDetails,
     new Date(year, mount, date + 1, hour, minute, second) > new Date()
 
   importDetailCount: ->
-    importId = UI._templateInstance().data._id
+    importId = Template.instance().data._id
     Schema.productDetails.find({import: importId}, {sort: {'version.createdAt': 1}}).count()
 
   importDetails: ->
-    importId = UI._templateInstance().data._id
+    importId = Template.instance().data._id
     Schema.productDetails.find {import: importId}, {sort: {'version.createdAt': 1}}
 
   dependsData: ->

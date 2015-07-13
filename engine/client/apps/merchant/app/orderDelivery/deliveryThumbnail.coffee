@@ -1,35 +1,36 @@
 lemon.defineWidget Template.deliveryThumbnail,
-#  showSelectCommand:  -> @delivery.status is 1 ko co nhan giao hang
-  showStartCommand:   -> @delivery.status is 1
-  showConfirmCommand: -> @delivery.status is 2
-  showFinishCommand:  -> @delivery.status is 3 or @delivery.status is 4
-  showCancelCommand:  -> _.contains([2, 3, 4], @delivery.status)
+  helpers:
+  #  showSelectCommand:  -> @delivery.status is 1 ko co nhan giao hang
+    showStartCommand:   -> @delivery.status is 1
+    showConfirmCommand: -> @delivery.status is 2
+    showFinishCommand:  -> @delivery.status is 3 or @delivery.status is 4
+    showCancelCommand:  -> _.contains([2, 3, 4], @delivery.status)
 
-#  showAccountingCommand:  -> @delivery.status is 5
-#  showExportCommand:      -> @delivery.status is 2
-#  showImportCommand:      -> @delivery.status is 8
+  #  showAccountingCommand:  -> @delivery.status is 5
+  #  showExportCommand:      -> @delivery.status is 2
+  #  showImportCommand:      -> @delivery.status is 8
 
-  showStatus: (status) ->
-    switch status
-      when 1 then 'Chưa Giao Hàng '
-      when 2 then 'Đang Giao Hàng'
-      when 3 then 'Giao Thất Bại'
-      when 4 then 'Giao Thành Công'
+    showStatus: (status) ->
+      switch status
+        when 1 then 'Chưa Giao Hàng '
+        when 2 then 'Đang Giao Hàng'
+        when 3 then 'Giao Thất Bại'
+        when 4 then 'Giao Thành Công'
 
-  buttonSuccessText: (status) ->
-    switch status
-      when 1 then 'nhận đơn giao hàng'
-      when 3 then 'xác nhận đi giao hàng'
-      when 4 then 'Thành Công'
-      when 5 then 'Chờ Xác Nhận Của Kế Toán'
-      when 6 then 'Xác Nhận'
-      when 8 then 'Chờ Xác Nhân Của Kho'
-      when 9 then 'Xác Nhận'
+    buttonSuccessText: (status) ->
+      switch status
+        when 1 then 'nhận đơn giao hàng'
+        when 3 then 'xác nhận đi giao hàng'
+        when 4 then 'Thành Công'
+        when 5 then 'Chờ Xác Nhận Của Kế Toán'
+        when 6 then 'Xác Nhận'
+        when 8 then 'Chờ Xác Nhân Của Kho'
+        when 9 then 'Xác Nhận'
 
-  buttonUnSuccessText: (status) -> 'Thất Bại' if status == 4
-  hideButtonSuccess: (status)-> return "display: none" if _.contains([2,5,7,8,10],status)
-  hideButtonUnSuccess: (status)-> return "display: none" unless status == 4
-  customerAlias: -> Schema.customers.findOne(@buyer)?.name ? @contactName
+    buttonUnSuccessText: (status) -> 'Thất Bại' if status == 4
+    hideButtonSuccess: (status)-> return "display: none" if _.contains([2,5,7,8,10],status)
+    hideButtonUnSuccess: (status)-> return "display: none" unless status == 4
+    customerAlias: -> Schema.customers.findOne(@buyer)?.name ? @contactName
 
   events:
 #    "click .select-command": (event, template) -> #nhân giao hàng

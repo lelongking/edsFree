@@ -289,5 +289,5 @@ Schema.add 'products', "Product", class Product
     Schema.priceBooks.findOne(existedQuery)
 
   @setSession: (currentProductId) ->
-    Meteor.subscribe('productManagementCurrentProductData', @_id) if Meteor.isClient
+    Meteor.subscribe('productManagementCurrentProductData', currentProductId) if Meteor.isClient
     Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentProduct': currentProductId}})

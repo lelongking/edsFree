@@ -1,23 +1,23 @@
 @CustomerCreate = ()->
   Customer.insert(item.name, item.description) for item in a
 
-
 scope = logics.customerManagement
 
 lemon.defineHyper Template.customerManagementOverviewSection,
-  avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
-  showEditCommand: -> Session.get "customerManagementShowEditCommand"
-  showDeleteCommand: -> Session.get("customerManagementCurrentCustomer")?.allowDelete
-  name: ->
-    Meteor.setTimeout ->
-      scope.overviewTemplateInstance.ui.$customerName.change()
-    ,50 if scope.overviewTemplateInstance
-    @name
-  firstName: -> Helpers.firstName(@name)
-
   rendered: ->
     scope.overviewTemplateInstance = @
     @ui.$customerName.autosizeInput({space: 10})
+
+  helpers:
+    avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
+    showEditCommand: -> Session.get "customerManagementShowEditCommand"
+    showDeleteCommand: -> Session.get("customerManagementCurrentCustomer")?.allowDelete
+    name: ->
+      Meteor.setTimeout ->
+        scope.overviewTemplateInstance.ui.$customerName.change()
+      ,50 if scope.overviewTemplateInstance
+      @name
+    firstName: -> Helpers.firstName(@name)
 
   events:
     "click .avatar": (event, template) -> template.find('.avatarFile').click()

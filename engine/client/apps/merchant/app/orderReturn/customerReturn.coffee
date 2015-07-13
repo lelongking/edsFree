@@ -1,7 +1,8 @@
 scope = logics.customerReturn
 
 lemon.defineApp Template.customerReturn,
-  allowSuccessReturn: -> if Session.get('currentCustomerReturn')?.owner then '' else 'disabled'
+  helpers:
+    allowSuccessReturn: -> if Session.get('currentCustomerReturn')?.owner then '' else 'disabled'
 
   created: ->
     CustomerSearch.search('')

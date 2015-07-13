@@ -2,31 +2,32 @@ scope = logics.productManagement
 Enums = Apps.Merchant.Enums
 
 lemon.defineHyper Template.overviewProductUnit,
-  currentProduct: -> scope.currentProduct
-  allowCreateUnit: -> if Session.get('productManagementAllowAddUnit') then 'selected' else ''
-  isNotLimitUnit: -> Session.get('productManagementAllowAddUnit') and scope.currentProduct.units?.length < 3
-  productUnitTables : ->
-    unitTable = []
-    product =
-      class       : 'product'
-      isProduct   : true
-      name        : scope.currentProduct.name
-      barcode     : 'Mã Vạch'
-      importPrice : 'Giá Nhập'
-      saleQuality : 'Giá Bán'
-    unitTable.push(product)
+  helpers:
+    currentProduct: -> scope.currentProduct
+    allowCreateUnit: -> if Session.get('productManagementAllowAddUnit') then 'selected' else ''
+    isNotLimitUnit: -> Session.get('productManagementAllowAddUnit') and scope.currentProduct.units?.length < 3
+    productUnitTables : ->
+      unitTable = []
+      product =
+        class       : 'product'
+        isProduct   : true
+        name        : scope.currentProduct.name
+        barcode     : 'Mã Vạch'
+        importPrice : 'Giá Nhập'
+        saleQuality : 'Giá Bán'
+      unitTable.push(product)
 
-    for unit in scope.currentProduct.units
-      productUnit =
-        _id         : unit._id
-        class       : 'unit'
-        isProduct   : false
-        name        : unit.name
-        barcode     : unit.barcode
-        importPrice : unit.priceBooks[0].importPrice
-        saleQuality : unit.priceBooks[0].salePrice
-      unitTable.push(productUnit)
-    return unitTable
+      for unit in scope.currentProduct.units
+        productUnit =
+          _id         : unit._id
+          class       : 'unit'
+          isProduct   : false
+          name        : unit.name
+          barcode     : unit.barcode
+          importPrice : unit.priceBooks[0].importPrice
+          saleQuality : unit.priceBooks[0].salePrice
+        unitTable.push(productUnit)
+      return unitTable
 
   rendered: ->
     if scope.currentProduct.status is Enums.getValue('ProductStatuses', 'initialize')

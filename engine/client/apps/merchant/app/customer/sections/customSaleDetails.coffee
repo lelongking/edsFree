@@ -1,30 +1,31 @@
 scope = logics.customerManagement
 
 lemon.defineWidget Template.customerManagementCustomSaleDetails,
-  customSaleDetails: ->
-    customSaleId = UI._templateInstance().data._id
-    Schema.customSaleDetails.find({customSale: customSaleId})
-  latestPaids: -> Schema.transactions.find {latestSale: @_id}, {sort: {'version.createdAt': 1}}
-  receivableClass: -> if @debtBalanceChange >= 0 then 'receive' else 'paid'
-  finalReceivableClass: -> if @latestDebtBalance >= 0 then 'receive' else 'paid'
-  name: -> @productName
+  helpers:
+    customSaleDetails: ->
+      customSaleId = Template.instance().data._id
+      Schema.customSaleDetails.find({customSale: customSaleId})
+    latestPaids: -> Schema.transactions.find {latestSale: @_id}, {sort: {'version.createdAt': 1}}
+    receivableClass: -> if @debtBalanceChange >= 0 then 'receive' else 'paid'
+    finalReceivableClass: -> if @latestDebtBalance >= 0 then 'receive' else 'paid'
+    name: -> @productName
 
-  customSaleDetailCount: ->
-    customSaleId = UI._templateInstance().data._id
-    Schema.customSaleDetails.find({customSale: customSaleId}).count() > 0
+    customSaleDetailCount: ->
+      customSaleId = Template.instance().data._id
+      Schema.customSaleDetails.find({customSale: customSaleId}).count() > 0
 
-  isShowDeleteCustomSale: ->
-    customer = Session.get("customerManagementCurrentCustomer")
-    if customer?.customSaleModeEnabled and (@allowDelete || !Schema.transactions.findOne({latestSale: @_id})) then true else false
+    isShowDeleteCustomSale: ->
+      customer = Session.get("customerManagementCurrentCustomer")
+      if customer?.customSaleModeEnabled and (@allowDelete || !Schema.transactions.findOne({latestSale: @_id})) then true else false
 
-  isCustomSaleModeEnabled: ->
-    customer = Session.get("customerManagementCurrentCustomer")
-    if @allowDelete and customer?.customSaleModeEnabled then true else false
+    isCustomSaleModeEnabled: ->
+      customer = Session.get("customerManagementCurrentCustomer")
+      if @allowDelete and customer?.customSaleModeEnabled then true else false
 
-  isCustomSaleDetailCreator: ->
-    customer = Session.get("customerManagementCurrentCustomer")
-    latestCustomSale = Schema.customSales.findOne({buyer: customer._id}, {sort: {debtDate: -1}})
-    if customer?.customSaleModeEnabled and @_id is latestCustomSale?._id then true else false
+    isCustomSaleDetailCreator: ->
+      customer = Session.get("customerManagementCurrentCustomer")
+      latestCustomSale = Schema.customSales.findOne({buyer: customer._id}, {sort: {debtDate: -1}})
+      if customer?.customSaleModeEnabled and @_id is latestCustomSale?._id then true else false
 
 
   events:

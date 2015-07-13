@@ -1,14 +1,15 @@
 scope = logics.productGroup
 
 lemon.defineApp Template.productGroupOverviewSection,
-  productGroupSelects: -> scope.productGroupSelects
-  productSelectedCount: -> Session.get("productSelectLists")?.length > 0
-#  showEditCommand: -> Session.get "productGroupShowEditCommand"
-  name: ->
-    Meteor.setTimeout ->
-      scope.overviewTemplateInstance.ui.$productGroupName.change()
-    ,50 if scope.overviewTemplateInstance
-    @name
+  helpers:
+    productGroupSelects: -> scope.productGroupSelects
+    productSelectedCount: -> Session.get("productSelectLists")?.length > 0
+  #  showEditCommand: -> Session.get "productGroupShowEditCommand"
+    name: ->
+      Meteor.setTimeout ->
+        scope.overviewTemplateInstance.ui.$productGroupName.change()
+      ,50 if scope.overviewTemplateInstance
+      @name
 
   rendered: ->
     scope.overviewTemplateInstance = @

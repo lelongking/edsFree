@@ -24,8 +24,8 @@ generateActiveClass = (context, instance) ->
 
 lemon.defineWidget Template.iTab,
   sources: -> Session.get(@options.source)
-  getCaption: -> @[UI._templateInstance().data.options.caption ? 'caption']
-  activeClass: -> generateActiveClass(UI._templateInstance(), @)
+  getCaption: -> @[Template.instance().data.options.caption ? 'caption']
+  activeClass: -> generateActiveClass(Template.instance(), @)
 
   events:
     "click li:not(.new-button):not(.active)": (event, template) ->

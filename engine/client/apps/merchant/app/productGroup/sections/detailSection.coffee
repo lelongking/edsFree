@@ -1,10 +1,11 @@
 scope = logics.productGroup
 
 lemon.defineHyper Template.productGroupDetailSection,
-  selected: -> if _.contains(Session.get("productSelectLists"), @_id) then 'selected' else ''
-  productLists: ->
-    return [] if !@products or @products.length is 0
-    Schema.products.find({_id: {$in: @products}, group: @_id},{sort: {name: 1}})
+  helpers:
+    selected: -> if _.contains(Session.get("productSelectLists"), @_id) then 'selected' else ''
+    productLists: ->
+      return [] if !@products or @products.length is 0
+      Schema.products.find({_id: {$in: @products}, group: @_id},{sort: {name: 1}})
 
   rendered: ->
 

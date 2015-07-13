@@ -1,11 +1,6 @@
 scope = logics.productManagement
 
 lemon.defineApp Template.productManagement,
-  creationMode: -> Session.get("productManagementCreationMode")
-  currentProduct: -> Session.get("productManagementCurrentProduct")
-  avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
-  activeClass:-> if Session.get("productManagementCurrentProduct")?._id is @._id then 'active' else ''
-
   created: ->
     ProductSearch.search ''
     Session.set("productManagementSearchFilter", "")
@@ -15,6 +10,12 @@ lemon.defineApp Template.productManagement,
 
 # loal danh sach san pham con lai
 #    lemon.dependencies.resolve('productManagements')
+
+  helpers:
+    creationMode: -> Session.get("productManagementCreationMode")
+    currentProduct: -> Session.get("productManagementCurrentProduct")
+    avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
+    activeClass:-> if Session.get("productManagementCurrentProduct")?._id is @._id then 'active' else ''
 
   events:
     "keyup input[name='searchFilter']": (event, template) ->
@@ -58,5 +59,6 @@ lemon.defineApp Template.productManagement,
       ProductSearch.search Helpers.Searchify(fullText)
 
     "click .inner.caption": (event, template) ->
+      console.log 'click', @_id
       Product.setSession(@_id)
       Session.set('productManagementIsShowProductUnit', false)

@@ -1,10 +1,11 @@
 scope = logics.productManagement
 
 lemon.defineWidget Template.productManagementImportDetails,
-  isProduct: -> @product is Session.get("productManagementCurrentProduct")._id
-  providerName: -> Template.parentData().importName
-  totalPrice: -> (@price ? @salePrice) * @quality
-  isInventory: -> Template.parentData().importType is -2
+  helpers:
+    isProduct: -> @product is Session.get("productManagementCurrentProduct")._id
+    providerName: -> Template.parentData().importName
+    totalPrice: -> (@price ? @salePrice) * @quality
+    isInventory: -> Template.parentData().importType is -2
 
 #    if orderFound = Schema.orders.findOne({_id:order._id, 'details.productUnit': productUnitId})
 
@@ -32,7 +33,7 @@ lemon.defineWidget Template.productManagementImportDetails,
 #    console.log @
 #
 #  importDetails: ->
-#    importId = UI._templateInstance().data._id
+#    importId = Template.instance().data._id
 #    Schema.productDetails.find {import: importId, product: Session.get("productManagementCurrentProduct")._id}
 #
 #  saleDetails: -> Schema.saleDetails.find {productDetail: @_id}
@@ -45,11 +46,11 @@ lemon.defineWidget Template.productManagementImportDetails,
 #lemon.defineWidget Template.productManagementReturnDetails,
 #  returnQuality: ->
 #    for detail in @productDetail
-#      if detail.productDetail is UI._templateInstance().data.productDetail._id
+#      if detail.productDetail is Template.instance().data.productDetail._id
 #        return detail.returnQuality/@conversionQuality
 #
 #  returnFinalPrice: ->
 #    for detail in @productDetail
-#      if detail.productDetail is UI._templateInstance().data.productDetail._id
+#      if detail.productDetail is Template.instance().data.productDetail._id
 #        return detail.returnQuality*@unitReturnsPrice/@conversionQuality
 #

@@ -6,30 +6,34 @@
 lemon
 lemon-icon
 select2
-mizzao:bootstrap-3
-rajit:bootstrap3-datepicker
 
 meteor-platform
 accounts-password
-mizzao:user-status
+coffeescript
+d3
 email
+
+
+mizzao:bootstrap-3
+mizzao:user-status
+rajit:bootstrap3-datepicker
+
+jnoble:multi-styl
+mquandalle:jade
+
+meteorhacks:fast-render
+meteorhacks:subs-manager
+meteorhacks:search-source
 
 iron:router
 zimme:iron-router-active
 multiply:iron-router-progress
-
-coffeescript
-jnoble:multi-styl
-mquandalle:jade
-meteorhacks:fast-render
-meteorhacks:subs-manager
 
 aldeed:simple-schema
 aldeed:collection2
 dburles:collection-helpers
 reywood:publish-composite
 tmeasday:publish-counts
-meteorhacks:search-source
 
 cfs:filesystem
 cfs:standard-packages
@@ -37,4 +41,3 @@ cfs:graphicsmagick
 
 anti:i18n
 mrt:nvd3js
-d3

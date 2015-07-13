@@ -2,51 +2,53 @@ scope = logics.productManagement
 Enums = Apps.Merchant.Enums
 
 lemon.defineHyper Template.productManagementOverviewSection,
-  currentProduct: -> scope.currentProduct
-  isShowSubmit: ->
-    if scope.currentProduct.status isnt Enums.getValue('ProductStatuses', 'confirmed') then true
-    else if Session.get('productManagementAllowInventory') is false then false
-    else if scope.currentProduct.inventoryInitial is false then true
+  helpers:
+    currentProduct: -> scope.currentProduct
+    isShowSubmit: ->
+      if scope.currentProduct.status isnt Enums.getValue('ProductStatuses', 'confirmed') then true
+      else if Session.get('productManagementAllowInventory') is false then false
+      else if scope.currentProduct.inventoryInitial is false then true
 
 
-  depositOptions:
-    reactiveSetter: (val) ->
-    reactiveValue: -> Session.get('test') ? 0
-    reactiveMax: -> 1000
-    reactiveMin: -> 0
-    reactiveStep: -> 10
-    others:
-      forcestepdivisibility: 'none'
+    depositOptions:
+      reactiveSetter: (val) ->
+      reactiveValue: -> Session.get('test') ? 0
+      reactiveMax: -> 1000
+      reactiveMin: -> 0
+      reactiveStep: -> 10
+      others:
+        forcestepdivisibility: 'none'
 
-  productUnits: ->
-    for productUnit in @units
-      for item in productUnit.priceBooks
-        if item.priceBook is Session.get('priceBookBasic')._id
-          productUnit.salePrice   = item.salePrice
-          productUnit.importPrice = item.importPrice
-    @units
+    productUnits: ->
+      for productUnit in @units
+        for item in productUnit.priceBooks
+          if item.priceBook is Session.get('priceBookBasic')._id
+            productUnit.salePrice   = item.salePrice
+            productUnit.importPrice = item.importPrice
+      @units
 
 
-  name: ->
-    Meteor.setTimeout ->
-      scope.overviewTemplateInstance.ui.$productName.change()
-    , 50 if scope.overviewTemplateInstance
-    @name
-#
-#  price: ->
-#    Meteor.setTimeout ->
-#      scope.overviewTemplateInstance.ui.$productPrice.inputmask "numeric",
-#        {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: " VNĐ", integerDigits:11, rightAlign:false}
-#    , 50 if scope.overviewTemplateInstance
-#    @price
-#
-#  importPrice: ->
-#    Meteor.setTimeout ->
-#      scope.overviewTemplateInstance.ui.$importPrice.inputmask "numeric",
-#        {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: " VNĐ", integerDigits:11, rightAlign:false}
-#    , 50 if scope.overviewTemplateInstance
-#    @importPrice
-#
+    name: ->
+      console.log @
+      Meteor.setTimeout ->
+        scope.overviewTemplateInstance.ui.$productName.change()
+      , 50 if scope.overviewTemplateInstance
+      @name
+  #
+  #  price: ->
+  #    Meteor.setTimeout ->
+  #      scope.overviewTemplateInstance.ui.$productPrice.inputmask "numeric",
+  #        {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: " VNĐ", integerDigits:11, rightAlign:false}
+  #    , 50 if scope.overviewTemplateInstance
+  #    @price
+  #
+  #  importPrice: ->
+  #    Meteor.setTimeout ->
+  #      scope.overviewTemplateInstance.ui.$importPrice.inputmask "numeric",
+  #        {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: " VNĐ", integerDigits:11, rightAlign:false}
+  #    , 50 if scope.overviewTemplateInstance
+  #    @importPrice
+  #
   rendered: ->
     Session.set('productManagementIsShowProductUnit', false)
     Session.set('productManagementIsShowProductInventory', false)

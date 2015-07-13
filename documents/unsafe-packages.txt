@@ -1,2 +1,10 @@
 mike:mocha
 mizzao:user-status
+
+1 phan quyen
+2 thong ke
+1 tra hang + giao hang
+1 quan ly don hang + don hang
+1 thu chi (thu chi cho khach hang, NCC)
+
+# kiem kho

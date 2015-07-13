@@ -2,8 +2,9 @@ scope = logics.customerReturn
 setTime = -> Session.set('realtime-now', new Date())
 
 lemon.defineHyper Template.customerReturnDetailSection,
-  created: -> @timeInterval = Meteor.setInterval(setTime, 1000)
-  destroyed: -> Meteor.clearInterval(@timeInterval)
+  helpers:
+    created: -> @timeInterval = Meteor.setInterval(setTime, 1000)
+    destroyed: -> Meteor.clearInterval(@timeInterval)
 
   events:
     "click .detail-row": -> Session.set("editingId", @_id); event.stopPropagation()

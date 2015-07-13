@@ -12,7 +12,7 @@ lemon.defineWidget Template.partnerManagementNewHistoryDetails,
 
 
   newHistoryDetails: ->
-    Id = UI._templateInstance().data._id
+    Id = Template.instance().data._id
     importList = Schema.productDetails.find({import: Id}).fetch()
     saleList = Schema.partnerSaleDetails.find({partnerSales: Id}).fetch()
     importList.concat(saleList)

@@ -1,2 +1,3 @@
 lemon.defineWidget Template.messageNotifications,
-  topMessages: -> logics.merchantNotification.topMessages
+  helpers:
+    topMessages: -> logics.merchantNotification.topMessages

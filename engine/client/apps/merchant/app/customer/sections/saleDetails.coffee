@@ -21,11 +21,11 @@ lemon.defineWidget Template.customerManagementSaleDetails,
 
 
   saleDetailCount: ->
-    saleId = UI._templateInstance().data._id
+    saleId = Template.instance().data._id
     Schema.saleDetails.find({sale: saleId}, {sort: {'version.createdAt': 1}}).count() > 0
 
   saleDetails: ->
-    saleId = UI._templateInstance().data._id
+    saleId = Template.instance().data._id
     Schema.saleDetails.find {sale: saleId}, {sort: {'version.createdAt': 1}}
 
   dependsData: ->

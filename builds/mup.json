@@ -21,7 +21,7 @@
   "setupPhantom": false,
 
   // Application name (No spaces)
-  "appName": "edsFree",
+  "appName": "edsPro",
 //  "appName": "lemonEds",
 
   // Location of app (local directory)
@@ -30,7 +30,7 @@
   // Configure environment
   "env": {
 //    "METEOR_ENV": "development",
-    "PORT": 3007,
+    "PORT": 3003,
     "UPSTART_UID": "meteoruser",
 //    "PORT": 80,
     "ROOT_URL": "http://gera.vn",

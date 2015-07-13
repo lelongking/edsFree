@@ -1,20 +1,21 @@
 scope = logics.customerGroup
 
 lemon.defineApp Template.customerGroup,
-  customerGroupLists: ->
-    console.log 'reactive....'
-    selector = {}; options  = {sort: {isBase: 1, nameSearch: 1}}; searchText = Session.get("customerGroupSearchFilter")
-    if(searchText)
-      regExp = Helpers.BuildRegExp(searchText);
-      selector = {$or: [
-        {name: regExp}
-      ]}
-    scope.customerGroupLists = Schema.customerGroups.find(selector, options).fetch()
-    scope.customerGroupLists
-
   created: ->
     Session.set("customerGroupSearchFilter", "")
     Session.set("customerGroupCreationMode", false)
+
+  helpers:
+    customerGroupLists: ->
+      console.log 'reactive....'
+      selector = {}; options  = {sort: {isBase: 1, nameSearch: 1}}; searchText = Session.get("customerGroupSearchFilter")
+      if(searchText)
+        regExp = Helpers.BuildRegExp(searchText);
+        selector = {$or: [
+          {name: regExp}
+        ]}
+      scope.customerGroupLists = Schema.customerGroups.find(selector, options).fetch()
+      scope.customerGroupLists
 
   events:
     "keyup input[name='searchFilter']": (event, template) ->

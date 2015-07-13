@@ -1,23 +1,24 @@
 scope = logics.priceBook
 
 lemon.defineApp Template.priceBook,
-  isPriceBookType: (bookType)->
-    priceType = Session.get("currentPriceBook").priceBookType
-    return true if bookType is 'default' and priceType is 0
-    return true if bookType is 'customer' and (priceType is 1 or priceType is 2)
-    return true if bookType is 'provider' and (priceType is 3 or priceType is 4)
+  helpers:
+    isPriceBookType: (bookType)->
+      priceType = Session.get("currentPriceBook").priceBookType
+      return true if bookType is 'default' and priceType is 0
+      return true if bookType is 'customer' and (priceType is 1 or priceType is 2)
+      return true if bookType is 'provider' and (priceType is 3 or priceType is 4)
 
-  priceBookLists: ->
-    console.log 'reactive....'
-    selector = {}; options  = {sort: {priceBookType: 1, name: 1}}; searchText = Session.get("priceBookSearchFilter")
-    if(searchText)
-      regExp = Helpers.BuildRegExp(searchText);
-      selector = {$or: [
-        {name: regExp}
-      ]}
-    priceBookFounds = Schema.priceBooks.find(selector, options).fetch()
-    scope.priceBookLists = getPriceBook(priceBookFounds)
-    scope.priceBookLists
+    priceBookLists: ->
+      console.log 'reactive....'
+      selector = {}; options  = {sort: {priceBookType: 1, name: 1}}; searchText = Session.get("priceBookSearchFilter")
+      if(searchText)
+        regExp = Helpers.BuildRegExp(searchText);
+        selector = {$or: [
+          {name: regExp}
+        ]}
+      priceBookFounds = Schema.priceBooks.find(selector, options).fetch()
+      scope.priceBookLists = getPriceBook(priceBookFounds)
+      scope.priceBookLists
 
   created: ->
     Session.set("priceBookSearchFilter", '')

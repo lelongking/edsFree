@@ -1,10 +1,11 @@
 scope = logics.customerManagement
 
 lemon.defineApp Template.customerManagement,
-  creationMode: -> Session.get("customerManagementCreationMode")
-  currentCustomer: -> Session.get("customerManagementCurrentCustomer")
-  avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
-  activeClass:-> if Session.get("customerManagementCurrentCustomer")?._id is @._id then 'active' else ''
+  helpers:
+    creationMode: -> Session.get("customerManagementCreationMode")
+    currentCustomer: -> Session.get("customerManagementCurrentCustomer")
+    avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
+    activeClass:-> if Session.get("customerManagementCurrentCustomer")?._id is @._id then 'active' else ''
 
 
 #  finalDebtBalance: -> Session.get("customerManagementCurrentCustomer")?.customSaleDebt + Session.get("customerManagementCurrentCustomer")?.saleDebt

@@ -1,10 +1,11 @@
 scope = logics.distributorReturn
 
 lemon.defineApp Template.distributorReturn,
-  currentDistributorReturn: -> Session.get('currentDistributorReturn')
-  showCustomerSelect: -> if Session.get('currentDistributorReturn')?.returnMethods is 0 then true else false
-  unitName: -> if @unit then @unit.unit else @product.basicUnit
-  allowSuccessReturn: -> if Session.get('currentDistributorReturn')?.distributor then '' else 'disabled'
+  helpers:
+    currentDistributorReturn: -> Session.get('currentDistributorReturn')
+    showCustomerSelect: -> if Session.get('currentDistributorReturn')?.returnMethods is 0 then true else false
+    unitName: -> if @unit then @unit.unit else @product.basicUnit
+    allowSuccessReturn: -> if Session.get('currentDistributorReturn')?.distributor then '' else 'disabled'
 
   created: ->
     lemon.dependencies.resolve('distributorReturn')

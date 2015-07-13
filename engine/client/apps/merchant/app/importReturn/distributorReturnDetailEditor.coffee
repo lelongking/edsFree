@@ -1,28 +1,29 @@
 scope = logics.distributorReturn
 
 lemon.defineHyper Template.distributorReturnDetailEditor,
-  crossReturnAvailableQuality: ->
-    if currentDistributorReturn = Session.get('currentDistributorReturn')
-      returnDetail   = @
-      currentProduct = Schema.productDetails.find({distributor: currentDistributorReturn.distributor, product: returnDetail.product}).fetch()
-      sameProducts = Schema.returnDetails.find({return: returnDetail.return, product: returnDetail.product}).fetch()
-      crossProductQuality = 0
-      currentProductQuality = 0
-      crossProductQuality += item.returnQuality for item in sameProducts
-      currentProductQuality += item.availableQuality for item in currentProduct
+  helpers:
+    crossReturnAvailableQuality: ->
+      if currentDistributorReturn = Session.get('currentDistributorReturn')
+        returnDetail   = @
+        currentProduct = Schema.productDetails.find({distributor: currentDistributorReturn.distributor, product: returnDetail.product}).fetch()
+        sameProducts = Schema.returnDetails.find({return: returnDetail.return, product: returnDetail.product}).fetch()
+        crossProductQuality = 0
+        currentProductQuality = 0
+        crossProductQuality += item.returnQuality for item in sameProducts
+        currentProductQuality += item.availableQuality for item in currentProduct
 
-      crossAvailable = currentProductQuality - crossProductQuality
-      if crossAvailable < 0
-        crossAvailable = Math.ceil(Math.abs(crossAvailable/returnDetail.conversionQuality))*(-1)
-      else
-        Math.ceil(Math.abs(crossAvailable/returnDetail.conversionQuality))
+        crossAvailable = currentProductQuality - crossProductQuality
+        if crossAvailable < 0
+          crossAvailable = Math.ceil(Math.abs(crossAvailable/returnDetail.conversionQuality))*(-1)
+        else
+          Math.ceil(Math.abs(crossAvailable/returnDetail.conversionQuality))
 
-      return {
-        crossAvailable: crossAvailable
-        isValid: crossAvailable > 0
-        invalid: crossAvailable < 0
-        errorClass: if crossAvailable >= 0 then '' else 'errors'
-      }
+        return {
+          crossAvailable: crossAvailable
+          isValid: crossAvailable > 0
+          invalid: crossAvailable < 0
+          errorClass: if crossAvailable >= 0 then '' else 'errors'
+        }
 
   rendered: ->
     @ui.$editQuality.inputmask "numeric",

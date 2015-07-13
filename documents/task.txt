@@ -1,0 +1,34 @@
+0. System
+    - Search:
+     + Config lại cho phù hợp,
+    - Cập nhật Selelct 2 4.0
+    - Up Ảnh:
+    - Thêm menu con cho app:
+    - Hệ thống nhắc nhở:
+    - Hệ thống tin nhắn:
+    - Hệ thống phê duyệt:
+    - Hệ thống hướng dẫn:
+
+
+
+1. Sản Phẩm
+    - Search:
+     + Reactive (mac đinh 20 sản phẩm bán chạy nhất, tìm kiếm 20 sản phẩm)
+     + Chỉnh sửa hiển thị search theo kieu mới (thanh hiển thị rộng hơn), bỏ đi.
+     + Hiển thị tên sản phẩm phía trên - canh trái, quy cách (ml, gr ..) bên dưới - canh phải, ghi chú (cafe, lúa) phía dưới - canh trái.
+    - Nhập tồn kho:
+     + Nhận ngày hết hạn, và hiển thị.
+    - Lịch sử tồn kho:
+     + Hiển thi theo từng ngày, hiển thị từ trên xuống, trên là phiếu cũ, dưới là phiếu mới nhất
+     + Chỉ hiển thị phiếu nhập trong 1 tháng và phiếu chưa bán hết hàng.
+     + Sắp xếp theo A.Kỳ, ko có chuyển đổi hàng
+
+2. Nhóm Sản Phẩm
+    - Search:
+    - Thông tin của nhóm:
+     + Chỉnh phần chọn chuyển nhóm cho sản phẩm.
+    - Danh sách sản phẩm:
+     + Thêm phần tìm kiếm sản phẩm
+     +
+
+
