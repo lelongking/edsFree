@@ -1,18 +1,22 @@
 scope = logics.providerManagement
 
 lemon.defineHyper Template.providerManagementOverviewSection,
-  avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
-  showEditCommand: -> Session.get "providerManagementShowEditCommand"
-  showDeleteCommand: -> Session.get("providerManagementCurrentProvider")?.allowDelete
-  name: ->
-    Meteor.setTimeout ->
-      scope.overviewTemplateInstance.ui.$providerName.change()
-    , 50 if scope.overviewTemplateInstance
-    @name
+  helpers:
+    avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
+    showEditCommand: -> Session.get "providerManagementShowEditCommand"
+    showDeleteCommand: -> Session.get("providerManagementCurrentProvider")?.allowDelete
+
+    name: ->
+      Meteor.setTimeout ->
+        scope.overviewTemplateInstance.ui.$providerName.change()
+      , 50 if scope.overviewTemplateInstance
+      @name
 
   rendered: ->
     scope.overviewTemplateInstance = @
     @ui.$providerName.autosizeInput({space: 10})
+#    @ui.$providerPhone.autosizeInput({space: 10})
+#    @ui.$providerAddress.autosizeInput({space: 10})
 
   events:
     "click .avatar": (event, template) -> template.find('.avatarFile').click()
@@ -34,7 +38,7 @@ lemon.defineHyper Template.providerManagementOverviewSection,
         else if $(event.currentTarget).attr('name') is 'providerPhone'
           $(event.currentTarget).val(Session.get("providerManagementCurrentProvider").phone)
         else if $(event.currentTarget).attr('name') is 'providerAddress'
-          $(event.currentTarget).val(Session.get("providerManagementCurrentProvider").location?.address)
+          $(event.currentTarget).val(Session.get("providerManagementCurrentProvider").address)
 
         scope.checkAllowUpdateProviderOverview(template)
 

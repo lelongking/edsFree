@@ -1,5 +1,5 @@
 @ProviderSearch = new SearchSource 'providers', ['name'],
-  keepHistory: 1000 * 60 * 5
+#  keepHistory: 1000 * 60 * 5
   localSearch: true
 
 @ProviderSearch.fetchData =(searchText, options, callback) ->

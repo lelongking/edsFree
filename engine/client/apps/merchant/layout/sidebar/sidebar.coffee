@@ -1,5 +1,6 @@
 lemon.defineWidget Template.sidebar,
-  friends: -> Meteor.users.find({_id: {$not : Meteor.userId()}, merchant: Session.get('merchant')._id}) if Session.get('merchant')
+  helpers:
+    friends: -> Meteor.users.find({_id: {$not : Meteor.userId()}, merchant: Session.get('merchant')._id}) if Session.get('merchant')
 
   events:
     "click .chat-avatar:not(.me)": (event, template) ->

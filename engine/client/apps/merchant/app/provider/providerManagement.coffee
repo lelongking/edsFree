@@ -2,14 +2,17 @@ scope = logics.providerManagement
 
 lemon.defineApp Template.providerManagement,
   helpers:
-    avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
-    currentProvider: -> Session.get("providerManagementCurrentProvider")
-    activeClass:-> if Session.get("providerManagementCurrentProvider")?._id is @._id then 'active' else ''
-    creationMode: -> Session.get("providerCreationMode")
+    providerLists: ->
+      selector = {}; options  = {sort: {nameSearch: 1}}; searchText = Session.get("providerManagementSearchFilter")
+      if(searchText)
+        regExp = Helpers.BuildRegExp(searchText);
+        selector = {$or: [
+          {nameSearch: regExp}
+        ]}
+      scope.providerLists = Schema.providers.find(selector, options).fetch()
+      scope.providerLists
 
-#  rendered: -> $(".nano").nanoScroller()
   created: ->
-    ProviderSearch.search('')
     Session.set("providerManagementSearchFilter", "")
 
   events:
@@ -24,7 +27,6 @@ lemon.defineApp Template.providerManagement,
         else if event.which is 40 then scope.ProviderSearchFindNextProvider(providerSearch)
         else
           scope.createNewProvider(template, providerSearch) if event.which is 13
-          ProviderSearch.search providerSearch
           scope.providerManagementCreationMode(providerSearch)
       , "providerManagementSearchPeople"
       , 50
@@ -35,7 +37,7 @@ lemon.defineApp Template.providerManagement,
       scope.createNewProvider(template, providerSearch)
       ProviderSearch.search providerSearch
 
-    "click .inner.caption": (event, template) ->
+    "click .list .doc-item": (event, template) ->
       if userId = Meteor.userId()
         Meteor.subscribe('providerManagementCurrentProviderData', @_id)
         Meteor.users.update(userId, {$set: {'sessions.currentProvider': @_id}})

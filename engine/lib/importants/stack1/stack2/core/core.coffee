@@ -178,3 +178,28 @@ Helpers.randomBarcode = (prefix="0", length=10)->
     prefix += Math.floor(Math.random() * 10)
 
   prefix
+
+
+createCompounder = (callback) ->
+  (string) ->
+    string = if string == null then '' else string + ''
+    string = string.toLowerCase()
+    array = []; (array.push item if item isnt "") for item, index in string.split(' ')
+    index = -1
+    length = array.length
+    result = ''
+    while ++index < length
+      result = callback(result, array[index], index)
+    result
+
+Helpers.ConvertNameUpperCase = createCompounder (result, word, index) ->
+  result + (if index then ' ' else '') + word.charAt(0).toUpperCase() + word.slice(1)
+
+Helpers.ConvertNameLowerCase = (string) ->
+  string = if string == null then '' else string + ''
+  string = string.toLowerCase()
+  array = []; (array.push item if item isnt "") for item, index in string.split(' ')
+  string = ""
+  for item, index in array
+    string += (if index is 0 then "" else " ") + item
+  string

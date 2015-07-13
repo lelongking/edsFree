@@ -17,7 +17,7 @@ Apps.Merchant.providerManagementInit.push (scope) ->
       newProviderId = Schema.providers.insert newProvider
       if Match.test(newProviderId, String)
         Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentProvider': newProviderId}})
-        ProviderSearch.cleanHistory()
+
 
 
   scope.providerManagementCreationMode = () ->
@@ -33,7 +33,7 @@ Apps.Merchant.providerManagementInit.push (scope) ->
 
       editOptions = {}
       editOptions.phone = phone if phone.length > 0
-      editOptions.location = {address: [address]} if address.length > 0
+      editOptions.address = address if address.length > 0
       if name.length > 0
         editOptions.name = name
         providerFound = Schema.providers.findOne {name: name, parentMerchant: provider.parentMerchant}
@@ -53,23 +53,4 @@ Apps.Merchant.providerManagementInit.push (scope) ->
     Session.set "providerManagementShowEditCommand",
       template.ui.$providerName.val() isnt Session.get("providerManagementCurrentProvider").name or
       template.ui.$providerPhone.val() isnt (Session.get("providerManagementCurrentProvider").phone ? '') or
-      template.ui.$providerAddress.val() isnt (Session.get("providerManagementCurrentProvider").location?.address ? '')
-
-  scope.checkAllowUpdateProviderOverview = (template) ->
-    if provider = Session.get("providerManagementCurrentProvider")
-      name    = template.ui.$providerName.val()
-      phone   = template.ui.$providerPhone.val()
-      address = template.ui.$providerAddress.val()
-
-      isValidName    = name isnt provider.name
-      isValidPhone   = phone isnt (provider.phone ? '')
-      isValidAddress = address isnt (provider.location?.address ? '')
-
-      providerFound = Schema.providers.findOne {name: name, parentMerchant: Session.get('myProfile').parentMerchant}
-      if name.length is 0
-        template.ui.$providerName.notify("Tên nhà phân phối không thể để trống.", {position: "right"})
-      else if providerFound and providerFound._id isnt provider._id
-        template.ui.$providerName.notify("Tên nhà phân phối đã tồn tại.", {position: "right"})
-        Session.set "providerManagementShowEditCommand"
-      else
-        Session.set "providerManagementShowEditCommand", isValidName or isValidPhone or isValidAddress
+      template.ui.$providerAddress.val() isnt (Session.get("providerManagementCurrentProvider").address ? '')

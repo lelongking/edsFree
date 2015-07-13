@@ -15,7 +15,7 @@ template(name="customerGroup")
         .nano: .nano-content
           .list
             each customerGroupLists
-              .doc-item
+              .doc-item(class="{{activeClass 'currentCustomerGroup'}}")
                 .avatar-wrapper: .avatar-image(class="missing"
                 style="background-image:url('')") A
                 .doc-info

@@ -12,7 +12,7 @@ lemon.defineApp Template.customerGroup,
       if(searchText)
         regExp = Helpers.BuildRegExp(searchText);
         selector = {$or: [
-          {name: regExp}
+          {nameSearch: regExp}
         ]}
       scope.customerGroupLists = Schema.customerGroups.find(selector, options).fetch()
       scope.customerGroupLists

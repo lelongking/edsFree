@@ -1,10 +1,67 @@
 mike:mocha
 mizzao:user-status
 
+
+# sua loi
+    + Giao dien Metro
+
+    + Chinh He Thong
+
+    + SP - NSP
+
+    + KH - NKH
+
+    + NCC
+
+    + Ban Hang - Nhap Kho
+
+    + Giao Hang
+
+    + Bang Gia
+
+
 1 phan quyen
+    + tao tai khoan 2h
+    + thai doi thong tin (doi mat khau) 1h
+    + phan quyen (quan ly, kinh doanh, ke toan(sau, chua quan tam) ) 1h
+
+  - Nhan su (quan ly)
+    + quan ly kinh doanh, ten nv. (sl dai ly, tien) -  don hang (tinh trang don hang, danh gia hieu qua) 3h
+
+  - Ap dung phan quyen (khoa giao dien metro) 1h + 1.5h (nen tang)
+    + giong: ban hang, tra hang, thu chi, giao hang
+    + khac : don hang, ql don hang, thong ke
+    + quan ly: nhap kho, bang gia, phan quyen
+
+
+1 tra hang 3h + giao hang 2h
+
+1 quan ly don hang 2h + 1h + 2h (giao dien)  , don hang 3h
+    + lien giao dien ban hang (han no, lai suat)
+    + tinh trang phieu (xanh, vang, do), theo giao cua giao hang. 2h
+    + Lien quan phan quyen (quan ly coi het, nv chi coi dc chinh minh) 1h
+
+1 thu chi (thu chi cho khach hang, NCC) 2h (giao dien) + 1h + 3h(ql quy tien)
+    + giong gd ban (chon khach hang), thu - chi.
+    + quan ly quy tien (chung cua cty, dau ky bao nhiu) 3h
+
 2 thong ke
-1 tra hang + giao hang
-1 quan ly don hang + don hang
-1 thu chi (thu chi cho khach hang, NCC)
+    + cai phan bieu do. 0.5h
+    + danh so, chi phi, loi nhuan (bieu do cot) 2h
+    + san pham, khach hang (bieu do tron) 2h
+    + theo thoi gian, khach hang, nhan vien (ko uu tien)
+
+1 Phieu In (ko uu tien)
+    + phieu ban
+    + phieu nhap
+    + phieu thu chi
+    + don hang
+    + khach hang
+
+# Tuy chinh (phieu in, han noi, quy doi, ....)
 
 # kiem kho
+
+# Nhat Ky Chung
+# Nhat Ky Rieng
+# Doi Tac

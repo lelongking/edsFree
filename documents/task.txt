@@ -32,3 +32,9 @@
      +
 
 
+3. Nhà Cung Cấp
+    - Search:
+ok   + Tạo sản phẩm (xóa tên trong khung Search), chuyển name thành ký tự thường hết
+ok   + Chỉnh giao diện Search
+ok   + Chưa có tooltip cho tên, sdt, name.
+     + Chưa có lịch sủ nhập kho, công nợ

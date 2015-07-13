@@ -4,7 +4,7 @@ template(name="providerManagement")
       .dual-detail-wrapper
         .dual-detail
           .nano: .nano-content
-            +providerManagementOverviewSection currentProvider
+            +providerManagementOverviewSection  getSession 'providerManagementCurrentProvider'
             //+providerManagementImportsHistorySection currentProvider
       .dual-addon
         .search-filter.icon-search-8
@@ -13,11 +13,11 @@ template(name="providerManagement")
             .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createProviderBtn
 
         .nano: .nano-content
-          .group-wrapper
-            each providerSearches
-              .caption.inner(class="{{activeClass}}")
-                +avatarImageComponent(avatar=avatarUrl alias=name instance=this)
-                span.text
-                  |{{name}}
-                  if description
-                      |({{description}})
+          .list
+            each providerLists
+              .doc-item(class="{{activeClass 'providerManagementCurrentProvider'}}")
+                .avatar-wrapper: .avatar-image(class="missing"
+                style="background-image:url('')") {{aliasLetter firstName}}
+                .doc-info
+                  .title {{name}}
+                  .sub-title {{description}}

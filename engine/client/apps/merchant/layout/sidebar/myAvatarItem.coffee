@@ -1,11 +1,12 @@
 lemon.defineWidget Template.myAvatarItem,
-  alias: ->
-    alias = @fullName ? Meteor.users.findOne(@user)?.emails[0].address
-    return {
-      shortName: Helpers.shortName(alias)
-      firstName: Helpers.firstName(alias)
-    }
-  avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
+  helpers:
+    alias: ->
+      alias = @fullName ? Meteor.users.findOne(@user)?.emails[0].address
+      return {
+        shortName: Helpers.shortName(alias)
+        firstName: Helpers.firstName(alias)
+      }
+    avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
 
   events:
     "click .avatar": (event, template) -> template.find('.avatarFileSelector').click()
