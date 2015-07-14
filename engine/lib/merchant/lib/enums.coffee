@@ -116,35 +116,35 @@ Apps.Merchant.Enums.ImportTypes = [
   display: 'moi tao'
 ,
   _id    : 1
-  value  : 'checked'
-  display: 'da kiem tra'
+  value  : 'staffConfirmed'
+  display: 'nhân viên đã xác nhận'
 ,
   _id    : 2
-  value  : 'confirmed'
-  display: 'nhan vien xac nhan'
+  value  : 'accountingWaiting'
+  display: 'chờ xác nhận kết toán'
 ,
   _id    : 3
-  value  : 'accounting'
-  display: 'ke toan xac nhan'
+  value  : 'confirmedWaiting'
+  display: 'cho kho xac nhan'
 ,
   _id    : 4
   value  : 'success'
-  display: 'ket thuc'
+  display: 'hoàn thành'
 ]
 
 #----------Transaction---------->
 Apps.Merchant.Enums.TransactionTypes = [
   _id    : 0
-  value  : 'provider'
-  display: 'moi tao'
+  value  : 'import'
+  display: 'Nha Cung Cap'
 ,
   _id    : 1
-  value  : 'customer'
-  display: 'da kiem tra'
+  value  : 'sales'
+  display: 'Khach Hang'
 ,
   _id    : 2
   value  : 'other'
-  display: 'nhan vien xac nhan'
+  display: 'Thu Chi'
 ]
 
 Apps.Merchant.Enums.TransactionStatuses = [
@@ -153,16 +153,12 @@ Apps.Merchant.Enums.TransactionStatuses = [
   display: 'moi tao'
 ,
   _id    : 1
-  value  : 'confirmed'
-  display: 'da kiem tra'
+  value  : 'tracking'
+  display: 'Con No'
 ,
   _id    : 2
-  value  : 'tracking'
-  display: 'nhan vien xac nhan'
-,
-  _id    : 3
   value  : 'closed'
-  display: 'nhan vien xac nhan'
+  display: 'Het No'
 ]
 
 

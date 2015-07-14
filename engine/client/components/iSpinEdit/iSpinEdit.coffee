@@ -31,7 +31,8 @@ isValueValid = (context, value) ->
     value >= context.data.options.reactiveMin() &&
     value <= context.data.options.reactiveMax()
 lemon.defineWidget Template.iSpinEdit,
-  reactiveValue: -> Template.instance().data.options.reactiveValue()
+  helpers:
+    reactiveValue: -> Template.instance().data.options.reactiveValue()
   ui:
     component: "input"
 

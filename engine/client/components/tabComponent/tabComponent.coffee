@@ -21,8 +21,9 @@ generateActiveClass = (context, instance) ->
   if instance[key] is currentSource?[key] then 'active' else ''
 
 lemon.defineWidget Template.tabComponent,
-  activeClass: -> generateActiveClass(Template.instance(), @)
-  dynamicCaption: -> @[Template.instance().data.options.caption ? 'caption']
+  helpers:
+    activeClass: -> generateActiveClass(Template.instance(), @)
+    dynamicCaption: -> @[Template.instance().data.options.caption ? 'caption']
 
   events:
     "click li:not(.new-button):not(.active)": (event, template) ->

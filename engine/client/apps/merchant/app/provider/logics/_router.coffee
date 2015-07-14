@@ -14,10 +14,4 @@ lemon.addRoute
       @next()
   data: ->
     Apps.setup(scope, Apps.Merchant.providerManagementReactive)
-
-    return {
-#      managedProviderList : scope.managedProviderList
-#      managedReturnProductList : scope.managedReturnProductList
-#      allowCreateProvider : scope.allowCreateProvider
-    }
 , Apps.Merchant.RouterBase

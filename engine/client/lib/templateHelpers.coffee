@@ -1,10 +1,13 @@
 Template.registerHelper 'getSession', (sessionName)-> Session.get(sessionName)
 
 Template.registerHelper 'isRowEditing', -> Session.get("editingId") is @_id
+Template.registerHelper 'totalPrice', -> if @totalPrice then @totalPrice else @price * @quality
 
 Template.registerHelper 'firstName', -> Helpers.firstName(@name)
 Template.registerHelper 'avatarUrl', -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
 Template.registerHelper 'activeClass', (sessionName)-> if Session.get(sessionName)?._id is @_id  then 'active' else ''
+Template.registerHelper 'isDisabled', (sessionName)-> if Session.get(sessionName) then '' else 'disabled'
+Template.registerHelper 'isNotDisabled', (sessionName)-> if Session.get(sessionName) then '' else 'disabled'
 
 Template.registerHelper 'getBuyerName', (buyerId)->  Schema.customers.findOne(buyerId)?.name ? 'Khách hàng không tồn tại'
 Template.registerHelper 'getProductName', (productId)->  Schema.products.findOne(productId)?.name ? 'Sản phẩm không tồn tại'

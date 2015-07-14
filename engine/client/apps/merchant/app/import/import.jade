@@ -4,25 +4,26 @@ template(name="import")
       .dual-detail-wrapper
         .dual-detail
           .nano: .nano-content
-            +importDetailSection currentImport
+            +importDetailSection getSession 'currentImport'
 
       .dual-addon
         .search-filter.icon-search-8
           input(name='searchFilter' type="text" placeholder="tìm sản phẩm...")
 
         .nano: .nano-content
-          .group-wrapper
+          .list
             each unitProductSearches
-              .caption.advanced.inner.product-selection(class="{{productSelectionActiveClass}}")
-                +avatarImageComponent(avatar=avatarUrl alias=name)
-                span.text {{name}}
-                  .commands
-                    span.icon-right-open-big.addImportDetail
-                span.right-info {{unitName}}
+              .doc-item.product-selection(class="{{productSelectionActiveClass}}")
+                .avatar-wrapper: .avatar-image(class="missing"
+                style="background-image:url('')") {{aliasLetter name}}
+                .doc-info
+                  .title {{name}}
+                  unless inventoryInitial
+                    .sub-title(data-toggle="tooltip" data-container="body" data-placement="right"
+                    title="Quay về ô sản phẩm, nhập kho đầu kỳ.") chưa tồn kho đầu kỳ
+                  .time-stamp.icon-angle-right.addImportDetail
+                  .price-stamp.icon-ticket {{unitName}}
 
-                unless inventoryInitial
-                  span.right-info(data-toggle="tooltip" data-container="body" data-placement="right" title="Quay về sản phẩm hoàn tất nhập tồn đầu kỳ."
-                  style="left: 28px; width: 150px;") Chưa tồn kho đầu kỳ
 
   #footer.modern
     .editor-row
@@ -34,7 +35,7 @@ template(name="import")
         span.ilabel.center chiết khấu
         +iSpinEdit(options=discountOptions)
       .editor-wrapper(style="width: 160px; padding-right: 20px")
-        span.ilabel.center tiền nhận
+        span.ilabel.center thanh toán
         +iSpinEdit(options=depositOptions)
 
 

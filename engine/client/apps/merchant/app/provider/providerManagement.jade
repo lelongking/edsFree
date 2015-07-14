@@ -5,7 +5,7 @@ template(name="providerManagement")
         .dual-detail
           .nano: .nano-content
             +providerManagementOverviewSection  getSession 'providerManagementCurrentProvider'
-            //+providerManagementImportsHistorySection currentProvider
+            +providerManagementImportsHistorySection getSession 'providerManagementProviderId'
       .dual-addon
         .search-filter.icon-search-8
           input(name='searchFilter' type="text" placeholder="tìm nhà cung cấp...")

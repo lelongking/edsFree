@@ -34,6 +34,7 @@ Meteor.publish null, ->
   collections.push Schema.orders.find()
   collections.push Schema.imports.find()
   collections.push Schema.priceBooks.find()
+  collections.push Schema.transactions.find()
   collections.push Meteor.users.find({_id: @userId}, {fields: {profiles: 1, sessions: 1} })
 
   return collections

@@ -50,8 +50,8 @@ Apps.Merchant.customerManagementInit.push (scope) ->
 
       return if name.replace("(", "").replace(")", "").trim().length < 2
       editOptions = Helpers.splitName(name)
-      editOptions.profiles.phone = phone if phone.length > 0
-      editOptions.profiles.address = address if address.length > 0
+      editOptions['profiles.phone'] = phone if phone.length > 0
+      editOptions['profiles.address'] = address if address.length > 0
 
       console.log editOptions
 

@@ -8,10 +8,15 @@ lemon.defineHyper Template.importDetailSection,
     showDelete: -> !Session.get("currentImport")?.submitted
 
     oldDebt: -> Session.get('currentProvider')?.totalCash ? 0
-    finalDebt: -> Session.get('currentProvider').totalCash + Session.get("currentImport").finalPrice - Session.get("currentImport").depositCash
+    finalDebt: ->
+      if provider = Session.get('currentProvider')
+        provider.totalCash + Session.get("currentImport").finalPrice - Session.get("currentImport").depositCash
+      else
+        Session.get("currentImport").finalPrice - Session.get("currentImport").depositCash
 
   created  : ->
     @timeInterval = Meteor.setInterval(setTime, 1000)
+
   destroyed: ->
     Meteor.clearInterval(@timeInterval)
 

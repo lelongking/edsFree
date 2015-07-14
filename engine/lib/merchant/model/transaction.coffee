@@ -1,32 +1,31 @@
 Enums = Apps.Merchant.Enums
+
 simpleSchema.transactions = new SimpleSchema
-  transactionName   : simpleSchema.DefaultString('ĐƠN HÀNG')
-  transactionCode   : simpleSchema.OptionalString
+  transactionName : type: String, defaultValue: 'ĐƠN HÀNG'
+  transactionCode : type: String, optional: true
+  description     : type: String, optional: true
 
-  transactionType   : simpleSchema.DefaultNumber(Enums.getValue('TransactionTypes', 'import'))
-  receivable        : type: Boolean #phai thu neu true
-  owedCash          : type: Number, optional: true # luôn bang 0 neu receivable is  false
+  transactionType : type: Number  , defaultValue: Enums.getValue('TransactionTypes', 'import')
+  status          : type: Number  , defaultValue: Enums.getValue('TransactionStatuses', 'initialize')
+  receivable      : type: Boolean , defaultValue: true  # ban hang (true), nhap kho (true),  khach hang tra (false), tra NCC (true)
+  owedCash        : type: Number  , defaultValue: 0     # so tien con no, luôn bang 0 neu receivable is  false
+  owner           : type: String  , optional: true      # chu no (KH hoac NCC)
+  parent          : type: String  , optional: true      # thong tin phiu ban, phiu nhap (Nhap - Ban - ko co) tuy theo
+  dueDay          : type: Date    , optional: true      # han no
 
-  status            : simpleSchema.DefaultNumber(Enums.getValue('TransactionStatuses', 'initialize'))
-  owner             : simpleSchema.OptionalString
-  staff             : simpleSchema.OptionalString # co neu phiu no
-  parent            : simpleSchema.OptionalString # thong tin phiu ban, nhap
-
-  description  : simpleSchema.OptionalString
-  dueDay       : type: Date, optional: true #han tra tuy theo co the co
-
-  beforeDebtBalance: type: Number, optional: true
-  debtBalanceChange: type: Number, optional: true
-  latestDebtBalance: type: Number, optional: true
+  beforeDebtBalance: type: Number, defaultValue: 0
+  debtBalanceChange: type: Number, defaultValue: 0
+  paidBalanceChange: type: Number, defaultValue: 0
+  latestDebtBalance: type: Number, defaultValue: 0
 
   merchant   : simpleSchema.DefaultMerchant
   allowDelete: simpleSchema.DefaultBoolean()
   creator    : simpleSchema.DefaultCreator
   version    : { type: simpleSchema.Version }
 
-  details                : type: [Object], defaultValue: []
+  details                : type: [Object], optional: true
   'details.$.transaction': type: String
-  'details.$.paymentCash': type: String
+  'details.$.paymentCash': type: Number
 
 Schema.add 'transactions', "Transaction", class Transaction
   @transform: (doc) ->

@@ -4,6 +4,7 @@ simpleSchema.imports = new SimpleSchema
   provider   : simpleSchema.OptionalString
   importCode : simpleSchema.OptionalString
   importType : type: Number, defaultValue: Enums.getValue('ImportTypes', 'initialize')
+  dueDay     : type: Date, optional: true
 
   description  : simpleSchema.OptionalString
   discountCash : type: Number, defaultValue: 0
@@ -11,9 +12,14 @@ simpleSchema.imports = new SimpleSchema
   totalPrice   : type: Number, defaultValue: 0
   finalPrice   : type: Number, defaultValue: 0
 
+#  beforeDebtBalance: type: Number, defaultValue: 0
+#  debtBalanceChange: type: Number, defaultValue: 0
+#  latestDebtBalance: type: Number, defaultValue: 0
+
   accounting          : type: String  , optional: true
   accountingConfirm   : type: Boolean , optional: true
   accountingConfirmAt : type: Date    , optional: true
+  transaction         : type: String  , optional: true
 
   merchant   : simpleSchema.DefaultMerchant
   allowDelete: simpleSchema.DefaultBoolean()
@@ -31,6 +37,14 @@ simpleSchema.imports = new SimpleSchema
   'details.$.discountCash'  : simpleSchema.DefaultNumber()
   'details.$.expire'        : {type: Date, optional: true}
 
+  'details.$.importQuality'       : {type: Number, min: 0}
+  'details.$.saleQuality'         : simpleSchema.DefaultNumber()
+  'details.$.returnSaleQuality'   : simpleSchema.DefaultNumber()
+  'details.$.returnImportQuality' : simpleSchema.DefaultNumber()
+  'details.$.inStockQuality'      : {type: Number, min: 0}
+  'details.$.inOderQuality'       : simpleSchema.DefaultNumber()
+  'details.$.availableQuality'    : {type: Number, min: 0}
+
   'details.$.orderId'               : type: [Object], defaultValue: []
   'details.$.orderId.$._id'         : type: String
   'details.$.orderId.$.buyer'       : type: String
@@ -39,14 +53,6 @@ simpleSchema.imports = new SimpleSchema
   'details.$.orderId.$.salePrice'   : type: Number
   'details.$.orderId.$.basicQuality': type: Number
   'details.$.orderId.$.createdAt'   : type: Date
-
-  'details.$.importQuality'       : {type: Number, min: 0}
-  'details.$.saleQuality'         : simpleSchema.DefaultNumber()
-  'details.$.returnSaleQuality'   : simpleSchema.DefaultNumber()
-  'details.$.returnImportQuality' : simpleSchema.DefaultNumber()
-  'details.$.inStockQuality'      : {type: Number, min: 0}
-  'details.$.inOderQuality'       : simpleSchema.DefaultNumber()
-  'details.$.availableQuality'    : {type: Number, min: 0}
 
   'details.$.returnDetails'               : type: [Object], optional: true
   'details.$.returnDetails.$._id'         : type: String
@@ -174,10 +180,10 @@ Schema.add 'imports', "Import", class Import
         productUnit = _.findWhere(product.units, {_id: detail.productUnit})
         return console.log('Khong tim thay ProductUnit') if !productUnit
 
-      if Schema.imports.update(self._id, $set:{importType : Enums.getValue('ImportTypes', 'checked')})
-        Meteor.call 'importConfirmed', self._id, (error, result) ->
+      if Schema.imports.update(self._id, $set:{importType : Enums.getValue('ImportTypes', 'staffConfirmed')})
+        Meteor.call 'importAccountingConfirmed', self._id, (error, result) ->
           if result then console.log result
-          Meteor.call 'importAccountingConfirmed', self._id, (error, result) ->
+          Meteor.call 'importWarehouseConfirmed', self._id, (error, result) ->
             if result then console.log result
 
 

@@ -14,11 +14,11 @@ template(name="saleDetailSection")
                 span.uppercase {{buyer.name}}
               .document-info
                 .right-info
-                  if buyer.phone
-                    span {{buyer.phone}}
+                  if buyer.profiles.phone
+                    span {{buyer.profiles.phone}}
                     span.icon-phone-circled <br/>
-                  if buyer.address
-                    span {{buyer.address}}
+                  if buyer.profiles.address
+                    span {{buyer.profiles.address}}
                     span.icon-location-outline
 
       .panel-body
