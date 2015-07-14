@@ -1,6 +1,7 @@
 scope = logics.sales
 lemon.defineHyper Template.orderRowEdit,
-  detailFinalPrice: -> @quality * (@price - @discountCash)
+  helpers:
+    detailFinalPrice: -> @quality * (@price - @discountCash)
 
   rendered: ->
     @ui.$editQuality.inputmask "numeric",

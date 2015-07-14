@@ -1,27 +1,28 @@
 scope = logics.providerManagement
 
 lemon.defineWidget Template.providerManagementCustomImportDetails,
-  productName: -> @productName
-  receivableClass: -> if @debtBalanceChange >= 0 then 'paid' else 'receive'
-  finalReceivableClass: -> if @latestDebtBalance >= 0 then 'receive' else 'paid'
-  latestPaids: -> Schema.transactions.find {latestImport: @_id}, {sort: {'version.createdAt': 1}}
-  customImportDetails: ->
-    customImportId = Template.instance().data._id
-    Schema.customImportDetails.find({customImport: customImportId})
+  helpers:
+    productName: -> @productName
+    receivableClass: -> if @debtBalanceChange >= 0 then 'paid' else 'receive'
+    finalReceivableClass: -> if @latestDebtBalance >= 0 then 'receive' else 'paid'
+    latestPaids: -> Schema.transactions.find {latestImport: @_id}, {sort: {'version.createdAt': 1}}
+    customImportDetails: ->
+      customImportId = Template.instance().data._id
+      Schema.customImportDetails.find({customImport: customImportId})
 
-  isCustomImportModeEnabled: ->
-    provider = Session.get("providerManagementCurrentProvider")
-    if @allowDelete and provider?.customImportModeEnabled then true else false
+    isCustomImportModeEnabled: ->
+      provider = Session.get("providerManagementCurrentProvider")
+      if @allowDelete and provider?.customImportModeEnabled then true else false
 
-  isCustomImportDetailCreator: ->
-    provider = Session.get("providerManagementCurrentProvider")
-    if provider?.customImportModeEnabled
-      if @allowDelete then true
+    isCustomImportDetailCreator: ->
+      provider = Session.get("providerManagementCurrentProvider")
+      if provider?.customImportModeEnabled
+        if @allowDelete then true
+        else
+          transaction = Schema.transactions.findOne({owner: provider._id, allowDelete: true}, {sort: {debtDate: -1}})
+          if transaction?.latestImport is @_id then true else false
       else
-        transaction = Schema.transactions.findOne({owner: provider._id, allowDelete: true}, {sort: {debtDate: -1}})
-        if transaction?.latestImport is @_id then true else false
-    else
-      false
+        false
 
   events:
     "click .enter-edit": (event, template) -> Session.set("providerManagementCurrentCustomImport", @)

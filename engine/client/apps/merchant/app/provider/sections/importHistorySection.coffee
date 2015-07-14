@@ -1,21 +1,22 @@
 scope = logics.providerManagement
 
 lemon.defineHyper Template.providerManagementImportsHistorySection,
-  finalDebtBalance: -> @customImportDebt + @importDebt
-  allowCreateCustomImport: -> if Session.get("allowCreateCustomImport") then '' else 'disabled'
-  allowCreateTransactionOfImport: -> if Session.get("allowCreateTransactionOfImport") then '' else 'disabled'
-  allowCreateTransactionOfCustomImport: -> if Session.get("allowCreateTransactionOfCustomImport") then '' else 'disabled'
+  helpers:
+    finalDebtBalance: -> @customImportDebt + @importDebt
+    allowCreateCustomImport: -> if Session.get("allowCreateCustomImport") then '' else 'disabled'
+    allowCreateTransactionOfImport: -> if Session.get("allowCreateTransactionOfImport") then '' else 'disabled'
+    allowCreateTransactionOfCustomImport: -> if Session.get("allowCreateTransactionOfCustomImport") then '' else 'disabled'
 
-  showExpandImportAndCustomImport: -> Session.get("showExpandImportAndCustomImport")
-  isCustomImportModeEnabled: -> if Session.get("providerManagementCurrentProvider")?.customImportModeEnabled then "" else "display: none;"
+    showExpandImportAndCustomImport: -> Session.get("showExpandImportAndCustomImport")
+    isCustomImportModeEnabled: -> if Session.get("providerManagementCurrentProvider")?.customImportModeEnabled then "" else "display: none;"
 
-  customImport: -> Schema.customImports.find({seller: Session.get("providerManagementCurrentProvider")?._id}, {sort: {debtDate: 1, 'version.createdAt': 1}})
-  defaultImport: ->
-    if provider = Session.get("providerManagementCurrentProvider")
-      Schema.imports.find({provider: provider._id, finish: true, submitted: true}, {sort: {'version.createdAt': 1}})
-  returnImport: ->
-    if provider = Session.get("providerManagementCurrentProvider")
-      Schema.returns.find({provider: provider._id, allowDelete: true})
+    customImport: -> Schema.customImports.find({seller: Session.get("providerManagementCurrentProvider")?._id}, {sort: {debtDate: 1, 'version.createdAt': 1}})
+    defaultImport: ->
+      if provider = Session.get("providerManagementCurrentProvider")
+        Schema.imports.find({provider: provider._id, finish: true, submitted: true}, {sort: {'version.createdAt': 1}})
+    returnImport: ->
+      if provider = Session.get("providerManagementCurrentProvider")
+        Schema.returns.find({provider: provider._id, allowDelete: true})
 
 
   rendered: ->

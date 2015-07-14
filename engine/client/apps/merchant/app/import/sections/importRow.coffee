@@ -1,6 +1,7 @@
 scope = logics.import
 lemon.defineHyper Template.importRowEdit,
-  detailFinalPrice: -> @quality * (@price - @discountCash)
+  helpers:
+    detailFinalPrice: -> @quality * (@price - @discountCash)
 
   rendered: ->
     @ui.$editExpireDate.inputmask("dd/mm/yyyy")

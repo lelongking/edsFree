@@ -18,8 +18,6 @@ Apps.Merchant.providerManagementInit.push (scope) ->
       if Match.test(newProviderId, String)
         Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentProvider': newProviderId}})
 
-
-
   scope.providerManagementCreationMode = () ->
   scope.ProviderSearchFindPreviousProvider = () ->
   scope.ProviderSearchFindNextProvider = () ->

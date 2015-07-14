@@ -1,10 +1,11 @@
 scope = logics.priceBook
 lemon.defineHyper Template.priceBookRowEdit,
-  isPriceBookType: (bookType)->
-    priceType = Session.get("currentPriceBook").priceBookType
-    return true if bookType is 'default' and priceType is 0
-    return true if bookType is 'customer' and (priceType is 1 or priceType is 2)
-    return true if bookType is 'provider' and (priceType is 3 or priceType is 4)
+  helpers:
+    isPriceBookType: (bookType)->
+      priceType = Session.get("currentPriceBook").priceBookType
+      return true if bookType is 'default' and priceType is 0
+      return true if bookType is 'customer' and (priceType is 1 or priceType is 2)
+      return true if bookType is 'provider' and (priceType is 3 or priceType is 4)
 
   rendered: ->
     if _.contains([0, 1, 2], Template.currentData().priceBookType)

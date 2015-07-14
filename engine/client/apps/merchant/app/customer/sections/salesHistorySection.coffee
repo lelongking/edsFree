@@ -1,25 +1,26 @@
 scope = logics.customerManagement
 
 lemon.defineHyper Template.customerManagementSalesHistorySection,
-  showExpandSaleAndCustomSale: -> Session.get("showExpandSaleAndCustomSale")
-  finalDebtBalance: -> @customSaleDebt + @saleDebt
-  allowCreateCustomSale: -> if Session.get("allowCreateCustomSale") then '' else 'disabled'
-  allowCreateTransactionOfSale: -> if Session.get("allowCreateTransactionOfSale") then '' else 'disabled'
-  allowCreateTransactionOfCustomSale: -> if Session.get("allowCreateTransactionOfCustomSale") then '' else 'disabled'
+  helpers:
+    showExpandSaleAndCustomSale: -> Session.get("showExpandSaleAndCustomSale")
+    finalDebtBalance: -> @customSaleDebt + @saleDebt
+    allowCreateCustomSale: -> if Session.get("allowCreateCustomSale") then '' else 'disabled'
+    allowCreateTransactionOfSale: -> if Session.get("allowCreateTransactionOfSale") then '' else 'disabled'
+    allowCreateTransactionOfCustomSale: -> if Session.get("allowCreateTransactionOfCustomSale") then '' else 'disabled'
 
-#  showIsFoundSale: -> if Schema.sales.find({buyer: Session.get("customerManagementCurrentCustomer")?._id}).count() > 0 then "" else "display: none;"
-  isCustomSaleModeEnabled: -> if Session.get("customerManagementCurrentCustomer")?.customSaleModeEnabled then "" else "display: none;"
+  #  showIsFoundSale: -> if Schema.sales.find({buyer: Session.get("customerManagementCurrentCustomer")?._id}).count() > 0 then "" else "display: none;"
+    isCustomSaleModeEnabled: -> if Session.get("customerManagementCurrentCustomer")?.customSaleModeEnabled then "" else "display: none;"
 
-  customSale: -> Schema.customSales.find({buyer: Session.get("customerManagementCurrentCustomer")?._id}, {sort: {debtDate: 1}})
-  defaultSale: -> Schema.sales.find({buyer: Session.get("customerManagementCurrentCustomer")?._id}, {sort: {'version.createdAt': -1}})
-  defaultSaleArchive: -> Schema.sales.find {
-      buyer               : Session.get("customerManagementCurrentCustomer")?._id,
-      'version.createdAt' : {$lt: new Date((new Date).toDateString())}
-    }, {sort: {'version.createdAt': 1}}
-  defaultSaleToday: -> Schema.sales.find {
-      buyer               : Session.get("customerManagementCurrentCustomer")?._id,
-      'version.createdAt' : {$gte: new Date((new Date).toDateString())}
-    }, {sort: {'version.createdAt': 1}}
+    customSale: -> Schema.customSales.find({buyer: Session.get("customerManagementCurrentCustomer")?._id}, {sort: {debtDate: 1}})
+    defaultSale: -> Schema.sales.find({buyer: Session.get("customerManagementCurrentCustomer")?._id}, {sort: {'version.createdAt': -1}})
+    defaultSaleArchive: -> Schema.sales.find {
+        buyer               : Session.get("customerManagementCurrentCustomer")?._id,
+        'version.createdAt' : {$lt: new Date((new Date).toDateString())}
+      }, {sort: {'version.createdAt': 1}}
+    defaultSaleToday: -> Schema.sales.find {
+        buyer               : Session.get("customerManagementCurrentCustomer")?._id,
+        'version.createdAt' : {$gte: new Date((new Date).toDateString())}
+      }, {sort: {'version.createdAt': 1}}
 
   rendered: ->
     @ui.$debtDate.inputmask("dd/mm/yyyy")

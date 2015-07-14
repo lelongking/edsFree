@@ -23,8 +23,8 @@ lemon.defineApp Template.providerManagement,
         Session.set("providerManagementSearchFilter", searchFilter)
 
         if event.which is 17 then console.log 'up'
-        else if event.which is 38 then scope.ProviderSearchFindPreviousProvider(providerSearch)
-        else if event.which is 40 then scope.ProviderSearchFindNextProvider(providerSearch)
+#        else if event.which is 38 then scope.ProviderSearchFindPreviousProvider(providerSearch)
+#        else if event.which is 40 then scope.ProviderSearchFindNextProvider(providerSearch)
         else
           scope.createNewProvider(template, providerSearch) if event.which is 13
           scope.providerManagementCreationMode(providerSearch)
@@ -39,6 +39,7 @@ lemon.defineApp Template.providerManagement,
 
     "click .list .doc-item": (event, template) ->
       if userId = Meteor.userId()
+        Session.set "providerManagementShowEditCommand"
         Meteor.subscribe('providerManagementCurrentProviderData', @_id)
         Meteor.users.update(userId, {$set: {'sessions.currentProvider': @_id}})
 

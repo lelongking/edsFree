@@ -2,12 +2,13 @@ setTime = -> Session.set('realtime-now', new Date())
 scope = logics.import
 
 lemon.defineHyper Template.importDetailSection,
-  showProductionDate: -> if @productionDate then true else false
-  showExpireDate: -> if @expire then true else false
-  showDelete: -> !Session.get("currentImport")?.submitted
+  helpers:
+    showProductionDate: -> if @productionDate then true else false
+    showExpireDate: -> if @expire then true else false
+    showDelete: -> !Session.get("currentImport")?.submitted
 
-  oldDebt: -> Session.get('currentProvider')?.totalCash ? 0
-  finalDebt: -> Session.get('currentProvider').totalCash + Session.get("currentImport").finalPrice - Session.get("currentImport").depositCash
+    oldDebt: -> Session.get('currentProvider')?.totalCash ? 0
+    finalDebt: -> Session.get('currentProvider').totalCash + Session.get("currentImport").finalPrice - Session.get("currentImport").depositCash
 
   created  : ->
     @timeInterval = Meteor.setInterval(setTime, 1000)
