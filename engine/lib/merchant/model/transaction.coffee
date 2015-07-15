@@ -5,9 +5,9 @@ simpleSchema.transactions = new SimpleSchema
   transactionCode : type: String, optional: true
   description     : type: String, optional: true
 
-  transactionType : type: Number  , defaultValue: Enums.getValue('TransactionTypes', 'import')
+  transactionType : type: Number  , defaultValue: Enums.getValue('TransactionTypes', 'provider')
   status          : type: Number  , defaultValue: Enums.getValue('TransactionStatuses', 'initialize')
-  receivable      : type: Boolean , defaultValue: true  # ban hang (true), nhap kho (true),  khach hang tra (false), tra NCC (true)
+  receivable      : type: Boolean , defaultValue: true  #true(no),false(tra)  ban hang (true), khach hang tra (false), nhap kho (true), tra NCC (false)
   owedCash        : type: Number  , defaultValue: 0     # so tien con no, luôn bang 0 neu receivable is  false
   owner           : type: String  , optional: true      # chu no (KH hoac NCC)
   parent          : type: String  , optional: true      # thong tin phiu ban, phiu nhap (Nhap - Ban - ko co) tuy theo
@@ -29,7 +29,6 @@ simpleSchema.transactions = new SimpleSchema
 
 Schema.add 'transactions', "Transaction", class Transaction
   @transform: (doc) ->
-
 
 
   debtDate:

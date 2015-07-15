@@ -5,9 +5,10 @@ simpleSchema.customers = new SimpleSchema
   description : simpleSchema.OptionalString
   group       : simpleSchema.OptionalString
 
-  salePaid     : simpleSchema.DefaultNumber()
-  saleDebt     : simpleSchema.DefaultNumber()
-  saleTotalCash: simpleSchema.DefaultNumber()
+  paidCash  : simpleSchema.DefaultNumber()
+  debtCash  : simpleSchema.DefaultNumber()
+  loanCash  : simpleSchema.DefaultNumber()
+  totalCash : simpleSchema.DefaultNumber()
 
   merchant    : simpleSchema.DefaultMerchant
   avatar      : simpleSchema.OptionalString

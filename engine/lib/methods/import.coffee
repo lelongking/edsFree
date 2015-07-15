@@ -1,4 +1,5 @@
 Enums = Apps.Merchant.Enums
+
 Meteor.methods
   importInventory: (importId)->
     user = Meteor.users.findOne(Meteor.userId())
@@ -37,10 +38,10 @@ Meteor.methods
     return {valid: false, error: 'provider not found!'} if !providerFound
 
     transactionInsert =
-      transactionName : 'Phiếu Nhập Kho'
+      transactionName : 'Phiếu Nhập'
 #      transactionCode :
 #      description     :
-      transactionType  : Enums.getValue('TransactionTypes', 'import')
+      transactionType  : Enums.getValue('TransactionTypes', 'provider')
       receivable       : true
       owner            : providerFound._id
       parent           : importFound._id

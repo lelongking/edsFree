@@ -1,5 +1,28 @@
+Enums = Apps.Merchant.Enums
+
 Apps.Merchant.providerManagementInit.push (scope) ->
 #-----------------Edit Provider-----------------------------------
+  scope.searchOrCreateProviderByInput = (event, template)->
+    Helpers.deferredAction ->
+      searchFilter  = template.ui.$searchFilter.val()
+      providerSearch = Helpers.Searchify searchFilter
+      Session.set("providerManagementSearchFilter", searchFilter)
+
+      if event.which is 17 then console.log 'up'
+    #        else if event.which is 38 then scope.ProviderSearchFindPreviousProvider(providerSearch)
+    #        else if event.which is 40 then scope.ProviderSearchFindNextProvider(providerSearch)
+      else
+        scope.createNewProvider(template, providerSearch) if event.which is 13
+        scope.providerManagementCreationMode(providerSearch)
+    , "providerManagementSearchPeople"
+    , 50
+
+  scope.createProviderByBtn = (event, template)->
+    fullText      = Session.get("providerManagementSearchFilter")
+    providerSearch = Helpers.Searchify(fullText)
+    scope.createNewProvider(template, providerSearch)
+    ProviderSearch.search providerSearch
+
   scope.createNewProvider = (template, providerSearch) ->
     fullText    = Session.get("providerManagementSearchFilter")
     newProvider = Provider.splitName(fullText)
@@ -44,27 +67,29 @@ Apps.Merchant.providerManagementInit.push (scope) ->
 
 Apps.Merchant.providerManagementInit.push (scope) ->
 #-----------------Create Transaction-----------------------------------
+  scope.checkAllowCreateAndCreateTransaction = (event, template) ->
+    if event.which is 13 then scope.createTransactionOfImport(event, template)
+    else scope.checkAllowCreateTransactionOfImport(event, template)
+
   scope.checkAllowCreateTransactionOfImport = (event, template) ->
-    if event.which is 8 and Session.get("providerManagementCurrentProvider")
-      payAmount = parseInt($(template.find("[name='payImportAmount']")).inputmask('unmaskedvalue'))
-      if payAmount != 0 and !isNaN(payAmount)
-        Session.set("allowCreateTransactionOfImport", true)
-      else
-        Session.set("allowCreateTransactionOfImport", false)
+    payAmount = parseInt($(template.find("[name='payImportAmount']")).inputmask('unmaskedvalue'))
+    if payAmount != 0 and !isNaN(payAmount)
+      Session.set("allowCreateTransactionOfImport", true)
+    else
+      Session.set("allowCreateTransactionOfImport", false)
 
   scope.createTransactionOfImport = (event, template) ->
     scope.checkAllowCreateTransactionOfImport(event, template)
-
     if Session.get("allowCreateTransactionOfImport")
       $payDescription = template.ui.$payImportDescription
-      $payAmount = template.ui.$payImportAmount
-      payAmount = parseInt($(template.find("[name='payImportAmount']")).inputmask('unmaskedvalue'))
+      $payAmount      = template.ui.$payImportAmount
+      payAmount       = parseInt($(template.find("[name='payImportAmount']")).inputmask('unmaskedvalue'))
+      description     = $payDescription.val()
 
       if !isNaN(payAmount) and payAmount != 0
-        Meteor.call('createNewReceiptCashOfImport', distributor._id, Math.abs(payAmount), $payDescription.val())
-        Meteor.call 'reCalculateMetroSummaryTotalPayableCash'
-        Session.set("allowCreateTransactionOfImport", false)
-        $payDescription.val(''); $payAmount.val('')
-        limitExpand    = Session.get("distributorManagementDataMaxCurrentRecords")
-        currentRecords = Session.get("distributorManagementDataRecordCount")
-        Meteor.subscribe('distributorManagementData', distributor._id, currentRecords, limitExpand)
+        ownerId         = scope.currentProvider._id
+        debitCash       = Math.abs(payAmount)
+        transactionType = Enums.getValue('TransactionTypes', 'provider')
+        Meteor.call 'createTransaction', ownerId, debitCash, null, description, transactionType, (error, result) ->
+          Session.set("allowCreateTransactionOfImport", false)
+          $payDescription.val(''); $payAmount.val('')

@@ -2,7 +2,6 @@ scope = logics.providerManagement
 
 lemon.defineHyper Template.providerManagementOverviewSection,
   helpers:
-    avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
     showEditCommand: -> Session.get "providerManagementShowEditCommand"
     showDeleteCommand: -> Session.get("providerManagementCurrentProvider")?.allowDelete
 
@@ -15,8 +14,6 @@ lemon.defineHyper Template.providerManagementOverviewSection,
   rendered: ->
     scope.overviewTemplateInstance = @
     @ui.$providerName.autosizeInput({space: 10})
-#    @ui.$providerPhone.autosizeInput({space: 10})
-#    @ui.$providerAddress.autosizeInput({space: 10})
 
   events:
     "click .avatar": (event, template) -> template.find('.avatarFile').click()

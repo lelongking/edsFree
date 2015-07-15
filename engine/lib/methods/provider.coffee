@@ -2,7 +2,7 @@ Enums = Apps.Merchant.Enums
 Meteor.methods
   reCalculateProviderDebt: (providerId)->
     transactionQuery =
-#      transactionType: Enums.getValue('TransactionTypes', 'import')
+#      transactionType: Enums.getValue('TransactionTypes', 'provider')
       owner          : providerId
 
     updateProvider = { paidCash: 0, debtCash: 0, loanCash: 0, totalCash: 0 }

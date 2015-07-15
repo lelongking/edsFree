@@ -39,3 +39,9 @@ Schema.add 'providers', "Provider", class Provider
   @nameIsExisted: (name, merchant) ->
     existedQuery = {name: name, merchant: merchant}
     Schema.providers.findOne(existedQuery)
+
+  @selectProvider: (providerId) ->
+    if userId = Meteor.userId()
+      Session.set "providerManagementShowEditCommand"
+#      Meteor.subscribe('providerManagementCurrentProviderData', @providerId)
+      Meteor.users.update(userId, {$set: {'sessions.currentProvider': providerId}})

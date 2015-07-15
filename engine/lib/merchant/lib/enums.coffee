@@ -135,11 +135,11 @@ Apps.Merchant.Enums.ImportTypes = [
 #----------Transaction---------->
 Apps.Merchant.Enums.TransactionTypes = [
   _id    : 0
-  value  : 'import'
+  value  : 'provider'
   display: 'Nha Cung Cap'
 ,
   _id    : 1
-  value  : 'sales'
+  value  : 'customer'
   display: 'Khach Hang'
 ,
   _id    : 2

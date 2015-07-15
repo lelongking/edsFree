@@ -2,7 +2,7 @@ template(name="providerManagementImportDetails")
   tr.header-row
     td.has-commands(colspan="5")
       | &nbsp;
-      .bill-header <b>{{momentCalendar version.createdAt}}</b> {{description}}
+      .bill-header <b>{{momentFormat version.createdAt "DD/MM/YYYY HH:MM:SS"}}</b> {{description}}
       //.commands
       //  if showDeleteImport
       //    .lemon.rounded.tiny.btn.red.deleteImport: span.icon-minus-4
@@ -15,40 +15,12 @@ template(name="providerManagementImportDetails")
       td.number {{formatNumber price}}
       td.last-column.number {{formatNumber totalPrice}}
 
-  tr.detail-row.summary-row
-    td
-    td.number(colspan="2"): span.blured-color.icon-feather-1 <b>{{formatNumber transaction.latestDebtBalance}}</b>
-    td.number(colspan="1"): span.blured-color <b>{{formatNumber transaction.paidBalanceChange}}</b>
-    td.summary-total(align="right"): span.s5 <b>{{formatNumber transaction.debtBalanceChange}}</b>
 
-  //each dependsData
-  //  if latestImport
-  //    tr.paid-row.top(class="{{receivableClass}}")
-  //      td.has-commands
-  //        span.note {{description}}, {{momentCalendar debtDate}}
-  //        .commands
-  //          if showDeleteTransaction
-  //            .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
-  //
-  //      td.number(colspan="3")
-  //        span.icon-feather-1
-  //        span.s4(class="{{finalReceivableClass}}") <b>{{formatNumberAbs totalDebtBalance}}</b>
-  //      td.number: span(class="{{receivableClass}}") <b>{{formatNumberAbs debtBalanceChange}}</b>
-  //  else
-  //    tr.header-row
-  //      td.has-commands(colspan="5")
-  //        | &nbsp;
-  //        .bill-header <b>Trả Hàng: {{momentCalendar version.createdAt}}</b> {{comment}}
-  //
-  //    each returnDetails
-  //      tr.detail-row.edit-detail
-  //        td {{getProductName product}}
-  //        td.number {{formatNumber unitReturnQuality}}
-  //        td(align="center") {{unitName}}
-  //        td.number {{formatNumber unitReturnsPrice}}
-  //        td.last-column.number {{formatNumber finalPrice}}
-  //
-  //    tr.detail-row.summary-row
-  //      td
-  //      td.number(colspan="3"): span.blured-color.icon-feather-1 <b>{{formatNumber totalDebtBalance}}</b>
-  //      td.summary-total(align="right"): span.s5 <b>{{formatNumber debtBalanceChange}}</b>
+  each transactions
+    tr.detail-row.summary-row
+      td.has-commands
+        .bill-header {{transactionName}}
+        .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
+      td.number(colspan="2"): span.blured-color.icon-feather-1 <b>{{formatNumber latestDebtBalance}}</b>
+      td.number(colspan="1"): span.blured-color <b>{{formatNumber paidBalanceChange}}</b>
+      td.summary-total(align="right"): span.s5 <b>{{formatNumber debtBalanceChange}}</b>

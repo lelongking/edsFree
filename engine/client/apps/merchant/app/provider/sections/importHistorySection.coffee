@@ -7,12 +7,22 @@ lemon.defineHyper Template.providerManagementImportsHistorySection,
 
   helpers:
     allImports: -> scope.findAllImport()
-    debtTotalCash: -> Session.get('providerManagementCurrentProvider')?.debtCash ? 0
+    oldDebts: -> scope.findOldDebt()
+    debtTotalCash: ->
+      if provider = Session.get('providerManagementCurrentProvider')
+        provider.debtCash + provider.loanCash
+      else 0
+
 
   events:
-    "keydown input.transaction-field":  (event, template) -> scope.checkAllowCreateTransactionOfImport(event, template)
-    "keypress input.transaction-field": (event, template) -> scope.createTransactionOfImport(event, template) if event.which is 13
-    "click .createTransaction":         (event, template) -> scope.createTransactionOfImport(event, template)
+    "keyup input.transaction-field":  (event, template) ->
+      scope.checkAllowCreateAndCreateTransaction(event, template)
+
+    "click .deleteTransaction": (event, template) ->
+      Meteor.call 'deleteTransaction', @_id
+
+    "click .createTransaction": (event, template) ->
+      scope.createTransactionOfImport(event, template)
 
 
 

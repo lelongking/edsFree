@@ -1,9 +1,11 @@
 lemon.defineWidget Template.providerManagementImportDetails,
-  created: ->
-    @child = Schema.transactions.findOne({parent: @data._id})
-
-  helpers:
-    transaction: -> Template.instance().child
+#  created: ->
+#    console.log @
+#    @child = Schema.transactions.findOne({parent: @data._id})
+#
+#  helpers:
+#    transaction: -> Template.instance().child
+#    detailsTotalCash: -> cash = 0; (cash += item.quality * item.price) for item in @details; cash
 
 #    totalDebtBalance: -> @latestDebtBalance + Session.get("providerManagementCurrentProvider")?.customImportDebt
 #
@@ -37,12 +39,15 @@ lemon.defineWidget Template.providerManagementImportDetails,
 #    returnDetails: -> Schema.returnDetails.find({return: @_id})
 
   events:
-    "click .deleteImport": (event, template) ->
-      Meteor.call 'providerManagementDeleteImport', @_id
-      Meteor.call 'reCalculateMetroSummaryTotalPayableCash'
-      Meteor.call 'reCalculateMetroSummary'
-
     "click .deleteTransaction": (event, template) ->
-      Meteor.call 'providerManagementDeleteTransaction', @_id
-      Meteor.call 'reCalculateMetroSummaryTotalPayableCash'
-      Meteor.call 'reCalculateMetroSummary'
+      Meteor.call 'deleteTransaction', @_id
+
+#    "click .deleteImport": (event, template) ->
+#      Meteor.call 'providerManagementDeleteImport', @_id
+#      Meteor.call 'reCalculateMetroSummaryTotalPayableCash'
+#      Meteor.call 'reCalculateMetroSummary'
+#
+#    "click .deleteTransaction": (event, template) ->
+#      Meteor.call 'providerManagementDeleteTransaction', @_id
+#      Meteor.call 'reCalculateMetroSummaryTotalPayableCash'
+#      Meteor.call 'reCalculateMetroSummary'
