@@ -7,11 +7,11 @@ lemon.defineHyper Template.importDetailSection,
     billNo: -> Helpers.orderCodeCreate(Session.get('currentProvider')?.billNo ? '0000')
     dueDate: -> moment().add(Session.get('currentImport').dueDay, 'days').endOf('day').format("DD/MM/YYYY")
 
-
-    oldDebt: -> Session.get('currentProvider')?.totalCash ? 0
+    oldDebt: -> if provider = Session.get('currentProvider') then provider.debtCash + provider.loanCash else 0
     finalDebt: ->
+      currentImport = Session.get("currentImport")
       if provider = Session.get('currentProvider')
-        provider.totalCash + Session.get("currentImport").finalPrice - Session.get("currentImport").depositCash
+        provider.debtCash + provider.loanCash + currentImport.finalPrice - currentImport.depositCash
       else
         Session.get("currentImport").finalPrice - Session.get("currentImport").depositCash
 

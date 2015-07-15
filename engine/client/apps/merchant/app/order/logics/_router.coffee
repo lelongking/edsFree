@@ -19,6 +19,8 @@ saleRoute =
       currentOrder                 : Session.get('currentOrder')
       tabOptions                   : scope.tabOptions
       depositOptions               : scope.depositOptions
+      debtDateOptions              : scope.debtDateOptions
+      discountOptions              : scope.discountOptions
       customerSelectOptions        : scope.customerSelectOptions
       paymentsDeliverySelectOption : scope.paymentsDeliverySelectOptions
       paymentMethodSelectOption    : scope.paymentMethodSelectOptions

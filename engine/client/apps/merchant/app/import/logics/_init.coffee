@@ -32,7 +32,7 @@ Apps.Merchant.importInit.push (scope) ->
       forcestepdivisibility: 'none'
 
   scope.debtDateOptions =
-    reactiveSetter: (val) -> scope.currentImport.changeField('dueDay', val)
+    reactiveSetter: (val) -> scope.currentImport.changeDueDay(val)
     reactiveValue: -> Session.get('currentImport')?.dueDay ? 90
     reactiveMax: -> 180
     reactiveMin: -> 0

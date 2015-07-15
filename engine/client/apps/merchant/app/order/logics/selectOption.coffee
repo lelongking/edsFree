@@ -19,6 +19,15 @@ Apps.Merchant.salesInit.push (scope) ->
     others:
       forcestepdivisibility: 'none'
 
+  scope.discountOptions =
+    reactiveSetter: (val) -> scope.currentOrder.changeDiscountCash(val)
+    reactiveValue: -> Session.get('currentOrder')?.discountCash ? 0
+    reactiveMax: -> 99999999999
+    reactiveMin: -> 0
+    reactiveStep: -> 1000
+    others:
+      forcestepdivisibility: 'none'
+
   scope.customerSelectOptions =
     query: (query) -> query.callback
       results: customerSearch(query)

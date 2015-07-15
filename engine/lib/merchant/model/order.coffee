@@ -20,6 +20,7 @@ simpleSchema.orders = new SimpleSchema
   orderType        : type: Number, defaultValue: Enums.getValue('OrderTypes', 'initialize')
   paymentMethod    : type: Number, defaultValue: Enums.getValue('PaymentMethods', 'direct')
   paymentsDelivery : type: Number, defaultValue: Enums.getValue('DeliveryTypes', 'direct')
+  dueDay           : type: Number, optional: true
 
   #xac nhan tien khi tao phieu
   accounting          : type: String  , optional: true
@@ -35,6 +36,11 @@ simpleSchema.orders = new SimpleSchema
   import          : type: String  , optional: true
   importConfirm   : type: Boolean , optional: true
   importConfirmAt : type: Date    , optional: true
+
+  #ngay xac nhan
+  saleDate    : type: Date, optional: true
+  shipperDate : type: Date, optional: true
+  successDate : type: Date, optional: true
 
   #khi co xac nhan thu tien va xuat kho, moi co the tiep tuc chuyen sang che do di giao hang
   delivery                     : type: Object , optional: true
@@ -68,6 +74,9 @@ simpleSchema.orders = new SimpleSchema
 Schema.add 'orders', "Order", class Order
   @transform: (doc) ->
     doc.remove = -> Schema.orders.remove @_id if @allowDelete
+
+    doc.changeDueDay = (dueDay, callback)->
+      Schema.orders.update @_id, $set:{dueDay: Math.abs(Number(dueDay))}, callback
 
     doc.changeBuyer = (customerId, callback)->
       customer = Schema.customers.findOne(customerId)
@@ -106,6 +115,10 @@ Schema.add 'orders', "Order", class Order
       option = $set:{'depositCash': Math.abs(depositCash)}
       option.$set.paymentMethod = if option.$set.depositCash > 0 then 0 else 1
       Schema.orders.update @_id, option, callback
+
+    doc.changeDiscountCash = (discountCash, callback) ->
+      discountCash = if Math.abs(discountCash) > @totalPrice then @totalPrice else Math.abs(discountCash)
+      Schema.orders.update @_id, $set:{discountCash: discountCash, finalPrice: (@totalPrice - discountCash)}, callback
 
     doc.changeDescription = (description, callback)->
       option = $set:{'description': description}

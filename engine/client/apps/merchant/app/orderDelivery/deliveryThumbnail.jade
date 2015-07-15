@@ -1,6 +1,12 @@
 template(name="deliveryThumbnail")
   .thumbnails(class="#{styles}")
     .right-caption {{showStatus delivery.status}}
+    .bill-info 01234567
+    .buyer-name Nguyen Quoc Loc
+    .seller-name Nguyen Quoc Loc
+    .sales-day Ngày Bán: 15/10/2015
+    .delivered-day Ngày Giao: 25/10/2015
+    .success-day Hoàn Thành: 25/15/2015
     +avatarImageComponent(avatar=avatarUrl alias=customerAlias)
     //.short-desc.quality
     //  button.btn.btn-default.unSuccessDelivery(style="{{hideButtonUnSuccess status}}") {{buttonUnSuccessText status}}

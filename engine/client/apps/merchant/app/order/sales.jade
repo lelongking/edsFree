@@ -76,8 +76,14 @@ template(name="sales")
     .editor-row
       .editor-wrapper.dual-spacer
       .editor-wrapper(style="width: 145px")
-        span.ilabel.center tiền nhận
+        span.ilabel.center chiết khấu
+        +iSpinEdit(options=discountOptions)
+      .editor-wrapper(style="width: 145px")
+        span.ilabel.center thanh toán
         +iSpinEdit(options=depositOptions)
+      .editor-wrapper(style="width: 145px")
+        span.ilabel.center hạn nợ
+        +iSpinEdit(options=debtDateOptions)
 
 
       .editor-wrapper.pull-right

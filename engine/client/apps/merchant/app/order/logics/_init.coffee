@@ -12,7 +12,14 @@ Apps.Merchant.salesInit.push (scope) ->
     destroyAction : (instance) -> if instance then instance.remove(); Order.findNotSubmitted().count() else -1
     navigateAction: (instance) -> Order.setSession(instance._id)
 
-
+  scope.debtDateOptions =
+    reactiveSetter: (val) -> scope.currentOrder.changeDueDay(val)
+    reactiveValue: -> Session.get('currentOrder')?.dueDay ? 90
+    reactiveMax: -> 180
+    reactiveMin: -> 0
+    reactiveStep: -> 30
+    others:
+      forcestepdivisibility: 'none'
 
 Apps.Merchant.salesReactiveRun.push (scope) ->
   if Session.get('mySession')

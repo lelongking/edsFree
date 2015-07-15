@@ -1,11 +1,8 @@
 scope = logics.sales
 lemon.defineHyper Template.orderRowEdit,
-  helpers:
-    detailFinalPrice: -> @quality * (@price - @discountCash)
-
   rendered: ->
     @ui.$editQuality.inputmask "numeric",
-      {autoGroup: true, groupSeparator:",", radixPoint: ".", integerDigits:11}
+      {autoGroup: true, groupSeparator:",", radixPoint: ".", integerDigits:11, rightAlign: false}
     @ui.$editDiscountCash.inputmask "integer",
       {autoGroup: true, groupSeparator:",", radixPoint: ".", integerDigits:11}
 
@@ -44,6 +41,3 @@ lemon.defineHyper Template.orderRowEdit,
         Session.set("editingId", nextRow._id) if nextRow = details.getNextBy("_id", rowId)
       else if event.which is 38  #upArrow
         Session.set("editingId", previousRow._id) if previousRow = details.getPreviousBy("_id", rowId)
-
-lemon.defineHyper Template.orderRowDisplay,
-  detailFinalPrice: -> @quality * (@price - @discountCash)

@@ -9,14 +9,17 @@ template(name="orderRowEdit")
   //tr.editors.dual-border(class="{{crossBillAvailableQuality.errorClass}}")
   tr.editors.dual-border
     td.bill-name.has-commands
-      |{{getProductName product}}
+      |{{productName}}
       .commands
         .lemon.rounded.tiny.btn.blue.animated.bounceIn.deleteOrderDetail: span.icon-minus-4
+    td.quality: input.error-field(name="editQuality" min="0" style="text-align: center;")
+    td: span
+      |{{unitName}}
+      unless isBase
+        span.super.s7.color-lime {{conversion}} {{basicName}}
     td.number.price.editable-field {{formatNumber price}}
-    td.quality: input.error-field(name="editQuality" min="0")
-    td.skull(align="center") {{getProductUnitName productUnit}}
     td.bill-discount: input(name="editDiscountCash" min="0" max="30")
-    td.number.final-price <b>{{formatNumber detailFinalPrice}}</b>
+    td.number.final-price <b>{{formatNumber finalPrice}}</b>
 
 template(name="orderRowDisplay")
   tr.detail-row.large-name: td(colspan="3")
@@ -27,18 +30,22 @@ template(name="orderRowDisplay")
   //tr.detail-row.click-enable(class="{{crossBillAvailableQuality.errorClass}}")
   tr.detail-row.click-enable
     td.bill-name.has-commands
-      |{{getProductName product}}
+      |{{productName}}
       .commands
         .lemon.rounded.tiny.btn.blue.deleteOrderDetail: span.icon-minus-4
-    td.number.price.editable-field {{formatNumber price}}
-    td.number.quality.editable-field.error-field
+    td.date.quality.editable-field.error-field
       span
         |{{formatNumber quality}}
         //if crossBillAvailableQuality.invalid
         //  span.super.s7.color-lime {{crossBillAvailableQuality.crossAvailable}}
-    td(align="center").skull {{getProductUnitName productUnit}}
+    td: span
+          |{{unitName}}
+          unless isBase
+            span.super.s7.color-lime {{conversion}} {{basicName}}
+
+    td.number.price.editable-field {{formatNumber price}}
     td.number.bill-discount.editable-field
       span {{formatNumber discountCash}}
       //if discountPercent
       //   span.super.s7.color-lime -{{round discountPercent}}%
-    td.number.final-price <b>{{formatNumber detailFinalPrice}}</b>
+    td.number.final-price <b>{{formatNumber finalPrice}}</b>
