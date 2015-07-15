@@ -4,7 +4,7 @@ simpleSchema.imports = new SimpleSchema
   provider   : simpleSchema.OptionalString
   importCode : simpleSchema.OptionalString
   importType : type: Number, defaultValue: Enums.getValue('ImportTypes', 'initialize')
-  dueDay     : type: Date, optional: true
+  dueDay     : type: Number, defaultValue: 90
 
   description  : simpleSchema.OptionalString
   discountCash : type: Number, defaultValue: 0
@@ -81,6 +81,8 @@ Schema.add 'imports', "Import", class Import
             optionUpdate.$set.discountCash = discountCash
             optionUpdate.$set.finalPrice   = totalPrice - discountCash
 
+        else if field is 'dueDay'
+          optionUpdate.$set.dueDay = Math.abs(value)
         else if field is 'discountCash'
           discountCash = if Math.abs(value) > @totalPrice then @totalPrice else Math.abs(value)
           optionUpdate.$set.discountCash = discountCash

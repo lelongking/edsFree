@@ -6,6 +6,7 @@ template(name="customerManagement")
           .nano: .nano-content
             +customerManagementOverviewSection currentCustomer
             +customerManagementSalesHistorySection currentCustomer
+
       .dual-addon
         .search-filter.icon-search-8
           input(name='searchFilter' type="text" placeholder="tìm khách hàng...")
@@ -23,9 +24,9 @@ template(name="customerManagement")
                     |({{description}})
 
 
-  #footer.modern
-    .editor-row
-      .editor-wrapper.dual-spacer
-      .editor-wrapper.right
-        span.s5 TỔNG NỢ:
-        span.s3 <b>{{formatNumber finalDebtBalance}}</b> VNĐ
+  //#footer.modern
+  //  .editor-row
+  //    .editor-wrapper.dual-spacer
+  //    .editor-wrapper.right
+  //      span.s5 TỔNG NỢ:
+  //      span.s3 <b>{{formatNumber finalDebtBalance}}</b> VNĐ

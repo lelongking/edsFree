@@ -2,58 +2,25 @@ template(name="customerManagementSaleDetails")
   tr.header-row
     td.has-commands(colspan="5")
       | &nbsp;
-      .bill-header
-        |<b>{{momentCalendar version.createdAt}}</b>
-        if description
-          |{{description}}
-      .commands
-        if showDeleteSales
-          .lemon.rounded.tiny.btn.red.deleteSales: span.icon-minus-4
+      .bill-header .bill-header <b>{{momentFormat version.createdAt "HH:MM:SS DD/MM/YYYY"}}</b> {{description}}
+      //.commands
+      //  if showDeleteSales
+      //    .lemon.rounded.tiny.btn.red.deleteSales: span.icon-minus-4
 
-  each saleDetails
+  each details
     tr.detail-row
       td.first-column {{getProductName product}}
-      td.number {{unitSaleQuality}}
-      td(align="center") {{unitName}}
-      td.number {{formatNumber unitPrice}}
-      td.last-column.number {{formatNumber finalPrice}}
+      td.number {{quality}}
+      td(align="center") {{getProductUnitName productUnit}}
+      td.number {{formatNumber price}}
+      td.last-column.number {{formatNumber totalPrice}}
 
-  if saleDetailCount
+
+  each transactions
     tr.detail-row.summary-row
-      td.note
-      td.number(colspan="3"): span.blured-color.icon-feather-1 <b>{{formatNumber totalDebtBalance}}</b>
-      td.summary-total(align="right"): span.s5 <b>{{formatNumber finalPrice}}</b>
-
-  each dependsData
-    if latestSale
-      tr.paid-row.top(class="{{receivableClass}}")
-        td.has-commands
-          span.note {{description}}, {{momentCalendar debtDate}}
-          .commands
-            if isShowDeleteTransaction
-              .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
-
-        td.number(colspan="3")
-          span.icon-feather-1
-          span.s4(class="{{finalReceivableClass}}") <b>{{formatNumberAbs totalDebtBalance}}</b>
-        td.number: span(class="{{receivableClass}}") <b>{{formatNumberAbs debtBalanceChange}}</b>
-    else
-      tr.header-row
-        td.has-commands(colspan="5")
-          | &nbsp;
-          .bill-header
-            |<b>Trả Hàng: {{momentCalendar version.createdAt}} </b>
-            if comment
-              |{{comment}}
-      each returnDetails
-        tr.detail-row.edit-detail
-          td.first-column {{getProductName product}}
-          td.number {{formatNumber unitReturnQuality}}
-          td(align="center") {{unitName}}
-          td.number {{formatNumber unitReturnsPrice}}
-          td.last-column.number {{formatNumber finalPrice}}
-
-      tr.detail-row.summary-row
-        td
-        td.number(colspan="3"): span.blured-color.icon-feather-1 <b>{{formatNumber totalDebtBalance}}</b>
-        td.summary-total(align="right"): span.s5 <b>{{formatNumber debtBalanceChange}}</b>
+      td.has-commands
+        .bill-header {{transactionName}}
+        .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
+      td.number(colspan="2"): span.blured-color.icon-feather-1 <b>{{formatNumber latestDebtBalance}}</b>
+      td.number(colspan="1"): span.blured-color <b>{{formatNumber paidBalanceChange}}</b>
+      td.summary-total(align="right"): span.s5 <b>{{formatNumber debtBalanceChange}}</b>

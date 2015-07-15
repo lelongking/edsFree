@@ -26,10 +26,10 @@ Apps.Merchant.providerManagementInit.push (scope) ->
       imports = Schema.imports.find({provider: providerId, importType: 4}).map(
         (item) -> item.transactions = scope.transactionFind(item._id);  item
       )
-      returns = Schema.returns.find({provider: providerId, importType: 4}).map(
+      returns = Schema.returns.find({owner: providerId, returnType: 4}).map(
         (item) -> item.transactions = scope.transactionFind(item._id);  item
       )
-      _.sortBy returns.concat(imports), (item) -> item.version.createdAt
+      _.sortBy imports.concat(returns), (item) -> item.version.createdAt
     else []
 
   scope.providerManagementCreationMode = () ->

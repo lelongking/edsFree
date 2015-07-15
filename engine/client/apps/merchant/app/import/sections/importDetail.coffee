@@ -3,9 +3,10 @@ scope = logics.import
 
 lemon.defineHyper Template.importDetailSection,
   helpers:
-    showProductionDate: -> if @productionDate then true else false
-    showExpireDate: -> if @expire then true else false
-    showDelete: -> !Session.get("currentImport")?.submitted
+    provider: -> Session.get('currentProvider')
+    billNo: -> Helpers.orderCodeCreate(Session.get('currentProvider')?.billNo ? '0000')
+    dueDate: -> moment().add(Session.get('currentImport').dueDay, 'days').endOf('day').format("DD/MM/YYYY")
+
 
     oldDebt: -> Session.get('currentProvider')?.totalCash ? 0
     finalDebt: ->

@@ -2,7 +2,7 @@ template(name="providerManagementImportDetails")
   tr.header-row
     td.has-commands(colspan="5")
       | &nbsp;
-      .bill-header <b>{{momentFormat version.createdAt "DD/MM/YYYY HH:MM:SS"}}</b> {{description}}
+      .bill-header <b>{{momentFormat version.createdAt "HH:MM:SS DD/MM/YYYY"}}</b> {{description}}
       //.commands
       //  if showDeleteImport
       //    .lemon.rounded.tiny.btn.red.deleteImport: span.icon-minus-4

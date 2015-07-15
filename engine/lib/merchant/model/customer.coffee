@@ -10,6 +10,10 @@ simpleSchema.customers = new SimpleSchema
   loanCash  : simpleSchema.DefaultNumber()
   totalCash : simpleSchema.DefaultNumber()
 
+  salePaid      : type: Number, optional: true
+  saleDebt      : type: Number, optional: true
+  saleTotalCash : type: Number, optional: true
+
   merchant    : simpleSchema.DefaultMerchant
   avatar      : simpleSchema.OptionalString
   allowDelete : simpleSchema.DefaultBoolean()
@@ -37,6 +41,15 @@ simpleSchema.customers = new SimpleSchema
 Schema.add 'customers', "Customer", class Customer
   @transform: (doc) ->
     doc.remove = -> Schema.customers.remove(@_id) if @allowDelete
+
+  @calculate: ->
+    Schema.customers.find({}).forEach(
+      (customer) ->
+        Schema.customers.update customer._id, {
+          $set:{paidCash:0, debtCash:0, loanCash:0, totalCash:0}
+          $unset:{salePaid:"", saleDebt:"", saleTotalCash:""}
+        }
+    )
 
   @insert: (name, description) ->
     Schema.customers.insert({name: name, description: description})

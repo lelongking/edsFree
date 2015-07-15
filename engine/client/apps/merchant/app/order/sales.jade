@@ -2,6 +2,17 @@ template(name="sales")
   #header
     .editor-row
       .editor-wrapper.dual-spacer
+      .editor-wrapper(style="width: 200px")
+        span.ilabel.optional khách hàng
+        +iSelect(options=customerSelectOptions class="field")
+      .editor-wrapper(style="width: 120px")
+        span.ilabel.optional thanh toán
+        +iSelect(options=paymentMethodSelectOption class="field")
+      .editor-wrapper(style="width: 130px")
+        span.ilabel.optional giao hàng
+        +iSelect(options=paymentsDeliverySelectOption class="field")
+
+
       //.editor-wrapper(style="width:170px")
       //  span.ilabel tên người nhận
       //  input.contactName(value="#{deliveryDetail.contactName}" tabindex="1")
@@ -44,8 +55,6 @@ template(name="sales")
 
   #footer.modern
     .editor-row.extra(name='delivery')
-
-
     //.editor-row.extra(name='advanced')
     //  .editor-wrapper(style="width: 200px; margin-right: 5px;")
     //    span.ilabel.optional nhân viên
@@ -66,15 +75,6 @@ template(name="sales")
 
     .editor-row
       .editor-wrapper.dual-spacer
-      .editor-wrapper(style="width: 200px")
-        span.ilabel.optional khách hàng
-        +iSelect(options=customerSelectOptions class="field")
-      .editor-wrapper(style="width: 120px")
-        span.ilabel.optional thanh toán
-        +iSelect(options=paymentMethodSelectOption class="field")
-      .editor-wrapper(style="width: 130px")
-        span.ilabel.optional giao hàng
-        +iSelect(options=paymentsDeliverySelectOption class="field")
       .editor-wrapper(style="width: 145px")
         span.ilabel.center tiền nhận
         +iSpinEdit(options=depositOptions)

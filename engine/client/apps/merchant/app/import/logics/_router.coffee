@@ -18,6 +18,7 @@ importRoute =
       providerSelectOptions : scope.providerSelectOptions
       depositOptions        : scope.depositOptions
       discountOptions       : scope.discountOptions
+      debtDateOptions       : scope.debtDateOptions
     }
 
 lemon.addRoute [importRoute], Apps.Merchant.RouterBase

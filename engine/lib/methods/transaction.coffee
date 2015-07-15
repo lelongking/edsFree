@@ -56,7 +56,7 @@ Meteor.methods
 
       if Schema.transactions.insert(transactionInsert)
         if transactionType is Enums.getValue('TransactionTypes', 'provider')
-          Schema.providers.update owner._id, ownerUpdate
+          Schema.providers. update owner._id, ownerUpdate
         else if transactionType is Enums.getValue('TransactionTypes', 'customer')
           Schema.customers.update owner._id, ownerUpdate
 
@@ -65,7 +65,7 @@ Meteor.methods
       if transaction.transactionType is Enums.getValue('TransactionTypes', 'provider')
         parent = Schema.imports.findOne(transaction.parent)
       else if transaction.transactionType is Enums.getValue('TransactionTypes', 'customer')
-        parent = Schema.sales.findOne(transaction.parent)
+        parent = Schema.orders.findOne(transaction.parent)
 
       if !parent or parent.transaction isnt transaction._id
         latestDebtBalance = 0; beforeDebtBalance = transaction.beforeDebtBalance

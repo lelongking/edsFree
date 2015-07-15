@@ -6,9 +6,20 @@ template(name="importDetailSection")
          .show-on-print
             +merchantPrintingHeader
             .bill-info
-               .seller-info NGƯỜI BÁN: {{sellerName}}
+               .seller-info Nhân viên: {{sellerName}}
+               .bill-no {{billNo}}
             .printing-info
-               .document-name PHIẾU NHẬP KHO
+               .document-name
+                  span.s4 PHIẾU NHẬP KHO <br />
+                  span.uppercase {{provider.name}}
+               .document-info
+                  .right-info
+                     if provider.phone
+                        span {{provider.phone}}
+                        span.icon-phone-circled <br/>
+                     if provider.address
+                        span {{provider.address}}
+                        span.icon-location-outline
 
       .panel-body
          table.lemon-grid
@@ -57,6 +68,9 @@ template(name="importDetailSection")
                td.number(colspan="2" style="border-top: solid 1px #d7d7d7")
                   span.s4 <b>{{formatNumber finalDebt}}</b> VNĐ
 
-      //.panel-footer
-      //   .right-float
-      //      span.s3
+      .panel-footer.show-on-print
+         .grea-print-message
+            .rounded-gera-logo: .rounded-wrapper
+               img(src="/images/white-pixel.jpg")
+               img.rounded-img(src="/images/gera-small.png")
+            i In từ hệ thống EDS - công ty Công Nghệ Thiên Ban (0838 111 766) - Hạn nợ {{dueDate}} ({{dueDay}} ngày)

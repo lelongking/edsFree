@@ -12,69 +12,34 @@ template(name="customerManagementSalesHistorySection")
         th(style="width:100px; text-align:center") ĐƠN VỊ
         th.number(style="width:120px") ĐƠN GIÁ
         th.number(style="width:175px") THÀNH TIỀN
+
     .panel-body.debt-details
       table.lemon-grid
-        +customerManagementSaleHistoryHeader
-        each customSale
-          +customerManagementCustomSaleDetails this
+        tr
+          th(style="width:auto")
+          th(style="width:50px")
+          th(style="width:100px")
+          th(style="width:120px")
+          th(style="width:182px")
 
-        tr.editors.hide-on-print(style="{{isCustomSaleModeEnabled}}")
-          td
-            input.new-transaction-custom-sale-field(name='payDescription' type="text" size="10" placeholder="ghi chú thu chi")
-          td(colspan="2")
-            input.new-transaction-custom-sale-field.number(name='payAmount' type="text" size="10" placeholder="số tiền")
-          td
-            input.new-transaction-custom-sale-field.number(name='paidDate' type="text" size="10" placeholder="ngày giao dịch")
-          td
-            .lemon.rounded.btn.orange.icon-money.pull-right.createTransactionOfCustomSale(class="{{allowCreateTransactionOfCustomSale}}")
+        each oldDebts
+          tr.detail-row.summary-row
+            td.has-commands
+              .bill-header {{transactionName}}
+              .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
+            td.number(colspan="2"): span.blured-color.icon-feather-1 <b>{{formatNumber latestDebtBalance}}</b>
+            td.number(colspan="1"): span.blured-color <b>{{formatNumber paidBalanceChange}}</b>
+            td.summary-total(align="right"): span.s5 <b>{{formatNumber debtBalanceChange}}</b>
 
-        tr.editors.hide-on-print.dual-border(style="{{isCustomSaleModeEnabled}}")
-          td(colspan="3")
-            input.new-bill-field(name='description' type="text" size="10" placeholder="ghi chú đơn hàng")
-          td
-            input.new-bill-field.number(name='debtDate' type="text" size="10" placeholder="ngày bán")
-          td
-            .lemon.rounded.btn.orange.icon-tags-2.pull-right.createCustomSale(class="{{allowCreateCustomSale}}")
-
-        if customSaleModeEnabled
-          tr.group-summary-row
-            td
-              .lemon.btn.lime.customSaleModeDisable.icon-ok-6 Kết Sổ Cũ
-            td.number.old-debt-total(colspan="4")
-              span.s5 NỢ CŨ:
-              span.s3 <b>{{formatNumber customSaleDebt}}</b> VNĐ
-
-        if showExpandSaleAndCustomSale
-          tr: td(colspan="5")
-            .lemon.btn.lime.pull-right.expandSaleAndCustomSale.icon-ok-6 Xem Thêm
-
-      table.lemon-grid.safe
-        +customerManagementSaleHistoryHeader
-        each defaultSaleArchive
+        each allSales
           +customerManagementSaleDetails this
 
-        each defaultSaleToday
-          +customerManagementSaleDetails this
-
-        //tr.editors.hide-on-print(style="{{showIsFoundSale}}")
-        tr.editors.hide-on-print
-          td
-            input.new-transaction-sale-field(name='paySaleDescription' type="text" size="10" placeholder="ghi chú thu chi")
-          td(colspan="3")
-            input.new-transaction-sale-field.number(name='paySaleAmount' type="text" size="10" placeholder="số tiền")
-          td
-            .lemon.rounded.btn.lime.icon-money.pull-right.createTransactionOfSale(class="{{allowCreateTransactionOfSale}}")
+        tr.editors
+          td(colspan="1"): input.transaction-field(name='paySaleDescription' type="text" size="10" placeholder="ghi chú trả tiền")
+          td(colspan="3"): input.transaction-field.number(name='paySaleAmount' type="text" size="10" placeholder="số tiền")
+          td(colspan="1"): .lemon.rounded.btn.lime.icon-money.pull-right.createTransaction(class="{{isNotDisabled 'allowCreateTransactionOfCustomer'}}")
 
     .panel-footer
       .right-float
         span.s5 TỔNG NỢ:
-        span.s3 <b>{{formatNumber finalDebtBalance}}</b> VNĐ
-        //h3 Tổng tiền: {{formatNumber totalPurchases}} VNĐ
-
-template(name="customerManagementSaleHistoryHeader")
-  tr
-    th(style="width:auto")
-    th(style="width:50px")
-    th(style="width:100px")
-    th(style="width:120px")
-    th(style="width:182px")
+        span.s3 <b>{{formatNumber debtTotalCash}}</b> VNĐ

@@ -14,10 +14,4 @@ lemon.addRoute
       @next()
   data: ->
     Apps.setup(scope, Apps.Merchant.customerManagementReactive)
-
-    return {
-#      managedCustomerList : scope.managedCustomerList
-#      genderSelectOptions : scope.genderSelectOptions
-#      allowCreate         : scope.allowCreate
-    }
 , Apps.Merchant.RouterBase
