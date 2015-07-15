@@ -41,7 +41,8 @@ lemon.defineHyper Template.overviewProductUnit,
 
 
 lemon.defineHyper Template.productUnitTableDetail,
-  isEditImportPrice: -> scope.currentProduct.status isnt Enums.getValue('ProductStatuses', 'confirmed')
+  helpers:
+    isEditImportPrice: -> scope.currentProduct.status isnt Enums.getValue('ProductStatuses', 'confirmed')
   events:
     "keyup [name='editImportQuality']": (event, template) ->
       $importPrice  = template.ui.$editImportQuality
@@ -51,12 +52,13 @@ lemon.defineHyper Template.productUnitTableDetail,
         scope.currentProduct.unitUpdate @_id, updateOption
 
 lemon.defineHyper Template.overviewProductInventoryDetail,
-  currentProduct: -> scope.currentProduct
-  quality: ->
-    quality = 0
-    for unit in Session.get('productManagementInventoryDetails')
-      quality = unit.quality if unit._id is @_id
-    quality
+  helpers:
+    currentProduct: -> scope.currentProduct
+    quality: ->
+      quality = 0
+      for unit in Session.get('productManagementInventoryDetails') ? []
+        quality = unit.quality if unit._id is @_id
+      quality
 
 
   rendered: -> $("[name=deliveryDate]").datepicker()
@@ -72,21 +74,33 @@ lemon.defineHyper Template.overviewProductInventoryDetail,
         inventoryDetails[detailIndex].quality = Number($quality.val())
         Session.set('productManagementInventoryDetails', inventoryDetails)
 
+    "change [name ='deliveryDate']": (event, template) ->
+      date = $("[name=deliveryDate]").datepicker().data().datepicker.dates[0]
+      console.log moment(date).endOf("day")._d
+
+      inventoryDetails = Session.get('productManagementInventoryDetails')
+      (detailIndex = index if detail._id is @_id) for detail, index in inventoryDetails
+
+      inventoryDetails[detailIndex].expriceDay = moment(date).endOf("day")._d
+      Session.set('productManagementInventoryDetails', inventoryDetails)
+
+
 
 
 lemon.defineHyper Template.overviewProductInventory,
-  currentProduct: -> scope.currentProduct
-  importUnit: ->
-    importUnitFound = {quality:0}
-    if importDetails = Schema.imports.findOne({importType: -2, 'details.productUnit': @_id})?.details
-      (importUnitFound = importUnit if importUnit.productUnit is @_id) for importUnit in importDetails
-    return importUnitFound
+  helpers:
+    currentProduct: -> scope.currentProduct
+    importUnit: ->
+      importUnitFound = {quality:0}
+      if importDetails = Schema.imports.findOne({importType: -2, 'details.productUnit': @_id})?.details
+        (importUnitFound = importUnit if importUnit.productUnit is @_id) for importUnit in importDetails
+      return importUnitFound
 
-  isImport: (status)->
-    if status is 'sale'
-      if Session.get('productManagementAllowInventory') then '' else 'selected'
-    else
-      if Session.get('productManagementAllowInventory') then 'selected' else ''
+    isImport: (status)->
+      if status is 'sale'
+        if Session.get('productManagementAllowInventory') then '' else 'selected'
+      else
+        if Session.get('productManagementAllowInventory') then 'selected' else ''
 
   rendered: ->
     Session.set('productManagementAllowInventory', scope.currentProduct.inventoryInitial)
@@ -106,7 +120,8 @@ lemon.defineHyper Template.overviewProductInventory,
 
 
 lemon.defineHyper Template.productUnitDetail,
-  currentProduct: -> scope.currentProduct
+  helpers:
+    currentProduct: -> scope.currentProduct
   events:
     "keyup [name='productUnitName']": (event, template) ->
       console.log $(template.find("[name='productUnitName']")).val()
@@ -120,6 +135,7 @@ lemon.defineHyper Template.productUnitDetail,
     "click .deleteProductUnit": (event, template) -> scope.deleteNewProductUnit(@, event, template)
 
 lemon.defineHyper Template.productUnitCreateUnit,
-  currentProduct: -> scope.currentProduct
+  helpers:
+    currentProduct: -> scope.currentProduct
   events:
     "click .addProductUnit": (event, template) -> scope.createNewProductUnit(event, template)

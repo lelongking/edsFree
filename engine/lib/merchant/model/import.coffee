@@ -96,7 +96,7 @@ Schema.add 'imports', "Import", class Import
 
         Schema.imports.update(@_id, optionUpdate) if _.keys(optionUpdate.$set).length > 0
 
-    doc.addImportDetail = (productUnitId, quality = 1, callback) ->
+    doc.addImportDetail = (productUnitId, quality = 1, expireDay = undefined, callback) ->
       product = Schema.products.findOne({'units._id': productUnitId})
       return console.log('Khong tim thay Product') if !product
 
@@ -123,6 +123,7 @@ Schema.add 'imports', "Import", class Import
         recalculationImport(@_id) if Schema.imports.update(@_id, updateQuery, callback)
 
       else
+        detailFindQuery.expire            = expireDay if expireDay
         detailFindQuery.orderId           = []
         detailFindQuery.quality           = quality
         detailFindQuery.conversion        = productUnit.conversion

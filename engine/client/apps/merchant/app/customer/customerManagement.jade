@@ -14,14 +14,16 @@ template(name="customerManagement")
             .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createCustomerBtn
 
         .nano: .nano-content
-          .group-wrapper
+          .list
             each customerSearches
-              .caption.inner(class="{{activeClass}}")
-                +avatarImageComponent(avatar=avatarUrl alias=firstName)
-                span.text
-                  |{{name}}
-                  if description
-                    |({{description}})
+              .doc-item(class="{{activeClass 'customerManagementCurrentCustomer'}}")
+                .avatar-wrapper: .avatar-image(class="missing"
+                style="background-image:url('')") {{aliasLetter firstName}}
+                .doc-info
+                  .title {{name}}
+                  .sub-title {{description}}
+                  if debtTotalCash
+                    .price-stamp.icon-ticket <b>{{formatNumber debtTotalCash}}</b> VNĐ
 
 
   //#footer.modern

@@ -248,7 +248,7 @@ Schema.add 'products', "Product", class Product
     doc.submitInventory = (inventoryDetails)->
       importId = Import.insert(null, null, 'Tồn kho đầu kỳ')
       if importFound = Schema.imports.findOne(importId)
-        importFound.addImportDetail(detail._id, detail.quality) for detail in inventoryDetails
+        importFound.addImportDetail(detail._id, detail.quality, detail.expriceDay) for detail in inventoryDetails
         Meteor.call 'importInventory', importFound._id, (error, result) ->
         Schema.products.update @_id, $set:{inventoryInitial: true, allowDelete: false, status: Enums.getValue('ProductStatuses', 'confirmed')}
 #        #TODO: chua tinh tru kho khi ban hang truoc

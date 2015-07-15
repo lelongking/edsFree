@@ -4,7 +4,7 @@ template(name="import")
       .dual-detail-wrapper
         .dual-detail
           .nano: .nano-content
-            +importDetailSection getSession 'currentImport'
+            +importDetailSection currentImport
 
       .dual-addon
         .search-filter.icon-search-8
@@ -31,15 +31,12 @@ template(name="import")
       .editor-wrapper(style="width:180px")
         span.ilabel.optional công ty cung cấp
         +iSelect(options=providerSelectOptions class="field")
-      .editor-wrapper(style="width: 130px")
+      .editor-wrapper(style="width: 160px; padding-right: 20px")
         span.ilabel.center chiết khấu
         +iSpinEdit(options=discountOptions)
-      .editor-wrapper(style="width: 140px")
+      .editor-wrapper(style="width: 160px; padding-right: 20px")
         span.ilabel.center thanh toán
         +iSpinEdit(options=depositOptions)
-      .editor-wrapper(style="width: 105px")
-        span.ilabel.center hạn nợ
-        +iSpinEdit(options=debtDateOptions)
 
 
       .editor-wrapper.right

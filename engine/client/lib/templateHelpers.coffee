@@ -40,7 +40,9 @@ Template.registerHelper 'formatNumberK', (context) ->  accounting.formatNumber(c
 
 Template.registerHelper 'pad', (number) -> if number < 10 then '0' + number else number
 Template.registerHelper 'round', (number) -> Math.round(number)
-Template.registerHelper 'momentFormat', (date, format) -> moment(date).format(format)
+Template.registerHelper 'momentFormat', (date, format) ->
+  if date then moment(date).format(format)
+  else '--/--/----'
 Template.registerHelper 'momentCalendar', (date) -> moment(date).calendar()
 
 Template.registerHelper 'productNameFromId', (id) -> Schema.products.findOne(id)?.name

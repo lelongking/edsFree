@@ -4,8 +4,8 @@ lemon.defineApp Template.customerManagement,
   helpers:
     creationMode: -> Session.get("customerManagementCreationMode")
     currentCustomer: -> Session.get("customerManagementCurrentCustomer")
-    avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
-    activeClass:-> if Session.get("customerManagementCurrentCustomer")?._id is @._id then 'active' else ''
+    debtTotalCash: -> @debtCash + @loanCash
+
 
 
 #  finalDebtBalance: -> Session.get("customerManagementCurrentCustomer")?.customSaleDebt + Session.get("customerManagementCurrentCustomer")?.saleDebt
@@ -56,7 +56,7 @@ lemon.defineApp Template.customerManagement,
       scope.createNewCustomer(template, customerSearch)
       CustomerSearch.search customerSearch
 
-    "click .inner.caption": (event, template) ->
+    "click .list .doc-item": (event, template) ->
       if userId = Meteor.userId()
         Meteor.subscribe('customerManagementCurrentCustomerData', @_id)
         Meteor.users.update(userId, {$set: {'sessions.currentCustomer': @_id}})

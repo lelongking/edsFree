@@ -14,7 +14,7 @@ template(name="productManagementSalesHistorySection")
           th.number(style="width:50px") SL
           th(style="width:80px; text-align:center") ĐƠN VỊ
           th.number(style="width:100px") GIÁ
-          th.number(style="width:120px") TỔNG TIỀN
+          th.number(style="width:120px") GHI CHÚ
 
         //if basicDetail.isShowDetail
         //  tr.header-row
@@ -61,7 +61,7 @@ template(name="productManagementSalesHistorySection")
               td.number {{quality}}
               td(align="center") {{getProductUnitName productUnit}}
               td.number {{formatNumber price}}
-              td.number {{formatNumber totalPrice}}
+              td.number
 
     .panel-footer
       unless inventoryInitial

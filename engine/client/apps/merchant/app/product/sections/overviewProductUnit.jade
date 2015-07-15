@@ -14,7 +14,7 @@ template(name="overviewProductInventory")
           form.form-inline: .form-group: .input-group
             .input-group-addon(style="width: 100px") {{importUnit.quality}}
             .input-group-addon(style="width: 100px") {{name}}
-            .input-group-addon(style="width: 100px") --/--/----
+            .input-group-addon(style="width: 100px") {{momentFormat importUnit.expire "DD/MM/YYYY"}}
             .input-group-addon(style="width: 100px") Hết hạn
         else
           +overviewProductInventoryDetail this
