@@ -1,13 +1,13 @@
 @UnitProductSearch = new SearchSource 'products', ['name'],
-  keepHistory: 1000 * 60 * 5
+#  keepHistory: 1000 * 60 * 5
   localSearch: true
 
 @UnitProductSearch.fetchData =(searchText, options, callback) ->
-  selector = {}; options = {sort: {name: 1}, limit: 20}
+  selector = {status: 1}; options = {sort: {name: 1}, limit: 20}
   if(searchText)
     regExp = Helpers.BuildRegExp(searchText);
     selector = {$or: [
-      {name: regExp}
+      {name: regExp, status: 1}
     ]}
   productLists = []
   for product in Schema.products.find(selector, options).fetch()
@@ -16,6 +16,7 @@
       unit.name     = product.name
       unit.avatar   = product.avatar
       unit.status   = product.status
+      unit.stock    = if product.inventoryInitial then unit.quality.availableQuality/unit.conversion else ''
       unit.inventoryInitial = product.inventoryInitial
       productLists.push(unit)
 

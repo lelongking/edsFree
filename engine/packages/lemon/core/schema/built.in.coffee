@@ -99,7 +99,9 @@ simpleSchema.Barcode =
 
 simpleSchema.DefaultMerchant =
   type: String
-  autoValue: -> Meteor.user().profiles.merchant if @isInsert and not @isSet
+  autoValue: ->
+    if @isInsert and not @isSet
+      Meteor.user().profiles.merchant
 
 simpleSchema.DefaultCreator =
   type: String

@@ -271,6 +271,7 @@ Schema.add 'priceBooks', "PriceBook", class PriceBook
     if userId = Meteor.userId()
       merchantId = Meteor.users.findOne(userId).profiles.merchant
       product = Schema.products.findOne({'units._id': productUnitId, merchant: merchantId})
+      console.log product
       priceBook = Schema.priceBooks.findOne({productUnits: {$ne: productUnitId}, priceBookType: 0, merchant: merchantId})
       if priceBook and product
         Schema.priceBooks.update priceBook._id, {$addToSet: {productUnits: productUnitId}}

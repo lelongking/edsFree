@@ -15,6 +15,14 @@ Meteor.methods
 
     for detail in importFound.details
       detailIndex = 0; updateQuery = {$inc:{}}
+      product = Schema.products.findOne(detail.product)
+      for unit, index in product.units
+        if unit._id is detail.productUnit
+          updateQuery.$inc["units.#{index}.quality.availableQuality"] = detail.availableQuality
+          updateQuery.$inc["units.#{index}.quality.inStockQuality"]   = detail.inStockQuality
+          updateQuery.$inc["units.#{index}.quality.importQuality"]    = detail.importQuality
+          break
+
       updateQuery.$inc["qualities.#{detailIndex}.availableQuality"]= detail.availableQuality
       updateQuery.$inc["qualities.#{detailIndex}.inStockQuality"]  = detail.inStockQuality
       updateQuery.$inc["qualities.#{detailIndex}.importQuality"]   = detail.importQuality
@@ -90,6 +98,14 @@ Meteor.methods
 
     for detail in importFound.details
       detailIndex = 0; updateQuery = {$inc:{}}
+      product = Schema.products.findOne(detail.product)
+      for unit, index in product.units
+        if unit._id is detail.productUnit
+          updateQuery.$inc["units.#{index}.quality.availableQuality"] = detail.availableQuality
+          updateQuery.$inc["units.#{index}.quality.inStockQuality"]   = detail.inStockQuality
+          updateQuery.$inc["units.#{index}.quality.importQuality"]    = detail.importQuality
+          break
+
       updateQuery.$inc["qualities.#{detailIndex}.availableQuality"]= detail.availableQuality
       updateQuery.$inc["qualities.#{detailIndex}.inStockQuality"]  = detail.inStockQuality
       updateQuery.$inc["qualities.#{detailIndex}.importQuality"]   = detail.importQuality

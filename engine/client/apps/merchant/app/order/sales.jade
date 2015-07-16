@@ -49,7 +49,7 @@ template(name="sales")
                   span.text {{name}}
                     .commands
                       span.icon-right-open-big.addSaleDetail
-                  span.right-info {{unitName}}
+                  span.right-info {{stock}} {{unitName}}
 
 
 
@@ -87,7 +87,8 @@ template(name="sales")
 
 
       .editor-wrapper.pull-right
-        button.flat.btn.lime.pull-right.finish(type='submit' style="margin-right: 5px;") HOÀN TẤT
+        button.flat.btn.lime.pull-right.finish(
+        type='submit' style="margin-right: 5px;" class="{{getSession 'currentOrderIsDisabled'}}") HOÀN TẤT
       .editor-wrapper.pull-right
         button.flat.btn.blue.pull-right.print-command(type='submit'): span.icon-print-6
 

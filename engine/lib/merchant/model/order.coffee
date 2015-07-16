@@ -194,7 +194,18 @@ Schema.add 'orders', "Order", class Order
 
     doc.orderConfirm = ->
       orderId = @_id
+      for detail in @details
+        if product = Schema.products.findOne(detail.product)
+          for unit in product.units
+            if unit._id is detail.productUnit
+              crossAvailable = (unit.quality.availableQuality - detail.basicQuality)/unit.conversion
+              if product.inventoryInitial and crossAvailable < 0
+                console.log('product quality nho'); return
+        else
+          console.log('product not Found'); return
+
       if Schema.orders.update(orderId, $set:{orderType: Enums.getValue('OrderTypes','checked')})
+
         Meteor.call 'orderSellerConfirmed', orderId, (error, result) ->
           console.log result, 'seller'
           Meteor.call 'orderAccountingConfirmed', orderId, (error, result) ->
@@ -203,6 +214,8 @@ Schema.add 'orders', "Order", class Order
               console.log result, 'export'
               Meteor.call 'orderSuccessConfirmed', orderId, (error, result) ->
                 console.log result, 'success'
+                Order.insert()
+
 
     doc.addDelivery = (option, callback) ->
       return console.log('Order không tồn tại.') if (!self = Schema.orders.findOne doc._id)
@@ -242,7 +255,9 @@ Schema.add 'orders', "Order", class Order
     newOrder = {}
     newOrder.buyer = buyer if buyer
     newOrder.seller= seller if seller
-    Schema.orders.insert newOrder, callback
+    orderId = Schema.orders.insert newOrder, callback
+    Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentOrder': orderId}})
+    return orderId
 
   @findNotSubmitted: ->
     Schema.orders.find({orderType: 0})

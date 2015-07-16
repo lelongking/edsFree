@@ -15,18 +15,33 @@ lemon.defineHyper Template.saleDetailSection,
         Session.get("currentOrder").finalPrice - Session.get("currentOrder").depositCash
 
     details: ->
+      isDisabled = true; isDisabled = if @details?.length > 0 then false else true
       for item in @details
         if product = Schema.products.findOne(item.product)
           item.productName = product.name
           item.basicName   = product.unitName()
+
           for unit in product.units
-            if item.isBase
-              item.basicName  = unit.name
-            else if unit._id is item.productUnit
+            item.basicName  = unit.name if item.isBase
+            if unit._id is item.productUnit
               item.unitName   = unit.name
               item.isBase     = unit.isBase
               item.conversion = unit.conversion
               item.finalPrice = item.quality * (item.price - item.discountCash)
+              if product.inventoryInitial
+                crossAvailable = (unit.quality.availableQuality - item.basicQuality)/unit.conversion
+                item.crossAvailable = crossAvailable
+                item.isValid        = crossAvailable > 0
+                item.invalid        = crossAvailable < 0
+                item.errorClass     = if crossAvailable >= 0 then '' else 'errors'
+              else
+                item.crossAvailable = 0
+                item.isValid        = true
+                item.invalid        = false
+                item.errorClass     = ''
+
+        if item.invalid then isDisabled = item.invalid
+      Session.set('currentOrderIsDisabled', if isDisabled then 'disabled' else '')
 
       @details
 

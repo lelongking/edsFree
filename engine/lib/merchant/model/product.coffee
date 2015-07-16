@@ -31,20 +31,20 @@ simpleSchema.products = new SimpleSchema
   'units.$.priceBooks.$.discountSalePrice'  : type: Number, optional: true
   'units.$.priceBooks.$.updateSalePriceAt'  : type: Date  , optional: true
 
-  'units.$.priceBooks.$.basicImport'         : type: Number, optional: true
+  'units.$.priceBooks.$.basicImport'        : type: Number, optional: true
   'units.$.priceBooks.$.importPrice'        : type: Number, optional: true
   'units.$.priceBooks.$.discountImportPrice': type: Number, optional: true
   'units.$.priceBooks.$.updateImportPriceAt': type: Date  , optional: true
 
-  'units.$.quality'                       : type: Object, optional: true
-  'units.$.quality.$.upperGapQuality'     : simpleSchema.DefaultNumber()
-  'units.$.quality.$.inStockQuality'      : simpleSchema.DefaultNumber()
-  'units.$.quality.$.inOderQuality'       : simpleSchema.DefaultNumber()
-  'units.$.quality.$.availableQuality'    : simpleSchema.DefaultNumber()
-  'units.$.quality.$.saleQuality'         : simpleSchema.DefaultNumber()
-  'units.$.quality.$.returnSaleQuality'   : simpleSchema.DefaultNumber()
-  'units.$.quality.$.importQuality'       : simpleSchema.DefaultNumber()
-  'units.$.quality.$.returnImportQuality' : simpleSchema.DefaultNumber()
+  'units.$.quality'                     : type: Object
+  'units.$.quality.upperGapQuality'     : type: Number
+  'units.$.quality.inStockQuality'      : type: Number
+  'units.$.quality.inOderQuality'       : type: Number
+  'units.$.quality.availableQuality'    : type: Number
+  'units.$.quality.saleQuality'         : type: Number
+  'units.$.quality.returnSaleQuality'   : type: Number
+  'units.$.quality.importQuality'       : type: Number
+  'units.$.quality.returnImportQuality' : type: Number
 
   qualities                        : type: [Object], defaultValue: [{}]
   'qualities.$.upperGapQuality'    : simpleSchema.DefaultNumber()
@@ -136,7 +136,15 @@ Schema.add 'products', "Product", class Product
           priceBooks  : priceBook
           isBase      : false
           allowDelete : true
-          quality     : {}
+          quality     :
+            availableQuality    : 0
+            importQuality       : 0
+            inOderQuality       : 0
+            inStockQuality      : 0
+            returnImportQuality : 0
+            returnSaleQuality   : 0
+            saleQuality         : 0
+            upperGapQuality     : 0
 
         if Schema.products.update(@_id, {$push: { units: productUnit }})
           PriceBook.addProductUnit(productUnitId)
@@ -269,6 +277,18 @@ Schema.add 'products', "Product", class Product
       updateImportPriceAt : new Date()
     }]
 
+    quality =
+      availableQuality    : 0
+      importQuality       : 0
+      inOderQuality       : 0
+      inStockQuality      : 0
+      returnImportQuality : 0
+      returnSaleQuality   : 0
+      saleQuality         : 0
+      upperGapQuality     : 0
+
+
+
     productUnitId = Random.id()
     option.units = [{
       _id         : productUnitId
@@ -277,9 +297,10 @@ Schema.add 'products', "Product", class Product
       isBase      : true
       conversion  : 1
       priceBooks  : priceBook
-      quality     : {}
+      quality     : quality
     }]
 
+    console.log option
     if newProductId = Schema.products.insert option
       PriceBook.addProductUnit(productUnitId); Product.setSession(newProductId)
     newProductId

@@ -55,6 +55,14 @@ Meteor.methods
 
     for detail in orderFound.details
       detailIndex = 0; updateQuery = {$inc:{}}
+
+      product = Schema.products.findOne(detail.product)
+      for unit, index in product.units
+        if unit._id is detail.productUnit
+          updateQuery.$inc["units.#{index}.quality.inOderQuality"]    = detail.basicQuality
+          updateQuery.$inc["units.#{index}.quality.availableQuality"] = -detail.basicQuality
+          break
+
       updateQuery.$inc["qualities.#{detailIndex}.inOderQuality"]    = detail.basicQuality
       updateQuery.$inc["qualities.#{detailIndex}.availableQuality"] = -detail.basicQuality
       Schema.products.update detail.product, updateQuery
@@ -70,8 +78,42 @@ Meteor.methods
       merchant  : user.profiles.merchant
       orderType : Enums.getValue('OrderTypes', 'seller')
     console.log orderQuery
+
     orderFound = Schema.orders.findOne orderQuery
     return {valid: false, error: 'order not found!'} if !orderFound
+
+    customerFound = Schema.customers.findOne(orderFound.buyer)
+    return {valid: false, error: 'customer not found!'} if !customerFound
+
+    transactionInsert =
+      transactionName : 'Phiếu Bán'
+#      transactionCode :
+#      description     :
+      transactionType  : Enums.getValue('TransactionTypes', 'customer')
+      receivable       : true
+      owner            : customerFound._id
+      parent           : orderFound._id
+      beforeDebtBalance: customerFound.debtCash
+      debtBalanceChange: orderFound.finalPrice
+      paidBalanceChange: orderFound.depositCash
+      latestDebtBalance: customerFound.debtCash + orderFound.finalPrice - orderFound.depositCash
+
+    transactionInsert.dueDay = orderFound.dueDay if orderFound.dueDay
+
+    if orderFound.depositCash >= orderFound.finalPrice # phiếu nhập đã thanh toán hết cho NCC
+      transactionInsert.owedCash = 0
+      transactionInsert.status   = Enums.getValue('TransactionStatuses', 'closed')
+    else
+      transactionInsert.owedCash = orderFound.finalPrice - orderFound.depositCash
+      transactionInsert.status   = Enums.getValue('TransactionStatuses', 'tracking')
+
+    if transactionId = Schema.transactions.insert(transactionInsert)
+      customerUpdate =
+        allowDelete : false
+        paidCash    : customerFound.paidCash  + orderFound.depositCash
+        debtCash    : customerFound.debtCash  + orderFound.finalPrice - orderFound.depositCash
+        totalCash   : customerFound.totalCash + orderFound.finalPrice
+      Schema.customers.update orderFound.buyer, $set: customerUpdate
 
     orderUpdate = $set:
       orderType          : Enums.getValue('OrderTypes', 'accounting')
@@ -94,6 +136,14 @@ Meteor.methods
     for orderDetail in orderFound.details
       if product = Schema.products.findOne({'units._id': orderDetail.productUnit})
         detailIndex = 0; updateQuery = {$inc:{}}
+
+        for unit, index in product.units
+          if unit._id is orderDetail.productUnit
+            updateQuery.$inc["units.#{index}.quality.saleQuality"]    = orderDetail.basicQuality
+            updateQuery.$inc["units.#{index}.quality.inOderQuality"]  = -orderDetail.basicQuality
+            updateQuery.$inc["units.#{index}.quality.inStockQuality"] = -orderDetail.basicQuality
+            break
+
         updateQuery.$inc["qualities.#{detailIndex}.saleQuality"]    = orderDetail.basicQuality
         updateQuery.$inc["qualities.#{detailIndex}.inOderQuality"]  = -orderDetail.basicQuality
         updateQuery.$inc["qualities.#{detailIndex}.inStockQuality"] = -orderDetail.basicQuality

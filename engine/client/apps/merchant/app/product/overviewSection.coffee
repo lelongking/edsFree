@@ -29,7 +29,6 @@ lemon.defineHyper Template.productManagementOverviewSection,
 
 
     name: ->
-      console.log @
       Meteor.setTimeout ->
         scope.overviewTemplateInstance.ui.$productName.change()
       , 50 if scope.overviewTemplateInstance
