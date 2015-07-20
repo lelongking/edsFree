@@ -2,23 +2,6 @@ mike:mocha
 mizzao:user-status
 
 
-# sua loi
-    + Giao dien Metro
-
-    + Chinh He Thong
-
-    + SP - NSP
-
-    + KH - NKH
-
-    + NCC
-
-    + Ban Hang - Nhap Kho
-
-    + Giao Hang
-
-    + Bang Gia
-
 
 1 phan quyen
     + tao tai khoan 2h

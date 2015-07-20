@@ -37,9 +37,9 @@ template(name="merchantHome")
                 span.caption.app-name.bottom.right khách hàng
               .tile.peter-river
                 //.app-icon.icon-shareable
-                //.app-count 0
-                //.app-count-description
-                span.caption.app-name.bottom.right hệ thống
+                .app-count 0
+                .app-count-description quản lý
+                span.caption.app-name.bottom.right phiếu bán
 
               .tile.amethyst(data-app="sales")
                 //.app-icon.icon-basket
@@ -80,14 +80,14 @@ template(name="merchantHome")
             .tile-group-2
               .tile.peter-river
                 //.app-icon.icon-shareable
-                //.app-count 0
-                //.app-count-description phiếu trong ngày
-                span.caption.app-name.bottom.right nhật ký
+                .app-count 0
+                .app-count-description quản lý
+                span.caption.app-name.bottom.right đơn hàng
               .tile.peter-river
                 //.app-icon.icon-shareable
-                .app-count 0
-                .app-count-description phiếu trong ngày
-                span.caption.app-name.bottom.right thu chi
+                .app-count 1
+                .app-count-description nhân viên
+                span.caption.app-name.bottom.right tùy chỉnh
 
               .tile.lime(data-app="delivery")
                 //.app-icon.icon-truck-1
@@ -97,19 +97,19 @@ template(name="merchantHome")
               .tile.carrot
                 //.app-icon.icon-flash-3
                 .app-count {{getPublishedCount 'orders'}}
-                span.caption.app-name.bottom.right đơn hàng
+                .app-count-description quản lý
+                span.caption.app-name.bottom.right thu chi
 
               .tile.blue
                 //.app-icon.icon-award
-                //.app-count {{listToFormatNumber Merchant.partnerList}}
-                //.app-count-description đã liên kết
+                .app-count 0
+                .app-count-description đã liên kết
                 span.caption.app-name.bottom.right đối tác
-
               .tile.blue
                 //.app-icon.icon-award
                 //.app-count {{listToFormatNumber Merchant.partnerList}}
                 //.app-count-description đã liên kết
-                span.caption.app-name.bottom.right nhóm k.hàng
+                span.caption.app-name.bottom.right nhật ký
 
               .tile.amethyst(data-app="priceBook")
                 //.app-icon.icon-chart-pie-outline
@@ -120,7 +120,8 @@ template(name="merchantHome")
                 //.app-icon.icon-chart-pie-outline
                 .app-count {{formatNumber revenueDay}}
                 .app-count-description doanh thu ngày
-                span.caption.app-name.bottom.right báo cáo
+                span.caption.app-name.bottom.right thống kê
+
             +metroDecoratorTiles
 
       .dual-addon

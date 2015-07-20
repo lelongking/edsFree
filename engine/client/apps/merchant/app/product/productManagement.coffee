@@ -59,6 +59,5 @@ lemon.defineApp Template.productManagement,
       ProductSearch.search Helpers.Searchify(fullText)
 
     "click .inner.caption": (event, template) ->
-      console.log 'click', @_id
       Product.setSession(@_id)
       Session.set('productManagementIsShowProductUnit', false)
