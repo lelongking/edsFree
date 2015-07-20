@@ -1,34 +1,45 @@
+Enums = Apps.Merchant.Enums
 scope = logics.productManagement
-#
+
 lemon.defineHyper Template.productManagementSalesHistorySection,
   helpers:
+    allSaleDetails: ->
+      details = []
+      if product = Session.get("productManagementCurrentProduct")
+        importOption   = sort: {importType: Enums.getValue('ImportTypes', 'success') , 'version.createdAt': -1}
+        importSelector = {'details.product': product._id}
+        allImports = Schema.imports.find(importSelector, importOption).map(
+          (item) ->
+            item.isImport = true
+            item
+        )
+
+        orderOption   = sort: {orderType: Enums.getValue('OrderTypes', 'success') , 'version.createdAt': -1}
+        orderSelector = {'details.product': product._id}
+        allOrders = Schema.orders.find(orderSelector, orderOption).map(
+          (order) ->
+            for detail in order.details
+              detail.buyer     = order.buyer
+              detail.createdAt = order.version.createdAt
+
+            order.isOrder = true
+            order
+        )
+
+        details.push({createdAt: key, data: value}) for key, value of _.groupBy(allImports.concat(allOrders), (item) -> moment(item.version.createdAt).format('L'))
+      return details
+
     saleQuality   : -> @qualities?[0].saleQuality ? 0
     inStockQuality: -> @qualities?[0].inStockQuality ? 0
     importQuality : -> @qualities?[0].importQuality ? 0
-  #
-    newImport: ->
-      if product = Session.get("productManagementCurrentProduct")
-        option = sort: {importType: 1 , 'version.createdAt': -1}
-        selector = {'details.product': product._id}
-        currentImport = Schema.imports.find(selector, option)
-        return {
-          isShowDetail: if currentImport.count() > 0 then true else false
-          detail: currentImport
-        }
-
-    allSaleDetails: ->
-      details = []; productId = @_id
-      for order in Schema.orders.find({'details.product': productId}).fetch()
-        for detail in order.details
-          if detail.product is productId
-            detail.buyer = order.buyer
-            details.push detail
-      return details
-
     totalPrice: -> @price * @quality
 
-  #  allSaleDetails: -> Schema.saleDetails.find({product: @_id})
-  #
+    isProduct: -> @product is Session.get("productManagementCurrentProduct")._id
+    isInventory: -> Template.parentData().importType is -2
+    availableQuality: -> @availableQuality/@conversion
+
+
+
   #  events:
   #    "click .basicDetailModeDisable": ->
   #      if branchProduct = Session.get("productManagementBranchProductSummary")

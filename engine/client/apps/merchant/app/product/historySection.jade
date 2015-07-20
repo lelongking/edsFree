@@ -11,57 +11,48 @@ template(name="productManagementSalesHistorySection")
         tr
           th(style="width:auto") ĐỐI TÁC
           th(style="width:100px; text-align:center") THỜI GIAN
-          th.number(style="width:50px") SL
+          th.number(style="width:80px") SỐ LƯỢNG
           th(style="width:80px; text-align:center") ĐƠN VỊ
           th.number(style="width:100px") GIÁ
           th.number(style="width:120px") GHI CHÚ
 
-        //if basicDetail.isShowDetail
-        //  tr.header-row
-        //    td.has-commands(colspan="7")
-        //      | &nbsp;
-        //      .bill-header <b>Tồn kho đầu kỳ</b>
-        //      .commands
-        //        if basicDetailModeEnabled
-        //          if isShowDisableMode
-        //            .lemon.rounded.tiny.btn.lime.basicDetailModeDisable.icon-ok-6
-        //          else
-        //            .lemon.rounded.tiny.btn.lime.disabled.icon-ok-6
-        //
-        //  each basicDetail.detail
-        //    +productManagementBasicImportDetails this
-        //
-        //  if basicDetailModeEnabled
-        //    each allSaleDetails
-        //      tr.detail-row
-        //        td.first-column
-        //          span.icon-forward-3 {{buyerName}}
-        //        td(align="center") {{momentFormat version.createdAt "DD/MM/YYYY"}}
-        //        td.number {{unitSaleQuality}}
-        //        td(align="center") {{unitName}}
-        //        td.number {{conversionQuality}}
-        //        td.number {{formatNumber unitPrice}}
-        //        td.number {{formatNumber finalPrice}}
+        each allSaleDetails
+          tr.header-row
+            td.has-commands(colspan="7")
+              | &nbsp;
+              .bill-header <b>{{createdAt}}</b>
+              //.commands(style="left: 80px; top:0px; font-style: italic; color:#7ac5f9") <b>{{description}}</b>
 
-        if newImport.isShowDetail
-          each newImport.detail
-            +productManagementImportDetails this
-        else
-          //td.has-commands(colspan="7")
-          //  | &nbsp;
-          //  .bill-header <b>{{momentFormat version.createdAt "DD/MM/YYYY"}}</b>
-          //  .commands(style="left: 80px; top:0px; font-style: italic; color:#7ac5f9") <b>{{description}}</b>
+          each data
+            if isImport
+              each details
+                if isProduct
+                  tr.detail-row
+                    td.first-column.has-commands
+                      if isInventory
+                        | Tồn kho đầu kỳ
+                      else
+                        |NCC {{providerName}}
+                      .commands Hết Hạn
+                    td(align="center") {{momentFormat expire "DD/MM/YYYY"}}
+                    td.number {{formatNumber availableQuality}}/{{formatNumber quality}}
+                    td(align="center") {{getProductUnitName productUnit}}
+                    td.number {{formatNumber price}}
+                    td.number
 
-          each allSaleDetails
-            tr.detail-row
-              td.first-column.has-commands
-                span.icon-forward-3 {{getBuyerName buyer}}
-                .commands Ngày Bán
-              td(align="center") {{momentFormat createdAt "DD/MM/YYYY"}}
-              td.number {{quality}}
-              td(align="center") {{getProductUnitName productUnit}}
-              td.number {{formatNumber price}}
-              td.number
+            if isOrder
+              each details
+                if isProduct
+                  tr.detail-row
+                    td.first-column.has-commands
+                      span.icon-forward-3 {{getBuyerName buyer}}
+                      .commands Ngày Bán
+                    td(align="center") {{momentFormat createdAt "DD/MM/YYYY"}}
+                    td.number {{quality}}
+                    td(align="center") {{getProductUnitName productUnit}}
+                    td.number {{formatNumber price}}
+                    td.number
+
 
     .panel-footer
       unless inventoryInitial
