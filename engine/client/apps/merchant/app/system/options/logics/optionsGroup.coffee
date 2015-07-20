@@ -2,11 +2,11 @@ Apps.Merchant.merchantOptionsInit.push (scope) ->
   settings = scope.settings = {}
 
   settings.system = [
-    display: "hệ thống"
-    icon: "icon-cog-outline"
-    template: "merchantSystemOptions"
-    data: undefined
-  ,
+#    display: "hệ thống"
+#    icon: "icon-cog-outline"
+#    template: "merchantSystemOptions"
+#    data: undefined
+#  ,
     display: "tài khoản"
     icon: "icon-group"
     template: "merchantAccountOptions"

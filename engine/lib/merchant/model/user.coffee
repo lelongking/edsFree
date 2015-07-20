@@ -9,8 +9,15 @@ userProfile = new SimpleSchema
     type: String
 
   gender:
+    type: Boolean
+    optional: true
+
+  dateOfBirth:
+    type: Date
+    optional: true
+
+  address:
     type: String
-    allowedValues: ['Male', 'Female']
     optional: true
 
   image:

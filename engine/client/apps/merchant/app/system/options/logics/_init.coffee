@@ -26,20 +26,19 @@ lemon.addRoute
 Apps.Merchant.merchantOptionsReactive.push (scope) ->
   if Session.get("myProfile")
     scope.myProfile = Session.get("myProfile")
-#    scope.myMerchantProfile = Schema.merchantProfiles.findOne {merchant: Session.get("myProfile").parentMerchant}
-    if !Session.get("merchantOptionsCurrentDynamics") and scope.settings?.common
-      Session.set "merchantOptionsCurrentDynamics", scope.settings.common[0]
+    if !Session.get("merchantOptionsCurrentDynamics") and scope.settings?.system
+      Session.set "merchantOptionsCurrentDynamics", scope.settings.system[0]
 
 Apps.Merchant.merchantOptionsInit.push (scope) ->
   scope.checkUpdateAccountOption = (template) ->
     if Session.get("myProfile")
       Session.set "merchantAccountOptionShowEditCommand",
-        template.ui.$fullName.val() isnt (Session.get("myProfile").fullName ? '') or
+        template.ui.$fullName.val() isnt (Session.get("myProfile").name ? '') or
         Session.get("merchantAccountOptionsGenderSelection") isnt (Session.get("myProfile").gender) or
         template.datePicker.$dateOfBirth.datepicker().data().datepicker.dates[0]?.toDateString() isnt (Session.get("myProfile").dateOfBirth?.toDateString() ? undefined) or
-        template.ui.$address.val() isnt (Session.get("myProfile").address ? '') or
-        template.ui.$emailAccount.val() isnt (Session.get("myProfile").email ? '') or
-        template.ui.$im.val() isnt (Session.get("myProfile").im ? '')
+        template.ui.$address.val() isnt (Session.get("myProfile").address ? '') #or
+#        template.ui.$emailAccount.val() isnt (Session.get("myProfile").email ? '') or
+#        template.ui.$im.val() isnt (Session.get("myProfile").im ? '')
 
   scope.updateAccountOption = (template)->
     if Session.get "merchantAccountOptionShowEditCommand"
@@ -48,18 +47,18 @@ Apps.Merchant.merchantOptionsInit.push (scope) ->
       gender      = Session.get("merchantAccountOptionsGenderSelection")
       dateOfBirth = template.datePicker.$dateOfBirth.datepicker().data().datepicker.dates[0]
       address     = template.ui.$address.val()
-      email       = template.ui.$emailAccount.val()
-      im          = template.ui.$im.val()
+#      email       = template.ui.$emailAccount.val()
+#      im          = template.ui.$im.val()
 
-      accountProfileOption ={}
-      accountProfileOption.fullName    = fullName if fullName isnt (profile.fullName ? '')
-      accountProfileOption.gender      = gender if gender isnt profile.gender
-      accountProfileOption.dateOfBirth = dateOfBirth if dateOfBirth?.toDateString() isnt (profile.dateOfBirth?.toDateString() ? undefined)
-      accountProfileOption.address     = address if address isnt (profile.address ? '')
-      accountProfileOption.email       = email if email isnt (profile.email ? '')
-      accountProfileOption.im          = im if im isnt (profile.im ? '')
+      option = $set:{}
+      option.$set['profiles.name']        = fullName if fullName isnt (profile.name ? '')
+      option.$set['profiles.gender']      = gender if gender isnt profile.gender
+      option.$set['profiles.dateOfBirth'] = dateOfBirth if dateOfBirth?.toDateString() isnt (profile.dateOfBirth?.toDateString() ? undefined)
+      option.$set['profiles.address']     = address if address isnt (profile.address ? '')
+#      accountProfileOption.email       = email if email isnt (profile.email ? '')
+#      accountProfileOption.im          = im if im isnt (profile.im ? '')
 
-      Schema.userProfiles.update profile._id, $set: accountProfileOption
+      Meteor.users.update(Meteor.userId(), option)
       Session.set "merchantAccountOptionShowEditCommand"
 
   scope.checkAccountChangePassword = (template) ->

@@ -10,13 +10,13 @@ lemon.defineHyper Template.merchantStaffOptions,
     showChangePasswordCommand: -> Session.get("merchantAccountOptionChangePasswordCommand")
 
   rendered: ->
-    scope.accountOptionsTemplate = @
     syncGenderStatus(this.switch.gender, Session.get("myProfile")?.gender ? true)
     @datePicker.$dateOfBirth.datepicker('setDate', Session.get('myProfile')?.dateOfBirth)
 
   events:
     "change [name='gender']": (event, template) ->
       Session.set("merchantAccountOptionsGenderSelection", event.target.checked)
+      console.log scope
       scope.checkUpdateAccountOption(template)
 
     "change [name='dateOfBirth']": (event, template) -> scope.checkUpdateAccountOption(template)

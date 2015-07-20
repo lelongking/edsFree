@@ -8,7 +8,7 @@ template(name="merchantAccountOptions")
     .panel-body
       .collapsible-row
         .description Họ tên
-        input.input-field.accountProfileOption(name="fullName" value="{{profile.fullName}}")
+        input.input-field.accountProfileOption(name="fullName" value="{{profile.name}}")
       .collapsible-row
         .description Giới tính
         .input-field {{genderString gender}}
@@ -20,12 +20,6 @@ template(name="merchantAccountOptions")
       .collapsible-row
         .description Địa chỉ hiện tại
         input.input-field.accountProfileOption(name="address" value="{{profile.address}}" placeholder="chưa cập nhật")
-      .collapsible-row
-        .description Địa chỉ Email
-        input.input-field.accountProfileOption(name="emailAccount" value="{{profile.email}}" placeholder="chưa cập nhật")
-      .collapsible-row
-        .description Địa chỉ Skype
-        input.input-field.accountProfileOption(name="im" value="{{profile.im}}" placeholder="chưa cập nhật")
 
 
   .section.top.panel.panel-default.options-section
