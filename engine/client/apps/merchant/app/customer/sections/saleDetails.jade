@@ -2,7 +2,7 @@ template(name="customerManagementSaleDetails")
   tr.header-row
     td.has-commands(colspan="5")
       | &nbsp;
-      .bill-header .bill-header <b>{{momentFormat version.createdAt "HH:MM:SS DD/MM/YYYY"}}</b> {{description}}
+      .bill-header <b>{{momentFormat version.createdAt "HH:MM:SS DD/MM/YYYY"}}</b> {{description}}
       //.commands
       //  if showDeleteSales
       //    .lemon.rounded.tiny.btn.red.deleteSales: span.icon-minus-4

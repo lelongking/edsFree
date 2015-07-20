@@ -5,33 +5,18 @@ lemon.defineApp Template.customerManagement,
     creationMode: -> Session.get("customerManagementCreationMode")
     currentCustomer: -> Session.get("customerManagementCurrentCustomer")
     debtTotalCash: -> @debtCash + @loanCash
-
-
-
-#  finalDebtBalance: -> Session.get("customerManagementCurrentCustomer")?.customSaleDebt + Session.get("customerManagementCurrentCustomer")?.saleDebt
-#  rendered: -> $(".nano").nanoScroller()
+    customerLists: ->
+      selector = {}; options  = {sort: {nameSearch: 1}}; searchText = Session.get("customerManagementSearchFilter")
+      if(searchText)
+        regExp = Helpers.BuildRegExp(searchText);
+        selector = {$or: [
+          {name: regExp}
+        ]}
+      scope.customerLists = Schema.customers.find(selector, options).fetch()
+      scope.customerLists
 
   created: ->
-#    permission = Role.hasPermission(Session.get("myProfile"), Apps.Merchant.TempPermissions.customerStaff.key)
-#    if !permission then Router.go('/merchant')
-#    lemon.dependencies.resolve('customerManagement')
-
-    CustomerSearch.search('')
     Session.set("customerManagementSearchFilter", "")
-
-#    if Session.get("mySession")
-#      currentCustomer = Session.get("mySession").currentCustomerManagementSelection
-#      limitExpand = Session.get("mySession").limitExpandSaleAndCustomSale ? 5
-#      if !currentCustomer
-#        if customer = Schema.customers.findOne()
-#          UserSession.set("currentCustomerManagementSelection", customer._id)
-#          Meteor.subscribe('customerManagementData', customer._id, 0, limitExpand)
-#          Session.set("customerManagementDataMaxCurrentRecords", limitExpand)
-#          Session.set("customerManagementCurrentCustomer", customer)
-#      else
-#        Meteor.subscribe('customerManagementData', currentCustomer, 0, limitExpand)
-#        Session.set("customerManagementDataMaxCurrentRecords", limitExpand)
-#        Session.set("customerManagementCurrentCustomer", Schema.customers.findOne(currentCustomer))
 
   events:
     "keyup input[name='searchFilter']": (event, template) ->
@@ -45,7 +30,6 @@ lemon.defineApp Template.customerManagement,
         else if event.which is 40 then scope.CustomerSearchFindNextCustomer(customerSearch)
         else
           scope.createNewCustomer(template, customerSearch) if event.which is 13
-          CustomerSearch.search customerSearch
           scope.customerManagementCreationMode(customerSearch)
       , "customerManagementSearchPeople"
       , 50

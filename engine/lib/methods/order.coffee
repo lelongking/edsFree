@@ -120,6 +120,7 @@ Meteor.methods
       accounting         : user._id
       accountingConfirm  : true
       accountingConfirmAt: new Date()
+      transaction        : transactionId
     Schema.orders.update orderFound._id, orderUpdate
 
   orderExportConfirmed: (orderId)->

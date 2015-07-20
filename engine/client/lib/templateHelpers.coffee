@@ -15,9 +15,9 @@ Template.registerHelper 'isNotDisabled', (sessionName)-> if Session.get(sessionN
 Template.registerHelper 'getBuyerName', (buyerId)->  Schema.customers.findOne(buyerId)?.name ? 'Khách hàng không tồn tại'
 Template.registerHelper 'getProductName', (productId)-> Schema.products.findOne(productId)?.name ? 'Sản phẩm không tồn tại'
 Template.registerHelper 'getProductUnitName', (unitId)->
-  product = Schema.products.findOne({'units._id': unitId})
-  productUnit = _.findWhere(product.units, {_id: unitId})
-  productUnit.name
+  if product = Schema.products.findOne({'units._id': unitId})
+    productUnit = _.findWhere(product.units, {_id: unitId})
+    productUnit.name
 
 
 #old----------------------------------------------->

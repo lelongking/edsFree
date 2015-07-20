@@ -15,7 +15,7 @@ template(name="customerManagement")
 
         .nano: .nano-content
           .list
-            each customerSearches
+            each customerLists
               .doc-item(class="{{activeClass 'customerManagementCurrentCustomer'}}")
                 .avatar-wrapper: .avatar-image(class="missing"
                 style="background-image:url('')") {{aliasLetter firstName}}

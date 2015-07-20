@@ -2,10 +2,10 @@ Enums = Apps.Merchant.Enums
 Apps.Merchant.customerManagementInit.push (scope) ->
 #-------------------Edit Customer-----------------------
   scope.customerManagementCreationMode = (customerSearch)->
-    if CustomerSearch.getCurrentQuery().length > 0
-      if CustomerSearch.history[customerSearch].data?.length is 0 then nameIsExisted = true
-      else if CustomerSearch.history[customerSearch].data?.length is 1
-        nameIsExisted = CustomerSearch.history[customerSearch].data[0].name isnt Session.get("customerManagementSearchFilter")
+    if Session.get("customerManagementSearchFilter").length > 0
+      if scope.customerLists.length is 0 then nameIsExisted = true
+      else if scope.customerLists.length is 1
+        nameIsExisted = scope.customerLists[0].name isnt Session.get("customerManagementSearchFilter")
     Session.set("customerManagementCreationMode", nameIsExisted)
 
   scope.createNewCustomer = (template, customerSearch) ->
@@ -18,14 +18,13 @@ Apps.Merchant.customerManagementInit.push (scope) ->
       newCustomerId = Schema.customers.insert newCustomer
       if Match.test(newCustomerId, String)
         Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentCustomer': newCustomerId}})
-        CustomerSearch.cleanHistory()
 
   scope.CustomerSearchFindPreviousCustomer = (customerSearch) ->
-    if previousRow = CustomerSearch.history[customerSearch].data.getPreviousBy('_id', Session.get('mySession').currentCustomer)
+    if previousRow = scope.customerLists.getPreviousBy('_id', Session.get('mySession').currentCustomer)
       Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentCustomer': previousRow._id}})
 
   scope.CustomerSearchFindNextCustomer = (customerSearch) ->
-    if nextRow = CustomerSearch.history[customerSearch].data.getNextBy('_id', Session.get('mySession').currentCustomer)
+    if nextRow = scope.customerLists.getNextBy('_id', Session.get('mySession').currentCustomer)
       Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentCustomer': nextRow._id}})
 
   scope.checkAllowUpdateOverview = (template) ->
@@ -61,9 +60,6 @@ Apps.Merchant.customerManagementInit.push (scope) ->
         Schema.customers.update customer._id, {$set: editOptions}, (error, result) -> if error then console.log error
         template.ui.$customerName.val editOptions.name
         Session.set("customerManagementShowEditCommand", false)
-
-        CustomerSearch.cleanHistory()
-        CustomerSearch.search(CustomerSearch.getCurrentQuery())
 
 
 Apps.Merchant.customerManagementInit.push (scope) ->

@@ -1,3 +1,4 @@
+Enums = Apps.Merchant.Enums
 logics.customerManagement = {}
 Apps.Merchant.customerManagementInit = []
 Apps.Merchant.customerManagementReactive = []
@@ -22,11 +23,13 @@ Apps.Merchant.customerManagementInit.push (scope) ->
 
   scope.findAllOrders = ->
     if customerId = Session.get("customerManagementCustomerId")
-      orders = Schema.orders.find({buyer: customerId, importType: 4}).map(
-        (item) -> item.transactions = scope.transactionFind(item._id);  item
-      )
-      returns = Schema.returns.find({owner: customerId, importType: 4}).map(
-        (item) -> item.transactions = scope.transactionFind(item._id);  item
-      )
+      orders = Schema.orders.find({
+        buyer     : customerId
+        orderType: Enums.getValue('OrderTypes', 'success')
+      }).map((item) -> item.transactions = scope.transactionFind(item._id); item)
+      returns = Schema.returns.find({
+        owner     : customerId
+        importType: 4
+      }).map((item) -> item.transactions = scope.transactionFind(item._id); item)
       _.sortBy orders.concat(returns), (item) -> item.version.createdAt
     else []

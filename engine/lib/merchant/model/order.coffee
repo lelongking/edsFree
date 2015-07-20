@@ -26,6 +26,7 @@ simpleSchema.orders = new SimpleSchema
   accounting          : type: String  , optional: true
   accountingConfirm   : type: Boolean , optional: true
   accountingConfirmAt : type: Date    , optional: true
+  transaction         : type: String  , optional: true
 
   #xac nhan xuat kho khi giao hang
   export          : type: String  , optional: true
