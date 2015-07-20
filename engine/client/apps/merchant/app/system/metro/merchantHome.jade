@@ -83,7 +83,7 @@ template(name="merchantHome")
                 .app-count 0
                 .app-count-description quản lý
                 span.caption.app-name.bottom.right đơn hàng
-              .tile.peter-river
+              .tile.peter-river(data-app='merchantOptions')
                 //.app-icon.icon-shareable
                 .app-count 1
                 .app-count-description nhân viên
@@ -130,10 +130,10 @@ template(name="merchantHome")
         .nano: .nano-content
           .group-wrapper
             .caption.group &nbsp;
-            each appMenus
-              .caption.inner
-                span.avatar.letter(class="{{icon}}")
-                span.text.uppercase.light-font {{display}}
+            //each appMenus
+            //  .caption.inner
+            //    span.avatar.letter(class="{{icon}}")
+            //    span.text.uppercase.light-font {{display}}
 
   //#footer.modern
   //  .editor-row

@@ -1,7 +1,7 @@
 Apps.Merchant.merchantOptionsInit.push (scope) ->
   settings = scope.settings = {}
 
-  settings.common = [
+  settings.system = [
     display: "hệ thống"
     icon: "icon-cog-outline"
     template: "merchantSystemOptions"
@@ -11,20 +11,20 @@ Apps.Merchant.merchantOptionsInit.push (scope) ->
     icon: "icon-group"
     template: "merchantAccountOptions"
     data: Session.get("myProfile")
-  ,
-    display: "ngôn ngữ"
-    icon: "icon-location-1"
-    template: "merchantLanguageOptions"
-    data: undefined
-  ,
-    display: "trò chuyện"
-    icon: "icon-chat-6"
-    template: "merchantMessengerOptions"
-    data: undefined
-  ,
-    display: "nhắc nhở"
-    icon: "pink icon-globe-6"
-    template: "merchantNotificationOptions"
+#  ,
+#    display: "ngôn ngữ"
+#    icon: "icon-location-1"
+#    template: "merchantLanguageOptions"
+#    data: undefined
+#  ,
+#    display: "trò chuyện"
+#    icon: "icon-chat-6"
+#    template: "merchantMessengerOptions"
+#    data: undefined
+#  ,
+#    display: "nhắc nhở"
+#    icon: "pink icon-globe-6"
+#    template: "merchantNotificationOptions"
     data: undefined
   ,
     display: "ghi chú"
@@ -41,23 +41,35 @@ Apps.Merchant.merchantOptionsInit.push (scope) ->
   ]
 
   settings.apps = [
-    display: "bán hàng - giao hàng"
-    icon: "orange icon-tags"
-    template: "merchantSaleOptions"
-    data: undefined
+#    display: "bán hàng - giao hàng"
+#    icon: "orange icon-tags"
+#    template: "merchantSaleOptions"
+#    data: undefined
+#  ,
+#    display: "kho - nhập kho"
+#    icon: "green-sea icon-download-outline"
+#    template: "merchantImportOptions"
+#    data: undefined
+#  ,
+#    display: "khách hàng"
+#    icon: "lime icon-contacts"
+#    template: "merchantCustomerOptions"
+#    data: undefined
+#  ,
+#    display: "nhà cung cấp"
+#    icon: "carrot icon-anchor-outline"
+#    template: "merchantProviderOptions"
+#    data: undefined
+  ]
+
+  settings.staff = [
+    display: "nhân sự"
+    icon: "icon-group"
+    template: "merchantStaffOptions"
+    data: Session.get("myProfile")
   ,
-    display: "kho - nhập kho"
-    icon: "green-sea icon-download-outline"
-    template: "merchantImportOptions"
-    data: undefined
-  ,
-    display: "khách hàng"
-    icon: "lime icon-contacts"
-    template: "merchantCustomerOptions"
-    data: undefined
-  ,
-    display: "nhà cung cấp"
-    icon: "carrot icon-anchor-outline"
-    template: "merchantProviderOptions"
-    data: undefined
+    display: "phân quyền"
+    icon: "icon-group"
+    template: "merchantHROptions"
+    data: Session.get("myProfile")
   ]

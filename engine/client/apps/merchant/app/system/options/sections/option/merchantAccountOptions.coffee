@@ -3,10 +3,11 @@ scope = logics.merchantOptions
 syncGenderStatus = (switchery, gender) -> switchery.element.click() if switchery.isChecked() isnt gender
 
 lemon.defineHyper Template.merchantAccountOptions,
-  profile: -> Session.get("myProfile")
-  gender: -> Session.get("merchantAccountOptionsGenderSelection") ? @gender
-  showEditCommand: -> Session.get("merchantAccountOptionShowEditCommand")
-  showChangePasswordCommand: -> Session.get("merchantAccountOptionChangePasswordCommand")
+  helpers:
+    profile: -> Session.get("myProfile")
+    gender: -> Session.get("merchantAccountOptionsGenderSelection") ? @gender
+    showEditCommand: -> Session.get("merchantAccountOptionShowEditCommand")
+    showChangePasswordCommand: -> Session.get("merchantAccountOptionChangePasswordCommand")
 
   rendered: ->
     scope.accountOptionsTemplate = @

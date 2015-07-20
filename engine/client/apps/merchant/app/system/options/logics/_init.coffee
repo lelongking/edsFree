@@ -6,20 +6,20 @@ scope = logics.merchantOptions
 
 lemon.addRoute
   template: 'merchantOptions'
-  waitOnDependency: 'merchantEssential'
+#  waitOnDependency: 'merchantEssential'
   onBeforeAction: ->
     if @ready()
       Apps.setup(scope, Apps.Merchant.merchantOptionsInit, 'customerManagement')
       Session.set "currentAppInfo",
-        name: "hệ thống"
+        name: "tuỳ chỉnh"
       @next()
   data: ->
     Apps.setup(scope, Apps.Merchant.merchantOptionsReactive)
 
     return {
       settings: scope.settings
-      merchantProfile: scope.myMerchantProfile
-      myProfile: scope.myProfile
+#      merchantProfile: scope.myMerchantProfile
+#      myProfile: scope.myProfile
     }
 , Apps.Merchant.RouterBase
 
@@ -91,9 +91,3 @@ Apps.Merchant.merchantOptionsInit.push (scope) ->
 
             Session.set "merchantAccountOptionChangePasswordCommand"
             console.log 'Thay đổi mật khẩu thành công.'
-
-
-
-
-
-

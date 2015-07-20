@@ -1,0 +1,29 @@
+template(name="merchantStaffOptions")
+  .section.top.panel.panel-default.options-section
+    .panel-heading
+      span.icon-contacts Tạo Nhân Viên
+    .panel-body
+      .collapsible-row
+        .description Tên đăng nhập
+        input.input-field.accountProfileOption(name="fullName" value="{{profile.fullName}}")
+      .collapsible-row
+        .description Mật khẩu
+        input.input-field.accountChangePassword(name="oldPassword" type="password" maxlength="40" placeholder="nhập mật khẩu")
+      .collapsible-row
+        .description Nhập lại mật khẩu
+        input.input-field.accountChangePassword(name="newPassword" type="password" maxlength="40" placeholder="nhập lại mật khẩu")
+
+
+  .section.top.panel.panel-default.options-section
+    .panel-heading
+      span.icon-key-outline Phân Quyền Cho Nhân Viên
+    .panel-body
+      .collapsible-row
+        .description Mật khẩu hiện tại
+        input.input-field.accountChangePassword(name="oldPassword" type="password" maxlength="40" placeholder="nhập mật khẩu hiện tại")
+      .collapsible-row
+        .description Mật khẩu mới
+        input.input-field.accountChangePassword(name="newPassword" type="password" maxlength="40" placeholder="nhập mật khẩu mới")
+      .collapsible-row
+        .description Xác nhận mật khẩu
+        input.input-field.accountChangePassword(name="confirmPassword" type="password" maxlength="40" placeholder="nhập lại mật khẩu mới")

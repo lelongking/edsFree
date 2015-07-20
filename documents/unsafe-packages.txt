@@ -43,7 +43,6 @@ mizzao:user-status
 
 # Tuy chinh (phieu in, han noi, quy doi, ....)
 
-# kiem kho
 
 # Nhat Ky Chung
 # Nhat Ky Rieng

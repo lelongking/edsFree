@@ -17,11 +17,12 @@ updateCompanyInfo = (template) ->
   Session.set "merchantOptionsCompanyInfoChanged", false
 
 lemon.defineHyper Template.merchantPrintDesigner,
-  bodySpaceIterator: ->
-    array = []
-    array.push i for i in [0...totalDecoratorTiles]
-    array
-  allowUpdateDesigner: -> Session.get("merchantOptionsCompanyInfoChanged")
+  helpers:
+    bodySpaceIterator: ->
+      array = []
+      array.push i for i in [0...totalDecoratorTiles]
+      array
+    allowUpdateDesigner: -> Session.get("merchantOptionsCompanyInfoChanged")
   rendered: -> console.log 'printDesignerRendered'
   events:
     "input .editable": (event, template) -> updateAllowEditBillDesign(template)
