@@ -51,10 +51,10 @@ Apps.Merchant.merchantOptionsInit.push (scope) ->
 #      im          = template.ui.$im.val()
 
       option = $set:{}
-      option.$set['profiles.name']        = fullName if fullName isnt (profile.name ? '')
-      option.$set['profiles.gender']      = gender if gender isnt profile.gender
-      option.$set['profiles.dateOfBirth'] = dateOfBirth if dateOfBirth?.toDateString() isnt (profile.dateOfBirth?.toDateString() ? undefined)
-      option.$set['profiles.address']     = address if address isnt (profile.address ? '')
+      option.$set['profile.name']        = fullName if fullName isnt (profile.name ? '')
+      option.$set['profile.gender']      = gender if gender isnt profile.gender
+      option.$set['profile.dateOfBirth'] = dateOfBirth if dateOfBirth?.toDateString() isnt (profile.dateOfBirth?.toDateString() ? undefined)
+      option.$set['profile.address']     = address if address isnt (profile.address ? '')
 #      accountProfileOption.email       = email if email isnt (profile.email ? '')
 #      accountProfileOption.im          = im if im isnt (profile.im ? '')
 

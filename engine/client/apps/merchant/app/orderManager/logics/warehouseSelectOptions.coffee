@@ -1,7 +1,7 @@
 #formatWarehouseSearch = (item) -> "#{item.name}" if item
 #
-#Apps.Merchant.billManagerInit.push (scope) ->
-#  logics.billManager.warehouseSelectOptions=
+#Apps.Merchant.orderManagerInit.push (scope) ->
+#  logics.orderManager.warehouseSelectOptions=
 #    query: (query) -> query.callback
 #      results: _.filter Session.get('availableWarehouses'), (item) ->
 #        unsignedTerm = Sky.helpers.removeVnSigns query.term

@@ -7,7 +7,7 @@
   if(searchText)
     regExp = Helpers.BuildRegExp(searchText);
     selector = {$or: [
-      {'profiles.name': regExp}
+      {'profile.name': regExp}
     ]}
   callback(false, Meteor.users.find(selector, options).fetch())
 

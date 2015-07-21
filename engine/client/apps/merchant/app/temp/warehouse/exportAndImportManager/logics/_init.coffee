@@ -9,10 +9,12 @@ Apps.Merchant.exportAndImportManagerInit.push (scope) ->
   Session.set('exportAndImportFilterToDate', lastDay)
 
 logics.exportAndImportManager.reactiveRun = ->
-  if Session.get('exportAndImportFilterStartDate') and Session.get('exportAndImportFilterToDate') and Session.get('myProfile')
-    logics.exportAndImportManager.availableBills = Sale.findExportAndImport(
-      Session.get('exportAndImportFilterStartDate'),
-      Session.get('exportAndImportFilterToDate'),
-      Session.get('myProfile').currentWarehouse
-    )
+  logics.exportAndImportManager.availableBills = Schema.orders.find().fetch()
+
+#  if Session.get('exportAndImportFilterStartDate') and Session.get('exportAndImportFilterToDate') and Session.get('myProfile')
+#    logics.exportAndImportManager.availableBills = Sale.findExportAndImport(
+#      Session.get('exportAndImportFilterStartDate'),
+#      Session.get('exportAndImportFilterToDate'),
+#      Session.get('myProfile').currentWarehouse
+#    )
 

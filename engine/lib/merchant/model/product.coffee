@@ -306,7 +306,7 @@ Schema.add 'products', "Product", class Product
     newProductId
 
   @nameIsExisted: (name, merchant = null) ->
-    existedQuery = {name: name, merchant: merchant ? Meteor.user().profiles.merchant}
+    existedQuery = {name: name, merchant: merchant ? Meteor.user().profile.merchant}
     Schema.priceBooks.findOne(existedQuery)
 
   @setSession: (currentProductId) ->

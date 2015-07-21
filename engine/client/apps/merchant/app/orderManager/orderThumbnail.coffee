@@ -1,4 +1,4 @@
-lemon.defineWidget Template.billThumbnail,
+lemon.defineWidget Template.orderThumbnail,
   isntDelete: ->
     if @status == true and @received == false then true else false
   buyerName: -> Schema.customers.findOne(@buyer)?.name

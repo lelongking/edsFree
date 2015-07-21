@@ -150,7 +150,7 @@ Schema.add 'priceBooks', "PriceBook", class PriceBook
 
     doc.changePriceProductTo = (ownerId, model) ->
       if ownerId and (user = Meteor.users.findOne(Meteor.userId()))
-        merchantId = user.profiles.merchant
+        merchantId = user.profile.merchant
 
         if model is 'customers'
           console.log 'is customer: ' + ownerId
@@ -261,7 +261,7 @@ Schema.add 'priceBooks', "PriceBook", class PriceBook
 
   @reUpdateByRemoveProductUnit: (productUnitId)->
     if userId = Meteor.userId()
-      merchantId = Meteor.users.findOne(userId).profiles.merchant
+      merchantId = Meteor.users.findOne(userId).profile.merchant
       product = Schema.products.findOne({'units._id': productUnitId, merchant: merchantId})
       priceBook = Schema.priceBooks.findOne({productUnits: productUnitId, priceBookType: 0, merchant: merchantId})
       if priceBook and !product
@@ -269,7 +269,7 @@ Schema.add 'priceBooks', "PriceBook", class PriceBook
 
   @addProductUnit: (productUnitId)->
     if userId = Meteor.userId()
-      merchantId = Meteor.users.findOne(userId).profiles.merchant
+      merchantId = Meteor.users.findOne(userId).profile.merchant
       product = Schema.products.findOne({'units._id': productUnitId, merchant: merchantId})
       console.log product
       priceBook = Schema.priceBooks.findOne({productUnits: {$ne: productUnitId}, priceBookType: 0, merchant: merchantId})
@@ -277,7 +277,7 @@ Schema.add 'priceBooks', "PriceBook", class PriceBook
         Schema.priceBooks.update priceBook._id, {$addToSet: {productUnits: productUnitId}}
 
   @nameIsExisted: (name, merchant = null) ->
-    existedQuery = {name: name, merchant: merchant ? Meteor.user().profiles.merchant}
+    existedQuery = {name: name, merchant: merchant ? Meteor.user().profile.merchant}
     Schema.priceBooks.findOne(existedQuery)
 
   @setSession: (priceBookId) ->
