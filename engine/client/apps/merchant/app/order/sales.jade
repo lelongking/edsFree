@@ -40,16 +40,15 @@ template(name="sales")
         .search-filter.icon-search-8
           input(name='searchFilter' type="text" placeholder="tìm sản phẩm..." value="{{productTextSearch}}")
 
-        .nano: .nano-content
-          .group-wrapper
-            each unitProductSearches
-              if status
-                .caption.advanced.inner.product-selection(class="{{productSelectionActiveClass}}")
-                  +avatarImageComponent(avatar=avatarUrl alias=name)
-                  span.text {{name}}
-                    .commands
-                      span.icon-right-open-big.addSaleDetail
-                  span.right-info {{stock}} {{unitName}}
+        .nano: .nano-content: .group-wrapper
+          each unitProductSearches
+            if status
+              .caption.advanced.inner.product-selection(class="{{productSelectionActiveClass}}")
+                +avatarImageComponent(avatar=avatarUrl alias=name)
+                span.text {{name}}
+                  .commands
+                    span.icon-right-open-big.addSaleDetail
+                span.right-info {{stock}} {{unitName}}
 
 
 

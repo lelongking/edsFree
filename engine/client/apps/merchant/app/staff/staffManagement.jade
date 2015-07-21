@@ -1,0 +1,32 @@
+template(name="staffManagement")
+  //#header
+
+  #content.modern.staff-management
+    .dual-content
+      .dual-detail-wrapper
+        .dual-detail
+          .nano: .nano-content
+            +staffManagementOverviewSection currentStaff
+            //+staffManagementSalesHistorySection currentStaff
+
+      .dual-addon
+        .search-filter.icon-search-8
+          input(name='searchFilter' type="text" placeholder="tìm nhân viên...")
+          if getSession 'staffManagementCreationMode'
+            .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createStaffBtn
+
+        .nano: .nano-content: .group-wrapper
+          each staffSearcher
+            .caption.advanced.inner.product-selection(class="{{activeClass 'staffManagementCurrentStaff'}}")
+              +avatarImageComponent(avatar=avatarUrl alias=getEmails)
+              span.text {{getEmails}}
+                //.commands: span.icon-right-open-big.addSaleDetail
+              span.left-info(style="width: 150px;") {{profile.name}}
+              span.right-info {{permission}}
+
+
+  //#footer.modern
+  //  .editor-row
+  //    .editor-wrappe.pull-right
+  //      span.s5 TỔNG NỢ:
+  //      span.s3 <b>{{formatNumber finalDebtBalance}}</b> VNĐ

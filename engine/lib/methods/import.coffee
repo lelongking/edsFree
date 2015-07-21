@@ -1,5 +1,4 @@
 Enums = Apps.Merchant.Enums
-
 Meteor.methods
   importInventory: (importId)->
     user = Meteor.users.findOne(Meteor.userId())
@@ -8,7 +7,7 @@ Meteor.methods
     importQuery =
       _id        : importId
       creator    : user._id
-      merchant   : user.profiles.merchant
+      merchant   : user.profile.merchant
       importType : Enums.getValue('ImportTypes', 'inventory')
     importFound = Schema.imports.findOne importQuery
     return {valid: false, error: 'import not found!'} if !importFound
@@ -37,7 +36,7 @@ Meteor.methods
 
     importQuery =
       _id         : importId
-      merchant    : user.profiles.merchant
+      merchant    : user.profile.merchant
       importType  : Enums.getValue('ImportTypes', 'staffConfirmed')
     importFound = Schema.imports.findOne importQuery
     return {valid: false, error: 'import not found!'} if !importFound
@@ -91,7 +90,7 @@ Meteor.methods
     importQuery =
       _id        : importId
       creator    : user._id
-      merchant   : user.profiles.merchant
+      merchant   : user.profile.merchant
       importType : Enums.getValue('ImportTypes', 'confirmedWaiting')
     importFound = Schema.imports.findOne importQuery
     return {valid: false, error: 'import not found!'} if !importFound

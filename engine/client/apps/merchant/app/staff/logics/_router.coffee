@@ -1,7 +1,7 @@
 scope = logics.staffManagement
 lemon.addRoute
+  path: 'staffs'
   template: 'staffManagement'
-  waitOnDependency: 'merchantEssential'
   onBeforeAction: ->
     if @ready()
       Apps.setup(scope, Apps.Merchant.staffManagementInit, 'staffManagement')
@@ -15,16 +15,16 @@ lemon.addRoute
     Apps.setup(scope, Apps.Merchant.staffManagementReactive)
 
     return {
-      currentStaffData :
-        currentStaff : Session.get("staffManagementCurrentStaff")
-        genderSelectOptions: scope.genderSelectOptions
-        roleSelectOptions: scope.roleSelectOptions
-        branchSelectOptions: scope.branchSelectOptions
-        warehouseSelectOptions: scope.warehouseSelectOptions
-
-
-      managedStaffList : scope.managedStaffList
-      genderSelectOptions : scope.genderSelectOptions
+#      currentStaffData :
+#        currentStaff : Session.get("staffManagementCurrentStaff")
+#        genderSelectOptions: scope.genderSelectOptions
+#        roleSelectOptions: scope.roleSelectOptions
+#        branchSelectOptions: scope.branchSelectOptions
+#        warehouseSelectOptions: scope.warehouseSelectOptions
+#
+#
+#      managedStaffList : scope.managedStaffList
+#      genderSelectOptions : scope.genderSelectOptions
 
     }
 , Apps.Merchant.RouterBase

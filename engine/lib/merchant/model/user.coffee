@@ -7,6 +7,7 @@ cloneName =
 userProfile = new SimpleSchema
   name:
     type: String
+    optional: true
 
   gender:
     type: Boolean
@@ -32,7 +33,12 @@ userProfile = new SimpleSchema
     type: String
     optional: true
 
+  roles:
+    type: String
+    optional: true
+
 userSession = new SimpleSchema
+  currentStaff          : simpleSchema.OptionalString
   currentProduct        : simpleSchema.OptionalString
   currentProductGroup   : simpleSchema.OptionalString
   currentCustomer       : simpleSchema.OptionalString
@@ -75,10 +81,10 @@ Meteor.users.attachSchema new SimpleSchema
     optional: true
     blackbox: true
 
-  profiles:
+  profile:
     type: userProfile
     optional: true
-  "profiles.name": cloneName
+#  "profile.name": cloneName
 
   sessions:
     type: userSession

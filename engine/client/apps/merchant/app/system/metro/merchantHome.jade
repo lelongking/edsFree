@@ -37,9 +37,9 @@ template(name="merchantHome")
                 span.caption.app-name.bottom.right khách hàng
               .tile.peter-river
                 //.app-icon.icon-shareable
-                .app-count 0
-                .app-count-description quản lý
-                span.caption.app-name.bottom.right phiếu bán
+                //.app-count 0
+                //.app-count-description
+                span.caption.app-name.bottom.right nhật ký
 
               .tile.amethyst(data-app="sales")
                 //.app-icon.icon-basket
@@ -78,11 +78,11 @@ template(name="merchantHome")
 
 
             .tile-group-2
-              .tile.peter-river
+              .tile.peter-river(data-app="staffManagement")
                 //.app-icon.icon-shareable
-                .app-count 0
+                .app-count {{getPublishedCount 'staffs'}}
                 .app-count-description quản lý
-                span.caption.app-name.bottom.right đơn hàng
+                span.caption.app-name.bottom.right nhân viên
               .tile.peter-river(data-app='merchantOptions')
                 //.app-icon.icon-shareable
                 .app-count 1
@@ -103,13 +103,13 @@ template(name="merchantHome")
               .tile.blue
                 //.app-icon.icon-award
                 .app-count 0
-                .app-count-description đã liên kết
-                span.caption.app-name.bottom.right đối tác
+                .app-count-description quản lý
+                span.caption.app-name.bottom.right phiếu bán
               .tile.blue
                 //.app-icon.icon-award
-                //.app-count {{listToFormatNumber Merchant.partnerList}}
-                //.app-count-description đã liên kết
-                span.caption.app-name.bottom.right nhật ký
+                .app-count 0
+                .app-count-description quản lý
+                span.caption.app-name.bottom.right đơn hàng
 
               .tile.amethyst(data-app="priceBook")
                 //.app-icon.icon-chart-pie-outline

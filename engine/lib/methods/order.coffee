@@ -43,7 +43,7 @@ Meteor.methods
     orderQuery =
       _id       : orderId
       creator   : user._id
-      merchant  : user.profiles.merchant
+      merchant  : user.profile.merchant
       orderType : Enums.getValue('OrderTypes', 'checked')
     orderFound = Schema.orders.findOne orderQuery
     return {valid: false, error: 'order not found!'} if !orderFound
@@ -75,7 +75,7 @@ Meteor.methods
 
     orderQuery =
       _id       : orderId
-      merchant  : user.profiles.merchant
+      merchant  : user.profile.merchant
       orderType : Enums.getValue('OrderTypes', 'seller')
     console.log orderQuery
 
@@ -129,7 +129,7 @@ Meteor.methods
 
     orderQuery =
       _id       : orderId
-      merchant  : user.profiles.merchant
+      merchant  : user.profile.merchant
       orderType : Enums.getValue('OrderTypes', 'accounting')
     orderFound = Schema.orders.findOne orderQuery
     return {valid: false, error: 'order not found!'} if !orderFound
@@ -205,7 +205,7 @@ Meteor.methods
 
     orderQuery =
       _id               : orderId
-      merchant          : user.profiles.merchant
+      merchant          : user.profile.merchant
       orderType         : Enums.getValue('OrderTypes', 'export')
       paymentsDelivery  : Enums.getValue('DeliveryTypes', 'delivery')
       'delivery.status' : Enums.getValue('DeliveryStatus', 'failDelivery')
@@ -226,7 +226,7 @@ Meteor.methods
     orderQuery =
       _id       : orderId
       creator   : user._id
-      merchant  : user.profiles.merchant
+      merchant  : user.profile.merchant
       orderType : $in: [Enums.getValue('OrderTypes', 'export'),Enums.getValue('OrderTypes', 'import')]
     orderFound = Schema.orders.findOne orderQuery
     return {valid: false, error: 'order not found!'} if !orderFound

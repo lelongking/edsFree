@@ -101,7 +101,7 @@ simpleSchema.DefaultMerchant =
   type: String
   autoValue: ->
     if @isInsert and not @isSet
-      Meteor.user().profiles.merchant
+      Meteor.user().profile.merchant
 
 simpleSchema.DefaultCreator =
   type: String

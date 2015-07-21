@@ -45,22 +45,6 @@ lemon.defineApp Template.customerManagement,
         Meteor.subscribe('customerManagementCurrentCustomerData', @_id)
         Meteor.users.update(userId, {$set: {'sessions.currentCustomer': @_id}})
 
-#        Schema.userSessions.update(Session.get("mySession")._id, {$set: {currentCustomerManagementSelection: @_id}})
-#        limitExpand = Session.get("mySession").limitExpandSaleAndCustomSale ? 5
-#        if customer = Schema.customers.findOne(@_id)
-#          countRecords = Schema.customSales.find({buyer: customer._id}).count()
-#          countRecords += Schema.sales.find({buyer: customer._id}).count() if customer.customSaleModeEnabled is false
-#          if countRecords is 0
-#            Meteor.subscribe('customerManagementData', customer._id, 0, limitExpand)
-#            Session.set("customerManagementDataMaxCurrentRecords", limitExpand)
-#          else
-#            Session.set("customerManagementDataMaxCurrentRecords", countRecords)
-#          Session.set("customerManagementCurrentCustomer", customer)
-#
-#        Session.set("allowCreateCustomSale", false)
-#        Session.set("allowCreateTransactionOfCustomSale", false)
-
-
 #    "click .excel-customer": (event, template) -> $(".excelFileSource").click()
 #    "change .excelFileSource": (event, template) ->
 #      if event.target.files.length > 0

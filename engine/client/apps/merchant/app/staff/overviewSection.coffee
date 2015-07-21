@@ -1,23 +1,18 @@
 scope = logics.staffManagement
 
 lemon.defineHyper Template.staffManagementOverviewSection,
-  firstName: -> Helpers.firstName(@currentStaff?.fullName)
-  avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
-  showEditCommand: -> Session.get "staffManagementShowEditCommand"
-  showDeleteCommand: -> Session.get("staffManagementCurrentStaff")?.allowDelete
+  helpers:
+    userName: -> @emails[0].address ? 'chưa tạo tài khoản đăng nhập.'
+    genderName: -> if @profile.gender then 'Nam' else 'Nữ'
 
-  userName: -> Meteor.users.findOne(@currentStaff?.user)?.emails[0].address ? 'chưa tạo tài khoản đăng nhập.'
-  branchName: -> Schema.merchants.findOne(@currentStaff?.currentMerchant)?.name ? 'chưa cập nhât'
-  genderName: -> if @currentStaff?.gender then 'Nam' else 'Nữ'
+    fullName: ->
+      Meteor.setTimeout ->
+        scope.overviewTemplateInstance.ui.$staffName.change()
+      ,50 if scope.overviewTemplateInstance
+      @profile.name
 
-  showCreateEmail: -> if Meteor.users.findOne(@currentStaff?.user) then false else true
-
-  fullName: ->
-    Meteor.setTimeout ->
-      scope.overviewTemplateInstance.ui.$staffName.change()
-    ,50 if scope.overviewTemplateInstance
-    @currentStaff?.fullName
-
+    genderSelectOptions: -> scope.genderSelectOptions
+    roleSelectOptions: -> scope.roleSelectOptions
 
   rendered: ->
     scope.overviewTemplateInstance = @
@@ -57,4 +52,3 @@ lemon.defineHyper Template.staffManagementOverviewSection,
         if staff.allowDelete and staff._id isnt Session.get('myProfile')._id
           Schema.userProfiles.remove staff._id
           UserSession.set('currentStaffManagementSelection', Schema.userProfiles.findOne()?._id ? '')
-

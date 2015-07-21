@@ -47,8 +47,8 @@ Apps.Merchant.priceBookInit.push (scope) ->
 #  scope.checkAllowUpdateOverview = (template) ->
 #    Session.set "priceBookManagementShowEditCommand",
 #      template.ui.$priceBookName.val() isnt Session.get("priceBookManagementCurrentPriceBook").name or
-#        template.ui.$priceBookPhone.val() isnt (Session.get("priceBookManagementCurrentPriceBook").profiles.phone ? '') or
-#        template.ui.$priceBookAddress.val() isnt (Session.get("priceBookManagementCurrentPriceBook").profiles.address ? '')
+#        template.ui.$priceBookPhone.val() isnt (Session.get("priceBookManagementCurrentPriceBook").profile.phone ? '') or
+#        template.ui.$priceBookAddress.val() isnt (Session.get("priceBookManagementCurrentPriceBook").profile.address ? '')
 #
 #  scope.editPriceBook = (template) ->
 #    priceBook = Session.get("priceBookManagementCurrentPriceBook")
@@ -59,8 +59,8 @@ Apps.Merchant.priceBookInit.push (scope) ->
 #
 #      return if name.replace("(", "").replace(")", "").trim().length < 2
 #      editOptions = Helpers.splitName(name)
-#      editOptions.profiles.phone = phone if phone.length > 0
-#      editOptions.profiles.address = address if address.length > 0
+#      editOptions.profile.phone = phone if phone.length > 0
+#      editOptions.profile.address = address if address.length > 0
 #
 #      console.log editOptions
 #

@@ -58,7 +58,8 @@ Apps.Merchant.staffManagementInit.push (scope) ->
       else
         template.ui.$staffName.val nameOptions.fullName
         Session.set("staffManagementShowEditCommand", false)
-        Schema.userProfiles.update staff._id, {$set: nameOptions}, (error, result) -> if error then console.log error
+        Meteor.call "updateEmailStaff", email, '123'
+
 
   scope.updateEmailOfStaff = (template) ->
     if staffProfile = Session.get("staffManagementCurrentStaff")

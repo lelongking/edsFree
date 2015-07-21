@@ -1,3 +1,16 @@
+Apps.Merchant.Enums.PermissionType = [
+  _id: 0
+  value  : 'admin'
+  display: 'Quản Lý'
+,
+  _id: 1
+  value  : 'accounting'
+  display: 'Kế Toán'
+,
+  _id: 2
+  value  : 'seller'
+  display: 'Kinh Doanh'
+]
 Apps.Merchant.Enums.GenderTypes = [
   _id: false
   display: 'NỮ'

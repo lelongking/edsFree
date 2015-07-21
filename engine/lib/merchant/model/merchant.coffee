@@ -49,6 +49,6 @@ simpleSchema.merchants = new SimpleSchema
   "merchantSummary.barcodeUsed" : type: [String], defaultValue: []
 
 Schema.add 'merchants', "Merchant", class Merchant
-  @getId: -> Meteor.users.findOne(Meteor.userId())?.profiles.merchant
+  @getId: -> Meteor.users.findOne(Meteor.userId())?.profile.merchant
 
 

@@ -2,7 +2,7 @@ Enums = Apps.Merchant.Enums
 Meteor.publish null, ->
   collections = []
   return collections if !@userId
-  merchantId = Meteor.users.findOne(@userId)?.profiles?.merchant
+  merchantId = Meteor.users.findOne(@userId)?.profile?.merchant
   return collections if !merchantId
 
   Counts.publish @, 'products', Schema.products.find({merchant: merchantId})
@@ -21,7 +21,7 @@ Meteor.publish null, ->
   Counts.publish @, 'imports', Schema.imports.find({importType: Enums.getValue('ImportTypes', 'success'),  merchant: merchantId})
   Counts.publish @, 'inventories', Schema.inventories.find({merchant: merchantId})
 
-  Counts.publish @, 'users', Meteor.users.find({merchant: merchantId})
+  Counts.publish @, 'staffs', Meteor.users.find({'profile.merchant': merchantId})
   Counts.publish @, 'priceBooks', Schema.priceBooks.find({merchant: merchantId})
 
   collections.push Schema.merchants.find({_id: merchantId})
@@ -35,6 +35,6 @@ Meteor.publish null, ->
   collections.push Schema.imports.find()
   collections.push Schema.priceBooks.find()
   collections.push Schema.transactions.find()
-  collections.push Meteor.users.find({_id: @userId}, {fields: {profiles: 1, sessions: 1} })
+  collections.push Meteor.users.find({'profile.merchant': merchantId}, {fields: {emails:1, profile: 1, sessions: 1} })
 
   return collections
