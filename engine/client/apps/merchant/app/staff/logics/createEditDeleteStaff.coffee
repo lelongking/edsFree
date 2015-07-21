@@ -38,27 +38,7 @@ Apps.Merchant.staffManagementInit.push (scope) ->
         UserSession.set('currentStaffManagementSelection', result)
       template.ui.$searchFilter.val(''); Session.set("staffManagementSearchFilter", "")
 
-  scope.editStaff = (template) ->
-    staff = Session.get("staffManagementCurrentStaff")
-    if staff and Session.get("staffManagementShowEditCommand")
-      fullText = template.ui.$staffName.val()
-      nameOptions = splitName(fullText)
-      console.log fullText
-      console.log nameOptions
 
-      if nameOptions.fullName.length > 0
-        staffFound = Schema.userProfiles.findOne {fullName: nameOptions.fullName, parentMerchant: staff.parentMerchant}
-
-      if nameOptions.fullName.length is 0
-        template.ui.$staffName.notify("Tên nhân viên không thể để trống.", {position: "right"})
-      else if staffFound and staffFound._id isnt staff._id
-        template.ui.$staffName.notify("Tên nhân viên đã tồn tại.", {position: "right"})
-        template.ui.$staffName.val nameOptions.fullName
-        Session.set("staffManagementShowEditCommand", false)
-      else
-        template.ui.$staffName.val nameOptions.fullName
-        Session.set("staffManagementShowEditCommand", false)
-        Meteor.call "updateEmailStaff", email, '123'
 
 
   scope.updateEmailOfStaff = (template) ->

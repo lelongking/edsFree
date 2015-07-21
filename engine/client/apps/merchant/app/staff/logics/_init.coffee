@@ -30,3 +30,33 @@ Apps.Merchant.staffManagementInit.push (scope) ->
         template.ui.$searchFilter.val email
         Meteor.call "createUserByEmail", email, '123', (error, result) ->
           Session.set("staffManagementCreationMode", false)
+
+  scope.editStaff = (template) ->
+    staff = Session.get("staffManagementCurrentStaff")
+    if staff and Session.get("staffManagementShowEditCommand")
+      fullText = template.ui.$staffName.val()
+      nameOptions = splitName(fullText)
+
+      if nameOptions['profile.name'].length is 0
+        template.ui.$staffName.notify("Tên nhân viên không thể để trống.", {position: "right"})
+#      else if staffFound and staffFound._id isnt staff._id
+#        template.ui.$staffName.notify("Tên nhân viên đã tồn tại.", {position: "right"})
+#        template.ui.$staffName.val nameOptions['profile.name']
+#        Session.set("staffManagementShowEditCommand", false)
+      else
+        template.ui.$staffName.val nameOptions['profile.name']
+        Session.set("staffManagementShowEditCommand", false)
+        Meteor.users.update(staff._id, $set: nameOptions)
+
+splitName = (fullText) ->
+  if fullText.indexOf("(") > 0
+    namePart    = fullText.substr(0, fullText.indexOf("(")).trim()
+    genderPart  = fullText.substr(fullText.indexOf("(")).replace("(", "").replace(")", "").trim()
+    if genderPart.length > 0 then genderPart  = (Helpers.RemoveVnSigns genderPart).toLowerCase()
+
+    option = {'profile.name': namePart }
+    option['profile.gender'] = if genderPart is 'nu' then false else true
+
+    return option
+  else
+    return { 'profile.name': fullText }

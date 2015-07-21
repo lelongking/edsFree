@@ -6,13 +6,14 @@ template(name="staffManagementOverviewSection")
       .caption
         input.editable.dashed(name="staffName" value="{{fullName}}" maxlength="50")
         span.blured-color ({{genderName}})
-      .sub1: span.editable Đăng nhập: {{userName}}
+      .sub1: span.editable Tài Khoản: {{userName}}
       .sub2: span.editable Doanh Số: 0 VND
       .commands
-        if showEditCommand
+        if getSession 'staffManagementShowEditCommand'
           .lemon.btn.rounded.lime.icon-ok-6.syncStaffEdit
         if allowDelete
           .lemon.btn.rounded.red.icon-minus-4.staffDelete
+
     .panel-footer.has-details
       .editor-row
         .editor-wrapper(style="width: 300px")
