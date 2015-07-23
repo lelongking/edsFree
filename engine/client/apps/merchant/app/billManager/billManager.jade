@@ -1,0 +1,20 @@
+template(name="billManager")
+  #content.modern.sales-app
+    .dual-content
+      .dual-detail-wrapper
+        .dual-detail
+          .nano: .nano-content
+            //+saleDetailSection currentOrder
+
+      .dual-addon
+        .search-filter.icon-search-8
+          input(name='searchFilter' type="text" placeholder="tìm sản phẩm..." value="{{productTextSearch}}")
+
+        .nano: .nano-content: .group-wrapper
+          each allBills
+            .caption.inner.advanced.product-selection(class="{{activeClass 'currentOrderBill'}}")
+              +avatarImageComponent(avatar=avatarUrl alias=buyerName)
+              span.text {{buyerName}}
+                //.commands: span.icon-right-open-big.addSaleDetail
+              span.left-info(style="text-transform: none; max-width: 140px") {{sellerName}}
+              span.right-info {{momentFormat version.createdAt 'DD/MM/YYYY'}}

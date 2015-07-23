@@ -25,8 +25,9 @@ lemon.defineHyper Template.productManagementSalesHistorySection,
             order.isOrder = true
             order
         )
+        for key, value of _.groupBy(allImports.concat(allOrders), (item) -> moment(item.version.createdAt).format('L'))
+          details.push({createdAt: key, data: value})
 
-        details.push({createdAt: key, data: value}) for key, value of _.groupBy(allImports.concat(allOrders), (item) -> moment(item.version.createdAt).format('L'))
       return details
 
     saleQuality   : -> @qualities?[0].saleQuality ? 0

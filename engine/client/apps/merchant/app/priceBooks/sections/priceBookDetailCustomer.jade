@@ -17,7 +17,7 @@ template(name="priceBookDetailCustomer")
       table.lemon-grid
         tr
           if isGroup
-            th(style="width:30px")
+            th(style="width:30px").hide-on-print
           th(style="width:auto")
           th(style="width:70px")
           th(style="width:120px")
@@ -30,7 +30,7 @@ template(name="priceBookDetailCustomer")
           else
             tr.detail-row(class="{{productSelected}}")
               if isGroup
-                td.command.icon-ok-6
+                td.command.icon-ok-6.hide-on-print
               td.first-column.has-commands
                |{{productName}}
                .commands: .lemon.rounded.tiny.btn.blue.animated.bounceIn.deleteUnitPrice: span.icon-minus-4

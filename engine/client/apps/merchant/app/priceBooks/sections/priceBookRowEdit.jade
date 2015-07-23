@@ -1,6 +1,6 @@
 template(name="priceBookRowEdit")
   tr.editors.dual-border
-    td.command.icon-ok-6
+    td.command.icon-ok-6.hide-on-print
     td.first-column {{productName}}
     td(align="center") {{productUnitName}}
     td.number {{barcode}}
@@ -19,7 +19,7 @@ template(name="priceBookRowEdit")
 
 template(name="priceBookRowDisplay")
   tr.detail-row.click-enable
-    td.command.icon-ok-6
+    td.command.icon-ok-6.hide-on-print
     td.first-column {{productName}}
     td(align="center") {{productUnitName}}
     td.number {{barcode}}

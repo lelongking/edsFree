@@ -31,7 +31,7 @@ template(name="navigation")
         //li.inav(class="{{isActiveRoute regex='taskManager'}}")
           a(href="{{pathFor 'taskManager'}}"): i.icon-clipboard-2
         if navigationPartial
-          +UI.dynamic(template=navigationPartial.template data=navigationPartial.data)
+          +Template.dynamic(template=navigationPartial.template data=navigationPartial.data)
         each subMenus
           li.inav(class="{{isActiveRoute regex=route}}")
             a(href="{{pathFor route}}"): i.fa(class="{{icon}}")

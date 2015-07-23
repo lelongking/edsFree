@@ -1,26 +1,23 @@
 template(name="orderManager")
-  +saleReview(saleDetails=currentSaleDetails sale=currentSale)
-  #header
-    .caption-row
-      .title ĐƠN HÀNG
-      .commands
-        button.lemon.btn.amethyst.icon-basket-3.createSale BÁN HÀNG
-    .editor-row
-      .editor-wrapper(style="width: 100px")
-        span.ilabel.right xem từ ngày
-        input(name="fromDate" binding="datePicker" todayHighlight="true" maxlength="20")
-      .editor-wrapper(style="width: 100px")
-        span.ilabel đến ngày
-        input(name="toDate" binding="datePicker" todayHighlight="true" maxlength="20")
-      .editor-wrapper
-        button.lemon.btn.lime.icon-ok-6#filterBills ÁP DỤNG
-      //.editor-wrapper.pull-right(style="width: 150px")
-      //  span.ilabel chọn kho
-      //  +iSelect(options=warehouseSelectOptions class="field")
+  #content.modern.sales-app
+    .dual-content
+      .dual-detail-wrapper
+        .dual-detail
+          .nano: .nano-content
+            +orderDetailSection sessionGet 'currentOrderBill'
 
-  #content
-    +iGrid(options=gridOptions)
+      .dual-addon
+        .search-filter.icon-search-8
+          input(name='searchFilter' type="text" placeholder="tìm đơn hàng..." value="{{productTextSearch}}")
 
-    //amethyst icon-inbox-1
-    //icon-edit-alt
-    //lemon.btn.lime.icon-ok-6
+        .nano: .nano-content
+          each details
+            .group-wrapper
+              .caption.group {{createdAt}}
+                each data
+                  .caption.inner.advanced.product-selection(class="{{activeClass 'currentOrderBill'}}")
+                    +avatarImageComponent(avatar=avatarUrl alias=orderName)
+                    span.text {{orderName}}
+                      .commands: span.icon-right-open-big.addSaleDetail
+                    span.left-info {{momentFormat version.createdAt 'DD/MM/YYYY'}}
+                    span.right-info {{formatNumber finalPrice}} VND

@@ -1,20 +1,17 @@
-logics.orderManager = {}
+logics.orderManager = { name: 'sale-logics' }
 Apps.Merchant.orderManagerInit = []
+Apps.Merchant.orderManagerReactiveRun = []
 
 Apps.Merchant.orderManagerInit.push (scope) ->
-  date = new Date();
-  firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-  lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-  Session.set('orderFilterStartDate', firstDay)
-  Session.set('orderFilterToDate', lastDay)
 
-logics.orderManager.reactiveRun = ->
-#  if Session.get('orderFilterStartDate') and Session.get('orderFilterToDate') and Session.get('myProfile')
-#    logics.orderManager.availableBills = Sale.findBillDetails(
-#      Session.get('orderFilterStartDate'),
-#      Session.get('orderFilterToDate'),
-#      Session.get('myProfile').currentWarehouse
-#    )
-#
-#  if Session.get('currentBillManagerSale')
-#    logics.orderManager.currentSaleDetails = Schema.saleDetails.find {sale: Session.get('currentBillManagerSale')._id}
+
+Apps.Merchant.orderManagerReactiveRun.push (scope) ->
+  if Session.get('mySession')
+    scope.currentOrderBill = Schema.orders.findOne Session.get('mySession').currentOrderBill
+    Session.set 'currentOrderBill', scope.currentOrderBill
+
+#  if newBuyerId = Session.get('currentOrder')?.buyer
+#    if !(oldBuyerId = Session.get('currentBuyer')?._id) or oldBuyerId isnt newBuyerId
+#      Session.set('currentBuyer', Schema.customers.findOne newBuyerId)
+#  else
+#    Session.set 'currentBuyer'

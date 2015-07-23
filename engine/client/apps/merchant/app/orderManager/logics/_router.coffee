@@ -1,16 +1,20 @@
+scope = logics.orderManager
+
 orderManagerRoute =
-  template: 'orderManager'
+  template: 'orderManager',
+#  waitOnDependency: 'merchantEssential'
   onBeforeAction: ->
     if @ready()
-      Apps.setup(logics.orderManager, Apps.Merchant.orderManagerInit, 'orderManager')
+      Apps.setup(scope, Apps.Merchant.orderManagerInit, 'orderManager')
+      Session.set "currentAppInfo",
+        name: "đơn hàng"
+#        navigationPartial:
+#          template: "salesNavigationPartial"
+#          data: {}
       @next()
   data: ->
-    logics.orderManager.reactiveRun()
-
+    Apps.setup(scope, Apps.Merchant.orderManagerReactiveRun)
     return {
-      gridOptions: logics.orderManager.gridOptions
-      currentSale: Session.get('currentBillManagerSale')
-      currentSaleDetails: logics.orderManager.currentSaleDetails
     }
 
 lemon.addRoute [orderManagerRoute], Apps.Merchant.RouterBase

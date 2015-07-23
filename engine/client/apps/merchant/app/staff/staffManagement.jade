@@ -21,7 +21,7 @@ template(name="staffManagement")
               +avatarImageComponent(avatar=avatarUrl alias=getEmails)
               span.text {{getEmails}}
                 //.commands: span.icon-right-open-big.addSaleDetail
-              span.left-info(style="width: 150px;") {{profile.name}}
+              span.left-info(style="max-width: 130px") {{profile.name}}
               span.right-info {{permission}}
 
 

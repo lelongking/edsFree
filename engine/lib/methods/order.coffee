@@ -76,7 +76,7 @@ Meteor.methods
     orderQuery =
       _id       : orderId
       merchant  : user.profile.merchant
-      orderType : Enums.getValue('OrderTypes', 'seller')
+      orderType : Enums.getValue('O rderTypes', 'seller')
     console.log orderQuery
 
     orderFound = Schema.orders.findOne orderQuery

@@ -6,3 +6,5 @@ lemon.defineWidget Template.iGrid,
       if typeof itemTemplate is 'function' then itemTemplate(@) else itemTemplate
     dataSource: -> Template.instance().data.options.reactiveSourceGetter()
     classicalHeader: -> Template.instance().data.options.classicalHeader
+  created: ->
+    console.log Template.instance()
