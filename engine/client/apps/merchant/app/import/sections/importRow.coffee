@@ -43,4 +43,5 @@ lemon.defineHyper Template.importRowEdit,
         Session.set("editingId", previousRow._id) if previousRow = details.getPreviousBy("_id", rowId)
 
 lemon.defineHyper Template.importRowDisplay,
-  detailFinalPrice: -> @quality * (@price - @discountCash)
+  helpers:
+    detailFinalPrice: -> @quality * (@price - @discountCash)

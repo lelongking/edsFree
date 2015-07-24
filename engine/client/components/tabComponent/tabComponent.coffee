@@ -12,8 +12,8 @@ destroyTab = (context, instance) ->
     options.navigateAction?(allTabs[nextIndex])
   else if latestLength is 0
     newTab = options.createAction()
-    Session.set(options.currentSource, newTab)
-    options.navigateAction?(newTab)
+#    Session.set(options.currentSource, newTab)
+#    options.navigateAction?(newTab)
 
 generateActiveClass = (context, instance) ->
   key = context.data.options.key

@@ -192,14 +192,14 @@ Schema.add 'imports', "Import", class Import
 
     doc.remove = -> Schema.imports.remove(@_id)
 
-  @insert: (providerId, description, importName, callback) ->
+  @insert: (providerId, importName, description, callback) ->
     newImport = {}
     newImport.provider    = providerId if providerId
     newImport.description = description if description
-    newImport.importName  = importName if importName
+    newImport.importName  = Helpers.shortName2(importName) if importName
     newImport.importType  = -1 if importName and !providerId
     importId = Schema.imports.insert(newImport, callback)
-    Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentImport': importId}})
+    Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentImport': importId}}) if importId
     return importId
 
   @findNotSubmitted: ->

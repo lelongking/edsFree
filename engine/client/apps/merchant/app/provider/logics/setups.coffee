@@ -90,6 +90,7 @@ Apps.Merchant.providerManagementInit.push (scope) ->
         ownerId         = scope.currentProvider._id
         debitCash       = Math.abs(payAmount)
         transactionType = Enums.getValue('TransactionTypes', 'provider')
-        Meteor.call 'createTransaction', ownerId, debitCash, null, description, transactionType, (error, result) ->
+        receivable      = Session.get("providerManagementOldDebt")
+        Meteor.call 'createTransaction', ownerId, debitCash, null, description, transactionType, receivable, (error, result) ->
           Session.set("allowCreateTransactionOfImport", false)
           $payDescription.val(''); $payAmount.val('')

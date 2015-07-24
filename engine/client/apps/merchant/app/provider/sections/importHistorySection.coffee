@@ -13,6 +13,8 @@ lemon.defineHyper Template.providerManagementImportsHistorySection,
         provider.debtCash + provider.loanCash
       else 0
 
+    transactionDescription: -> if Session.get("providerManagementOldDebt") then 'ghi chú nợ cũ' else 'ghi chú trả tiền'
+    transactionStatus: -> if Session.get("providerManagementOldDebt") then 'Nợ Cũ' else 'Trả Tiền'
 
   events:
     "keyup input.transaction-field":  (event, template) ->

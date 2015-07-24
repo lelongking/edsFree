@@ -9,7 +9,7 @@ Apps.Merchant.salesInit.push (scope) ->
     caption: 'orderName'
     key: '_id'
     createAction  : -> Order.insert()
-    destroyAction : (instance) -> if instance then  Order.findNotSubmitted().count() if instance.remove() else -1
+    destroyAction : (instance) -> if instance then Order.findNotSubmitted().count() if instance.remove() else -1
     navigateAction: (instance) -> Order.setSession(instance._id)
 
   scope.debtDateOptions =

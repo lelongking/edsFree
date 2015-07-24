@@ -19,9 +19,7 @@ template(name="staffManagement")
           each staffSearcher
             .caption.advanced.inner.product-selection(class="{{activeClass 'staffManagementCurrentStaff'}}")
               +avatarImageComponent(avatar=avatarUrl alias=getEmails)
-              span.text {{getEmails}}
-                //.commands: span.icon-right-open-big.addSaleDetail
-              span.left-info(style="max-width: 130px") {{profile.name}}
+              span.text {{profile.name}}
               span.right-info {{permission}}
 
 

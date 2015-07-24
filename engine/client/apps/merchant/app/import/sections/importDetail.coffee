@@ -5,15 +5,16 @@ lemon.defineHyper Template.importDetailSection,
   helpers:
     provider: -> Session.get('currentProvider')
     billNo: -> Helpers.orderCodeCreate(Session.get('currentProvider')?.billNo ? '0000')
-    dueDate: -> moment().add(Session.get('currentImport').dueDay, 'days').endOf('day').format("DD/MM/YYYY")
+    dueDate: -> moment().add(Session.get('currentImport').dueDay, 'days').endOf('day').format("DD/MM/YYYY") if Session.get('currentImport')
 
     oldDebt: -> if provider = Session.get('currentProvider') then provider.debtCash + provider.loanCash else 0
     finalDebt: ->
-      currentImport = Session.get("currentImport")
-      if provider = Session.get('currentProvider')
-        provider.debtCash + provider.loanCash + currentImport.finalPrice - currentImport.depositCash
-      else
-        Session.get("currentImport").finalPrice - Session.get("currentImport").depositCash
+      if currentImport = Session.get("currentImport")
+        if provider = Session.get('currentProvider')
+          provider.debtCash + provider.loanCash + currentImport.finalPrice - currentImport.depositCash
+        else
+          Session.get("currentImport").finalPrice - Session.get("currentImport").depositCash
+      else 0
 
   created  : ->
     @timeInterval = Meteor.setInterval(setTime, 1000)

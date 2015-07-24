@@ -10,7 +10,11 @@ Apps.Merchant.importInit.push (scope) ->
     caption: 'importName'
     key: '_id'
     createAction  : -> Import.insert()
-    destroyAction : (instance) -> if instance then Import.findNotSubmitted().count() if instance.remove() else -1
+    destroyAction : (instance) ->
+      if instance
+        instance.remove()
+        Import.findNotSubmitted().count()
+      else -1
     navigateAction: (instance) -> Import.setSession(instance._id)
 
   scope.depositOptions =
