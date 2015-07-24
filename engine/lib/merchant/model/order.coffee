@@ -6,9 +6,9 @@ simpleSchema.orders = new SimpleSchema
   creator     : simpleSchema.DefaultCreator
   version     : { type: simpleSchema.Version }
 
-  buyer       : simpleSchema.OptionalString
-  orderName   : simpleSchema.DefaultString('ĐƠN HÀNG')
-  description : simpleSchema.OptionalString
+  buyer       : type: String, optional: true
+  orderName   : type: String, defaultValue: 'ĐƠN HÀNG'
+  description : type: String, optional: true
 
   depositCash  : simpleSchema.DefaultNumber()
   discountCash : simpleSchema.DefaultNumber()
@@ -207,11 +207,13 @@ Schema.add 'orders', "Order", class Order
         else
           console.log('product not Found'); return
 
-        Meteor.call 'orderSellerConfirm', orderId, (error, result) -> console.log error, result, 'sellerConfirm'
-
-      if Schema.orders.update(orderId, $set:{orderType: Enums.getValue('OrderTypes','sellerConfirm')})
-        Order.insert()
-
+        Meteor.call 'orderSellerConfirm', orderId, (error, result) ->
+          console.log error, result, 'sellerConfirm'
+          unless Schema.orders.findOne({
+            merchant    : Merchant.getId()
+            orderType   : Enums.getValue('OrderTypes', 'initialize')
+            orderStatus : Enums.getValue('OrderStatus', 'initialize')
+          }) then Order.insert()
 
 #          Meteor.call 'orderAccountingConfirmed', orderId, (error, result) ->
 #            console.log result, 'accounting'
@@ -257,8 +259,11 @@ Schema.add 'orders', "Order", class Order
 
   @insert: (buyer, seller, tabDisplay, description, callback) ->
     newOrder = {}
-    newOrder.buyer = buyer if buyer
-    newOrder.seller= seller if seller
+    newOrder.buyer       = buyer if buyer
+    newOrder.seller      = seller if seller
+    newOrder.description = description if description
+    newOrder.orderName   = Helpers.shortName2(tabDisplay) if tabDisplay
+
     orderId = Schema.orders.insert newOrder, callback
     Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentOrder': orderId}})
     return orderId

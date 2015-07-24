@@ -7,14 +7,15 @@ lemon.defineHyper Template.billDetailGridSection,
 
     customerOldDebt: -> if customer = Session.get('currentBuyer') then customer.debtCash + customer.loanCash else 0
     customerFinalDebt: ->
-      order = Session.get("currentBillHistory")
-      if customer = Session.get('currentBuyer')
-        customer.debtCash + customer.loanCash + order.finalPrice - order.depositCash
-      else
-        Session.get("currentBillHistory").finalPrice - Session.get("currentBillHistory").depositCash
+      if order = Session.get("currentBillHistory")
+        if customer = Session.get('currentBuyer')
+          customer.debtCash + customer.loanCash + order.finalPrice - order.depositCash
+        else
+          order.finalPrice - order.depositCash
+      else 0
 
     details: ->
-      return [] unless @
+      return [] unless @details
       isDisabled = true; isDisabled = if @details?.length > 0 then false else true
       for item in @details
         item.model = 'orderDetail'

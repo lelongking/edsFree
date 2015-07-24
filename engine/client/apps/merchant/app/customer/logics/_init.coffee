@@ -12,7 +12,6 @@ Apps.Merchant.customerManagementReactive.push (scope) ->
     Session.set "customerManagementCustomerId", customerId
 
 
-
 Apps.Merchant.customerManagementInit.push (scope) ->
   scope.resetShowEditCommand = -> Session.set "customerManagementShowEditCommand"
   scope.transactionFind = (parentId)-> Schema.transactions.find({parent: parentId}, {sort: {'version.createdAt': 1}})

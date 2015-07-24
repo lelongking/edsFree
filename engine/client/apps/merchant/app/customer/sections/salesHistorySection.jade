@@ -35,9 +35,14 @@ template(name="customerManagementSalesHistorySection")
           +customerManagementSaleDetails this
 
         tr.editors
-          td(colspan="1"): input.transaction-field(name='paySaleDescription' type="text" size="10" placeholder="ghi chú trả tiền")
-          td(colspan="3"): input.transaction-field.number(name='paySaleAmount' type="text" size="10" placeholder="số tiền")
-          td(colspan="1"): .lemon.rounded.btn.lime.icon-money.pull-right.createTransaction(class="{{isNotDisabled 'allowCreateTransactionOfCustomer'}}")
+          td(colspan="1"): input.transaction-field(type="text" size="10"
+          name='paySaleDescription' placeholder="{{transactionDescription}}")
+
+          td(colspan="3"): input.transaction-field.number(type="text" size="10"
+          name='paySaleAmount' placeholder="số tiền")
+
+          td(colspan="1"): .lemon.btn.lime.icon-money.pull-right.createTransaction(
+          class="{{isNotDisabled 'allowCreateTransactionOfCustomer'}}") {{transactionStatus}}
 
     .panel-footer
       .right-float

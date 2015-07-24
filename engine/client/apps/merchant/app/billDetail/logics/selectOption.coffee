@@ -45,14 +45,14 @@ Apps.Merchant.billDetailInit.push (scope) ->
     query: (query) -> query.callback
       results: [Meteor.users.findOne(scope.currentBillHistory.seller).profile]
       text: 'name'
-    initSelection: (element, callback) -> callback Meteor.users.findOne(scope.currentBillHistory.seller).profile
+    initSelection: (element, callback) -> callback Meteor.users.findOne(scope.currentBillHistory?.seller)?.profile
     formatSelection: formatCustomerSearch
     formatResult: formatCustomerSearch
     id: 'name'
     placeholder: 'CHỌN NGƯỜI MUA'
     readonly: -> true
     changeAction: (e) -> scope.currentBillHistory.changeBuyer(e.added._id)
-    reactiveValueGetter: -> Meteor.users.findOne(Session.get('currentBillHistory').seller).profile ? 'skyReset'
+    reactiveValueGetter: -> Meteor.users.findOne(Session.get('currentBillHistory')?.seller)?.profile ? 'skyReset'
 
   scope.paymentsDeliverySelectOptions =
     query: (query) -> query.callback

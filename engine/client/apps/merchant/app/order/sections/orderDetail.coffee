@@ -5,16 +5,22 @@ lemon.defineHyper Template.saleDetailSection,
   helpers:
     buyer: -> Session.get('currentBuyer')
     billNo: -> Helpers.orderCodeCreate(Session.get('currentBuyer')?.billNo ? '0000')
-    dueDate: -> moment().add(Session.get('currentOrder').dueDay, 'days').endOf('day').format("DD/MM/YYYY")
     customerOldDebt: -> if customer = Session.get('currentBuyer') then customer.debtCash + customer.loanCash else 0
+
+    dueDate: ->
+      if order = Session.get("currentOrder")
+        moment().add(order.dueDay, 'days').endOf('day').format("DD/MM/YYYY")
+
     customerFinalDebt: ->
-      order = Session.get("currentOrder")
-      if customer = Session.get('currentBuyer')
-        customer.debtCash + customer.loanCash + order.finalPrice - order.depositCash
-      else
-        Session.get("currentOrder").finalPrice - Session.get("currentOrder").depositCash
+      if order = Session.get("currentOrder")
+        if customer = Session.get('currentBuyer')
+          customer.debtCash + customer.loanCash + order.finalPrice - order.depositCash
+        else
+          order.finalPrice - order.depositCash
+      else 0
 
     details: ->
+      return [] if !@details
       isDisabled = true; isDisabled = if @details?.length > 0 then false else true
       for item in @details
         if product = Schema.products.findOne(item.product)

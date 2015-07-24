@@ -87,7 +87,8 @@ Apps.Merchant.customerManagementInit.push (scope) ->
         ownerId         = scope.currentCustomer._id
         debitCash       = Math.abs(payAmount)
         transactionType = Enums.getValue('TransactionTypes', 'customer')
+        receivable      = Session.get("customerManagementOldDebt")
         console.log debitCash
-        Meteor.call 'createTransaction', ownerId, debitCash, null, description, transactionType, (error, result) ->
+        Meteor.call 'createTransaction', ownerId, debitCash, null, description, transactionType, receivable, (error, result) ->
           Session.set("allowCreateTransactionOfCustomer", false)
           $payDescription.val(''); $payAmount.val('')

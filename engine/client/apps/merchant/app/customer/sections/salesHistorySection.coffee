@@ -3,12 +3,15 @@ numericOption = {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: "
 
 lemon.defineHyper Template.customerManagementSalesHistorySection,
   helpers:
-    allSales: -> scope.findAllOrders()
-    oldDebts: -> scope.findOldDebtCustomer()
+    allSales: -> logics.customerManagement.findAllOrders()
+    oldDebts: -> logics.customerManagement.findOldDebtCustomer()
     debtTotalCash: ->
       if customer = Session.get('customerManagementCurrentCustomer')
         customer.debtCash + customer.loanCash
       else 0
+
+    transactionDescription: -> if Session.get("customerManagementOldDebt") then 'ghi chú nợ cũ' else 'ghi chú trả tiền'
+    transactionStatus: -> if Session.get("customerManagementOldDebt") then 'Nợ Cũ' else 'Trả Tiền'
 
   rendered: ->
     @ui.$paySaleAmount.inputmask("numeric", numericOption)

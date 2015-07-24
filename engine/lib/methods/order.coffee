@@ -124,6 +124,31 @@ updateSubtractQualityInImport = (orderFound, orderDetail, combinedImports) ->
 
 Enums = Apps.Merchant.Enums
 Meteor.methods
+  customerToOrder: (customerId)->
+    try
+      user = Meteor.users.findOne(Meteor.userId())
+      throw {valid: false, error: 'user not found!'} if !user
+
+      customer = Schema.customers.findOne({_id: customerId, merchant: user.profile.merchant})
+      throw {valid: false, error: 'customer not found!'} if !customer
+
+      orderFound = Schema.orders.findOne({
+        seller      : user._id
+        buyer       : customer._id
+        merchant    : user.profile.merchant
+        orderType   : Enums.getValue('OrderTypes', 'initialize')
+        orderStatus : Enums.getValue('OrderStatus', 'initialize')
+      }, {sort: {'version.createdAt': -1}})
+
+      if orderFound
+        Order.setSession(orderFound._id)
+      else
+        Order.setSession(orderId) if orderId = Order.insert(customer._id, user._id, customer.name)
+
+    catch error
+      throw new Meteor.Error('customerToOrder', error)
+
+
   orderSellerConfirm: (orderId)->
     user = Meteor.users.findOne(Meteor.userId())
     return {valid: false, error: 'user not found!'} if !user
