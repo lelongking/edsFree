@@ -1,9 +1,9 @@
 template(name="gridComponent")
-  .igrid(class="{{wrapperClass}}")
+  .igrid.row(class="{{wrapperClass}}")
     if headerTemplate
       .igrid-header
         +Template.dynamic(template=headerTemplate)
-    .igrid-content
+    .igrid-content.col
       each dataSource
         .item-wrapper(class="{{animationClass}}")
           +Template.dynamic(template=itemTemplate data=this)

@@ -4,7 +4,9 @@ template(name="billManager")
       .dual-detail-wrapper
         .dual-detail
           .nano: .nano-content
-            //+saleDetailSection currentOrder
+            .segments-container.size2
+              +gridComponent(options=waitingGridOptions wrapperClass="segments-column" headerTemplate="billThumbnailHeader1" animation="bounceInDown")
+              +gridComponent(options=deliveringGridOptions wrapperClass="segments-column" headerTemplate="billThumbnailHeader2" animation="bounceInDown")
 
       .dual-addon
         .search-filter.icon-search-8
@@ -12,9 +14,19 @@ template(name="billManager")
 
         .nano: .nano-content: .group-wrapper
           each allBills
-            .caption.inner.advanced.product-selection(class="{{activeClass 'currentOrderBill'}}")
+            .caption.inner.advanced.product-selection
               +avatarImageComponent(avatar=avatarUrl alias=buyerName)
               span.text {{buyerName}}
                 //.commands: span.icon-right-open-big.addSaleDetail
               span.left-info(style="text-transform: none; max-width: 140px") {{sellerName}}
               span.right-info {{momentFormat version.createdAt 'DD/MM/YYYY'}}
+
+
+
+
+template(name="billThumbnailHeader1")
+  span.title CHỜ
+  span.icon.icon-truck-1 7 ngày
+template(name="billThumbnailHeader2")
+  span.title ĐỎ
+  span.icon.icon-award quá 7 ngày

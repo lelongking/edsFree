@@ -6,7 +6,7 @@ billManagerRoute =
     if @ready()
       Apps.setup(scope, Apps.Merchant.billManagerInit, 'billManager')
       Session.set "currentAppInfo",
-        name: "phiếu bán"
+        name: "quản lý phiếu bán"
 #        navigationPartial:
 #          template: "billManagerNavigationPartial"
 #          data: {}

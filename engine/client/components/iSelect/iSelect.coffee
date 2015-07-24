@@ -26,6 +26,13 @@ setSelection = ($element, context) ->
   else
     $element.select2('val', val) if val
 
+setReadonly = ($element, context) ->
+  if typeof context.data.options.readonly is "function"
+    if context.data.options.readonly()
+      $element.select2('readonly', true)
+    else
+      $element.select2('readonly', false)
+
 destroySelection = ($element, context) -> $element.select2('destroy')
 stopTrackingValue = (context) -> context.valueTracker.stop()
 
@@ -41,6 +48,7 @@ lemon.defineWidget Template.iSelect,
     registerHotkey $element, @
     startTrackingValue $element, @
     setSelection $element, @
+    setReadonly $element, @
 
   destroyed: ->
     $element = $(@ui.component)

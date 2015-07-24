@@ -1,12 +1,16 @@
 scope = logics.orderManager
-
+Enums = Apps.Merchant.Enums
 lemon.defineApp Template.orderManager,
   helpers:
     details: ->
-      details = []; orders = Schema.orders.find({orderType: 6}).fetch()
-      for key, value of _.groupBy(orders, (item) -> moment(item.version.createdAt).format('MM/YYYY'))
-        details.push({createdAt: key, data: value})
-      console.log details
+      details = []; orders = Schema.orders.find({
+        merchant    : Merchant.getId()
+        orderType   : {$in:[ Enums.getValue('OrderTypes', 'success'), Enums.getValue('OrderTypes', 'fail') ]}
+        orderStatus : Enums.getValue('OrderStatus', 'finish')
+      }).fetch()
+      if orders.length > 0
+        for key, value of _.groupBy(orders, (item) -> moment(item.version.createdAt).format('MM/YYYY'))
+          details.push({createdAt: key, data: value})
       details
 
 

@@ -4,9 +4,7 @@ mizzao:user-status
 
 
 1 phan quyen
-    + tao tai khoan 2h
-    + thai doi thong tin (doi mat khau) 1h
-    + phan quyen (quan ly, kinh doanh, ke toan(sau, chua quan tam) ) 1h
+     + phan quyen (quan ly, kinh doanh, ke toan(sau, chua quan tam) ) 1h
 
   - Nhan su (quan ly)
     + quan ly kinh doanh, ten nv. (sl dai ly, tien) -  don hang (tinh trang don hang, danh gia hieu qua) 3h
@@ -17,7 +15,7 @@ mizzao:user-status
     + quan ly: nhap kho, bang gia, phan quyen
 
 
-1 tra hang 3h + giao hang 2h
+1 tra hang 3h
 
 1 quan ly don hang 2h + 1h + 2h (giao dien)  , don hang 3h
     + lien giao dien ban hang (han no, lai suat)

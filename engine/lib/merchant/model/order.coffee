@@ -6,7 +6,6 @@ simpleSchema.orders = new SimpleSchema
   creator     : simpleSchema.DefaultCreator
   version     : { type: simpleSchema.Version }
 
-  seller      : simpleSchema.OptionalString
   buyer       : simpleSchema.OptionalString
   orderName   : simpleSchema.DefaultString('ĐƠN HÀNG')
   description : simpleSchema.OptionalString
@@ -18,25 +17,28 @@ simpleSchema.orders = new SimpleSchema
 
   orderCode        : simpleSchema.OptionalString
   orderType        : type: Number, defaultValue: Enums.getValue('OrderTypes', 'initialize')
+  orderStatus      : type: Number, defaultValue: Enums.getValue('OrderStatus', 'initialize')
   paymentMethod    : type: Number, defaultValue: Enums.getValue('PaymentMethods', 'direct')
   paymentsDelivery : type: Number, defaultValue: Enums.getValue('DeliveryTypes', 'direct')
   dueDay           : type: Number, optional: true
 
-  #xac nhan tien khi tao phieu
+  #nhan vien tao phieu
+  seller          : simpleSchema.DefaultCreator
+  sellerConfirmAt : type: Date, optional: true
+
+  #ke toan xac nhan phieu
   accounting          : type: String  , optional: true
-  accountingConfirm   : type: Boolean , optional: true
-  accountingConfirmAt : type: Date    , optional: true
-  transaction         : type: String  , optional: true
+  accountingConfirmAt : type: Date, optional: true
 
   #xac nhan xuat kho khi giao hang
   export          : type: String  , optional: true
-  exportConfirm   : type: Boolean , optional: true
   exportConfirmAt : type: Date    , optional: true
 
   #xac nhan nhap kho khi giao hang that bai
   import          : type: String  , optional: true
-  importConfirm   : type: Boolean , optional: true
   importConfirmAt : type: Date    , optional: true
+
+  transaction     : type: String  , optional: true
 
   #ngay xac nhan
   saleDate    : type: Date, optional: true
@@ -205,17 +207,18 @@ Schema.add 'orders', "Order", class Order
         else
           console.log('product not Found'); return
 
-      if Schema.orders.update(orderId, $set:{orderType: Enums.getValue('OrderTypes','checked')})
+        Meteor.call 'orderSellerConfirm', orderId, (error, result) -> console.log error, result, 'sellerConfirm'
 
-        Meteor.call 'orderSellerConfirmed', orderId, (error, result) ->
-          console.log result, 'seller'
-          Meteor.call 'orderAccountingConfirmed', orderId, (error, result) ->
-            console.log result, 'accounting'
-            Meteor.call 'orderExportConfirmed', orderId, (error, result) ->
-              console.log result, 'export'
-              Meteor.call 'orderSuccessConfirmed', orderId, (error, result) ->
-                console.log result, 'success'
-                Order.insert()
+      if Schema.orders.update(orderId, $set:{orderType: Enums.getValue('OrderTypes','sellerConfirm')})
+        Order.insert()
+
+
+#          Meteor.call 'orderAccountingConfirmed', orderId, (error, result) ->
+#            console.log result, 'accounting'
+#            Meteor.call 'orderExportConfirmed', orderId, (error, result) ->
+#              console.log result, 'export'
+#              Meteor.call 'orderSuccessConfirmed', orderId, (error, result) ->
+#                console.log result, 'success'
 
 
     doc.addDelivery = (option, callback) ->

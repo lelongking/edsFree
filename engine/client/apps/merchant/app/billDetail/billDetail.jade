@@ -1,0 +1,54 @@
+template(name="billDetail")
+  #header
+    .editor-row
+      .editor-wrapper.dual-spacer
+      .editor-wrapper(style="width: 200px")
+        span.ilabel.optional nhân viên
+        +iSelect(options=sellerSelectOptions class="field")
+      .editor-wrapper(style="width: 200px")
+        span.ilabel.optional khách hàng
+        +iSelect(options=customerSelectOptions class="field")
+      .editor-wrapper(style="width: 120px")
+        span.ilabel.optional thanh toán
+        +iSelect(options=paymentMethodSelectOptions class="field")
+      .editor-wrapper(style="width: 130px")
+        span.ilabel.optional giao hàng
+        +iSelect(options=paymentsDeliverySelectOptions class="field")
+
+  #content.modern.sales-app
+    .dual-content
+      .dual-detail-wrapper
+        .dual-detail
+          .nano: .nano-content
+            +billDetailGridSection getSession 'currentBillHistory'
+
+      .dual-addon
+        .search-filter.icon-search-8
+          input(type="text" placeholder="tìm sản phẩm..."
+          name='searchFilter' value="{{productTextSearch}}")
+
+        .nano: .nano-content: .group-wrapper
+          each unitProductSearches
+            if status
+              .caption.advanced.inner.product-selection(
+              class="{{productSelectionActiveClass}}")
+                +avatarImageComponent(avatar=avatarUrl alias=name)
+                span.text {{name}}
+                  .commands: span.icon-right-open-big.addSaleDetail
+                span.right-info {{stock}} {{unitName}}
+
+  #footer.modern
+    .editor-row
+      .editor-wrapper.dual-spacer
+      .editor-wrapper(style="width: 145px")
+        span.ilabel.center chiết khấu
+        +iSpinEdit(options=discountOptions)
+      .editor-wrapper(style="width: 145px")
+        span.ilabel.center thanh toán
+        +iSpinEdit(options=depositOptions)
+
+      .editor-wrapper.pull-right
+        button.flat.btn.lime.pull-right.accountingConfirm(type='submit' style="margin-right: 5px;"
+        class="{{getSession 'currentBillHistoryIsDisabled'}}") XÁC NHẬN
+      .editor-wrapper.pull-right
+        button.flat.btn.blue.pull-right.print-command(type='submit'): span.icon-print-6

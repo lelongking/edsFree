@@ -4,7 +4,7 @@ Template.registerHelper 'sellerName', -> Session.get('myProfile')?.name ? 'Nhân
 Template.registerHelper 'isRowEditing', -> Session.get("editingId") is @_id
 Template.registerHelper 'totalPrice', -> if @totalPrice then @totalPrice else @price * @quality
 
-Template.registerHelper 'firstName', -> Helpers.firstName(@name)
+Template.registerHelper 'firstName', -> Helpers.firstName(@name ? @)
 Template.registerHelper 'avatarUrl', -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
 Template.registerHelper 'activeClass', (sessionName)-> if Session.get(sessionName)?._id is @_id  then 'active' else ''
 Template.registerHelper 'isDisabled', (sessionName)-> if Session.get(sessionName) then '' else 'disabled'

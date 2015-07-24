@@ -87,6 +87,8 @@ Meteor.users.attachSchema new SimpleSchema
     optional: true
 #  "profile.name": cloneName
 
+  saleCash    : type: Number, defaultValue: 0
+
   sessions    : type: userSession, defaultValue: {}
   creator     : simpleSchema.DefaultCreator
   createdAt   : type: Date      , defaultValue: new Date

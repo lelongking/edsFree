@@ -14,3 +14,14 @@
     clearfix()
     overflow-y scroll
     overflow-x hidden
+    &.col
+      +below(1024px)
+        span(1)
+      +above(1024px)
+        span(1)
+      +above(1200px)
+        span(1)
+      +above(1600px)
+        span(1/2)
+      +above(1900px)
+        span(1/2)

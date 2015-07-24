@@ -23,31 +23,53 @@ Apps.Merchant.Enums.GenderTypes = [
 Apps.Merchant.Enums.OrderTypes = [
   _id    : 0
   value  : 'initialize'
+  display: 'theo doi'
+,
+  _id    : 1
+  value  : 'tracking'
+  display: 'moi tao'
+,
+  _id    : 2
+  value  : 'success'
+  display: 'moi tao'
+,
+  _id    : 3
+  value  : 'fail'
+  display: 'moi tao'
+]
+
+Apps.Merchant.Enums.OrderStatus = [
+  _id    : 0
+  value  : 'initialize'
   display: 'moi tao'
 ,
   _id    : 1
-  value  : 'checked'
+  value  : 'sellerConfirm'
   display: 'da kiem tra'
 ,
   _id    : 2
-  value  : 'seller'
-  display: 'nhan vien xac nhan'
-,
-  _id    : 3
-  value  : 'accounting'
+  value  : 'accountingConfirm'
   display: 'ke toan xac nhan'
 ,
+  _id    : 3
+  value  : 'exportConfirm'
+  display: 'xuat hàng ra kho'
+,
   _id    : 4
-  value  : 'export'
-  display: 'kho xuat hang'
+  value  : 'success'
+  display: 'thanh cong'
 ,
   _id    : 5
-  value  : 'import'
-  display: 'kho nhan hang'
+  value  : 'fail'
+  display: 'that bai'
 ,
   _id    : 6
-  value  : 'success'
-  display: 'ket thuc'
+  value  : 'importConfirm'
+  display: 'tra hang vao kho'
+,
+  _id    : 7
+  value  : 'finish'
+  display: 'hoan tat'
 ]
 
 Apps.Merchant.Enums.PaymentMethods = [

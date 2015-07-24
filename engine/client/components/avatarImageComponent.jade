@@ -2,4 +2,7 @@ template(name="avatarImageComponent")
   if avatar
     span.avatar.image: img(src="{{avatar}}")
   else
-    span.avatar.letter {{aliasLetter alias}}
+    if name
+      span.avatar.letter {{firstName name}}
+    else
+      span.avatar.letter {{aliasLetter alias}}

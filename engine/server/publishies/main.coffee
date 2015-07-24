@@ -12,7 +12,10 @@ Meteor.publish null, ->
   Counts.publish @, 'customerReturns', Schema.returns.find({returnType: 0, merchant: merchantId})
   Counts.publish @, 'customerGroups', Schema.customerGroups.find({isBase: false, merchant: merchantId})
 
-  Counts.publish @, 'orders', Schema.orders.find({orderType:{$in: [1,2]}, merchant: merchantId})
+  Counts.publish @, 'orders', Schema.orders.find({
+    merchant: merchantId
+    orderType:{$in: [0]}
+  })
   Counts.publish @, 'deliveries', Schema.orders.find({orderType:2, 'delivery.status': {$in: [1,2,3,4]}, merchant: merchantId})
 
   Counts.publish @, 'providers', Schema.providers.find({merchant: merchantId})
@@ -23,6 +26,18 @@ Meteor.publish null, ->
 
   Counts.publish @, 'staffs', Meteor.users.find({'profile.merchant': merchantId})
   Counts.publish @, 'priceBooks', Schema.priceBooks.find({merchant: merchantId})
+  Counts.publish @, 'billManagers', Schema.orders.find({
+    orderType   : Enums.getValue('OrderTypes', 'tracking')
+    orderStatus : {$in:[
+      Enums.getValue('OrderStatus', 'accountingConfirm')
+      Enums.getValue('OrderStatus', 'exportConfirm')
+      Enums.getValue('OrderStatus', 'success')
+      Enums.getValue('OrderStatus', 'fail')
+      Enums.getValue('OrderStatus', 'importConfirm')
+    ]}
+    merchant    : merchantId
+  })
+  Counts.publish @, 'orderManagers', Schema.orders.find({orderStatus: Enums.getValue('OrderStatus', 'finish'), merchant: merchantId})
 
   collections.push Schema.merchants.find({_id: merchantId})
   collections.push Schema.products.find()
