@@ -17,16 +17,16 @@ Meteor.methods
         owner            : owner._id
         beforeDebtBalance: owner.debtCash + owner.loanCash
 
-      transactionInsert.parent = transaction.parent if transaction?.parent
-      transactionInsert.description = description if description
+      if transactionType is Enums.getValue('TransactionTypes', 'provider')
+        transactionInsert.transactionName = if receivable then 'Phiếu Thu' else 'Phiếu Chi'
+      else if transactionType is Enums.getValue('TransactionTypes', 'customer')
+        transactionInsert.transactionName = if receivable then 'Phiếu Chi' else 'Phiếu Thu'
 
-      if name
-        transactionInsert.transactionName = name
-      else
-        if transactionType is Enums.getValue('TransactionTypes', 'provider')
-          transactionInsert.transactionName = if receivable then 'Phiếu Thu' else 'Phiếu Chi'
-        else if transactionType is Enums.getValue('TransactionTypes', 'customer')
-          transactionInsert.transactionName = if receivable then 'Phiếu Chi' else 'Phiếu Thu'
+      transactionInsert.transactionName = name if name
+#      transactionInsert.description = transactionInsert.transactionName
+#      transactionInsert.description = description if description
+      transactionInsert.description = 'CÔNG NỢ ĐÔNG XUÂN 2014- 2015'
+      transactionInsert.parent = transaction.parent if transaction?.parent
 
       paidCash = 0 #paidCash -> tien nhan, debtCash -> tien tra.
       if receivable

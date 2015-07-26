@@ -302,7 +302,9 @@ Schema.add 'products', "Product", class Product
 
     console.log option
     if newProductId = Schema.products.insert option
-      PriceBook.addProductUnit(productUnitId); Product.setSession(newProductId)
+      PriceBook.addProductUnit(productUnitId)
+      Product.setSession(newProductId)
+      ProductGroup.addProduct(newProductId)
     newProductId
 
   @nameIsExisted: (name, merchant = null) ->

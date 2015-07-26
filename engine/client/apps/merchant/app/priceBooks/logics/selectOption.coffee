@@ -63,7 +63,7 @@ priceBookSearch  = (query) ->
 formatPriceBookSearch = (item) ->
   if item
     return "#{item.name}" if item.model is 'customers'
-    return "Nhóm - #{item.name}" if item.model is 'customerGroups'
+    return "Vùng - #{item.name}" if item.model is 'customerGroups'
 
 Apps.Merchant.priceBookInit.push (scope) ->
   scope.priceBookSelectOptions =
@@ -74,6 +74,6 @@ Apps.Merchant.priceBookInit.push (scope) ->
     formatSelection: formatPriceBookSearch
     formatResult: formatPriceBookSearch
     id: '_id'
-    placeholder: 'CHỌN NHÓM HOẶC KHÁCH HÀNG'
+    placeholder: 'CHỌN VÙNG HOẶC KHÁCH HÀNG'
     changeAction: (e) -> scope.currentPriceBook.changePriceProductTo(e.added._id, e.added.model)
     reactiveValueGetter: -> 'skyReset'

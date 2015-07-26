@@ -199,7 +199,8 @@ Schema.add 'priceBooks', "PriceBook", class PriceBook
 
                 unless _.isEmpty(unitUpdateQuery.$push)
                   Schema.products.update(query.productId, unitUpdateQuery)
-                  Schema.priceBooks.update @_id, $push: {products:{_id:query.productId, unit: productUnitId}}
+                  Schema.priceBooks.update @_id, $pull: {products:{_id:query.productId, unit: productUnitId}}
+                  Schema.priceBooks.update priceBookOfGroup._id, $push: {products:{_id:query.productId, unit: productUnitId}}
 
   #                  cập nhật lại giá của bản giá cập nhật theo bản giá gốc
   #                unitUpdateQuery = $set:{}

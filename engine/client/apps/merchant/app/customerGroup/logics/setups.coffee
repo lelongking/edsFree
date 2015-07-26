@@ -28,10 +28,9 @@ Apps.Merchant.customerGroupInit.push (scope) ->
         Session.set("customerGroupShowEditCommand", false)
 
 
-  scope.addCustomer = ->
-    Schema.customers.find({}).forEach(
-      (customer) ->
-        if customer.group
-          Schema.customers.update customer._id, $set: {group: "7DLd4P666ontn2fnc"}
-          Schema.customerGroups.update "7DLd4P666ontn2fnc", $addToSet: {customers: customer._id }
-    )
+  scope.addCustomer = (customerId)->
+    customer = Schema.customers.findOne(customerId)
+    group = Schema.customerGroups.findOne({isBase: true})
+    if customer and group
+      Schema.customers.update customer._id, $set: {group: group._id}
+      Schema.customerGroups.update group._id, $addToSet: {customers: customer._id }

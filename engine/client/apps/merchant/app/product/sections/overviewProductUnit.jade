@@ -46,7 +46,7 @@ template(name="overviewProductUnit")
       each productUnitTables
         .col.col-sm-4.col-md-3.col-lg-2
           .package-block
-            .title(style="width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis") {{name}}
+            .title(style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis") {{name}}
             .features(class="{{class}}")
               if isProduct
                 li: span {{barcode}} :

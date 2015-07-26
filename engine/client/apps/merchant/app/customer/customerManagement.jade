@@ -23,7 +23,9 @@ template(name="customerManagement")
                   .title {{name}}
                   .sub-title {{description}}
                   if debtTotalCash
-                    .price-stamp.icon-ticket <b>{{formatNumber debtTotalCash}}</b> VNĐ
+                    .price-stamp
+                      <b>{{formatNumber debtTotalCash}}</b>
+                      span(style="font-size: 11px;") <b>VND</b>
 
 
   //#footer.modern

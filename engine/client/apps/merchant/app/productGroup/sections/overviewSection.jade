@@ -2,12 +2,12 @@ template(name="productGroupOverviewSection")
   .section.top.panel.panel-default
     input.hidden.avatarFile(type="file")
     .panel-heading
-      +avatarImageComponent(avatar=avatarUrl alias=firstName)
+      +avatarImageComponent(avatar=avatarUrl alias=name)
       .caption
         input.editable.dashed(name="productGroupName" value="{{name}}" maxlength="50")
-        span.blured-color ({{productCount}} khách hàng)
+        //span.blured-color ({{productCount}} sản phẩm)
 
-      .sub1: input.editable.dashed(value="{{productCount}} khách hàng")
+      .sub1: input.editable.dashed(value="{{productCount}} sản phẩm")
       .sub2: input.editable.dashed(name="productGroupDescription" value="{{description}}" maxlength="100" size="50" placeholder="ghi chú")
       .commands
         if getSession 'productGroupShowEditCommand'

@@ -13,20 +13,20 @@ template(name="merchantHome")
               .tile.quatro.lime.overlay.customer-management(class="{{metroUnLocker Summary.data.staffCount}}" data-app='customerManagement')
                 .canvas-wrapper.double: .canvas
                   //.app-icon.icon-group
-                  span.caption.app-name.bottom.right khách hàng
                   .app-count {{getPublishedCount 'customers'}}
-                  .app-count-description khách hàng
+                  .app-count-description tất cả
+                  span.caption.app-name.bottom.right khách hàng
               .tile.double.pumpkin.overlay.distributor-management(data-app="providerManagement")
                 .canvas-wrapper: .canvas
                   //.app-icon.icon-building
                   .app-count {{getPublishedCount 'providers'}}
-                  .app-count-description công ty
+                  .app-count-description tất cả
                   span.caption.app-name.bottom.right nhà cung cấp
               .tile.double.belize-hole.overlay.product-management(data-app="productManagement")
                 .canvas-wrapper: .canvas
                   //.app-icon.icon-cubes
                   .app-count {{getPublishedCount 'products'}}
-                  .app-count-description loại sản phẩm
+                  .app-count-description tất cả
                   span.caption.app-name.bottom.right sản phẩm
 
             .tile-group-2
@@ -41,10 +41,10 @@ template(name="merchantHome")
                 //.app-count-description
                 span.caption.app-name.bottom.right nhật ký
 
-              .tile.amethyst(data-app="sales")
+              .tile.amethyst.order-management(data-app="sales")
                 //.app-icon.icon-basket
                 .app-count {{getPublishedCount 'orders'}}
-                .app-count-description phiếu trong ngày
+                .app-count-description phiếu tạm
                 span.caption.app-name.bottom.right bán hàng
               .tile.pink
                 //.app-icon.icon-reply-outline

@@ -17,6 +17,7 @@ Apps.Merchant.customerManagementInit.push (scope) ->
     else
       newCustomerId = Schema.customers.insert newCustomer
       if Match.test(newCustomerId, String)
+        CustomerGroup.addCustomer(newCustomerId)
         Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentCustomer': newCustomerId}})
 
   scope.CustomerSearchFindPreviousCustomer = (customerSearch) ->
@@ -89,6 +90,7 @@ Apps.Merchant.customerManagementInit.push (scope) ->
         transactionType = Enums.getValue('TransactionTypes', 'customer')
         receivable      = Session.get("customerManagementOldDebt")
         console.log debitCash
+        Session.set("allowCreateTransactionOfCustomer", false)
+        Session.set("customerManagementOldDebt")
+        $payDescription.val(''); $payAmount.val('')
         Meteor.call 'createTransaction', ownerId, debitCash, null, description, transactionType, receivable, (error, result) ->
-          Session.set("allowCreateTransactionOfCustomer", false)
-          $payDescription.val(''); $payAmount.val('')

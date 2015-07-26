@@ -52,7 +52,8 @@ Schema.add 'customers', "Customer", class Customer
     )
 
   @insert: (name, description) ->
-    Schema.customers.insert({name: name, description: description})
+    customerId = Schema.customers.insert({name: name, description: description})
+    CustomerGroup.addCustomer(customerId) if customerId
 
   @splitName: (fullText) ->
     if fullText.indexOf("(") > 0
@@ -65,3 +66,6 @@ Schema.add 'customers', "Customer", class Customer
   @nameIsExisted: (name, merchant) ->
     existedQuery = {name: name, merchant: merchant}
     Schema.customers.findOne(existedQuery)
+
+  @setSession: (customerId) ->
+    Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentCustomer': customerId}})

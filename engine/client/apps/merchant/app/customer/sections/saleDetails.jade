@@ -19,8 +19,8 @@ template(name="customerManagementSaleDetails")
   each transactions
     tr.detail-row.summary-row
       td.has-commands
-        .bill-header {{transactionName}}
-        .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
-      td.number(colspan="2"): span.blured-color.icon-feather-1 <b>{{formatNumber latestDebtBalance}}</b>
-      td.number(colspan="1"): span.blured-color <b>{{formatNumber paidBalanceChange}}</b>
-      td.summary-total(align="right"): span.s5 <b>{{formatNumber debtBalanceChange}}</b>
+        .bill-header {{description}}
+        //.commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
+      td.number(colspan="2"): span.blured-color <b>{{formatNumber paidBalanceChange}}</b>
+      td.number(colspan="1"): span.blured-color <b>{{formatNumber debtBalanceChange}}</b>
+      td.summary-total(align="right"): span.s5 <b>{{formatNumber latestDebtBalance}}</b>

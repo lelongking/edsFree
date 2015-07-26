@@ -79,3 +79,9 @@ Schema.add 'customerGroups', "CustomerGroup", class CustomerGroup
     Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentCustomerGroup': customerGroupId}})
 
   @getBasicGroup: -> Schema.customerGroups.findOne {isBase: true, merchant: Merchant.getId()}
+  @addCustomer = (customerId)->
+    customer = Schema.customers.findOne(customerId)
+    group = Schema.customerGroups.findOne({isBase: true})
+    if customer and group
+      Schema.customers.update customer._id, $set: {group: group._id}
+      Schema.customerGroups.update group._id, $addToSet: {customers: customer._id }

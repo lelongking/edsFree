@@ -13,15 +13,15 @@ template(name="customerGroupDetailSection")
         th.number(style="width:110px") GIÁ TRỊ PHIẾU
         th.number(style="width:140px") TỔNG TIỀN
     .panel-body.debt-details
-      table.lemon-grid
+      table.lemon-grid(style="cursor: pointer;")
         +customerGroupHeader
         each customerLists
           tr.detail-row(class="{{selected}}")
             td.command.icon-ok-6
             td {{name}}
-            td(style="text-align:center") 15/10/2015
-            td.number 6.250.000 VNĐ
-            td.number 415.300.000 VNĐ
+            td.date {{latestTradingDay}}
+            td.number {{latestTradingTotalCash}}
+            td.number {{debtTotalCash}}
 
 
 

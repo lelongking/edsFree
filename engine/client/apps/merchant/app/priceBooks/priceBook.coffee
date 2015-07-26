@@ -34,7 +34,7 @@ getPriceBook = (priceBookFounds) ->
   priceBookFounds =_.groupBy priceBookFounds, (priceBook) ->
     if priceBook.priceBookType is 0 then 'Cơ Bản'
     else if priceBook.priceBookType is 1 then 'Khách Hàng'
-    else if priceBook.priceBookType is 2 then 'Nhóm Khách Hàng'
+    else if priceBook.priceBookType is 2 then 'Khu Vực - Vùng'
     else if priceBook.priceBookType is 3 then 'Nhà Cung Cấp'
     else if priceBook.priceBookType is 4 then 'Nhóm Nhà Cung Cấp'
 

@@ -56,11 +56,11 @@ lemon.defineHyper Template.priceBookRowDisplay,
 lemon.defineHyper Template.priceBookDefaultRowEdit,
   rendered: ->
     @ui.$editSaleQuality.inputmask "numeric",
-      {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: "  ThungVNĐ", integerDigits:11, rightAlign: false}
+      {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: "  VNĐ", integerDigits:11, rightAlign: false}
     @ui.$editSaleQuality.val Template.currentData().salePrice
 
     @ui.$editImportQuality.inputmask "numeric",
-      {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: " ThungVNĐ", integerDigits:11, rightAlign: false}
+      {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: " VNĐ", integerDigits:11, rightAlign: false}
     @ui.$editImportQuality.val Template.currentData().importPrice
 
     @ui.$editSaleQuality.select()
