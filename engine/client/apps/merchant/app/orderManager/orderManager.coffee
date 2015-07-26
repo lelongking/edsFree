@@ -5,7 +5,7 @@ lemon.defineApp Template.orderManager,
     details: ->
       details = []; orders = Schema.orders.find({
         merchant    : Merchant.getId()
-        orderType   : {$in:[ Enums.getValue('OrderTypes', 'success'), Enums.getValue('OrderTypes', 'fail') ]}
+        orderType   : {$in:[ Enums.getValue('OrderTypes', 'success')]}
         orderStatus : Enums.getValue('OrderStatus', 'finish')
       }).fetch()
       if orders.length > 0

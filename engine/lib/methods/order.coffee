@@ -38,15 +38,15 @@ createTransaction = (customer, order)->
   transactionInsert =
     transactionName : 'Phiếu Bán'
 #      transactionCode :
-#      description     :
+    description      : 'Phiếu Bán'
     transactionType  : Enums.getValue('TransactionTypes', 'customer')
     receivable       : true
     owner            : customer._id
     parent           : order._id
-    beforeDebtBalance: customer.debtCash
+    beforeDebtBalance: customer.debtCash + customer.loanCash
     debtBalanceChange: order.finalPrice
     paidBalanceChange: order.depositCash
-    latestDebtBalance: customer.debtCash + order.finalPrice - order.depositCash
+    latestDebtBalance: customer.debtCash + customer.loanCash +  order.finalPrice - order.depositCash
 
   transactionInsert.dueDay = order.dueDay if order.dueDay
 

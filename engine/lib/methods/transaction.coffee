@@ -6,7 +6,7 @@ Meteor.methods
     else if transactionType is Enums.getValue('TransactionTypes', 'customer')
       owner = Schema.customers.findOne(ownerId)
 
-    transaction = Schema.transactions.findOne({owner: owner._id}, {sort: {'version.createdAt': 1}})
+    transaction = Schema.transactions.findOne({owner: owner._id}, {sort: {'version.createdAt': -1}})
 
     if owner
       ownerUpdate = $set: {allowDelete : false}, $inc:{}
@@ -23,9 +23,7 @@ Meteor.methods
         transactionInsert.transactionName = if receivable then 'Phiếu Chi' else 'Phiếu Thu'
 
       transactionInsert.transactionName = name if name
-#      transactionInsert.description = transactionInsert.transactionName
-#      transactionInsert.description = description if description
-      transactionInsert.description = 'CÔNG NỢ ĐÔNG XUÂN 2014- 2015'
+      transactionInsert.description = description if description
       transactionInsert.parent = transaction.parent if transaction?.parent
 
       paidCash = 0 #paidCash -> tien nhan, debtCash -> tien tra.
@@ -45,7 +43,7 @@ Meteor.methods
         ownerUpdate.$inc.loanCash  = paidCash
         ownerUpdate.$inc.totalCash = paidCash
 
-        transactionInsert.owedCash          = 0
+        transactionInsert.owedCash          = debtCash - paidCash
         transactionInsert.status            = Enums.getValue('TransactionStatuses', 'closed')
         transactionInsert.debtBalanceChange = paidCash
         transactionInsert.paidBalanceChange = debtCash

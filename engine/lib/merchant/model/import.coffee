@@ -104,7 +104,7 @@ Schema.add 'imports', "Import", class Import
       return console.log('Khong tim thay ProductUnit') if !productUnit
 
       price = product.getPrice(productUnitId, @provider, 'import')
-      return console.log('Price not found..') if !price
+      return console.log('Price not found..') if price is undefined
 
       return console.log("Price invalid (#{price})") if price < 0
       return console.log("Quality invalid (#{quality})") if quality < 1

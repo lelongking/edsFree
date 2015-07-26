@@ -63,6 +63,7 @@ findPrice = (priceBookId, priceBookList, priceType = 'sale') ->
     return undefined
   else if priceType is 'import'
     for priceBook in priceBookList
+      console.log priceBook.importPrice, priceBook.priceBook, priceBookId
       return priceBook.importPrice if priceBook.priceBook is priceBookId
     return undefined
 
@@ -101,7 +102,6 @@ Schema.add 'products', "Product", class Product
                 priceFound = findPrice(priceBookOfProvider._id, unit.priceBooks, priceType) if priceBookOfProvider
                 priceFound = findPrice(priceBookOfProviderGroup._id, unit.priceBooks, priceType) if priceBookOfProviderGroup and priceFound is undefined
               priceFound = findPrice(Session.get('priceBookBasic')._id, unit.priceBooks, priceType) if priceFound is undefined
-
       return priceFound
 
     doc.unitCreate = (name, conversion = 1)->
@@ -248,13 +248,14 @@ Schema.add 'products', "Product", class Product
       if @allowDelete
         if Schema.products.remove @_id, callback
           PriceBook.reUpdateByRemoveProductUnit(productUnit._id) for productUnit in @units
+          Schema.productGroups.update @group, $pull: {products: @_id }
 
     doc.productConfirm = ->
       if @status is Enums.getValue('ProductStatuses', 'initialize')
         Schema.products.update @_id, $set:{status: Enums.getValue('ProductStatuses', 'confirmed')}
 
     doc.submitInventory = (inventoryDetails)->
-      importId = Import.insert(null, null, 'Tồn kho đầu kỳ')
+      importId = Import.insert(null,'Tồn kho đầu kỳ', null)
       if importFound = Schema.imports.findOne(importId)
         importFound.addImportDetail(detail._id, detail.quality, detail.expriceDay) for detail in inventoryDetails
         Meteor.call 'importInventory', importFound._id, (error, result) ->

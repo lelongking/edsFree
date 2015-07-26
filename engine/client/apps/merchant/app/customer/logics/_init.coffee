@@ -25,10 +25,22 @@ Apps.Merchant.customerManagementInit.push (scope) ->
       orders = Schema.orders.find({
         buyer     : customerId
         orderType: Enums.getValue('OrderTypes', 'success')
-      }).map((item) -> item.transactions = scope.transactionFind(item._id); item)
+      }).map(
+        (item) ->
+          item.transactions = scope.transactionFind(item._id).fetch()
+          item.transactions[item.transactions.length-1].isLastTransaction = true if item.transactions.length > 0
+          item
+      )
+
       returns = Schema.returns.find({
         owner     : customerId
         importType: 4
-      }).map((item) -> item.transactions = scope.transactionFind(item._id); item)
+      }).map(
+        (item) ->
+          item.transactions = scope.transactionFind(item._id).fetch()
+          item.transactions[item.transactions.length-1].isLastTransaction = true if item.transactions.length > 0
+          item
+      )
+
       _.sortBy orders.concat(returns), (item) -> item.version.createdAt
     else []

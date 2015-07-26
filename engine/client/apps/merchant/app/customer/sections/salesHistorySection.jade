@@ -14,7 +14,7 @@ template(name="customerManagementSalesHistorySection")
         th.number(style="width:175px") THÀNH TIỀN
 
     .panel-body.debt-details
-      table.lemon-grid
+      table.lemon-grid.safe
         tr
           th(style="width:auto")
           th(style="width:50px")
@@ -23,13 +23,13 @@ template(name="customerManagementSalesHistorySection")
           th(style="width:182px")
 
         each oldDebts
-          tr.detail-row.summary-row
-            td.has-commands
+          tr.detail-row
+            td.has-commands(style="border-left: solid 2px #F39C12;")
               .bill-header {{description}}
               .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
-            td.number(colspan="2"): span.blured-color <b>{{formatNumber paidBalanceChange}}</b>
-            td.number(colspan="1"): span.blured-color <b>{{formatNumber debtBalanceChange}}</b>
-            td.summary-total(align="right"): span.s5 <b>{{formatNumber latestDebtBalance}}</b>
+            td.number(colspan="2")
+            td.number
+            td.number(align="right"): span.s5 <b>{{formatNumber latestDebtBalance}}</b>
 
         each allSales
           +customerManagementSaleDetails this

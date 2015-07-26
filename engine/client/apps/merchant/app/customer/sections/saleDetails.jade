@@ -1,8 +1,8 @@
 template(name="customerManagementSaleDetails")
   tr.header-row
-    td.has-commands(colspan="5")
+    td.has-commands(colspan="5")(style="border-left: solid 2px #d35400")
       | &nbsp;
-      .bill-header <b>{{momentFormat version.createdAt "HH:MM:SS DD/MM/YYYY"}}</b> {{description}}
+      .bill-header(style="background-color: #f39c12;") <b>{{momentFormat version.createdAt "DD/MM/YYYY"}}</b> {{description}}
       //.commands
       //  if showDeleteSales
       //    .lemon.rounded.tiny.btn.red.deleteSales: span.icon-minus-4
@@ -15,12 +15,38 @@ template(name="customerManagementSaleDetails")
       td.number {{formatNumber price}}
       td.last-column.number {{formatNumber totalPrice}}
 
+  if discountCash
+    tr.detail-row
+      td.number(colspan="4"): span Tổng phiếu :
+      td.number.receive.border-top: span.s5 <b>{{formatNumber totalPrice}}</b>
+    tr.detail-row
+      td.number(colspan="4"): span Chiết khấu :
+      td.number.paid: span.s5 <b>{{formatNumber discountCash}}</b>
+    if depositCash
+      tr.detail-row
+        td.number(colspan="4"): span Thanh toán :
+        td.number.paid: span.s5 <b>{{formatNumber depositCash}}</b>
+  else
+    if depositCash
+      tr.detail-row
+        td.number(colspan="4"): span Tổng phiếu :
+        td.number.receive.border-top: span.s5 <b>{{formatNumber totalPrice}}</b>
+      tr.detail-row
+        td.number(colspan="4"): span Thanh toán :
+        td.number.paid: span.s5 <b>{{formatNumber depositCash}}</b>
 
   each transactions
-    tr.detail-row.summary-row
+    tr.paid-row.top(class="{{transactionClass}}")
       td.has-commands
-        .bill-header {{description}}
-        //.commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
-      td.number(colspan="2"): span.blured-color <b>{{formatNumber paidBalanceChange}}</b>
-      td.number(colspan="1"): span.blured-color <b>{{formatNumber debtBalanceChange}}</b>
-      td.summary-total(align="right"): span.s5 <b>{{formatNumber latestDebtBalance}}</b>
+        span {{transactionName}} {{description}}
+        if allowDelete
+          .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
+      td.number(colspan="2")
+      td.number.border-top(style="color: #666;" class="{{transactionClass beforeDebtBalance}}"): span.icon-feather-1.s5 <b>{{formatNumberBeforeDebtBalance}}</b>
+      td.number.border-top: span.s5 <b>{{formatNumber owedCash}}</b>
+
+    if isLastTransaction
+      tr.detail-row
+        td.number(colspan="3")
+        td.number.border-top
+        td.number.border-top: span.icon-feather-1.s5 <b>{{formatNumber latestDebtBalance}}</b>

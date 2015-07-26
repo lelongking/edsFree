@@ -84,4 +84,5 @@ Schema.add 'productGroups', "ProductGroup", class ProductGroup
     group = Schema.productGroups.findOne({isBase: true})
     if product and group
       Schema.products.update product._id, $set: {group: group._id}
+      Schema.productGroups.update group, $pull: {products: product._id } if product.group
       Schema.productGroups.update group._id, $addToSet: {products: product._id }
