@@ -2,17 +2,10 @@ simpleSchema.merchants = new SimpleSchema
   creator     : simpleSchema.DefaultCreator
   version     : {type: simpleSchema.Version }
 
-  name:
-    type: String
-    optional: true #optional tren danh nghia, se phai dien vao trong buoc dang ky!
-
-  address:
-    type: String
-    optional: true
-
-  area:
-    type: [String]
-    optional: true
+  name      : type: String  , optional: true #optional tren danh nghia, se phai dien vao trong buoc dang ky!
+  address   : type: String  , optional: true
+  area      : type: [String], optional: true
+  totalCash : type: Number  , defaultValue: 0
 
   merchantProfile:  type: Object, optional: true
   "merchantProfile.isActive"          : type: Boolean , defaultValue: false

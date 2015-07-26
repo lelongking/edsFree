@@ -40,7 +40,10 @@ simpleSchema.customers = new SimpleSchema
 
 Schema.add 'customers', "Customer", class Customer
   @transform: (doc) ->
-    doc.remove = -> Schema.customers.remove(@_id) if @allowDelete
+    doc.remove = ->
+      (if Schema.customers.remove(@_id)
+        totalCash = @debtCash + @loanCash
+        Schema.customerGroups.update @group, {$pull: {customers: @_id }, $inc:{totalCash: -totalCash}} if @group) if @allowDelete
 
   @calculate: ->
     Schema.customers.find({}).forEach(

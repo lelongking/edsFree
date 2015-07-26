@@ -5,6 +5,7 @@ simpleSchema.customerGroups = new SimpleSchema
   staff       : simpleSchema.OptionalString
   priceBook   : simpleSchema.OptionalString
   customers   : type: [String], defaultValue: []
+  totalCash   : type: Number, defaultValue: 0
 
   merchant    : simpleSchema.DefaultMerchant
   allowDelete : simpleSchema.DefaultBoolean()
@@ -23,6 +24,11 @@ simpleSchema.customerGroups = new SimpleSchema
 Schema.add 'customerGroups', "CustomerGroup", class CustomerGroup
   @transform: (doc) ->
     doc.customerCount = -> if @customers then @customers.length else 0
+    doc.reCalculateTotalCash = ->
+      totalCash = 0
+      Schema.customers.find({group: @_id}).forEach((customer) -> totalCash += (customer.debtCash + customer.loanCash))
+      Schema.customerGroups.update @_id, $set:{totalCash: totalCash}
+
     doc.remove = ->
       if @allowDelete
         Schema.customerGroups.remove(@_id)
@@ -41,9 +47,11 @@ Schema.add 'customerGroups', "CustomerGroup", class CustomerGroup
         updateGroupFrom = $pullAll:{customers: customerSelected}
         customerNotExistedCount = (_.difference(@customers, customerSelected)).length
         updateGroupFrom.$set = {allowDelete: true} if customerNotExistedCount is 0 and @isBase is false
+        updateGroupFrom.$inc = {totalCash: -(customerFound.debtCash + customerFound.loanCash)}
         Schema.customerGroups.update @_id, updateGroupFrom
 
         updateGroupTo = $set:{allowDelete: false}, $addToSet:{customers: {$each: customerList}}
+        updateGroupTo.$inc = {totalCash: customerFound.debtCash + customerFound.loanCash}
         Schema.customerGroups.update customerGroupId, updateGroupTo
 
         userUpdate = $set:{}; userUpdate.$set["sessions.customerSelected.#{@_id}"] = []
@@ -84,4 +92,6 @@ Schema.add 'customerGroups', "CustomerGroup", class CustomerGroup
     group = Schema.customerGroups.findOne({isBase: true})
     if customer and group
       Schema.customers.update customer._id, $set: {group: group._id}
-      Schema.customerGroups.update group._id, $addToSet: {customers: customer._id }
+      totalCash = customer.debtCash + customer.loanCash
+      Schema.customerGroups.update customer.group, {$pull: {customers: customer._id }, $inc:{totalCash: -totalCash}} if customer.group
+      Schema.customerGroups.update group._id, {$addToSet: {customers: customer._id }, $inc:{totalCash: totalCash}}

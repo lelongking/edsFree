@@ -64,6 +64,7 @@ createTransaction = (customer, order)->
       debtCash    : customer.debtCash  + order.finalPrice - order.depositCash
       totalCash   : customer.totalCash + order.finalPrice
     Schema.customers.update order.buyer, $set: customerUpdate
+    Schema.customerGroups.update order.group, $inc:{totalCash: (order.finalPrice - order.depositCash)} if customer.group
 
   return transactionId
 
@@ -159,7 +160,9 @@ Meteor.methods
       merchant    : user.profile.merchant
       orderType   : Enums.getValue('OrderTypes', 'initialize')
       orderStatus : Enums.getValue('OrderStatus', 'initialize')
+    console.log orderQuery
     orderFound = Schema.orders.findOne orderQuery
+
     return {valid: false, error: 'order not found!'} if !orderFound
 
     for detail, detailIndex in orderFound.details

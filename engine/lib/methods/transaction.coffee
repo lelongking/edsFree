@@ -56,6 +56,8 @@ Meteor.methods
           Schema.providers. update owner._id, ownerUpdate
         else if transactionType is Enums.getValue('TransactionTypes', 'customer')
           Schema.customers.update owner._id, ownerUpdate
+          totalCash = (ownerUpdate.$inc.debtCash + ownerUpdate.$inc.loanCash)
+          Schema.customerGroups.update owner.group, $inc:{totalCash: totalCash} if owner.group
 
   deleteTransaction: (transactionId) ->
     if transaction = Schema.transactions.findOne transactionId
@@ -86,3 +88,5 @@ Meteor.methods
             Schema.providers.update transaction.owner, $inc: updateOwner
           else if transaction.transactionType is Enums.getValue('TransactionTypes', 'customer')
             Schema.customers.update transaction.owner, $inc: updateOwner
+            if customer = Schema.customers.findOne(transaction.owner)
+              Schema.customerGroups.update customer.group, $inc:{totalCash: (transaction.paidBalanceChange - transaction.debtBalanceChange)} if customer.group

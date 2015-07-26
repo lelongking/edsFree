@@ -203,7 +203,11 @@ Schema.add 'imports', "Import", class Import
     return importId
 
   @findNotSubmitted: ->
-    Schema.imports.find({importType: 0})
+    Schema.imports.find({
+      creator    : Meteor.userId()
+      merchant   : Merchant.getId()
+      importType : Enums.getValue('ImportTypes', 'initialize')
+    })
 
   @setSession: (importId) ->
     Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentImport': importId}})

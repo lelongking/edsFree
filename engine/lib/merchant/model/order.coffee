@@ -269,7 +269,12 @@ Schema.add 'orders', "Order", class Order
     return orderId
 
   @findNotSubmitted: ->
-    Schema.orders.find({orderType: 0})
+    Schema.orders.find({
+      seller      : Meteor.userId()
+      merchant    : Merchant.getId()
+      orderType   : Enums.getValue('OrderTypes', 'initialize')
+      orderStatus : Enums.getValue('OrderStatus', 'initialize')
+    })
 
   @setSession: (orderId) ->
     Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentOrder': orderId}})

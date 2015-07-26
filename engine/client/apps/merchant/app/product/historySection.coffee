@@ -38,7 +38,7 @@ lemon.defineHyper Template.productManagementSalesHistorySection,
     isProduct: -> @product is Session.get("productManagementCurrentProduct")._id
     isInventory: -> Template.parentData().importType is -2
     availableQuality: -> @availableQuality/@conversion
-
+    providerName: -> Template.parentData().importName
 
 
   #  events:
