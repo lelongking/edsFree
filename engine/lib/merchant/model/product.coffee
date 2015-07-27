@@ -71,6 +71,7 @@ Schema.add 'products', "Product", class Product
   @transform: (doc) ->
     doc.unitName = -> doc.units[0].name if doc.units.length > 0
     doc.basicUnit= -> doc.units[0]._id if doc.units.length > 0
+    doc.allQuality = -> doc.qualities[0].inStockQuality if doc.qualities.length > 0
 
     doc.changeName = (name)->
 
@@ -248,7 +249,9 @@ Schema.add 'products', "Product", class Product
       if @allowDelete
         if Schema.products.remove @_id, callback
           PriceBook.reUpdateByRemoveProductUnit(productUnit._id) for productUnit in @units
+
           Schema.productGroups.update @group, $pull: {products: @_id }
+
 
     doc.productConfirm = ->
       if @status is Enums.getValue('ProductStatuses', 'initialize')
