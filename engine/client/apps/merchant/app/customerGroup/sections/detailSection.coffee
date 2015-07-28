@@ -10,7 +10,7 @@ lemon.defineHyper Template.customerGroupDetailSection,
           order = Schema.orders.findOne({
             buyer       : item._id
             orderType   : Enums.getValue('OrderTypes', 'success')
-            orderStatus : Enums.getValue('OrderStatus', 'success')
+            orderStatus : Enums.getValue('OrderStatus', 'finish')
           })
           if order
             item.latestTradingDay       = order.successDate

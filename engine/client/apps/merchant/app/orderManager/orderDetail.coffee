@@ -6,7 +6,8 @@ lemon.defineHyper Template.orderDetailSection,
     buyer: -> Session.get('currentBuyer')
     billNo: -> Helpers.orderCodeCreate(Session.get('currentBuyer')?.billNo ? '0000')
     details: ->
-      isDisabled = true; isDisabled = if @details?.length > 0 then false else true
+      return [] unless @details
+      isDisabled = true; isDisabled = if @details.length > 0 then false else true
       for item in @details
         if product = Schema.products.findOne(item.product)
           item.productName = product.name

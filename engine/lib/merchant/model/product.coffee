@@ -6,6 +6,7 @@ simpleSchema.products = new SimpleSchema
   image           : {type: String ,optional: true}
   group           : {type: String ,optional: true}
   inventoryInitial: simpleSchema.DefaultBoolean(false)
+  lastExpire      : {type: Date   ,optional: true}
 
 
   status      : {type: Number , defaultValue: Enums.getValue('ProductStatuses', 'initialize')}
@@ -21,6 +22,7 @@ simpleSchema.products = new SimpleSchema
   'units.$.conversion' : type: Number
   'units.$.isBase'     : type: Boolean, defaultValue: false
   'units.$.allowDelete': type: Boolean, defaultValue: true
+  'units.$.lastExpire' : type: Date   , optional: true
   'units.$.createdAt'  : simpleSchema.DefaultCreatedAt
 
   'units.$.priceBooks'                      : type: [Object], optional: true
@@ -72,7 +74,6 @@ Schema.add 'products', "Product", class Product
     doc.unitName = -> doc.units[0].name if doc.units.length > 0
     doc.basicUnit= -> doc.units[0]._id if doc.units.length > 0
     doc.allQuality = -> doc.qualities[0].inStockQuality if doc.qualities.length > 0
-
     doc.changeName = (name)->
 
     doc.getPrice = (productUnitId, ownerId, priceType = 'sale') ->

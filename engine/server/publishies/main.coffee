@@ -6,11 +6,11 @@ Meteor.publish null, ->
   return collections if !merchantId
 
   Counts.publish @, 'products', Schema.products.find({merchant: merchantId})
-  Counts.publish @, 'productGroups', Schema.productGroups.find({isBase: false, merchant: merchantId})
+  Counts.publish @, 'productGroups', Schema.productGroups.find({merchant: merchantId})
 
   Counts.publish @, 'customers', Schema.customers.find({merchant: merchantId})
   Counts.publish @, 'customerReturns', Schema.returns.find({returnType: 0, merchant: merchantId})
-  Counts.publish @, 'customerGroups', Schema.customerGroups.find({isBase: false, merchant: merchantId})
+  Counts.publish @, 'customerGroups', Schema.customerGroups.find({merchant: merchantId})
 
   Counts.publish @, 'orders', Schema.orders.find({
     merchant: merchantId
@@ -55,6 +55,6 @@ Meteor.publish null, ->
   collections.push Schema.imports.find()
   collections.push Schema.priceBooks.find()
   collections.push Schema.transactions.find()
-  collections.push Meteor.users.find({'profile.merchant': merchantId}, {fields: {emails:1, profile: 1, sessions: 1} })
+  collections.push Meteor.users.find({'profile.merchant': merchantId}, {fields: {emails:1, profile: 1, sessions: 1, creator: 1} })
 
   return collections

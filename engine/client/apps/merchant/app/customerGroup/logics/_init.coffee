@@ -11,8 +11,7 @@ Apps.Merchant.customerGroupReactive.push (scope) ->
     scope.currentCustomerGroup = customerGroup
     Session.set "currentCustomerGroup", scope.currentCustomerGroup
     Session.set "customerSelectLists", Session.get('mySession').customerSelected?[Session.get('currentCustomerGroup')._id] ? []
-
-
+    $(".changeCustomer").select2("readonly", Session.get("customerSelectLists").length is 0)
 
 Apps.Merchant.customerGroupInit.push (scope) ->
   scope.resetSearchFilter = (template) ->

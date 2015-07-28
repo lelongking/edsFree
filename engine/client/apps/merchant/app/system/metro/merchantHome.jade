@@ -35,89 +35,85 @@ template(name="merchantHome")
                 .app-count {{getPublishedCount 'customerGroups'}}
                 .app-count-description NHÓM
                 span.caption.app-name.bottom.right khách hàng
-              .tile.peter-river
-                //.app-icon.icon-shareable
-                //.app-count 0
-                //.app-count-description
-                span.caption.app-name.bottom.right nhật ký
+              .tile.carrot
+                //.app-icon.icon-flash-3
+                .app-count
+                .app-count-description quản lý
+                span.caption.app-name.bottom.right thu chi
 
               .tile.amethyst.order-management(data-app="sales")
                 //.app-icon.icon-basket
                 .app-count {{getPublishedCount 'orders'}}
-                .app-count-description phiếu tạm
+                .app-count-description phiếu
                 span.caption.app-name.bottom.right bán hàng
-              .tile.pink
-                //.app-icon.icon-reply-outline
-                .app-count {{getPublishedCount 'customerReturns'}}
-                .app-count-description phiếu trong ngày
-                span.caption.app-name.bottom.right trả hàng
+
+              .tile.carrot(data-app="billManager")
+                //.app-icon.icon-award
+                .app-count {{getPublishedCount 'billManagers'}}
+                .app-count-description tình trạng
+                span.caption.app-name.bottom.right phiếu bán
 
 
               .tile.green-sea(data-app="import")
                 //.app-icon.icon-download-outline
                 .app-count {{getPublishedCount 'imports'}}
-                .app-count-description phiếu trong ngày
+                .app-count-description phiếu
                 span.caption.app-name.bottom.right nhập kho
-              .tile.pumpkin
-                //.app-icon.icon-reply-outline
-                .app-count {{getPublishedCount 'providerReturns'}}
-                .app-count-description phiếu trong ngày
-                span.caption.app-name.bottom.right trả hàng
+              .tile.carrot
+                //.app-icon.icon-edit
+                .app-count {{getPublishedCount 'inventories'}}
+                .app-count-description
+                span.caption.app-name.bottom.right kiểm kho
 
               .tile.peter-river(data-app="productGroup")
                 .app-count {{getPublishedCount 'productGroups'}}
                 .app-count-description NHÓM
                 span.caption.app-name.bottom.right sản phẩm
-              .tile.carrot
-                //.app-icon.icon-edit
-                .app-count {{getPublishedCount 'inventories'}}
-                .app-count-description ngày chưa cập nhật
-                span.caption.app-name.bottom.right kiểm kho
+              .tile.amethyst(data-app="priceBook")
+                //.app-icon.icon-chart-pie-outline
+                .app-count {{getPublishedCount 'priceBooks'}}
+                .app-count-description
+                span.caption.app-name.bottom.right bảng giá
 
 
             .tile-group-2
               .tile.peter-river(data-app="staffManagement")
                 //.app-icon.icon-shareable
                 .app-count {{getPublishedCount 'staffs'}}
-                .app-count-description quản lý
+                .app-count-description
                 span.caption.app-name.bottom.right nhân viên
               .tile.peter-river(data-app='merchantOptions')
                 //.app-icon.icon-shareable
-                .app-count 1
-                .app-count-description nhân viên
+                .app-count
+                .app-count-description hệ thống
                 span.caption.app-name.bottom.right tùy chỉnh
 
-              .tile.carrot(data-app="billManager")
-                //.app-icon.icon-award
-                .app-count {{getPublishedCount 'billManagers'}}
-                .app-count-description quản lý
-                span.caption.app-name.bottom.right phiếu bán
+              .tile.pink
+                //.app-icon.icon-reply-outline
+                .app-count {{getPublishedCount 'customerReturns'}}
+                .app-count-description khách hàng
+                span.caption.app-name.bottom.right trả hàng
               .tile.green-sea(data-app="orderManager")
                 //.app-icon.icon-award
                 .app-count {{getPublishedCount 'orderManagers'}}
-                .app-count-description quản lý
-                span.caption.app-name.bottom.right đơn hàng
+                .app-count-description hoàn thành
+                span.caption.app-name.bottom.right phiếu bán
 
-              .tile.lime
-                //.app-icon.icon-truck-1
-                //.app-count {{getPublishedCount 'deliveries'}}
-                //.app-count-description phiếu chờ giao
-                //span.caption.app-name.bottom.right giao hàng
-              .tile.carrot
-                //.app-icon.icon-flash-3
-                .app-count {{getPublishedCount 'orders'}}
-                .app-count-description quản lý
-                span.caption.app-name.bottom.right thu chi
+              .tile.pumpkin
+                //.app-icon.icon-reply-outline
+                .app-count {{getPublishedCount 'providerReturns'}}
+                .app-count-description phiếu
+                span.caption.app-name.bottom.right trả hàng
+              .tile.peter-river
+                //.app-icon.icon-shareable
+                //.app-count 0
+                //.app-count-description
+                span.caption.app-name.bottom.right nhật ký
 
-              .tile.amethyst(data-app="priceBook")
-                //.app-icon.icon-chart-pie-outline
-                .app-count {{getPublishedCount 'priceBooks'}}
-                .app-count-description doanh thu ngày
-                span.caption.app-name.bottom.right bảng giá
-              .tile.amethyst
+              .tile.double.amethyst
                 //.app-icon.icon-chart-pie-outline
                 .app-count {{formatNumber revenueDay}}
-                .app-count-description doanh thu ngày
+                .app-count-description
                 span.caption.app-name.bottom.right thống kê
 
             +metroDecoratorTiles

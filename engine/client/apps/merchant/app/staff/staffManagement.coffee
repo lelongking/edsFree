@@ -36,11 +36,6 @@ lemon.defineApp Template.staffManagement,
       , "staffManagementSearchPeople"
       , 50
 
-    "click .createCustomerBtn": (event, template) ->
-      fullText    = Session.get("staffManagementSearchFilter")
-      staffSearch = Helpers.Searchify(fullText)
-      scope.createNewCustomer(template, staffSearch)
-
     "click .inner.caption": (event, template) ->
       Meteor.users.update(userId, {$set: {'sessions.currentStaff': @_id}}) if userId = Meteor.userId()
 

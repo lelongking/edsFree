@@ -19,14 +19,14 @@ template(name="productGroupDetailSection")
           tr.detail-row(class="{{selected}}")
             td.command.icon-ok-6
             td {{name}}
-            td(style="text-align:center") 15/10/2015
-            td(style="text-align:center") 30 Ngày
-            td.number 100 Thùng - 100 Chai
+            td(style="text-align:center") {{momentFormat lastExpire 'DD/MM/YYYY'}}
+            td(style="text-align:center") {{lastExpireDays}}
+            td.number {{allQuality}} {{unitName}}
 
-    .panel-footer
-      .right-float
-        span.s5 TỔNG NỢ:
-        span.s3 <b>{{formatNumber finalDebtBalance}}</b> VNĐ
+    //.panel-footer
+    //  .right-float
+    //    span.s5 TỔNG NỢ:
+    //    span.s3 <b>{{formatNumber finalDebtBalance}}</b> VNĐ
         //h3 Tổng tiền: {{formatNumber totalPurchases}} VNĐ
 
 template(name="productGroupHeader")

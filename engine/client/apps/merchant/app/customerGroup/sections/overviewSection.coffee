@@ -14,6 +14,8 @@ lemon.defineApp Template.customerGroupOverviewSection,
   rendered: ->
     scope.overviewTemplateInstance = @
     @ui.$customerGroupName.autosizeInput({space: 10})
+    changeCustomerReadonly = if Session.get("customerSelectLists") then Session.get("customerSelectLists").length is 0 else true
+    $(".changeCustomer").select2("readonly", changeCustomerReadonly)
 
 
   events:

@@ -22,6 +22,7 @@
 
   // Application name (No spaces)
   "appName": "edsPro",
+//  "appName": "edsChauA",
 //  "appName": "lemonEds",
 
   // Location of app (local directory)
@@ -30,11 +31,12 @@
   // Configure environment
   "env": {
 //    "METEOR_ENV": "development",
-    "PORT": 3003,
+//    "PORT": 3003,
+    "PORT": 3006,
     "UPSTART_UID": "meteoruser",
 //    "PORT": 80,
     "ROOT_URL": "http://gera.vn",
-//    "MONGO_URL": "mongodb://localhost:27017/edsBeta",
+//    "MONGO_URL": "mongodb://localhost:27017/edsChaua",
     "MONGO_URL": "mongodb://localhost:27017/edsFreemium",
     "MAIL_URL": "smtp://thienbantech@gmail.com:thienban2014@stmp.gmail.com:465/"
   },

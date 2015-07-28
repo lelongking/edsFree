@@ -7,6 +7,16 @@ Apps.Merchant.staffManagementReactive.push (scope) ->
     scope.currentStaff = Meteor.users.findOne(staffId)
     Session.set("staffManagementCurrentStaff", scope.currentStaff)
 
+  staff = Session.get('staffManagementCurrentStaff')
+  if staff
+    if staff.creator
+      $(".roleSelect").select2("readonly", false)
+    else
+      $(".roleSelect").select2("readonly", true)
+  else
+    $(".roleSelect").select2("readonly", true)
+    $(".genderSelect").select2("readonly", true)
+
 Apps.Merchant.staffManagementInit.push (scope) ->
   scope.staffManagementCreationMode = ->
     if Session.get("staffManagementSearchFilter").length > 0

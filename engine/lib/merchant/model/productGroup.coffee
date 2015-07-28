@@ -86,3 +86,13 @@ Schema.add 'productGroups', "ProductGroup", class ProductGroup
       Schema.products.update product._id, $set: {group: group._id}
       Schema.productGroups.update group, $pull: {products: product._id } if product.group
       Schema.productGroups.update group._id, $addToSet: {products: product._id }
+
+  @reAddProduct: ->
+    if productGroup = Schema.productGroups.findOne({isBase: true, merchant: Merchant.getId()})
+      productList = []
+      Schema.products.find({merchant: Merchant.getId(), group: {$exists: false}}).forEach(
+        (product) ->
+          productList.push(product._id)
+          Schema.products.update product._id, $set: {group: productGroup._id}
+      )
+      Schema.productGroups.update productGroup._id, $addToSet:{products: {$each:productList}}

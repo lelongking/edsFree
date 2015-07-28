@@ -11,7 +11,7 @@ Apps.Merchant.staffManagementInit.push (scope) ->
     initSelection: (element, callback) -> callback findPermissionType(Session.get('staffManagementCurrentStaff')?.profile.roles)
     formatSelection: formatDefaultSearch
     formatResult: formatDefaultSearch
-    placeholder: 'CHỌN SẢN PTGD'
+    placeholder: 'CHỌN OHÂN QUYỀN'
     minimumResultsForSearch: -1
     changeAction: (e) -> Meteor.users.update(Session.get("staffManagementCurrentStaff")._id, $set:{'profile.roles': e.added.value})
     reactiveValueGetter: -> findPermissionType(Session.get('staffManagementCurrentStaff')?.profile.roles)

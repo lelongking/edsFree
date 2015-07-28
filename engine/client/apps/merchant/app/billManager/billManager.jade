@@ -10,7 +10,7 @@ template(name="billManager")
 
       .dual-addon
         .search-filter.icon-search-8
-          input(name='searchFilter' type="text" placeholder="tìm sản phẩm..." value="{{productTextSearch}}")
+          input(name='searchFilter' type="text")
 
         .nano: .nano-content: .group-wrapper
           each allBills
@@ -22,11 +22,7 @@ template(name="billManager")
               span.right-info {{momentFormat version.createdAt 'DD/MM/YYYY'}}
 
 
-
-
 template(name="billThumbnailHeader1")
-  span.title CHỜ
-  span.icon.icon-truck-1 7 ngày
+  span.icon-truck-1 Trong 7 ngày
 template(name="billThumbnailHeader2")
-  span.title ĐỎ
-  span.icon.icon-award quá 7 ngày
+  span.icon-award Quá 7 ngày

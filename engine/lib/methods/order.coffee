@@ -343,6 +343,7 @@ Meteor.methods
       orderUpdate = $set:
         orderStatus : Enums.getValue('OrderStatus', 'finish')
         transaction : transactionId
+        successDate : new Date()
       Schema.orders.update orderFound._id, orderUpdate
 
     else

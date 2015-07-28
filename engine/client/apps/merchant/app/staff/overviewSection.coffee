@@ -17,6 +17,7 @@ lemon.defineHyper Template.staffManagementOverviewSection,
   rendered: ->
     scope.overviewTemplateInstance = @
     @ui.$staffName.autosizeInput({space: 10})
+    $(".roleSelect").select2("readonly", Template.currentData().creator is undefined)
 
   events:
 #    "click .avatar": (event, template) -> template.find('.avatarFile').click()

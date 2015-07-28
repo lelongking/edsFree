@@ -42,7 +42,7 @@ Template.registerHelper 'pad', (number) -> if number < 10 then '0' + number else
 Template.registerHelper 'round', (number) -> Math.round(number)
 Template.registerHelper 'momentFormat', (date, format) ->
   if date then moment(date).format(format)
-  else '--/--/----'
+  else '---/---/------'
 Template.registerHelper 'momentCalendar', (date) -> moment(date).calendar()
 
 Template.registerHelper 'productNameFromId', (id) -> Schema.products.findOne(id)?.name
