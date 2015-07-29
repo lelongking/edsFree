@@ -6,16 +6,20 @@ Apps.Merchant.staffManagementReactive.push (scope) ->
   if staffId = Session.get("mySession")?.currentStaff
     scope.currentStaff = Meteor.users.findOne(staffId)
     Session.set("staffManagementCurrentStaff", scope.currentStaff)
+    Session.set "customerOfStaffSelectLists", Session.get('mySession').customerOfStaffSelected[staffId] ? []
 
-  staff = Session.get('staffManagementCurrentStaff')
-  if staff
-    if staff.creator
-      $(".roleSelect").select2("readonly", false)
-    else
-      $(".roleSelect").select2("readonly", true)
+  if staff = Session.get('staffManagementCurrentStaff')
+    $(".roleSelect").select2("readonly", unless staff.creator then true else false)
   else
     $(".roleSelect").select2("readonly", true)
     $(".genderSelect").select2("readonly", true)
+    $(".changeCustomer").select2("readonly", true)
+
+  if Session.get('customerOfStaffSelectLists')
+    $(".changeCustomer").select2("readonly", Session.get('customerOfStaffSelectLists').length < 1)
+
+  if countCustomer = Session.get('staffManagementCustomerListNotOfStaffSelect')
+    Session.set('addCustomerToStaffIsDisabled', if countCustomer.length > 0 then '' else 'disabled')
 
 Apps.Merchant.staffManagementInit.push (scope) ->
   scope.staffManagementCreationMode = ->

@@ -4,6 +4,7 @@ simpleSchema.customers = new SimpleSchema
   nameSearch  : simpleSchema.searchSource('name')
   description : simpleSchema.OptionalString
   group       : simpleSchema.OptionalString
+  staff       : simpleSchema.OptionalString
 
   paidCash  : simpleSchema.DefaultNumber()
   debtCash  : simpleSchema.DefaultNumber()

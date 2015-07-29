@@ -1,9 +1,35 @@
 formatGender         = (item) -> "#{item.display}" if item
 formatDefaultSearch  = (item) -> "#{item.display}" if item
+formatCustomerSearch = (item) -> "#{item.profile.name}" if item
 findPermissionType   = (permissionId)-> _.findWhere(Enums.PermissionType, {value: permissionId}) ? 'skyReset'
 
 Enums = Apps.Merchant.Enums
 Apps.Merchant.staffManagementInit.push (scope) ->
+  scope.customerGroupSelects =
+    query: (query) -> query.callback
+      results: Meteor.users.find({_id: {$not: Session.get("mySession").currentStaff}}).fetch()
+      text: 'name'
+    initSelection: (element, callback) -> callback 'skyReset'
+    formatSelection: formatCustomerSearch
+    formatResult: formatCustomerSearch
+    id: '_id'
+    placeholder: 'CHỌN NHÓM'
+    changeAction: (e) ->
+      formStaff = Session.get('staffManagementCurrentStaff')
+      toStaff   = e.added
+      customerList = Session.get('customerOfStaffSelectLists')
+
+      if formStaff and toStaff and customerList.length > 0
+        checkCustomerList = []
+        for customerId in customerList
+          if customer = Schema.customers.findOne({_id:customerId, staff: formStaff._id})
+            checkCustomerList.push(customer._id)
+            Schema.customers.update customer._id, $set:{staff: toStaff._id}
+
+        Meteor.users.update(formStaff._id, $pullAll:{'profile.customers': customerList })
+        Meteor.users.update(toStaff._id, $addToSet:{'profile.customers': {$each: checkCustomerList}}) if checkCustomerList.length > 0
+    reactiveValueGetter: -> 'skyReset'
+
   scope.roleSelectOptions =
     query: (query) -> query.callback
       results: Enums.PermissionType
@@ -11,32 +37,10 @@ Apps.Merchant.staffManagementInit.push (scope) ->
     initSelection: (element, callback) -> callback findPermissionType(Session.get('staffManagementCurrentStaff')?.profile.roles)
     formatSelection: formatDefaultSearch
     formatResult: formatDefaultSearch
-    placeholder: 'CHỌN OHÂN QUYỀN'
+    placeholder: 'CHỌN PHÂN QUYỀN'
     minimumResultsForSearch: -1
     changeAction: (e) -> Meteor.users.update(Session.get("staffManagementCurrentStaff")._id, $set:{'profile.roles': e.added.value})
     reactiveValueGetter: -> findPermissionType(Session.get('staffManagementCurrentStaff')?.profile.roles)
-
-#  scope.roleSelectOptions =
-#    query: (query) -> query.callback
-#      results: Schema.roles.find().fetch()
-#    initSelection: (element, callback) -> callback Session.get('currentRoleSelection')
-#    changeAction: (e) ->
-#      currentRoles = Session.get('currentRoleSelection')
-#      currentRoles = currentRoles ? []
-#
-#      currentRoles.push e.added if e.added
-#      if e.removed
-#        removedItem = _.findWhere(currentRoles, {_id: e.removed._id})
-#        currentRoles.splice currentRoles.indexOf(removedItem), 1
-#
-#      Session.set('currentRoleSelection', currentRoles)
-#      Schema.userProfiles.update Session.get("staffManagementCurrentStaff")._id, $set: {roles: _.pluck(currentRoles, '_id')}
-#    reactiveValueGetter: -> Session.get('currentRoleSelection')
-#    formatSelection: formatRoleSelect
-#    formatResult: formatRoleSelect
-#    others:
-#      multiple: true
-#      maximumSelectionSize: 3
 
   scope.genderSelectOptions =
     query: (query) -> query.callback

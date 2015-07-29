@@ -30,6 +30,7 @@ startTrackingValue = ($element, context) ->
 isValueValid = (context, value) ->
     value >= context.data.options.reactiveMin() &&
     value <= context.data.options.reactiveMax()
+
 lemon.defineWidget Template.iSpinEdit,
   helpers:
     reactiveValue: -> Template.instance().data.options.reactiveValue()

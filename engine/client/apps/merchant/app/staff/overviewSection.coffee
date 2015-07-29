@@ -13,11 +13,13 @@ lemon.defineHyper Template.staffManagementOverviewSection,
 
     genderSelectOptions: -> scope.genderSelectOptions
     roleSelectOptions: -> scope.roleSelectOptions
+    customerGroupSelects: -> scope.customerGroupSelects
 
   rendered: ->
     scope.overviewTemplateInstance = @
     @ui.$staffName.autosizeInput({space: 10})
     $(".roleSelect").select2("readonly", Template.currentData().creator is undefined)
+    $(".changeCustomer").select2("readonly", Template.currentData().creator is undefined)
 
   events:
 #    "click .avatar": (event, template) -> template.find('.avatarFile').click()
@@ -47,3 +49,20 @@ lemon.defineHyper Template.staffManagementOverviewSection,
         if staff.allowDelete and staff._id isnt Session.get('myProfile')._id
           Schema.userProfiles.remove staff._id
           UserSession.set('currentStaffManagementSelection', Schema.userProfiles.findOne()?._id ? '')
+
+    "click .addCustomerToStaff": (event, template)->
+      if Session.get('showCustomerListNotOfStaff')
+        staffId      = Session.get("staffManagementCurrentStaff")._id
+        customerList = Session.get('staffManagementCustomerListNotOfStaffSelect')
+        list = []
+
+        if staffId and customerList?.length > 0
+          for customerId in customerList
+            if customer = Schema.customers.findOne({_id:customerId, staff: {$exists: false} })
+              list.push(customer._id)
+              Schema.customers.update customer._id, $set:{staff: staffId}
+
+          if list.length > 0
+            Meteor.users.update staffId, $addToSet:{'profile.customers': {$each: list}}
+            Session.set('showCustomerListNotOfStaff', false)
+            Session.set('staffManagementCustomerListNotOfStaffSelect', [])

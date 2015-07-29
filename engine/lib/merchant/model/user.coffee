@@ -37,6 +37,10 @@ userProfile = new SimpleSchema
     type: String
     optional: true
 
+  customers:
+    type: [String]
+    optional: true
+
 userSession = new SimpleSchema
   currentStaff          : simpleSchema.OptionalString
   currentProduct        : simpleSchema.OptionalString
@@ -51,9 +55,10 @@ userSession = new SimpleSchema
   currentCustomerReturn : simpleSchema.OptionalString
   currentProviderReturn : simpleSchema.OptionalString
 
-  customerSelected      : type: Object, blackbox: true, optional: true
-  productSelected       : type: Object, blackbox: true, optional: true
-  productUnitSelected   : type: Object, blackbox: true, optional: true
+  customerSelected        : type: Object, blackbox: true, optional: true
+  productSelected         : type: Object, blackbox: true, optional: true
+  productUnitSelected     : type: Object, blackbox: true, optional: true
+  customerOfStaffSelected : type: Object, blackbox: true, optional: true
 
 Meteor.users.attachSchema new SimpleSchema
   username:

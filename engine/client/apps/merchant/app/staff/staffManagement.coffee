@@ -37,29 +37,8 @@ lemon.defineApp Template.staffManagement,
       , 50
 
     "click .inner.caption": (event, template) ->
-      Meteor.users.update(userId, {$set: {'sessions.currentStaff': @_id}}) if userId = Meteor.userId()
-
-
-#    "keypress input[name='searchFilter']": (event, template)->
-#      scope.createStaff(template) if event.which is 13 and Session.get("staffManagementCreationMode")
-#    "click .createStaffBtn": (event, template) -> scope.createStaff(template)
-#
-#    "click .inner.caption": (event, template) ->
-#      if Session.get("mySession")
-#        Schema.userSessions.update(Session.get("mySession")._id, {$set: {currentStaffManagementSelection: @_id}})
-#        limitExpand = Session.get("mySession").limitExpandSaleAndCustomSale ? 5
-#        if staff = Schema.userProfiles.findOne(@_id)
-##          countRecords = Schema.customSales.find({buyer: staff._id}).count()
-##          countRecords += Schema.sales.find({buyer: staff._id}).count() if staff.customSaleModeEnabled is false
-##          if countRecords is 0
-##            Meteor.subscribe('staffManagementData', staff._id, 0, limitExpand)
-##            Session.set("staffManagementDataMaxCurrentRecords", limitExpand)
-##          else
-##            Session.set("staffManagementDataMaxCurrentRecords", countRecords)
-#          Session.set("staffManagementCurrentStaff", staff)
-#
-#        Session.set("allowCreateCustomSale", false)
-#        Session.set("allowCreateTransactionOfCustomSale", false)
-#
-#        Session.set('currentRoleSelection', Schema.roles.find({_id: $in: staff.roles ? []}).fetch())
-#
+      if userId = Meteor.userId()
+        Meteor.users.update(userId, {$set: {'sessions.currentStaff': @_id}})
+#        $(".changeCustomer").select2("readonly", Meteor.users.findOne(@_id).sessions.customerOfStaffSelected.length < 1)
+        Session.set('showCustomerListNotOfStaff', false)
+        Session.set('staffManagementCustomerListNotOfStaffSelect', [])

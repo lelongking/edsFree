@@ -3,11 +3,11 @@
   localSearch: true
 
 @CustomerSearch.fetchData =(searchText, options, callback) ->
-  selector = {}; options = {sort: {name: 1}, limit: 20}
+  selector = {}; options = {sort: {nameSearch: 1}, limit: 20}
   if(searchText)
     regExp = Helpers.BuildRegExp(searchText);
     selector = {$or: [
-      {name: regExp}
+      {nameSearch: regExp}
     ]}
   callback(false, Schema.customers.find(selector, options).fetch())
 

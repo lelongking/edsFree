@@ -1,4 +1,4 @@
-template(name="customerOfStaffSection")
+template(name="customerNotOfStaffSection")
   .section.panel.panel-default.printable-area
     .panel-heading
       .show-on-print
@@ -8,7 +8,7 @@ template(name="customerOfStaffSection")
 
       table.lemon-grid: tr
         th(style="width:20px")
-        th(style="width:auto") DANH SÁCH KHÁCH HÀNG CỦA NHÂN VIÊN
+        th(style="width:auto") DANH SÁCH KHÁCH HÀNG MỚI
         th.date(style="width:110px")
         th.number(style="width:110px")
         th.number(style="width:140px")
@@ -20,12 +20,12 @@ template(name="customerOfStaffSection")
           tr.detail-row(class="{{selected}}")
             td.command.icon-ok-6.hide-on-print
             td {{name}}
-            td.date
-            td.number
-            td.number
+            td.date {{latestTradingDay}}
+            td.number {{latestTradingTotalCash}}
+            td.number {{debtTotalCash}}
 
 
-template(name="customerOfStaffGroupHeader")
+template(name="customerOfNotStaffGroupHeader")
   tr
     th.hide-on-print(style="width:30px")
     th(style="width:auto")

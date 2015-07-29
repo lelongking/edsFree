@@ -16,9 +16,17 @@ template(name="staffManagementOverviewSection")
 
     .panel-footer.has-details
       .editor-row
+        .editor-wrapper(style="width: 200px")
+          span.ilabel.optional chuyển khách hàng
+          +iSelect(options=customerGroupSelects class="field changeCustomer")
         .editor-wrapper(style="width: 300px")
           span.ilabel.optional phân quyền
           +iSelect(options=roleSelectOptions class="field roleSelect")
         .editor-wrapper(style="width: 90px")
           span.ilabel.optional giới tính
           +iSelect(options=genderSelectOptions class="field genderSelect")
+
+        if getSession 'showCustomerListNotOfStaff'
+          .editor-wrapper.pull-right
+            button.flat.btn.lime.pull-right.addCustomerToStaff(
+            type='submit' style="margin-right: 5px;" class="{{getSession 'addCustomerToStaffIsDisabled'}}") THÊM
