@@ -15,7 +15,11 @@ lemon.defineHyper Template.productManagementSalesHistorySection,
         )
 
         orderOption   = sort: {orderType: Enums.getValue('OrderTypes', 'success') , 'version.createdAt': -1}
-        orderSelector = {'details.product': product._id}
+        orderSelector = {
+          'details.product': product._id
+          orderType        : Enums.getValue('OrderTypes', 'success')
+          orderStatus      : Enums.getValue('OrderStatus', 'finish')
+        }
         allOrders = Schema.orders.find(orderSelector, orderOption).map(
           (order) ->
             for detail in order.details

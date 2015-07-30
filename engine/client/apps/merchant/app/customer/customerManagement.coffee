@@ -10,8 +10,15 @@ lemon.defineApp Template.customerManagement,
       if(searchText)
         regExp = Helpers.BuildRegExp(searchText);
         selector = {$or: [
-          {name: regExp}
+          {nameSearch: regExp}
         ]}
+
+      if Session.get('myProfile')?.roles is 'seller'
+        if(searchText)
+          selector.$or[0]._id = $in: Session.get('myProfile').customers
+        else
+          selector = {_id: {$in: Session.get('myProfile').customers}}
+
       scope.customerLists = Schema.customers.find(selector, options).fetch()
       scope.customerLists
 
@@ -42,7 +49,7 @@ lemon.defineApp Template.customerManagement,
 
     "click .list .doc-item": (event, template) ->
       if userId = Meteor.userId()
-        Meteor.subscribe('customerManagementCurrentCustomerData', @_id)
+#        Meteor.subscribe('customerManagementCurrentCustomerData', @_id)
         Meteor.users.update(userId, {$set: {'sessions.currentCustomer': @_id}})
 
 #    "click .excel-customer": (event, template) -> $(".excelFileSource").click()

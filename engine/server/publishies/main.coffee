@@ -5,6 +5,7 @@ Meteor.publish null, ->
   merchantId = Meteor.users.findOne(@userId)?.profile?.merchant
   return collections if !merchantId
 
+  #all
   Counts.publish @, 'products', Schema.products.find({merchant: merchantId})
   Counts.publish @, 'productGroups', Schema.productGroups.find({merchant: merchantId})
 
@@ -12,10 +13,7 @@ Meteor.publish null, ->
   Counts.publish @, 'customerReturns', Schema.returns.find({returnType: 0, merchant: merchantId})
   Counts.publish @, 'customerGroups', Schema.customerGroups.find({merchant: merchantId})
 
-  Counts.publish @, 'orders', Schema.orders.find({
-    merchant: merchantId
-    orderType:{$in: [0]}
-  })
+
   Counts.publish @, 'deliveries', Schema.orders.find({orderType:2, 'delivery.status': {$in: [1,2,3,4]}, merchant: merchantId})
 
   Counts.publish @, 'providers', Schema.providers.find({merchant: merchantId})
@@ -26,8 +24,20 @@ Meteor.publish null, ->
 
   Counts.publish @, 'staffs', Meteor.users.find({'profile.merchant': merchantId})
   Counts.publish @, 'priceBooks', Schema.priceBooks.find({merchant: merchantId})
-  Counts.publish @, 'billManagers', Schema.orders.find({
-    orderType   : Enums.getValue('OrderTypes', 'tracking')
+
+  orderQuery =
+    merchant    : merchantId
+    orderType   : Enums.getValue('OrderTypes', 'initialize')
+    orderStatus : Enums.getValue('OrderStatus', 'initialize')
+  Counts.publish @, 'orders', Schema.orders.find(orderQuery)
+
+  billQuery =
+    merchant    : merchantId
+    orderType   : {$in:[
+      Enums.getValue('OrderTypes', 'tracking')
+      Enums.getValue('OrderTypes', 'success')
+      Enums.getValue('OrderTypes', 'fail')
+    ]}
     orderStatus : {$in:[
       Enums.getValue('OrderStatus', 'sellerConfirm')
       Enums.getValue('OrderStatus', 'accountingConfirm')
@@ -36,13 +46,28 @@ Meteor.publish null, ->
       Enums.getValue('OrderStatus', 'fail')
       Enums.getValue('OrderStatus', 'importConfirm')
     ]}
+  Counts.publish @, 'billManagers', Schema.orders.find(billQuery)
+
+  orderFinishQuery =
     merchant    : merchantId
-  })
-  Counts.publish @, 'orderManagers', Schema.orders.find({
     orderType   : Enums.getValue('OrderTypes', 'success')
     orderStatus : Enums.getValue('OrderStatus', 'finish')
-    merchant    : merchantId
-  })
+  Counts.publish @, 'orderManagers', Schema.orders.find(orderFinishQuery)
+
+  # Giao dien hien thi cho Nhan vien
+  Counts.publish @, 'customerOfStaff', Schema.customers.find({staff: @userId, merchant: merchantId})
+
+  orderQuery.creator = @userId
+  Counts.publish @, 'orderOfStaff', Schema.orders.find(orderQuery)
+
+  billQuery.creator = @userId
+  Counts.publish @, 'billManagerOfStaff', Schema.orders.find(billQuery)
+
+  orderFinishQuery.creator = @userId
+  Counts.publish @, 'orderHistoryOfStaff', Schema.orders.find(orderFinishQuery)
+
+
+
 
   collections.push Schema.merchants.find({_id: merchantId})
   collections.push Schema.products.find()

@@ -24,7 +24,8 @@ Apps.Merchant.customerManagementInit.push (scope) ->
     if customerId = Session.get("customerManagementCustomerId")
       orders = Schema.orders.find({
         buyer     : customerId
-        orderType: Enums.getValue('OrderTypes', 'success')
+        orderType  : Enums.getValue('OrderTypes', 'success')
+        orderStatus: Enums.getValue('OrderStatus', 'finish')
       }).map(
         (item) ->
           item.transactions = scope.transactionFind(item._id).fetch()

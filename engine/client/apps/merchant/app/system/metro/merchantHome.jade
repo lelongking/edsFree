@@ -7,116 +7,187 @@ template(name="merchantHome")
           //.home-eds-text THIEN BAN
           //.home-separator-logo
 
-          .metro-inner-wrapper
-            +metroDecoratorTiles
-            .tile-group-2
-              .tile.quatro.lime.overlay.customer-management(class="{{metroUnLocker Summary.data.staffCount}}" data-app='customerManagement')
-                .canvas-wrapper.double: .canvas
-                  //.app-icon.icon-group
-                  .app-count {{getPublishedCount 'customers'}}
-                  .app-count-description tất cả
+          if showMetroBySeller
+            .metro-inner-wrapper
+              .tile-group-6
+                each decoratorIterator
+                  .tile.decoration
+
+              .tile-group-3
+                .tile.amethyst.order-management(data-app="sales")
+                  //.app-icon.icon-basket
+                  .app-count {{getPublishedCount 'orderOfStaff'}}
+                  .app-count-description phiếu
+                  span.caption.app-name.bottom.right bán hàng
+                .tile.carrot(data-app="billManager")
+                  //.app-icon.icon-award
+                  .app-count {{getPublishedCount 'billManagerOfStaff'}}
+                  .app-count-description tình trạng
+                  span.caption.app-name.bottom.right phiếu bán
+                .tile.green-sea(data-app="orderManager")
+                  //.app-icon.icon-award
+                  .app-count {{getPublishedCount 'orderHistoryOfStaff'}}
+                  .app-count-description hoàn thành
+                  span.caption.app-name.bottom.right phiếu bán
+
+                .tile.double.lime.overlay.customer-management(class="{{metroUnLocker Summary.data.staffCount}}" data-app='customerManagement')
+                  .canvas-wrapper.double: .canvas
+                    //.app-icon.icon-group
+                    .app-count {{getPublishedCount 'customerOfStaff'}}
+                    .app-count-description tất cả
+                    span.caption.app-name.bottom.right khách hàng
+                .tile.carrot(data-app="customerGroup")
+                  //.app-icon.icon-shareable
+                  .app-count {{getPublishedCount 'customerGroups'}}
+                  .app-count-description NHÓM
                   span.caption.app-name.bottom.right khách hàng
-              .tile.double.pumpkin.overlay.distributor-management(data-app="providerManagement")
-                .canvas-wrapper: .canvas
-                  //.app-icon.icon-building
-                  .app-count {{getPublishedCount 'providers'}}
-                  .app-count-description tất cả
-                  span.caption.app-name.bottom.right nhà cung cấp
-              .tile.double.belize-hole.overlay.product-management(data-app="productManagement")
-                .canvas-wrapper: .canvas
-                  //.app-icon.icon-cubes
-                  .app-count {{getPublishedCount 'products'}}
-                  .app-count-description tất cả
+
+                .tile.double.belize-hole.overlay.product-management(data-app="productManagement")
+                  .canvas-wrapper: .canvas
+                    //.app-icon.icon-cubes
+                    .app-count {{getPublishedCount 'products'}}
+                    .app-count-description tất cả
+                    span.caption.app-name.bottom.right sản phẩm
+                .tile.peter-river(data-app="productGroup")
+                  .app-count {{getPublishedCount 'productGroups'}}
+                  .app-count-description NHÓM
                   span.caption.app-name.bottom.right sản phẩm
 
-            .tile-group-2
-              .tile.carrot(data-app="customerGroup")
-                //.app-icon.icon-shareable
-                .app-count {{getPublishedCount 'customerGroups'}}
-                .app-count-description NHÓM
-                span.caption.app-name.bottom.right khách hàng
-              .tile.carrot
-                //.app-icon.icon-flash-3
-                .app-count
-                .app-count-description quản lý
-                span.caption.app-name.bottom.right thu chi
+                .tile.amethyst
+                  //.app-icon.icon-chart-pie-outline
+                  .app-count
+                  .app-count-description
+                  span.caption.app-name.bottom.right thống kê
+                .tile.peter-river
+                  //.app-icon.icon-shareable
+                  //.app-count 0
+                  //.app-count-description
+                  span.caption.app-name.bottom.right nhật ký
+                .tile.peter-river(data-app='merchantOptions')
+                  //.app-icon.icon-shareable
+                  .app-count
+                  .app-count-description hệ thống
+                  span.caption.app-name.bottom.right tùy chỉnh
 
-              .tile.amethyst.order-management(data-app="sales")
-                //.app-icon.icon-basket
-                .app-count {{getPublishedCount 'orders'}}
-                .app-count-description phiếu
-                span.caption.app-name.bottom.right bán hàng
-
-              .tile.carrot(data-app="billManager")
-                //.app-icon.icon-award
-                .app-count {{getPublishedCount 'billManagers'}}
-                .app-count-description tình trạng
-                span.caption.app-name.bottom.right phiếu bán
+              .tile-group-6
+                each decoratorIterator
+                  .tile.decoration
 
 
-              .tile.green-sea(data-app="import")
-                //.app-icon.icon-download-outline
-                .app-count {{getPublishedCount 'imports'}}
-                .app-count-description phiếu
-                span.caption.app-name.bottom.right nhập kho
-              .tile.carrot
-                //.app-icon.icon-edit
-                .app-count {{getPublishedCount 'inventories'}}
-                .app-count-description
-                span.caption.app-name.bottom.right kiểm kho
+          if showMetroByAdmin
+            .metro-inner-wrapper
+              +metroDecoratorTiles
 
-              .tile.peter-river(data-app="productGroup")
-                .app-count {{getPublishedCount 'productGroups'}}
-                .app-count-description NHÓM
-                span.caption.app-name.bottom.right sản phẩm
-              .tile.amethyst(data-app="priceBook")
-                //.app-icon.icon-chart-pie-outline
-                .app-count {{getPublishedCount 'priceBooks'}}
-                .app-count-description
-                span.caption.app-name.bottom.right bảng giá
+              .tile-group-2
+                .tile.quatro.lime.overlay.customer-management(class="{{metroUnLocker Summary.data.staffCount}}" data-app='customerManagement')
+                  .canvas-wrapper.double: .canvas
+                    //.app-icon.icon-group
+                    .app-count {{getPublishedCount 'customers'}}
+                    .app-count-description tất cả
+                    span.caption.app-name.bottom.right khách hàng
+                .tile.double.pumpkin.overlay.distributor-management(data-app="providerManagement")
+                  .canvas-wrapper: .canvas
+                    //.app-icon.icon-building
+                    .app-count {{getPublishedCount 'providers'}}
+                    .app-count-description tất cả
+                    span.caption.app-name.bottom.right nhà cung cấp
+                .tile.double.belize-hole.overlay.product-management(data-app="productManagement")
+                  .canvas-wrapper: .canvas
+                    //.app-icon.icon-cubes
+                    .app-count {{getPublishedCount 'products'}}
+                    .app-count-description tất cả
+                    span.caption.app-name.bottom.right sản phẩm
+
+              .tile-group-2
+                .tile.carrot(data-app="customerGroup")
+                  //.app-icon.icon-shareable
+                  .app-count {{getPublishedCount 'customerGroups'}}
+                  .app-count-description NHÓM
+                  span.caption.app-name.bottom.right khách hàng
+                .tile.carrot
+                  //.app-icon.icon-flash-3
+                  .app-count
+                  .app-count-description quản lý
+                  span.caption.app-name.bottom.right thu chi
+
+                .tile.amethyst.order-management(data-app="sales")
+                  //.app-icon.icon-basket
+                  .app-count {{getPublishedCount 'orders'}}
+                  .app-count-description phiếu
+                  span.caption.app-name.bottom.right bán hàng
+
+                .tile.carrot(data-app="billManager")
+                  //.app-icon.icon-award
+                  .app-count {{getPublishedCount 'billManagers'}}
+                  .app-count-description tình trạng
+                  span.caption.app-name.bottom.right phiếu bán
 
 
-            .tile-group-2
-              .tile.peter-river(data-app="staffManagement")
-                //.app-icon.icon-shareable
-                .app-count {{getPublishedCount 'staffs'}}
-                .app-count-description
-                span.caption.app-name.bottom.right nhân viên
-              .tile.peter-river(data-app='merchantOptions')
-                //.app-icon.icon-shareable
-                .app-count
-                .app-count-description hệ thống
-                span.caption.app-name.bottom.right tùy chỉnh
+                .tile.green-sea(data-app="import")
+                  //.app-icon.icon-download-outline
+                  .app-count {{getPublishedCount 'imports'}}
+                  .app-count-description phiếu
+                  span.caption.app-name.bottom.right nhập kho
+                .tile.carrot
+                  //.app-icon.icon-edit
+                  .app-count {{getPublishedCount 'inventories'}}
+                  .app-count-description
+                  span.caption.app-name.bottom.right kiểm kho
 
-              .tile.pink
-                //.app-icon.icon-reply-outline
-                .app-count {{getPublishedCount 'customerReturns'}}
-                .app-count-description khách hàng
-                span.caption.app-name.bottom.right trả hàng
-              .tile.green-sea(data-app="orderManager")
-                //.app-icon.icon-award
-                .app-count {{getPublishedCount 'orderManagers'}}
-                .app-count-description hoàn thành
-                span.caption.app-name.bottom.right phiếu bán
+                .tile.peter-river(data-app="productGroup")
+                  .app-count {{getPublishedCount 'productGroups'}}
+                  .app-count-description NHÓM
+                  span.caption.app-name.bottom.right sản phẩm
+                .tile.amethyst(data-app="priceBook")
+                  //.app-icon.icon-chart-pie-outline
+                  .app-count {{getPublishedCount 'priceBooks'}}
+                  .app-count-description
+                  span.caption.app-name.bottom.right bảng giá
 
-              .tile.pumpkin
-                //.app-icon.icon-reply-outline
-                .app-count {{getPublishedCount 'providerReturns'}}
-                .app-count-description phiếu
-                span.caption.app-name.bottom.right trả hàng
-              .tile.peter-river
-                //.app-icon.icon-shareable
-                //.app-count 0
-                //.app-count-description
-                span.caption.app-name.bottom.right nhật ký
 
-              .tile.double.amethyst
-                //.app-icon.icon-chart-pie-outline
-                .app-count {{formatNumber revenueDay}}
-                .app-count-description
-                span.caption.app-name.bottom.right thống kê
+              .tile-group-2
+                .tile.peter-river(data-app="staffManagement")
+                  //.app-icon.icon-shareable
+                  .app-count {{getPublishedCount 'staffs'}}
+                  .app-count-description
+                  span.caption.app-name.bottom.right nhân viên
+                .tile.peter-river(data-app='merchantOptions')
+                  //.app-icon.icon-shareable
+                  .app-count
+                  .app-count-description hệ thống
+                  span.caption.app-name.bottom.right tùy chỉnh
 
-            +metroDecoratorTiles
+                .tile.pink
+                  //.app-icon.icon-reply-outline
+                  .app-count {{getPublishedCount 'customerReturns'}}
+                  .app-count-description khách hàng
+                  span.caption.app-name.bottom.right trả hàng
+                .tile.green-sea(data-app="orderManager")
+                  //.app-icon.icon-award
+                  .app-count {{getPublishedCount 'orderManagers'}}
+                  .app-count-description hoàn thành
+                  span.caption.app-name.bottom.right phiếu bán
+
+                .tile.pumpkin
+                  //.app-icon.icon-reply-outline
+                  .app-count {{getPublishedCount 'providerReturns'}}
+                  .app-count-description phiếu
+                  span.caption.app-name.bottom.right trả hàng
+                .tile.peter-river
+                  //.app-icon.icon-shareable
+                  //.app-count 0
+                  //.app-count-description
+                  span.caption.app-name.bottom.right nhật ký
+
+                .tile.double.amethyst
+                  //.app-icon.icon-chart-pie-outline
+                  .app-count {{formatNumber revenueDay}}
+                  .app-count-description
+                  span.caption.app-name.bottom.right thống kê
+
+              +metroDecoratorTiles
+
+
 
       .dual-addon
         .search-filter.icon-search-8

@@ -1,5 +1,17 @@
+totalDecoratorTiles = 6 * 4
 lemon.defineApp Template.merchantHome,
-#  revenueDay: -> @Summary?.salesMoneyDay - @Summary?.importMoneyDay + @Summary?.returnMoneyOfDistributorDay - @Summary?.returnMoneyOfCustomerDay
+  created: ->
+    console.log Session.get('myProfile')
+
+  helpers:
+    decoratorIterator: ->
+      array = []
+      array.push i for i in [0...totalDecoratorTiles]
+      array
+
+    showMetroBySeller: -> Session.get('myProfile')?.roles is 'seller'
+    showMetroByAdmin: -> Session.get('myProfile')?.roles isnt 'seller'
+
   events:
     "click [data-app]:not(.locked)": (event, template) -> Router.go $(event.currentTarget).attr('data-app')
     "click .caption.inner": -> Router.go @app

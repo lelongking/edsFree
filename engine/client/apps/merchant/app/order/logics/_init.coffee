@@ -1,3 +1,4 @@
+Enums = Apps.Merchant.Enums
 logics.sales = { name: 'sale-logics' }
 Apps.Merchant.salesInit = []
 Apps.Merchant.salesReactiveRun = []
@@ -23,7 +24,11 @@ Apps.Merchant.salesInit.push (scope) ->
 
 Apps.Merchant.salesReactiveRun.push (scope) ->
   if Session.get('mySession')
-    scope.currentOrder = Schema.orders.findOne Session.get('mySession').currentOrder
+    scope.currentOrder = Schema.orders.findOne({
+      _id        : Session.get('mySession').currentOrder
+      orderType  : Enums.getValue('OrderTypes', 'initialize')
+      orderStatus: Enums.getValue('OrderStatus', 'initialize')
+    })
     Session.set 'currentOrder', scope.currentOrder
 
   if newBuyerId = Session.get('currentOrder')?.buyer

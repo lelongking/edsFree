@@ -26,9 +26,16 @@ Apps.Merchant.staffManagementInit.push (scope) ->
             checkCustomerList.push(customer._id)
             Schema.customers.update customer._id, $set:{staff: toStaff._id}
 
+        userUpdate = $set:{}; userUpdate.$set["sessions.customerOfStaffSelected.#{Session.get("mySession").currentStaff}"] = []
+        Meteor.users.update(Meteor.userId(), userUpdate)
+
         Meteor.users.update(formStaff._id, $pullAll:{'profile.customers': customerList })
         Meteor.users.update(toStaff._id, $addToSet:{'profile.customers': {$each: checkCustomerList}}) if checkCustomerList.length > 0
-    reactiveValueGetter: -> 'skyReset'
+
+        Session.set('staffManagementResetCustomerSelect', '')
+        Session.set('staffManagementResetCustomerSelect', 'skyReset')
+      return false
+    reactiveValueGetter: -> Session.get('staffManagementResetCustomerSelect')
 
   scope.roleSelectOptions =
     query: (query) -> query.callback
