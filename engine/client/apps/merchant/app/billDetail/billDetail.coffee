@@ -18,7 +18,9 @@ lemon.defineApp Template.billDetail,
     Session.set("currentBillHistory")
 
   events:
-    "click .caption.inner": (event, template) -> scope.currentBillHistory.addDetail(@_id); event.stopPropagation()
+    "click .caption.inner": (event, template) ->
+      scope.currentBillHistory.addDetail(@_id); event.stopPropagation() if User.roleIsManager()
+
     "click .accountingConfirm": (event, template) ->
       Meteor.call 'orderAccountConfirm', scope.currentBillHistory._id, (error, result) ->
         Meteor.call 'orderExportConfirm', scope.currentBillHistory._id, (error, result) ->

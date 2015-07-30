@@ -28,27 +28,29 @@ template(name="billDetail")
           name='searchFilter' value="{{productTextSearch}}")
 
         .nano: .nano-content: .group-wrapper
-          each unitProductSearches
-            if status
-              .caption.advanced.inner.product-selection(
-              class="{{productSelectionActiveClass}}")
-                +avatarImageComponent(avatar=avatarUrl alias=name)
-                span.text {{name}}
-                  .commands: span.icon-right-open-big.addSaleDetail
-                span.right-info {{stock}} {{unitName}}
+          if isManager
+            each unitProductSearches
+              if status
+                .caption.advanced.inner.product-selection(
+                class="{{productSelectionActiveClass}}")
+                  +avatarImageComponent(avatar=avatarUrl alias=name)
+                  span.text {{name}}
+                    .commands: span.icon-right-open-big.addSaleDetail
+                  span.right-info {{stock}} {{unitName}}
 
-  #footer.modern
-    .editor-row
-      .editor-wrapper.dual-spacer
-      .editor-wrapper(style="width: 145px")
-        span.ilabel.center chiết khấu
-        +iSpinEdit(options=discountOptions)
-      .editor-wrapper(style="width: 145px")
-        span.ilabel.center thanh toán
-        +iSpinEdit(options=depositOptions)
+  if isManager
+    #footer.modern
+      .editor-row
+        .editor-wrapper.dual-spacer
+        .editor-wrapper(style="width: 145px")
+          span.ilabel.center chiết khấu
+          +iSpinEdit(options=discountOptions)
+        .editor-wrapper(style="width: 145px")
+          span.ilabel.center thanh toán
+          +iSpinEdit(options=depositOptions)
 
-      .editor-wrapper.pull-right
-        button.flat.btn.lime.pull-right.accountingConfirm(type='submit' style="margin-right: 5px;"
-        class="{{getSession 'currentBillHistoryIsDisabled'}}") XÁC NHẬN
-      .editor-wrapper.pull-right
-        button.flat.btn.blue.pull-right.print-command(type='submit'): span.icon-print-6
+        .editor-wrapper.pull-right
+          button.flat.btn.lime.pull-right.accountingConfirm(type='submit' style="margin-right: 5px;"
+          class="{{getSession 'currentBillHistoryIsDisabled'}}") XÁC NHẬN
+        .editor-wrapper.pull-right
+          button.flat.btn.blue.pull-right.print-command(type='submit'): span.icon-print-6

@@ -15,22 +15,26 @@ lemon.defineWidget Template.billThumbnail,
       Router.go 'billDetail'
 
     "click .success-command": (event, template)->
-      Meteor.call 'orderSuccessConfirm', @_id, (error, result) -> if error then console.log error
+      if User.roleIsManager()
+        Meteor.call 'orderSuccessConfirm', @_id, (error, result) -> if error then console.log error
       event.stopPropagation()
 
     "click .fail-command": (event, template)->
-      Meteor.call 'orderSuccessConfirm', @_id, false, (error, result) -> if error then console.log error
+      if User.roleIsManager()
+        Meteor.call 'orderSuccessConfirm', @_id, false, (error, result) -> if error then console.log error
       event.stopPropagation()
 
     "click .cancel-command": (event, template)->
-      Meteor.call 'orderUndoConfirm', @_id, (error, result) -> if error then console.log error
+      if User.roleIsManager()
+        Meteor.call 'orderUndoConfirm', @_id, (error, result) -> if error then console.log error
       event.stopPropagation()
 
     "click .finish-command": (event, template)->
-      order = @
-      if order.orderStatus is Enums.getValue('OrderStatus', 'fail')
-        Meteor.call 'orderImportConfirm', order._id, (error, result) ->
+      if User.roleIsManager()
+        order = @
+        if order.orderStatus is Enums.getValue('OrderStatus', 'fail')
+          Meteor.call 'orderImportConfirm', order._id, (error, result) ->
+            Meteor.call 'orderFinishConfirm', order._id, (error, result) -> if error then console.log error
+        else
           Meteor.call 'orderFinishConfirm', order._id, (error, result) -> if error then console.log error
-      else
-        Meteor.call 'orderFinishConfirm', order._id, (error, result) -> if error then console.log error
       event.stopPropagation()

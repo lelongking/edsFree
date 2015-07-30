@@ -63,6 +63,7 @@ Apps.Merchant.billDetailInit.push (scope) ->
     formatResult: formatDefaultSearch
     placeholder: 'CHỌN SẢN PTGD'
     minimumResultsForSearch: -1
+    readonly: -> !User.roleIsManager()
     changeAction: (e) -> scope.currentBillHistory.changePaymentsDelivery(e.added._id)
     reactiveValueGetter: -> findDeliveryTypes(Session.get('currentBillHistory')?.paymentsDelivery)
 
@@ -75,5 +76,6 @@ Apps.Merchant.billDetailInit.push (scope) ->
     formatResult: formatDefaultSearch
     placeholder: 'CHỌN SẢN PTGD'
     minimumResultsForSearch: -1
+    readonly: -> !User.roleIsManager()
     changeAction: (e) -> scope.currentBillHistory.changePaymentMethod(e.added._id)
     reactiveValueGetter: -> findPaymentMethods(Session.get('currentBillHistory')?.paymentMethod)

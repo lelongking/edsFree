@@ -11,6 +11,7 @@ lemon.defineApp Template.merchantHome,
 
     showMetroBySeller: -> Session.get('myProfile')?.roles is 'seller'
     showMetroByAdmin: -> Session.get('myProfile')?.roles isnt 'seller'
+    metroLockerStaff: -> if User.roleIsAdmin() then '' else ' locked'
 
   events:
     "click [data-app]:not(.locked)": (event, template) -> Router.go $(event.currentTarget).attr('data-app')

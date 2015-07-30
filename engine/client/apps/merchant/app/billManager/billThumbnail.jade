@@ -4,12 +4,13 @@ template(name="billThumbnail")
     .right-caption(style="font-size: 18px; top: 4px;") {{getBuyerName buyer}}
     .full-desc.price(style="bottom: 45px;font-size: 16px;") {{momentFormat accountingConfirmAt "DD/MM/YYYY"}}
     .full-desc.status {{showStatus}}
-    .command-container
-      if isFinish
-        .command-button.cancel-command.icon-reply-3
-        .command-button.finish-command.icon-award
-      else
-        .command-button.animated.bounceIn.fail-command.icon-emo-cry
-        .command-button.animated.bounceIn.success-command.icon-ok-6
+    if isManager
+      .command-container
+        if isFinish
+          .command-button.cancel-command.icon-reply-3
+          .command-button.finish-command.icon-award
+        else
+          .command-button.animated.bounceIn.fail-command.icon-emo-cry
+          .command-button.animated.bounceIn.success-command.icon-ok-6
 
 

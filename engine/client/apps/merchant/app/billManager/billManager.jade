@@ -18,7 +18,7 @@ template(name="billManager")
               +avatarImageComponent(avatar=avatarUrl alias=buyerName)
               span.text {{buyerName}}
                 //.commands: span.icon-right-open-big.addSaleDetail
-              span.left-info(style="text-transform: none; max-width: 140px") {{sellerName}}
+              span.left-info(style="text-transform: none; max-width: 140px") {{getSellerName seller}}
               span.right-info {{momentFormat version.createdAt 'DD/MM/YYYY'}}
 
 
