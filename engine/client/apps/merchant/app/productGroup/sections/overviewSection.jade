@@ -1,22 +1,30 @@
 template(name="productGroupOverviewSection")
-  .section.top.panel.panel-default
-    input.hidden.avatarFile(type="file")
-    .panel-heading
-      +avatarImageComponent(avatar=avatarUrl alias=name)
-      .caption
-        input.editable.dashed(name="productGroupName" value="{{name}}" maxlength="50")
-        //span.blured-color ({{productCount}} sản phẩm)
+  if isManager
+    .section.top.panel.panel-default
+      input.hidden.avatarFile(type="file")
+      .panel-heading
+        +avatarImageComponent(avatar=avatarUrl alias=name)
+        .caption
+          input.editable.dashed(name="productGroupName" value="{{name}}" maxlength="50")
+          //span.blured-color ({{productCount}} sản phẩm)
 
-      .sub1: input.editable.dashed(value="{{productCount}} sản phẩm")
-      .sub2: input.editable.dashed(name="productGroupDescription" value="{{description}}" maxlength="100" size="50" placeholder="ghi chú")
-      .commands
-        if getSession 'productGroupShowEditCommand'
-          .lemon.btn.rounded.lime.icon-ok-6.syncProductEdit
-        if allowDelete
-          .lemon.btn.rounded.red.icon-minus-4.productDelete
+        .sub1: input.editable.dashed(value="{{productCount}} sản phẩm")
+        .sub2: input.editable.dashed(name="productGroupDescription" value="{{description}}" maxlength="100" size="50" placeholder="ghi chú")
+        .commands
+          if getSession 'productGroupShowEditCommand'
+            .lemon.btn.rounded.lime.icon-ok-6.syncProductEdit
+          if allowDelete
+            .lemon.btn.rounded.red.icon-minus-4.productDelete
 
-    if productSelectedCount
-      .panel-footer.has-details
-        .editor-wrapper(style="width: 200px; padding-left: 5px;")
-          span.ilabel.optional chuyển nhóm
-          +iSelect(options=productGroupSelects class="field")
+      if productSelectedCount
+        .panel-footer.has-details
+          .editor-wrapper(style="width: 200px; padding-left: 5px;")
+            span.ilabel.optional chuyển nhóm
+            +iSelect(options=productGroupSelects class="field")
+  else
+    .section.top.panel.panel-default
+      .panel-heading
+        +avatarImageComponent(avatar=avatarUrl alias=name)
+        .caption: span.editable.dashed {{name}}
+        .sub1: span.editable.dashed {{productCount}} sản phẩm
+        .sub2: span.editable.dashed {{description}}

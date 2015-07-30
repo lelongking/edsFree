@@ -42,30 +42,3 @@ lemon.defineApp Template.sales,
 
     "click .finish": (event, template)->
       scope.currentOrder.orderConfirm()
-
-
-#
-#    "change [name='advancedMode']": (event, template) ->
-#      scope.templateInstance.ui.extras.toggleExtra 'advanced', event.target.checked
-#
-#    "change [name ='deliveryDate']": (event, template) -> scope.updateDeliveryDate()
-#
-#    'input .contactName': (event, template)->
-#      Helpers.deferredAction ->
-#        scope.updateDeliveryContactName(template.find(".contactName"))
-#      , "salesCurrentProductSearchProduct"
-#
-#    'input .contactPhone': (event, template)->
-#      Helpers.deferredAction ->
-#        scope.updateDeliveryContactPhone(template.find(".contactPhone"))
-#      , "salesCurrentProductSearchProduct"
-#
-#    'input .deliveryAddress': (event, template)->
-#      Helpers.deferredAction ->
-#        scope.updateDeliveryAddress(template.find(".deliveryAddress"))
-#      , "salesCurrentProductSearchProduct"
-#
-#    'input .comment': (event, template)->
-#      Helpers.deferredAction ->
-#        scope.updateDeliveryComment(template.find(".comment"))
-#      , "salesCurrentProductSearchProduct"

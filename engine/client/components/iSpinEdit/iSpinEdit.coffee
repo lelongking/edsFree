@@ -16,7 +16,7 @@ startTrackingOptions = ($element, context) ->
       step: context.data.options.reactiveStep()
       initVal: context.data.options.reactiveValue()
 
-stopTrackingOptions = (context) -> context.optionsTracker.stop()
+stopTrackingOptions = (context) -> context.optionsTracker.stop() if context.optionsTracker
 
 startTrackingValue = ($element, context) ->
   $element.on 'change', (e) ->

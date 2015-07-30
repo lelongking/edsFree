@@ -7,7 +7,8 @@ template(name="productGroupDetailSection")
           .document-name {{name}}
 
       table.lemon-grid: tr
-        th(style="width:20px")
+        if isManager
+          th(style="width:20px")
         th(style="width:auto") TÊN SẢN PHẨM
         th(style="width:80px; text-align:center") HẾT HẠN
         th(style="width:80px; text-align:center") CÒN LẠI
@@ -17,7 +18,8 @@ template(name="productGroupDetailSection")
         +productGroupHeader
         each productLists
           tr.detail-row(class="{{selected}}")
-            td.command.icon-ok-6
+            if isManager
+              td.command.icon-ok-6
             td {{name}}
             td(style="text-align:center") {{momentFormat lastExpire 'DD/MM/YYYY'}}
             td(style="text-align:center") {{lastExpireDays}}
@@ -31,7 +33,8 @@ template(name="productGroupDetailSection")
 
 template(name="productGroupHeader")
   tr
-    th(style="width:30px")
+    if isManager
+      th(style="width:30px")
     th(style="width:auto")
     th(style="width:80px")
     th(style="width:80px")

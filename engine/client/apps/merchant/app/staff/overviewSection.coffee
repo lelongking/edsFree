@@ -2,14 +2,14 @@ scope = logics.staffManagement
 
 lemon.defineHyper Template.staffManagementOverviewSection,
   helpers:
-    userName: -> @emails[0].address ? 'chưa tạo tài khoản đăng nhập.'
-    genderName: -> if @profile.gender then 'Nam' else 'Nữ'
+    userName: -> @emails?[0]?.address ? 'chưa tạo tài khoản đăng nhập.'
+    genderName: -> if @profile?.gender then 'Nam' else 'Nữ'
 
     fullName: ->
       Meteor.setTimeout ->
         scope.overviewTemplateInstance.ui.$staffName.change()
       ,50 if scope.overviewTemplateInstance
-      @profile.name
+      @profile?.name
 
     genderSelectOptions: -> scope.genderSelectOptions
     roleSelectOptions: -> scope.roleSelectOptions

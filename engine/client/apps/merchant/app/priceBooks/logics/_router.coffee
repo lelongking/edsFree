@@ -4,6 +4,7 @@ lemon.addRoute
 #  waitOnDependency: 'merchantEssential'
   onBeforeAction: ->
     if @ready()
+      Router.go('/merchant') unless User.roleIsManager()
       Apps.setup(scope, Apps.Merchant.priceBookInit, 'priceBook')
       Session.set "currentAppInfo",
         name: "bảng giá"

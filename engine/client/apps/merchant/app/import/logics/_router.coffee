@@ -5,6 +5,7 @@ importRoute =
 #  waitOnDependency: 'merchantEssential'
   onBeforeAction: ->
     if @ready()
+      Router.go('/merchant') unless User.roleIsManager()
       Apps.setup(scope, Apps.Merchant.importInit, 'import')
       Session.set "currentAppInfo",
         name: "nhập kho"

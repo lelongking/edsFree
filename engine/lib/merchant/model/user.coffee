@@ -104,3 +104,5 @@ class @User
     if Session.get('myProfile').roles isnt 'seller' then true
     else if Session.get('myProfile').roles is undefined then false
     else false
+
+  @roleIsAdmin: -> Session.get('myProfile').roles is 'admin'

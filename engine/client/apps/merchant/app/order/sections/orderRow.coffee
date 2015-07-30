@@ -36,7 +36,11 @@ lemon.defineHyper Template.orderRowEdit,
         quality      = undefined if quality is Template.currentData().quality
         if quality isnt undefined or discountCash isnt undefined
           scope.currentOrder.editDetail(rowId, quality, discountCash)
-          Session.set("editingId", nextRow._id) if nextRow = details.getNextBy("_id", rowId)
+          if nextRow = details.getNextBy("_id", rowId)
+            Session.set("editingId", nextRow._id)
+          else
+            Session.set("editingId")
+
       else if event.which is 40  #downArrow
         Session.set("editingId", nextRow._id) if nextRow = details.getNextBy("_id", rowId)
       else if event.which is 38  #upArrow
