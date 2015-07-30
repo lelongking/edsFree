@@ -1,0 +1,33 @@
+template(name="overviewProductInventory")
+  .detail-wrapper
+    span.denyInventory.icon-ok-6(class="{{isImport 'sale'}}")
+    span Bán hàng trước, nhập tồn kho sau.
+  .detail-wrapper
+    span.allowInventory.icon-ok-6(class="{{isImport 'import'}}")
+    span Nhập tồn kho ngay lúc này
+  if getSession 'productManagementAllowInventory'
+    .detail-wrapper
+      each currentProduct.units
+        if currentProduct.inventoryInitial
+          form.form-inline: .form-group: .input-group
+            .input-group-addon(style="width: 100px") {{importUnit.quality}}
+            .input-group-addon(style="width: 100px") {{name}}
+            .input-group-addon(style="width: 100px") {{momentFormat importUnit.expire "DD/MM/YYYY"}}
+            .input-group-addon(style="width: 100px") Hết hạn
+        else
+          +overviewProductInventoryDetail this
+
+
+template(name="overviewProductInventoryDetail")
+  form.form-inline: .form-group: .input-group
+    input.form-control.editable.dashed(
+    name="unitQuality" data-toggle="tooltip" data-container="body" data-placement="right"
+    placeholder="Số lượng" title="Số lượng" value="{{quality}}")
+
+    .input-group-addon(style="width: 100px") {{name}}
+
+    input.form-control.editable.dashed(
+    name="deliveryDate" data-toggle="tooltip" data-container="body" data-placement="right" maxlength="20"
+    placeholder="Ngày hết hạn" title="Ngày hết hạn" binding="datePicker" todayHighlight="true" tabindex="4")
+
+    .input-group-addon(style="width: 100px") Hết hạn

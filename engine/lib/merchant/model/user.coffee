@@ -98,3 +98,9 @@ Meteor.users.attachSchema new SimpleSchema
   creator     : simpleSchema.DefaultCreator
   createdAt   : type: Date      , defaultValue: new Date
   allowDelete : type: Boolean   , defaultValue: true
+
+class @User
+  @roleIsManager: ->
+    if Session.get('myProfile').roles isnt 'seller' then true
+    else if Session.get('myProfile').roles is undefined then false
+    else false

@@ -27,15 +27,15 @@ lemon.defineApp Template.productManagement,
       if event.which is 17 then console.log 'up'
 
       else if event.which is 38
-        previousRow = ProductSearch.history[productSearch].data.getPreviousBy('_id', currentProductId)
-        Product.setSession(previousRow._id) if previousRow
+#        previousRow = ProductSearch.history[productSearch].data.getPreviousBy('_id', currentProductId)
+#        Product.setSession(previousRow._id) if previousRow
 
       else if event.which is 40
-        nextRow = ProductSearch.history[productSearch].data.getNextBy('_id', currentProductId)
-        Product.setSession(nextRow._id) if nextRow
+#        nextRow = ProductSearch.history[productSearch].data.getNextBy('_id', currentProductId)
+#        Product.setSession(nextRow._id) if nextRow
 
       else
-        if event.which is 13
+        if User.roleIsManager() and event.which is 13
           newProduct = Helpers.splitName(searchFilter)
           unless newProduct.name is ""
             newProduct.merchant = Session.get("myProfile").merchant

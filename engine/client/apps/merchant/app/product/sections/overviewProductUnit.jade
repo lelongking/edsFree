@@ -1,35 +1,3 @@
-template(name="overviewProductInventory")
-  .detail-wrapper
-    span.denyInventory.icon-ok-6(class="{{isImport 'sale'}}")
-    span Bán hàng trước, nhập tồn kho sau.
-
-  .detail-wrapper
-    span.allowInventory.icon-ok-6(class="{{isImport 'import'}}")
-    span Nhập tồn kho ngay lúc này
-
-  if getSession 'productManagementAllowInventory'
-    .detail-wrapper
-      each currentProduct.units
-        if currentProduct.inventoryInitial
-          form.form-inline: .form-group: .input-group
-            .input-group-addon(style="width: 100px") {{importUnit.quality}}
-            .input-group-addon(style="width: 100px") {{name}}
-            .input-group-addon(style="width: 100px") {{momentFormat importUnit.expire "DD/MM/YYYY"}}
-            .input-group-addon(style="width: 100px") Hết hạn
-        else
-          +overviewProductInventoryDetail this
-
-template(name="overviewProductInventoryDetail")
-  form.form-inline: .form-group: .input-group
-    input.form-control.editable.dashed(data-toggle="tooltip" data-container="body" data-placement="right"
-    placeholder="Số lượng" title="Số lượng" name="unitQuality" value="{{quality}}")
-    .input-group-addon(style="width: 100px") {{name}}
-
-    input.form-control.editable.dashed(data-toggle="tooltip" data-container="body" data-placement="right"
-    placeholder="Ngày hết hạn" title="Ngày hết hạn"
-    name="deliveryDate" binding="datePicker" todayHighlight="true" maxlength="20" tabindex="4")
-    .input-group-addon(style="width: 100px") Hết hạn
-
 template(name="overviewProductUnit")
   .detail-wrapper
     span.icon-ok-6(class="{{allowCreateUnit}}")
@@ -38,8 +6,10 @@ template(name="overviewProductUnit")
     each currentProduct.units
       unless isBase
         +productUnitDetail this
-    if isNotLimitUnit
-      +productUnitCreateUnit this
+
+    if isManager
+      if isNotLimitUnit
+        +productUnitCreateUnit this
 
   .detail-wrapper
     .productUnit-table-group.row
@@ -66,23 +36,32 @@ template(name="productUnitTableDetail")
 
 
 template(name="productUnitDetail")
-  form.form-inline: .form-group
-    .input-group
-      input.form-control.editable.dashed(data-toggle="tooltip" data-container="body" data-placement="right"
-      placeholder="tên đơn vị tính" title="Tên đơn vị tính" value="{{name}}" name="productUnitName")
+  if isManager
+    form.form-inline: .form-group
+      .input-group
+        input.form-control.editable.dashed(data-toggle="tooltip" data-container="body" data-placement="right"
+        placeholder="tên đơn vị tính" title="Tên đơn vị tính" value="{{name}}" name="productUnitName")
 
-      .input-group-addon(data-toggle="tooltip" data-container="body" data-placement="right" title="Quy cách") =
+        .input-group-addon(data-toggle="tooltip" data-container="body" data-placement="right" title="Quy cách") =
+
+        if allowDelete
+          input.form-control.editable.dashed(data-toggle="tooltip" data-container="body" data-placement="right"
+          placeholder="tên đơn vị tính" title="Quy cánh" value="{{conversion}}" name="productUnitConversion")
+        else
+          .input-group-addon(style="width: 207px") {{conversion}}
+
+        .input-group-addon {{currentProduct.unitName}}
 
       if allowDelete
-        input.form-control.editable.dashed(data-toggle="tooltip" data-container="body" data-placement="right"
-        placeholder="tên đơn vị tính" title="Quy cánh" value="{{conversion}}" name="productUnitConversion")
-      else
-        .input-group-addon(style="width: 207px") {{conversion}}
+        .lemon.rounded.btn.blue.icon-minus-4.deleteProductUnit
 
-      .input-group-addon {{currentProduct.unitName}}
-
-    if allowDelete
-      .lemon.rounded.btn.blue.icon-minus-4.deleteProductUnit
+  else
+    form.form-inline: .form-group
+      .input-group
+        .input-group-addon.editable.dashed(style="width: 214px") {{name}}
+        .input-group-addon =
+        .input-group-addon.editable.dashed(style="width: 214px") {{conversion}}
+        .input-group-addon {{currentProduct.unitName}}
 
 
 

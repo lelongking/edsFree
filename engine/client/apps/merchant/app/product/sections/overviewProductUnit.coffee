@@ -2,6 +2,12 @@ scope = logics.productManagement
 Enums = Apps.Merchant.Enums
 
 lemon.defineHyper Template.overviewProductUnit,
+  rendered: ->
+    if scope.currentProduct.status is Enums.getValue('ProductStatuses', 'initialize')
+      Session.set('productManagementAllowAddUnit', scope.currentProduct.units?.length < 3)
+    else
+      Session.set('productManagementAllowAddUnit', false)
+
   helpers:
     currentProduct: -> scope.currentProduct
     allowCreateUnit: -> if Session.get('productManagementAllowAddUnit') then 'selected' else ''
@@ -29,113 +35,45 @@ lemon.defineHyper Template.overviewProductUnit,
         unitTable.push(productUnit)
       return unitTable
 
-  rendered: ->
-    if scope.currentProduct.status is Enums.getValue('ProductStatuses', 'initialize')
-      Session.set('productManagementAllowAddUnit', scope.currentProduct.units?.length < 3)
-    else
-      Session.set('productManagementAllowAddUnit', false)
-
   events:
     "click span.icon-ok-6": ->
-      Session.set('productManagementAllowAddUnit', !Session.get('productManagementAllowAddUnit'))
+      Session.set('productManagementAllowAddUnit', !Session.get('productManagementAllowAddUnit')) if User.roleIsManager()
 
 
 lemon.defineHyper Template.productUnitTableDetail,
   helpers:
     isEditImportPrice: -> scope.currentProduct.status isnt Enums.getValue('ProductStatuses', 'confirmed')
+
   events:
     "keyup [name='editImportQuality']": (event, template) ->
-      $importPrice  = template.ui.$editImportQuality
-      console.log accounting.parse($importPrice.val()), @_id
-      if event.which is 13
-        updateOption = {importPrice: accounting.parse($importPrice.val())}
-        scope.currentProduct.unitUpdate @_id, updateOption
-
-lemon.defineHyper Template.overviewProductInventoryDetail,
-  helpers:
-    currentProduct: -> scope.currentProduct
-    quality: ->
-      quality = 0
-      for unit in Session.get('productManagementInventoryDetails') ? []
-        quality = unit.quality if unit._id is @_id
-      quality
-
-
-  rendered: -> $("[name=deliveryDate]").datepicker()
-  events:
-    "keyup [name='unitQuality']": (event, template) ->
-      $quality = $(template.find("[name='unitQuality']"))
-      inventoryDetails = Session.get('productManagementInventoryDetails')
-      (detailIndex = index if detail._id is @_id) for detail, index in inventoryDetails
-
-      if isNaN(Number($quality.val()))
-        $quality.val(inventoryDetails[detailIndex].quality)
-      else
-        inventoryDetails[detailIndex].quality = Number($quality.val())
-        Session.set('productManagementInventoryDetails', inventoryDetails)
-
-    "change [name ='deliveryDate']": (event, template) ->
-      date = $("[name=deliveryDate]").datepicker().data().datepicker.dates[0]
-      console.log moment(date).endOf("day")._d
-
-      inventoryDetails = Session.get('productManagementInventoryDetails')
-      (detailIndex = index if detail._id is @_id) for detail, index in inventoryDetails
-
-      inventoryDetails[detailIndex].expriceDay = moment(date).endOf("day")._d
-      Session.set('productManagementInventoryDetails', inventoryDetails)
-
-
-
-
-lemon.defineHyper Template.overviewProductInventory,
-  helpers:
-    currentProduct: -> scope.currentProduct
-    importUnit: ->
-      importUnitFound = {quality:0}
-      if importDetails = Schema.imports.findOne({importType: -2, 'details.productUnit': @_id})?.details
-        (importUnitFound = importUnit if importUnit.productUnit is @_id) for importUnit in importDetails
-      return importUnitFound
-
-    isImport: (status)->
-      if status is 'sale'
-        if Session.get('productManagementAllowInventory') then '' else 'selected'
-      else
-        if Session.get('productManagementAllowInventory') then 'selected' else ''
-
-  rendered: ->
-    Session.set('productManagementAllowInventory', scope.currentProduct.inventoryInitial)
-
-  events:
-    "click .denyInventory": (event, template) ->
-      unless scope.currentProduct.inventoryInitial
-        Session.set('productManagementAllowInventory', false)
-        Session.set('productManagementInventoryDetails', false)
-
-    "click .allowInventory": (event, template) ->
-      unless scope.currentProduct.inventoryInitial
-        Session.set('productManagementAllowInventory', true)
-        details = []
-        (details.push {_id : unit._id, quality: 0}) for unit in scope.currentProduct.units
-        Session.set('productManagementInventoryDetails', details)
-
+      if User.roleIsManager()
+        $importPrice  = template.ui.$editImportQuality
+        console.log accounting.parse($importPrice.val()), @_id
+        if event.which is 13
+          updateOption = {importPrice: accounting.parse($importPrice.val())}
+          scope.currentProduct.unitUpdate @_id, updateOption
 
 lemon.defineHyper Template.productUnitDetail,
   helpers:
     currentProduct: -> scope.currentProduct
+
   events:
     "keyup [name='productUnitName']": (event, template) ->
-      console.log $(template.find("[name='productUnitName']")).val()
-      scope.currentProduct.unitUpdate(@_id, {name: $(template.find("[name='productUnitName']")).val()})
+      if User.roleIsManager()
+        console.log $(template.find("[name='productUnitName']")).val()
+        scope.currentProduct.unitUpdate(@_id, {name: $(template.find("[name='productUnitName']")).val()})
 
     "keyup [name='productUnitConversion']": (event, template) ->
-      $conversion = $(template.find("[name='productUnitConversion']"))
-      if isNaN(Number($conversion.val())) then $conversion.val(@conversion)
-      else scope.currentProduct.unitUpdate(@_id, {conversion: $conversion.val()})
+      if User.roleIsManager()
+        $conversion = $(template.find("[name='productUnitConversion']"))
+        if isNaN(Number($conversion.val())) then $conversion.val(@conversion)
+        else scope.currentProduct.unitUpdate(@_id, {conversion: $conversion.val()})
 
-    "click .deleteProductUnit": (event, template) -> scope.deleteNewProductUnit(@, event, template)
+    "click .deleteProductUnit": (event, template) -> scope.deleteNewProductUnit(@, event, template) if User.roleIsManager()
 
 lemon.defineHyper Template.productUnitCreateUnit,
   helpers:
     currentProduct: -> scope.currentProduct
+
   events:
-    "click .addProductUnit": (event, template) -> scope.createNewProductUnit(event, template)
+    "click .addProductUnit": (event, template) -> scope.createNewProductUnit(event, template) if User.roleIsManager()

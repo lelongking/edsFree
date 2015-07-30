@@ -2,6 +2,14 @@ scope = logics.productManagement
 Enums = Apps.Merchant.Enums
 
 lemon.defineHyper Template.productManagementOverviewSection,
+  rendered: ->
+    Session.set('productManagementIsShowProductUnit', false)
+    Session.set('productManagementIsShowProductInventory', false)
+    scope.overviewTemplateInstance = @
+    @ui.$productName.autosizeInput({space: 10}) if @ui.$productName
+  #    @ui.$productPrice.inputmask("numeric",   {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: " VNĐ", integerDigits:11, rightAlign:false})
+  #    @ui.$importPrice.inputmask("numeric",   {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: " VNĐ", integerDigits:11, rightAlign:false})
+
   helpers:
     currentProduct: -> scope.currentProduct
     isShowSubmit: ->
@@ -9,6 +17,19 @@ lemon.defineHyper Template.productManagementOverviewSection,
       else if Session.get('productManagementAllowInventory') is false then false
       else if scope.currentProduct.inventoryInitial is false then true
 
+    productUnits: ->
+      for productUnit in @units
+        for item in productUnit.priceBooks
+          if item.priceBook is Session.get('priceBookBasic')._id
+            productUnit.salePrice   = item.salePrice
+            productUnit.importPrice = item.importPrice
+      @units
+
+    name: ->
+      Meteor.setTimeout ->
+        scope.overviewTemplateInstance.ui.$productName.change()
+      , 50 if scope.overviewTemplateInstance?.ui?.$productName?
+      @name
 
     depositOptions:
       reactiveSetter: (val) ->
@@ -19,62 +40,21 @@ lemon.defineHyper Template.productManagementOverviewSection,
       others:
         forcestepdivisibility: 'none'
 
-    productUnits: ->
-      for productUnit in @units
-        for item in productUnit.priceBooks
-          if item.priceBook is Session.get('priceBookBasic')._id
-            productUnit.salePrice   = item.salePrice
-            productUnit.importPrice = item.importPrice
-      @units
-
-
-    name: ->
-      Meteor.setTimeout ->
-        scope.overviewTemplateInstance.ui.$productName.change()
-      , 50 if scope.overviewTemplateInstance
-      @name
-  #
-  #  price: ->
-  #    Meteor.setTimeout ->
-  #      scope.overviewTemplateInstance.ui.$productPrice.inputmask "numeric",
-  #        {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: " VNĐ", integerDigits:11, rightAlign:false}
-  #    , 50 if scope.overviewTemplateInstance
-  #    @price
-  #
-  #  importPrice: ->
-  #    Meteor.setTimeout ->
-  #      scope.overviewTemplateInstance.ui.$importPrice.inputmask "numeric",
-  #        {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: " VNĐ", integerDigits:11, rightAlign:false}
-  #    , 50 if scope.overviewTemplateInstance
-  #    @importPrice
-  #
-  rendered: ->
-    Session.set('productManagementIsShowProductUnit', false)
-    Session.set('productManagementIsShowProductInventory', false)
-    scope.overviewTemplateInstance = @
-    @ui.$productName.autosizeInput({space: 10})
-#    @ui.$productPrice.inputmask("numeric",   {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: " VNĐ", integerDigits:11, rightAlign:false})
-#    @ui.$importPrice.inputmask("numeric",   {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: " VNĐ", integerDigits:11, rightAlign:false})
-#
   events:
-    "click .avatar": (event, template) -> template.find('.avatarFile').click()
+    "click .avatar": (event, template) ->
+      if Session.get('myProfile').roles isnt 'seller'
+        template.find('.avatarFile').click()
+
     "change .avatarFile": (event, template) ->
-      files = event.target.files
-      if files.length > 0
-        AvatarImages.insert files[0], (error, fileObj) ->
-          Schema.products.update(Session.get('productManagementCurrentProduct')._id, {$set: {image: fileObj._id}})
-          AvatarImages.findOne(Session.get('productManagementCurrentProduct').image)?.remove()
-
-
-    "click .title.productUnit": (event, template)->
-      Session.set('productManagementIsShowProductUnit', !Session.get('productManagementIsShowProductUnit'))
-
-    "click .title.productInventory": (event, template)->
-      Session.set('productManagementIsShowProductInventory', !Session.get('productManagementIsShowProductInventory'))
+      if Session.get('myProfile').roles isnt 'seller'
+        files = event.target.files
+        if files.length > 0
+          AvatarImages.insert files[0], (error, fileObj) ->
+            Schema.products.update(Session.get('productManagementCurrentProduct')._id, {$set: {image: fileObj._id}})
+            AvatarImages.findOne(Session.get('productManagementCurrentProduct').image)?.remove()
 
     "click .productDelete": (event, template) ->
-
-      if @allowDelete
+      if Session.get('myProfile').roles isnt 'seller' and @allowDelete
         scope.currentProduct.remove()
         Product.setSession(Schema.products.findOne()._id)
         ProductSearch.cleanHistory()
@@ -113,3 +93,9 @@ lemon.defineHyper Template.productManagementOverviewSection,
 
           ProductSearch.cleanHistory()
           ProductSearch.search(ProductSearch.getCurrentQuery())
+
+    # Click mo rong hoac dong mo rong thong tin chi tiet cua san pham
+    "click .title.productUnit": (event, template)->
+      Session.set('productManagementIsShowProductUnit', !Session.get('productManagementIsShowProductUnit'))
+    "click .title.productInventory": (event, template)->
+      Session.set('productManagementIsShowProductInventory', !Session.get('productManagementIsShowProductInventory'))
