@@ -7,7 +7,8 @@ template(name="customerGroupDetailSection")
           .document-name {{name}}
 
       table.lemon-grid: tr
-        th(style="width:20px")
+        if isManager
+          th(style="width:20px")
         th(style="width:auto") TÊN KHÁCH HÀNG
         th(style="width:110px; text-align:center") GD GẦN NHẤT
         th.number(style="width:110px") GIÁ TRỊ PHIẾU
@@ -17,7 +18,8 @@ template(name="customerGroupDetailSection")
         +customerGroupHeader
         each customerLists
           tr.detail-row(class="{{selected}}")
-            td.command.icon-ok-6
+            if isManager
+              td.command.icon-ok-6
             td {{name}}
             td.date {{latestTradingDay}}
             td.number {{latestTradingTotalCash}}
@@ -28,11 +30,15 @@ template(name="customerGroupDetailSection")
     .panel-footer
       .right-float
         span.s5 TỔNG NỢ:
-        span.s3 <b>{{formatNumber totalCash}}</b> VNĐ
+        if isManager
+          span.s3 <b>{{formatNumber totalCash}}</b> VNĐ
+        else
+          span.s3 <b>{{formatNumber totalCashByStaff}}</b> VNĐ
 
 template(name="customerGroupHeader")
   tr
-    th(style="width:30px")
+    if isManager
+      th(style="width:30px")
     th(style="width:auto")
     th(style="width:90px")
     th(style="width:120px")

@@ -10,6 +10,6 @@ Apps.Merchant.customerGroupInit.push (scope) ->
     formatResult: formatCustomerSearch
     id: '_id'
     placeholder: 'CHỌN NHÓM'
-    changeAction: (e) -> scope.currentCustomerGroup.changeCustomerTo(e.added._id)
+    changeAction: (e) -> scope.currentCustomerGroup.changeCustomerTo(e.added._id) if User.roleIsManager()
     reactiveValueGetter: -> 'skyReset'
 

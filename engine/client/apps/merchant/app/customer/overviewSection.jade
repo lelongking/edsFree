@@ -1,18 +1,32 @@
 template(name="customerManagementOverviewSection")
-  .section.top.panel.panel-default
-    input.hidden.avatarFile(type="file")
-    .panel-heading
-      +avatarImageComponent(avatar=avatarUrl alias=firstName)
-      .caption
-        input.editable.dashed(name="customerName" value="{{name}}" maxlength="50")
-        if description
-          span.blured-color ({{description}})
-      .sub1: input.editable.dashed(name="customerPhone" value="{{profiles.phone}}" maxlength="100" size="30" placeholder="điện thoại")
-      .sub2: input.editable.dashed(name="customerAddress" value="{{profiles.address}}" maxlength="200" size="50" placeholder="địa chỉ")
-      .commands
-        if showEditCommand
-          .lemon.btn.rounded.lime.icon-ok-6.syncCustomerEdit
-        if showDeleteCommand
-          .lemon.btn.rounded.red.icon-minus-4.customerDelete
-    .panel-footer
-      span.icon-angle-right
+  if isManager
+    .section.top.panel.panel-default
+      input.hidden.avatarFile(type="file")
+      .panel-heading
+        +avatarImageComponent(avatar=avatarUrl alias=firstName)
+        .caption
+          input.editable.dashed(name="customerName" value="{{name}}" maxlength="50")
+          if description
+            span.blured-color ({{description}})
+        .sub1: input.editable.dashed(name="customerPhone" value="{{profiles.phone}}" maxlength="100" size="30" placeholder="điện thoại")
+        .sub2: input.editable.dashed(name="customerAddress" value="{{profiles.address}}" maxlength="200" size="50" placeholder="địa chỉ")
+        .commands
+          if showEditCommand
+            .lemon.btn.rounded.lime.icon-ok-6.syncCustomerEdit
+          if showDeleteCommand
+            .lemon.btn.rounded.red.icon-minus-4.customerDelete
+      .panel-footer
+        span.icon-angle-right
+
+  else
+    .section.top.panel.panel-default
+      .panel-heading
+        +avatarImageComponent(avatar=avatarUrl alias=firstName)
+        .caption: span.editable.dashed(data-toggle="tooltip" data-container="body" data-placement="right"
+        placeholder="tên khách hành" title="tên khách hành") {{name}}
+
+        .sub1: span.editable.dashed(style="width: 125px" data-toggle="tooltip" data-container="body" data-placement="right"
+        placeholder="điện thoại" title="điện thoại") {{profiles.phone}}
+
+        .sub2: span.editable.dashed(style="width: 125px" data-toggle="tooltip" data-container="body" data-placement="right"
+        placeholder="địa chỉ" title="địa chỉ") {{profiles.address}}

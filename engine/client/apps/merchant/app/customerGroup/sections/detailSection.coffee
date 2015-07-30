@@ -3,9 +3,15 @@ Enums = Apps.Merchant.Enums
 lemon.defineHyper Template.customerGroupDetailSection,
   helpers:
     selected: -> if _.contains(Session.get("customerSelectLists"), @_id) then 'selected' else ''
+    totalCashByStaff: ->
+      totalCash = 0
+      (totalCash += customer.debtCash + customer.loanCash) for customer in scope.customerList
+      totalCash
+
     customerLists: ->
       return [] if !@customers or @customers.length is 0
-      Schema.customers.find({_id: {$in: @customers}, group: @_id},{sort: {name: 1}}).map(
+      customerListId = _.intersection(@customers, Session.get('myProfile').customers)
+      customerList = Schema.customers.find({_id: {$in: customerListId}, group: @_id},{sort: {name: 1}}).map(
         (item) ->
           order = Schema.orders.findOne({
             buyer       : item._id
@@ -19,14 +25,16 @@ lemon.defineHyper Template.customerGroupDetailSection,
           item.debtTotalCash = accounting.formatNumber(item.debtCash + item.loanCash) + ' VND'
           item
       )
+      scope.customerList = customerList
+      customerList
 
   events:
     "click .detail-row:not(.selected) td.command": (event, template) ->
-      scope.currentCustomerGroup.selectedCustomer(@_id)
+      scope.currentCustomerGroup.selectedCustomer(@_id) if User.roleIsManager()
       event.stopPropagation()
 
     "click .detail-row.selected td.command": (event, template) ->
-      scope.currentCustomerGroup.unSelectedCustomer(@_id)
+      scope.currentCustomerGroup.unSelectedCustomer(@_id) if User.roleIsManager()
       event.stopPropagation()
 
     "click .detail-row": (event, template) ->

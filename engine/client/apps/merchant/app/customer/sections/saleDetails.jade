@@ -40,7 +40,8 @@ template(name="customerManagementSaleDetails")
       td.has-commands
         span {{transactionName}} {{description}}
         if allowDelete
-          .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
+          if isManager
+            .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
       td.number(colspan="2")
       td.number.border-top(style="color: #666;" class="{{transactionClass beforeDebtBalance}}"): span.icon-feather-1.s5 <b>{{formatNumberBeforeDebtBalance}}</b>
       td.number.border-top: span.s5 <b>{{formatNumber owedCash}}</b>

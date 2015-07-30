@@ -14,6 +14,13 @@ lemon.defineApp Template.customerGroup,
         selector = {$or: [
           {nameSearch: regExp}
         ]}
+
+      unless User.roleIsManager()
+        if searchText
+          selector.$or[0].customers = {$in: Session.get('myProfile').customers}
+        else
+          selector.customers = {$in: Session.get('myProfile').customers}
+
       scope.customerGroupLists = Schema.customerGroups.find(selector, options).fetch()
       scope.customerGroupLists
 
@@ -28,11 +35,14 @@ lemon.defineApp Template.customerGroup,
         else if event.which is 38 then scope.searchFindPreviousCustomerGroup()
         else if event.which is 40 then scope.searchFindNextCustomerGroup()
         else
-          nameIsExisted = CustomerGroup.nameIsExisted(Session.get("customerGroupSearchFilter"), Session.get("myProfile").merchant)
-          Session.set("customerGroupCreationMode", !nameIsExisted)
-          scope.createNewCustomerGroup(template) if event.which is 13
+          if User.roleIsManager()
+            nameIsExisted = CustomerGroup.nameIsExisted(Session.get("customerGroupSearchFilter"), Session.get("myProfile").merchant)
+            Session.set("customerGroupCreationMode", !nameIsExisted)
+            scope.createNewCustomerGroup(template) if event.which is 13
+          else
+            Session.set("customerGroupCreationMode", false)
       , "customerGroupSearchPeople"
       , 50
 
-    "click .createCustomerGroupBtn": (event, template) -> scope.createNewCustomerGroup(template)
+    "click .createCustomerGroupBtn": (event, template) -> scope.createNewCustomerGroup(template) if User.roleIsManager()
     "click .list .doc-item": (event, template) -> CustomerGroup.setSessionCustomerGroup(@_id)

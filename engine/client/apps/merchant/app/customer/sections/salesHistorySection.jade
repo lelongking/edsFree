@@ -26,7 +26,8 @@ template(name="customerManagementSalesHistorySection")
           tr.detail-row
             td.has-commands(style="border-left: solid 2px #d35400;")
               .bill-header {{description}}
-              .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
+              if isManager
+                .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
             td.number(colspan="2")
             td.number
             td.number(align="right"): span.s5 <b>{{formatNumber latestDebtBalance}}</b>

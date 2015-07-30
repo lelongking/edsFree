@@ -2,7 +2,8 @@ Enums = Apps.Merchant.Enums
 Meteor.publish null, ->
   collections = []
   return collections if !@userId
-  merchantId = Meteor.users.findOne(@userId)?.profile?.merchant
+  myProfile  = Meteor.users.findOne(@userId)?.profile
+  merchantId = myProfile.merchant if myProfile
   return collections if !merchantId
 
   #all
@@ -65,6 +66,9 @@ Meteor.publish null, ->
 
   orderFinishQuery.creator = @userId
   Counts.publish @, 'orderHistoryOfStaff', Schema.orders.find(orderFinishQuery)
+
+  customerGroupQuery = merchant: merchantId, customers: {$in: myProfile.customers}
+  Counts.publish @, 'customerGroupOfStaff', Schema.customerGroups.find(customerGroupQuery)
 
 
 

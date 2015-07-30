@@ -6,7 +6,7 @@ scope = logics.customerManagement
 lemon.defineHyper Template.customerManagementOverviewSection,
   rendered: ->
     scope.overviewTemplateInstance = @
-    @ui.$customerName.autosizeInput({space: 10})
+    @ui.$customerName.autosizeInput({space: 10}) if @ui.$customerName
 
   helpers:
     avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
@@ -15,7 +15,7 @@ lemon.defineHyper Template.customerManagementOverviewSection,
     name: ->
       Meteor.setTimeout ->
         scope.overviewTemplateInstance.ui.$customerName.change()
-      ,50 if scope.overviewTemplateInstance
+      ,50 if scope.overviewTemplateInstance?.ui.$customerName?
       @name
     firstName: -> Helpers.firstName(@name)
 

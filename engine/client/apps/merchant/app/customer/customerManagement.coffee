@@ -36,16 +36,22 @@ lemon.defineApp Template.customerManagement,
         else if event.which is 38 then scope.CustomerSearchFindPreviousCustomer(customerSearch)
         else if event.which is 40 then scope.CustomerSearchFindNextCustomer(customerSearch)
         else
-          scope.createNewCustomer(template, customerSearch) if event.which is 13
-          scope.customerManagementCreationMode(customerSearch)
+
+          if User.roleIsManager()
+            scope.createNewCustomer(template, customerSearch) if event.which is 13
+            scope.customerManagementCreationMode(customerSearch)
+          else
+            Session.set("customerManagementCreationMode", false)
+
       , "customerManagementSearchPeople"
       , 50
 
     "click .createCustomerBtn": (event, template) ->
-      fullText      = Session.get("customerManagementSearchFilter")
-      customerSearch = Helpers.Searchify(fullText)
-      scope.createNewCustomer(template, customerSearch)
-      CustomerSearch.search customerSearch
+      if User.roleIsManager()
+        fullText      = Session.get("customerManagementSearchFilter")
+        customerSearch = Helpers.Searchify(fullText)
+        scope.createNewCustomer(template, customerSearch)
+        CustomerSearch.search customerSearch
 
     "click .list .doc-item": (event, template) ->
       if userId = Meteor.userId()

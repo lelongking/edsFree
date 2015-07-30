@@ -23,7 +23,14 @@ simpleSchema.customerGroups = new SimpleSchema
 
 Schema.add 'customerGroups', "CustomerGroup", class CustomerGroup
   @transform: (doc) ->
-    doc.customerCount = -> if @customers then @customers.length else 0
+    doc.customerCount = ->
+      if @customers
+        if User.roleIsManager()
+          @customers.length
+        else
+          _.intersection(@customers, Meteor.users.findOne(Meteor.userId()).profile.customers).length
+      else 0
+
     doc.reCalculateTotalCash = ->
       totalCash = 0
       Schema.customers.find({group: @_id}).forEach((customer) -> totalCash += (customer.debtCash + customer.loanCash))
