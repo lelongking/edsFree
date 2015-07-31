@@ -2,7 +2,7 @@ template(name="customerManagementSaleDetails")
   tr.header-row
     td.has-commands(colspan="5" style="border-left: solid 2px #f39c12")
       | &nbsp;
-      .bill-header(style="background-color: #f39c12;") <b>{{momentFormat version.createdAt "DD/MM/YYYY"}}</b> {{description}}
+      .bill-header(style="background-color: #f39c12;") <b>{{momentFormat version.createdAt "DD/MM/YYYY"}}</b> {{orderCode}} {{description}}
       //.commands
       //  if showDeleteSales
       //    .lemon.rounded.tiny.btn.red.deleteSales: span.icon-minus-4

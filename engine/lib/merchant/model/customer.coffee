@@ -5,6 +5,12 @@ simpleSchema.customers = new SimpleSchema
   description : simpleSchema.OptionalString
   group       : simpleSchema.OptionalString
   staff       : simpleSchema.OptionalString
+  ballot      : type: Number, defaultValue: 0
+  billNo      : simpleSchema.DefaultString('0000')
+
+  orderWaiting : type: [String], defaultValue: []
+  orderFailure : type: [String], defaultValue: []
+  orderSuccess : type: [String], defaultValue: []
 
   paidCash  : simpleSchema.DefaultNumber()
   debtCash  : simpleSchema.DefaultNumber()
@@ -41,6 +47,14 @@ simpleSchema.customers = new SimpleSchema
 
 Schema.add 'customers', "Customer", class Customer
   @transform: (doc) ->
+    doc.orderWaitingCount = -> if @orderWaiting then @orderWaiting.length else 0
+    doc.orderFailureCount = -> if @orderFailure then @orderFailure.length else 0
+    doc.orderSuccessCount = -> if @orderSuccess then @orderSuccess.length else 0
+    doc.totalDebtCash = ->
+      if (typeof @debtCash is "number") and (typeof @loanCash is "number")
+        @debtCash + @loanCash
+      else 0
+
     doc.remove = ->
       (if Schema.customers.remove(@_id)
         totalCash = @debtCash + @loanCash

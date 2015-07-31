@@ -38,7 +38,7 @@ createTransaction = (customer, order)->
   transactionInsert =
     transactionName : 'Phiếu Bán'
 #      transactionCode :
-    description      : 'Phiếu Bán'
+#    description      : 'Phiếu Bán'
     transactionType  : Enums.getValue('TransactionTypes', 'customer')
     receivable       : true
     owner            : customer._id
@@ -202,6 +202,7 @@ Meteor.methods
       accounting         : Meteor.userId()
       accountingConfirmAt: new Date()
     Schema.orders.update orderFound._id, orderUpdate
+    Schema.customers.update orderFound.buyer, $addToSet:{orderWaiting: orderFound._id}
 
   orderExportConfirm: (orderId)->
     user = Meteor.users.findOne(Meteor.userId())
@@ -345,11 +346,13 @@ Meteor.methods
         transaction : transactionId
         successDate : new Date()
       Schema.orders.update orderFound._id, orderUpdate
+      Schema.customers.update orderFound.buyer, {$addToSet:{orderSuccess: orderFound._id}, $pull: {orderWaiting: orderFound._id}}
 
     else
       orderUpdate = $set:
         orderStatus : Enums.getValue('OrderStatus', 'finish')
       Schema.orders.update orderFound._id, orderUpdate
+      Schema.customers.update orderFound.buyer, {$addToSet:{orderFailure: orderFound._id}, $pull: {orderWaiting: orderFound._id}}
 
 
 

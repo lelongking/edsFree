@@ -47,6 +47,7 @@ lemon.defineHyper Template.saleDetailSection,
                 item.errorClass     = ''
 
         if item.invalid then isDisabled = item.invalid
+        (isDisabled = Session.get("currentOrder").buyer is undefined) unless isDisabled
       Session.set('currentOrderIsDisabled', if isDisabled then 'disabled' else '')
 
       @details

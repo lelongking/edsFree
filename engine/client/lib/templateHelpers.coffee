@@ -10,6 +10,9 @@ Template.registerHelper 'activeClass', (sessionName)-> if Session.get(sessionNam
 Template.registerHelper 'isDisabled', (sessionName)-> if Session.get(sessionName) then '' else 'disabled'
 Template.registerHelper 'isNotDisabled', (sessionName)-> if Session.get(sessionName) then '' else 'disabled'
 Template.registerHelper 'isManager', -> User.roleIsManager()
+Template.registerHelper 'orderCode', (orderCode)->
+  return orderCode if orderCode
+  if @orderCode then @orderCode else '----/----'
 
 Template.registerHelper 'getBuyerName', (buyerId)-> Schema.customers.findOne(buyerId)?.name ? 'Khách hàng không tồn tại'
 Template.registerHelper 'getSellerName', (sellerId)-> Meteor.users.findOne(sellerId)?.profile.name ? 'Nhân viên không tồn tại'

@@ -3,6 +3,10 @@ Enums = Apps.Merchant.Enums
 lemon.defineWidget Template.billThumbnail,
   helpers:
     customerAlias: -> Schema.customers.findOne(@buyer)?.name ? @contactName
+    countDay: ->
+      console.log moment(new Date()).diff(@accountingConfirmAt, 'days')
+      moment(new Date()).diff(@accountingConfirmAt, 'days').toString()
+
     isFinish: -> _.contains([Enums.getValue('OrderStatus', 'success'), Enums.getValue('OrderStatus', 'fail')], @orderStatus)
     showStatus: ->
       if @orderStatus is Enums.getValue('OrderStatus', 'exportConfirm') then 'Chờ Xác Nhận'

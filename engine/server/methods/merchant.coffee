@@ -14,6 +14,7 @@ Meteor.methods
         Apps.Merchant.checkExpireDateCreateTransaction(profile, transactionId, parentMerchantProfile.notifyReceivableExpireRange ? 90)
 
   registerMerchant: (email, password, companyName, contactPhone) ->
+    return
     userId = Accounts.createUser {email: email, password: password}
     user = Meteor.users.findOne(userId)
 

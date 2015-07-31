@@ -10,6 +10,11 @@ lemon.defineHyper Template.customerManagementSalesHistorySection,
         customer.debtCash + customer.loanCash
       else 0
 
+    debtCash: ->
+      if customer = Session.get('customerManagementCurrentCustomer')
+        customer.debtCash + customer.paidCash
+      else 0
+
     transactionDescription: -> if Session.get("customerManagementOldDebt") then 'ghi chú nợ cũ' else 'ghi chú trả tiền'
     transactionStatus: -> if Session.get("customerManagementOldDebt") then 'Nợ Cũ' else 'Trả Tiền'
     showTransaction: -> if Session.get("customerManagementOldDebt") is undefined then 'display: none'

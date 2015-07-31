@@ -1,0 +1,22 @@
+template(name="turnoverStaff")
+
+  #content.modern.product-management
+    .dual-content
+      .dual-detail-wrapper
+        .dual-detail
+          .nano: .nano-content
+            //+productManagementOverviewSection currentProduct
+            +orderStaffHistorySection
+
+      .dual-addon
+        .search-filter.icon-search-8
+          input(name='searchFilter' type="text")
+          if creationMode
+            .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createStockBtn
+
+        .nano: .nano-content:  .group-wrapper
+          //each productSearches
+          //  .advanced.caption.inner.product-selection(class="{{activeClass}}")
+          //    +avatarImageComponent(avatar=avatarUrl alias=name instance=this)
+          //    span.text {{name}}
+          //    span.right-info {{allQuality}} {{unitName}}

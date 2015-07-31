@@ -196,6 +196,7 @@ Schema.add 'orders', "Order", class Order
       recalculationOrder(self._id) if Schema.orders.update(self._id, removeDetailQuery, callback)
 
     doc.orderConfirm = ->
+      return console.log('customer not found') unless @buyer
       orderId = @_id
       for detail in @details
         if product = Schema.products.findOne(detail.product)

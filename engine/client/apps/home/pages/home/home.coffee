@@ -67,9 +67,9 @@ lemon.defineWidget Template.home,
       $account        = $(template.find("#account"))
       $secret         = $(template.find("#secret"))
 
-      Meteor.call "registerMerchant", $account.val(), $secret.val(), $companyName.val(), $companyPhone.val(), (error, result) ->
-        (return; console.log error) if error
-        Meteor.loginWithPassword $account.val(), $secret.val(), (error) -> Router.go('/merchantWizard') if !error
+#      Meteor.call "registerMerchant", $account.val(), $secret.val(), $companyName.val(), $companyPhone.val(), (error, result) ->
+#        (return; console.log error) if error
+#        Meteor.loginWithPassword $account.val(), $secret.val(), (error) -> Router.go('/merchantWizard') if !error
 
     "blur #account": (event, template) ->
       $account = $(template.find("#account"))

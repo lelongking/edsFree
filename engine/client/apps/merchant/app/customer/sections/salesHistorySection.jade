@@ -46,6 +46,30 @@ template(name="customerManagementSalesHistorySection")
           class="{{isNotDisabled 'allowCreateTransactionOfCustomer'}}") {{transactionStatus}}
 
     .panel-footer
-      .right-float
-        span.s5 TỔNG NỢ:
-        span.s4 <b>{{formatNumber debtTotalCash}}</b> VND
+      table.lemon-grid.safe
+        tr
+          th(style="width:auto")
+          th(style="width:200px")
+          th(style="width:200px")
+
+        tr
+          td
+          td Nợ tồn đầu kỳ:
+          td.number <b>{{formatNumber loanCash}}</b> VND
+
+        tr
+          td
+          td Phát sinh trong kỳ:
+          td.number <b>{{formatNumber debtCash}}</b> VND
+
+        tr
+          td
+          td Thu nợ trong kỳ:
+          td.number <b>{{formatNumber paidCash}}</b> VND
+
+        tr
+          td
+          td Nợ tồn cuối kỳ:
+          td.number <b>{{formatNumber debtTotalCash}}</b> VND
+
+

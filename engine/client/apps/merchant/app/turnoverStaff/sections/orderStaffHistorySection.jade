@@ -1,0 +1,37 @@
+template(name="orderStaffHistorySection")
+  .section.panel.panel-default.printable-area
+    .panel-heading
+      .show-on-print
+        +merchantPrintingHeader
+        .printing-info
+          .document-name {{name}}
+
+      table.lemon-grid.safe
+        tr
+          th(style="width:93px") Thời Gian
+          th.date(style="width:80px") Số Phiếu
+          th(style="width:auto") Tên Khách Hàng
+          th.number(style="width:150px") Tổng Giá Trị Phiếu
+          th.number(style="width:130px") Tình Trạng Phiếu
+
+    .panel-body.debt-details
+      table.lemon-grid.safe
+        tr
+          th(style="width:100px")
+          th.date(style="width:80px")
+          th(style="width:auto")
+          th.number(style="width:150px")
+          th.number(style="width:140px")
+
+        each historyOrder
+          tr
+            td {{momentFormat accountingConfirmAt 'DD/MM/YYYY'}}
+            td.date {{orderCode}}
+            td {{getBuyerName buyer}}
+            td.number {{formatNumber finalPrice}} VND
+            td.number {{orderStatus}}
+
+    .panel-footer
+      .right-float
+        span.s5.note <b>Tổng Doanh Số: </b>
+        span.s4 {{formatNumber totalTurnoverCash}} VND
