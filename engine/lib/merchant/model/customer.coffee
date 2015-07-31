@@ -5,8 +5,7 @@ simpleSchema.customers = new SimpleSchema
   description : simpleSchema.OptionalString
   group       : simpleSchema.OptionalString
   staff       : simpleSchema.OptionalString
-  ballot      : type: Number, defaultValue: 0
-  billNo      : simpleSchema.DefaultString('0000')
+  billNo      : type: Number, defaultValue: 0
 
   orderWaiting : type: [String], defaultValue: []
   orderFailure : type: [String], defaultValue: []

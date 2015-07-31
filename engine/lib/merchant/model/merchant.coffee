@@ -6,8 +6,8 @@ simpleSchema.merchants = new SimpleSchema
   address   : type: String  , optional: true
   area      : type: [String], optional: true
   totalCash : type: Number  , defaultValue: 0
-  saleBallot  : type: Number  , defaultValue: 0 #số phiếu bán
-  importBallot: type: Number  , defaultValue: 0 #số phiếu nhap
+  saleBill  : type: Number  , defaultValue: 0 #số phiếu bán
+  importBill: type: Number  , defaultValue: 0 #số phiếu nhap
 
   merchantProfile:  type: Object, optional: true
   "merchantProfile.isActive"          : type: Boolean , defaultValue: false

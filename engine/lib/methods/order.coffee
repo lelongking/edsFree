@@ -326,6 +326,12 @@ Meteor.methods
     orderFound = Schema.orders.findOne orderQuery
     return {valid: false, error: 'order not found!'} if !orderFound
 
+    customerFound = Schema.customers.findOne(orderFound.buyer)
+    return {valid: false, error: 'customer not found!'} if !customerFound
+
+    merchantFound = Schema.merchants.findOne(user.profile.merchant)
+    return {valid: false, error: 'merchant not found!'} if !merchantFound
+
     if orderFound.orderType is Enums.getValue('OrderTypes', 'success')
       customerFound = Schema.customers.findOne(orderFound.buyer)
       return {valid: false, error: 'customer not found!'} if !customerFound
@@ -345,8 +351,11 @@ Meteor.methods
         orderStatus : Enums.getValue('OrderStatus', 'finish')
         transaction : transactionId
         successDate : new Date()
+        orderCode   :"#{Helpers.orderCodeCreate(customerFound.billNo)}/#{Helpers.orderCodeCreate(merchantFound.saleBill)}"
+
       Schema.orders.update orderFound._id, orderUpdate
-      Schema.customers.update orderFound.buyer, {$addToSet:{orderSuccess: orderFound._id}, $pull: {orderWaiting: orderFound._id}}
+      Schema.customers.update customerFound._id, {$inc: {billNo: 1},$addToSet:{orderSuccess: orderFound._id}, $pull: {orderWaiting: orderFound._id}}
+      Schema.merchants.update(merchantFound._id, $inc:{saleBill: 1})
 
     else
       orderUpdate = $set:

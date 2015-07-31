@@ -10,6 +10,9 @@ simpleSchema.orders = new SimpleSchema
   orderName   : type: String, defaultValue: 'ĐƠN HÀNG'
   description : type: String, optional: true
 
+  billNoOfBuyer     : type: String, optional: true
+  billNoOfMerchant  : type: String, optional: true
+
   depositCash  : simpleSchema.DefaultNumber()
   discountCash : simpleSchema.DefaultNumber()
   totalPrice   : simpleSchema.DefaultNumber()
