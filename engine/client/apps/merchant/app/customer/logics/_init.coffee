@@ -17,7 +17,14 @@ Apps.Merchant.customerManagementInit.push (scope) ->
   scope.transactionFind = (parentId)-> Schema.transactions.find({parent: parentId}, {sort: {'version.createdAt': 1}})
   scope.findOldDebtCustomer = ->
     if customerId = Session.get("customerManagementCustomerId")
-      Schema.transactions.find({owner: customerId, parent:{$exists: false}}, {sort: {'version.createdAt': 1}})
+      transaction = Schema.transactions.find({owner: customerId, parent:{$exists: false}}, {sort: {'version.createdAt': 1}})
+      transactionCount = transaction.count(); count = 0
+      transaction.map(
+        (transaction) ->
+          count += 1
+          transaction.isLastTransaction = true if count is transactionCount
+          transaction
+      )
     else []
 
   scope.findAllOrders = ->

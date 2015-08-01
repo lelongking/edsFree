@@ -10,9 +10,14 @@ Template.registerHelper 'activeClass', (sessionName)-> if Session.get(sessionNam
 Template.registerHelper 'isDisabled', (sessionName)-> if Session.get(sessionName) then '' else 'disabled'
 Template.registerHelper 'isNotDisabled', (sessionName)-> if Session.get(sessionName) then '' else 'disabled'
 Template.registerHelper 'isManager', -> User.roleIsManager()
+Template.registerHelper 'formatNumberBeforeDebtBalance', -> accounting.formatNumber(@beforeDebtBalance) if @beforeDebtBalance isnt 0
 Template.registerHelper 'orderCode', (orderCode)->
   return orderCode if orderCode
   if @orderCode then @orderCode else '----/----'
+
+Template.registerHelper 'transactionClass', (value)->
+  if value is undefined then (if @receivable then 'receive' else 'paid')
+  else (if value >= 0 then 'receive' else 'paid')
 
 Template.registerHelper 'getBuyerName', (buyerId)-> Schema.customers.findOne(buyerId)?.name ? 'Khách hàng không tồn tại'
 Template.registerHelper 'getSellerName', (sellerId)-> Meteor.users.findOne(sellerId)?.profile.name ? 'Nhân viên không tồn tại'

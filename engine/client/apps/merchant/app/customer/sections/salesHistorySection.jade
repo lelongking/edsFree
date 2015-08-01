@@ -6,12 +6,21 @@ template(name="customerManagementSalesHistorySection")
         .printing-info
           .document-name {{name}}
 
-      table.lemon-grid: tr
-        th(style="width:auto") SẢN PHẨM
-        th.number(style="width:50px") SL
-        th(style="width:100px; text-align:center") ĐƠN VỊ
-        th.number(style="width:120px") ĐƠN GIÁ
-        th.number(style="width:175px") THÀNH TIỀN
+      .show-on-print
+        table.lemon-grid: tr
+          th(style="width:auto") SẢN PHẨM
+          th.number(style="width:50px") SL
+          th.date(style="width:100px") ĐƠN VỊ
+          th.number(style="width:180px") ĐƠN GIÁ
+          th.number(style="width:200px") THÀNH TIỀN
+
+      .hide-on-print
+        table.lemon-grid: tr
+          th(style="width:auto") SẢN PHẨM
+          th.number(style="width:50px") SL
+          th.date(style="width:100px") ĐƠN VỊ
+          th.number(style="width:120px") ĐƠN GIÁ
+          th.number(style="width:175px") THÀNH TIỀN
 
     .panel-body.debt-details
       table.lemon-grid.safe
@@ -19,18 +28,26 @@ template(name="customerManagementSalesHistorySection")
           th(style="width:auto")
           th(style="width:50px")
           th(style="width:100px")
-          th(style="width:120px")
+          th.hide-on-print(style="width:120px")
           th(style="width:182px")
 
-        each oldDebts
-          tr.detail-row
-            td.has-commands(style="border-left: solid 2px #d35400;")
-              .bill-header {{description}}
-              if isManager
-                .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
-            td.number(colspan="2")
-            td.number
-            td.number(align="right"): span.s5 <b>{{formatNumber latestDebtBalance}}</b>
+        if hasOldDebts
+          tr.header-row
+            td.has-commands(colspan="5")
+              | &nbsp;
+              .bill-header <b>Nợ tồn đầu kỳ</b>
+
+          each oldDebts
+            tr.paid-row.top(class="{{transactionClass}}")
+              td.has-commands(style="border-left: solid 2px #d35400;")
+                .bill-header {{description}}
+                if isManager
+                  .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
+              td.number(colspan="2")
+              td.number(style="color: #666;")
+                unless beforeDebtBalance = 0
+                  span.icon-feather-1.s5 <b>{{formatNumberBeforeDebtBalance}}</b>
+              td.number(align="right"): span.s5 <b>{{formatNumber latestDebtBalance}}</b>
 
         each allSales
           +customerManagementSaleDetails this

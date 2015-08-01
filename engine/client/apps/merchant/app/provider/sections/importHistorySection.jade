@@ -22,14 +22,23 @@ template(name="providerManagementImportsHistorySection")
           th(style="width:120px")
           th(style="width:182px")
 
-        each oldDebts
-          tr.detail-row.summary-row
-            td.has-commands
-              .bill-header {{transactionName}}
-              .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
-            td.number(colspan="2"): span.blured-color.icon-feather-1 <b>{{formatNumber latestDebtBalance}}</b>
-            td.number(colspan="1"): span.blured-color <b>{{formatNumber paidBalanceChange}}</b>
-            td.summary-total(align="right"): span.s5 <b>{{formatNumber debtBalanceChange}}</b>
+        if hasOldDebts
+          tr.header-row
+            td.has-commands(colspan="5")
+              | &nbsp;
+              .bill-header <b>Nợ tồn đầu kỳ</b>
+
+          each oldDebts
+            tr.paid-row.top(class="{{transactionClass}}")
+              td.has-commands(style="border-left: solid 2px #d35400;")
+                .bill-header {{description}}
+                if isManager
+                  .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
+              td.number(colspan="2")
+              td.number(style="color: #666;")
+                unless beforeDebtBalance = 0
+                  span.icon-feather-1.s5 <b>{{formatNumberBeforeDebtBalance}}</b>
+              td.number(align="right"): span.s5 <b>{{formatNumber latestDebtBalance}}</b>
 
         each allImports
           +providerManagementImportDetails this

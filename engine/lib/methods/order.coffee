@@ -204,6 +204,9 @@ Meteor.methods
     Schema.orders.update orderFound._id, orderUpdate
     Schema.customers.update orderFound.buyer, $addToSet:{orderWaiting: orderFound._id}
 
+    updateUserId = if orderFound.staff then orderFound.staff else orderFound.seller
+    Meteor.users.update(updateUserId, $inc:{'profile.turnoverCash': orderFound.finalPrice})
+
   orderExportConfirm: (orderId)->
     user = Meteor.users.findOne(Meteor.userId())
     return {valid: false, error: 'user not found!'} if !user

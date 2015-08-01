@@ -1,19 +1,16 @@
 lemon.defineWidget Template.providerManagementImportDetails,
-#  created: ->
-#    console.log @
-#    @child = Schema.transactions.findOne({parent: @data._id})
-#
-#  helpers:
-#    transaction: -> Template.instance().child
-#    detailsTotalCash: -> cash = 0; (cash += item.quality * item.price) for item in @details; cash
+  helpers:
+    formatNumberBeforeDebtBalance: -> accounting.formatNumber(@beforeDebtBalance) if @beforeDebtBalance isnt 0
+    allowDelete: -> @_id is Template.parentData().transaction
+    transactionClass: (value)->
+      if value is undefined
+        if @receivable then 'receive' else 'paid'
+      else
+        if value >= 0 then 'receive' else 'paid'
 
-#    totalDebtBalance: -> @latestDebtBalance + Session.get("providerManagementCurrentProvider")?.customImportDebt
-#
-#    receivableClass: -> if @debtBalanceChange >= 0 then 'paid' else 'receive'
-#    finalReceivableClass: ->
-#      latestDebtBalance = @latestDebtBalance + Session.get("providerManagementCurrentProvider")?.customImportDebt
-#      if latestDebtBalance >= 0 then 'receive' else 'paid'
-
+  events:
+    "click .deleteTransaction": (event, template) ->
+      Meteor.call 'deleteTransaction', @_id
 
 #    showDeleteImport: ->
 #      if @creator is Session.get('myProfile').user

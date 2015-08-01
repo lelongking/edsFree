@@ -6,7 +6,11 @@ lemon.defineApp Template.orderStaffHistorySection,
   helpers:
     historyOrder: -> findOderHistory()
     orderStatus: -> if @orderType is Enums.getValue('OrderTypes', 'success') then 'Hoàn Thành' else 'Đang Chờ Duyệt'
-    totalTurnoverCash: -> total = 0; findOderHistory().forEach((order)-> total += order.finalPrice); total
+    totalTurnoverCash: ->
+      total = 0
+      findOderHistory().forEach((order)-> total += order.finalPrice)
+      Meteor.users.update(Meteor.userId(), $set:{'profile.turnoverCash': total}) if total isnt Session.get('myProfile').turnoverCash
+      total
 
 findOderHistory = ->
   Schema.orders.find({

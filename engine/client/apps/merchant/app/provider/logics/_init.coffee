@@ -18,7 +18,14 @@ Apps.Merchant.providerManagementInit.push (scope) ->
   scope.transactionFind = (parentId)-> Schema.transactions.find({parent: parentId}, {sort: {'version.createdAt': 1}})
   scope.findOldDebt = ->
     if providerId = Session.get("providerManagementProviderId")
-      Schema.transactions.find({owner: providerId, parent:{$exists: false}}, {sort: {'version.createdAt': 1}})
+      transaction = Schema.transactions.find({owner: providerId, parent:{$exists: false}}, {sort: {'version.createdAt': 1}})
+      transactionCount = transaction.count(); count = 0
+      transaction.map(
+        (transaction) ->
+          count += 1
+          transaction.isLastTransaction = true if count is transactionCount
+          transaction
+      )
     else []
 
   scope.findAllImport = ->

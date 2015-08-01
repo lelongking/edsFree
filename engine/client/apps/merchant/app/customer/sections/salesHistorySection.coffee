@@ -5,6 +5,8 @@ lemon.defineHyper Template.customerManagementSalesHistorySection,
   helpers:
     allSales: -> logics.customerManagement.findAllOrders()
     oldDebts: -> logics.customerManagement.findOldDebtCustomer()
+    hasOldDebts: -> logics.customerManagement.findOldDebtCustomer().length > 0
+
     debtTotalCash: ->
       if customer = Session.get('customerManagementCurrentCustomer')
         customer.debtCash + customer.loanCash
