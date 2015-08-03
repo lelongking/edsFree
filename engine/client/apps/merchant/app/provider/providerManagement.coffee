@@ -2,6 +2,7 @@ scope = logics.providerManagement
 
 lemon.defineApp Template.providerManagement,
   helpers:
+    debtTotalCash: -> @debtCash + @loanCash
     providerLists: ->
       selector = {}; options  = {sort: {nameSearch: 1}}; searchText = Session.get("providerManagementSearchFilter")
       if(searchText)

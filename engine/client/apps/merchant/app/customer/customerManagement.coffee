@@ -36,7 +36,6 @@ lemon.defineApp Template.customerManagement,
         else if event.which is 38 then scope.CustomerSearchFindPreviousCustomer(customerSearch)
         else if event.which is 40 then scope.CustomerSearchFindNextCustomer(customerSearch)
         else
-
           if User.roleIsManager()
             scope.createNewCustomer(template, customerSearch) if event.which is 13
             scope.customerManagementCreationMode(customerSearch)

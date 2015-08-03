@@ -119,6 +119,12 @@ Meteor.methods
     importFound = Schema.imports.findOne importQuery
     return {valid: false, error: 'import not found!'} if !importFound
 
+    providerFound = Schema.customers.findOne(importFound.provider)
+    return {valid: false, error: 'provider not found!'} if !providerFound
+
+    merchantFound = Schema.merchants.findOne(user.profile?.merchant)
+    return {valid: false, error: 'merchant not found!'} if !merchantFound
+
     for detail in importFound.details
       detailIndex = 0; updateQuery = {$inc:{}}
       product = Schema.products.findOne(detail.product)
@@ -137,6 +143,8 @@ Meteor.methods
 
     importUpdate = $set:
       importType : Enums.getValue('ImportTypes', 'success')
+      successDate: new Date()
+      billNo     : "#{Helpers.orderCodeCreate(providerFound.billNo)}/#{Helpers.orderCodeCreate(merchantFound.importBill)}"
 
     Schema.providers.update importFound.provider, $set:{allowDelete: false}
     Schema.imports.update importFound._id, importUpdate

@@ -40,6 +40,13 @@ Apps.Merchant.providerManagementInit.push (scope) ->
     else []
 
   scope.providerManagementCreationMode = () ->
+    if Session.get("providerManagementSearchFilter").length > 0
+      if scope.providerLists.length is 0 then nameIsExisted = true
+      else if scope.providerLists.length is 1
+        nameIsExisted = scope.providerLists[0].name isnt Session.get("providerManagementSearchFilter")
+    Session.set("providerManagementCreationMode", nameIsExisted)
+
+
   scope.ProviderSearchFindPreviousProvider = () ->
   scope.ProviderSearchFindNextProvider = () ->
 

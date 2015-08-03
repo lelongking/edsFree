@@ -9,7 +9,7 @@ template(name="providerManagement")
       .dual-addon
         .search-filter.icon-search-8
           input(name='searchFilter' type="text" placeholder="tìm nhà cung cấp...")
-          if creationMode
+          if getSession 'providerManagementCreationMode'
             .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createProviderBtn
 
         .nano: .nano-content
@@ -21,3 +21,7 @@ template(name="providerManagement")
                 .doc-info
                   .title {{name}}
                   .sub-title {{description}}
+                if debtTotalCash
+                  .price-stamp
+                    <b>{{formatNumber debtTotalCash}}</b>
+                    span(style="font-size: 11px;") <b>VND</b>

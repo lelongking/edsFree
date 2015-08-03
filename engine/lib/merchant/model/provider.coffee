@@ -5,7 +5,7 @@ simpleSchema.providers = new SimpleSchema
 
   phone          : simpleSchema.OptionalString
   address        : simpleSchema.OptionalString
-  billNo         : simpleSchema.DefaultString('0000')
+  billNo         : type: Number, defaultValue: 0
   representative : simpleSchema.OptionalString
   manufacturer   : simpleSchema.OptionalString
 

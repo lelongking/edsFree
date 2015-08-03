@@ -73,6 +73,14 @@ simpleSchema.orders = new SimpleSchema
   'details.$.discountCash'  : simpleSchema.DefaultNumber()
   'details.$.isExport'      : simpleSchema.DefaultBoolean(false)
 
+  'details.$.import'                : type: [Object], optional: true
+  'details.$.import.$._id'          : type: String  , optional: true
+  'details.$.import.$.detailId'     : type: String  , optional: true
+  'details.$.import.$.price'        : type: Number  , optional: true
+  'details.$.import.$.quality'      : type: Number  , optional: true
+  'details.$.import.$.basicQuality' : type: Number  , optional: true
+  'details.$.import.$.note'         : type: String  , optional: true
+
   'details.$.returnDetails'               : type: [Object], optional: true
   'details.$.returnDetails.$._id'         : type: String
   'details.$.returnDetails.$.basicQuality': type: Number, optional: true

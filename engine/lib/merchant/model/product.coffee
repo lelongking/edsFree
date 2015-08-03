@@ -259,12 +259,24 @@ Schema.add 'products', "Product", class Product
         Schema.products.update @_id, $set:{status: Enums.getValue('ProductStatuses', 'confirmed')}
 
     doc.submitInventory = (inventoryDetails)->
-      importId = Import.insert(null,'Tồn kho đầu kỳ', null)
-      if importFound = Schema.imports.findOne(importId)
-        importFound.addImportDetail(detail._id, detail.quality, detail.expriceDay) for detail in inventoryDetails
-        Meteor.call 'importInventory', importFound._id, (error, result) ->
-        Schema.products.update @_id, $set:{inventoryInitial: true, allowDelete: false, status: Enums.getValue('ProductStatuses', 'confirmed')}
-#        #TODO: chua tinh tru kho khi ban hang truoc
+      if User.roleIsManager()
+        isValid = false
+        (isValid = true if detail.quality > 0) for detail in inventoryDetails
+
+        if isValid
+          importId = Import.insert(null,'Tồn kho đầu kỳ', null)
+          if importFound = Schema.imports.findOne(importId)
+            for detail in inventoryDetails
+              importFound.addImportDetail(detail._id, detail.quality, detail.expriceDay) if detail.quality > 0
+
+            Meteor.call 'importInventory', importFound._id, (error, result) -> console.log error, result
+  #        #TODO: chua tinh tru kho khi ban hang truoc
+
+        Schema.products.update @_id, $set:{
+          inventoryInitial: true
+          allowDelete     : false
+          status          : Enums.getValue('ProductStatuses', 'confirmed')
+        }
 
 
 

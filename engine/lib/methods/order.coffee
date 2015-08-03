@@ -69,18 +69,18 @@ createTransaction = (customer, order)->
   return transactionId
 
 updateSubtractQualityInProductUnit = (product, orderDetail) ->
-  detailIndex = 0; updateQuery = {$inc:{}}
+  detailIndex = 0; updateProductQuery = {$inc:{}}
   for unit, index in product.units
     if unit._id is orderDetail.productUnit
-      updateQuery.$inc["units.#{index}.quality.saleQuality"]    = orderDetail.basicQuality
-      updateQuery.$inc["units.#{index}.quality.inOderQuality"]  = -orderDetail.basicQuality
-      updateQuery.$inc["units.#{index}.quality.inStockQuality"] = -orderDetail.basicQuality
+      updateProductQuery.$inc["units.#{index}.quality.saleQuality"]    = orderDetail.basicQuality
+      updateProductQuery.$inc["units.#{index}.quality.inOderQuality"]  = -orderDetail.basicQuality
+      updateProductQuery.$inc["units.#{index}.quality.inStockQuality"] = -orderDetail.basicQuality
       break
 
-  updateQuery.$inc["qualities.#{detailIndex}.saleQuality"]    = orderDetail.basicQuality
-  updateQuery.$inc["qualities.#{detailIndex}.inOderQuality"]  = -orderDetail.basicQuality
-  updateQuery.$inc["qualities.#{detailIndex}.inStockQuality"] = -orderDetail.basicQuality
-  Schema.products.update product._id, updateQuery
+  updateProductQuery.$inc["qualities.#{detailIndex}.saleQuality"]    = orderDetail.basicQuality
+  updateProductQuery.$inc["qualities.#{detailIndex}.inOderQuality"]  = -orderDetail.basicQuality
+  updateProductQuery.$inc["qualities.#{detailIndex}.inStockQuality"] = -orderDetail.basicQuality
+  Schema.products.update product._id, updateProductQuery
 
 findAllImport = (productUnitId) ->
   basicImport = Schema.imports.find({
@@ -91,7 +91,7 @@ findAllImport = (productUnitId) ->
   combinedImports = basicImport; console.log combinedImports
   combinedImports
 
-updateSubtractQualityInImport = (orderFound, orderDetail, combinedImports) ->
+updateSubtractQualityInImport = (orderFound, orderDetail, detailIndex, combinedImports) ->
   transactionQuality = 0
   for currentImport in combinedImports
     for importDetail, index in currentImport.details
@@ -118,6 +118,25 @@ updateSubtractQualityInImport = (orderFound, orderDetail, combinedImports) ->
         updateImport.$inc["details.#{index}.availableQuality"]  = -takenQuality
 
         Schema.imports.update currentImport._id, updateImport
+
+#        if currentImport.importType is Enums.getValue('ImportTypes', 'inventorySuccess')
+#
+#        else if currentImport.importType is Enums.getValue('ImportTypes', 'success')
+
+        updateOrderQuery = {$push:{}}
+        importDetail =
+          _id         : currentImport._id
+          detailId    : importDetail._id
+          price       : orderDetail.price
+          quality     : takenQuality/orderDetail.conversion
+          basicQuality: takenQuality
+          note        : 'Hang Ton'
+
+#        "Hết TKĐK"
+#        "Còn #{d}"
+
+        updateOrderQuery.$push["details.#{detailIndex}.import"] = importDetail
+        Schema.orders.update orderFound._id, updateOrderQuery
 
         transactionQuality += takenQuality
         break if transactionQuality == orderDetail.basicQuality
@@ -342,13 +361,13 @@ Meteor.methods
       transactionId = createTransaction(customerFound, orderFound)
       return {valid: false, error: 'customer not found!'} if !transactionId
 
-      for orderDetail in orderFound.details
+      for orderDetail, detailIndex in orderFound.details
         if product = Schema.products.findOne({'units._id': orderDetail.productUnit})
           updateSubtractQualityInProductUnit(product, orderDetail)
 
           if product.inventoryInitial
             combinedImports = findAllImport(orderDetail.productUnit)
-            updateSubtractQualityInImport(orderFound, orderDetail, combinedImports)
+            updateSubtractQualityInImport(orderFound, orderDetail, detailIndex, combinedImports)
 
       orderUpdate = $set:
         orderStatus : Enums.getValue('OrderStatus', 'finish')

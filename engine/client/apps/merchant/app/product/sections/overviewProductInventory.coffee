@@ -59,16 +59,11 @@ lemon.defineHyper Template.overviewProductInventoryDetail,
 
     "change [name ='deliveryDate']": (event, template) ->
       if User.roleIsManager()
-        date = $("[name=deliveryDate]").datepicker().data().datepicker.dates[0]
-        console.log moment(date).endOf("day")._d
+        productUnit = @; inventoryDetails = Session.get('productManagementInventoryDetails')
+        date = $(template.find("[name='deliveryDate']")).datepicker().data().datepicker.dates[0]
 
-        inventoryDetails = Session.get('productManagementInventoryDetails')
-        (detailIndex = index if detail._id is @_id) for detail, index in inventoryDetails
-
-        inventoryDetails[detailIndex].expriceDay = moment(date).endOf("day")._d
+        for detail, index in inventoryDetails
+          if detail._id is productUnit._id
+            if date then detail.expriceDay = moment(date).endOf("day")._d
+            else delete detail.expriceDay
         Session.set('productManagementInventoryDetails', inventoryDetails)
-
-
-
-
-

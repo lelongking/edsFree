@@ -19,7 +19,12 @@ simpleSchema.imports = new SimpleSchema
   accounting          : type: String  , optional: true
   accountingConfirm   : type: Boolean , optional: true
   accountingConfirmAt : type: Date    , optional: true
+
+  stocker             : type: String  , optional: true
+  stockerConfirmAt    : type: Date    , optional: true
+
   transaction         : type: String  , optional: true
+  successDate         : type: Date, optional: true
 
   merchant   : simpleSchema.DefaultMerchant
   allowDelete: simpleSchema.DefaultBoolean()
@@ -35,7 +40,8 @@ simpleSchema.imports = new SimpleSchema
   'details.$.basicQuality'  : {type: Number, min: 0}
   'details.$.conversion'    : {type: Number, min: 1}
   'details.$.discountCash'  : simpleSchema.DefaultNumber()
-  'details.$.expire'        : {type: Date, optional: true}
+  'details.$.expire'        : {type: Date   , optional: true}
+  'details.$.note'          : {type: String , optional: true}
 
   'details.$.importQuality'       : {type: Number, min: 0}
   'details.$.saleQuality'         : simpleSchema.DefaultNumber()
@@ -96,7 +102,7 @@ Schema.add 'imports', "Import", class Import
 
         Schema.imports.update(@_id, optionUpdate) if _.keys(optionUpdate.$set).length > 0
 
-    doc.addImportDetail = (productUnitId, quality = 1, expireDay = undefined, callback) ->
+    doc.addImportDetail = (productUnitId, quality = 1, expireDay = undefined, note = undefined, callback) ->
       product = Schema.products.findOne({'units._id': productUnitId})
       return console.log('Khong tim thay Product') if !product
 
@@ -124,6 +130,7 @@ Schema.add 'imports', "Import", class Import
 
       else
         detailFindQuery.expire            = expireDay if expireDay
+        detailFindQuery.note              = note if note
         detailFindQuery.orderId           = []
         detailFindQuery.quality           = quality
         detailFindQuery.conversion        = productUnit.conversion

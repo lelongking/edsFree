@@ -9,12 +9,12 @@ template(name="productManagementSalesHistorySection")
     .panel-body.debt-details
       table.lemon-grid.safe
         tr
-          th(style="width:auto") ĐỐI TÁC
-          th(style="width:100px; text-align:center") THỜI GIAN
-          th.number(style="width:80px") SỐ LƯỢNG
-          th(style="width:80px; text-align:center") ĐƠN VỊ
+          th(style="width:250px") ĐỐI TÁC
+          th.date(style="width:80px") THỜI GIAN
+          th.number(style="width:40px") SL
+          th.date(style="width:70px") ĐƠN VỊ
           th.number(style="width:100px") GIÁ
-          th.number(style="width:120px") GHI CHÚ
+          th.number(style="width:auto") GHI CHÚ
 
         each allSaleDetails
           tr.header-row
@@ -34,12 +34,11 @@ template(name="productManagementSalesHistorySection")
                       else
                         |NCC {{providerName}}
                       .commands Hết Hạn
-                    td(align="center") {{momentFormat expire "DD/MM/YYYY"}}
-                    //td.number {{formatNumber availableQuality}}/{{formatNumber quality}}
+                    td.date {{momentFormat expire "DD/MM/YYYY"}}
                     td.number {{formatNumber quality}}
-                    td(align="center") {{getProductUnitName productUnit}}
+                    td.date {{getProductUnitName productUnit}}
                     td.number {{formatNumber price}}
-                    td.number
+                    td.number {{note}}
 
             if isOrder
               each details
@@ -48,11 +47,11 @@ template(name="productManagementSalesHistorySection")
                     td.first-column.has-commands
                       span.icon-forward-3 {{getBuyerName buyer}}
                       .commands Ngày Bán
-                    td(align="center") {{momentFormat createdAt "DD/MM/YYYY"}}
+                    td.date {{momentFormat createdAt "DD/MM/YYYY"}}
                     td.number {{quality}}
-                    td(align="center") {{getProductUnitName productUnit}}
+                    td.date {{getProductUnitName productUnit}}
                     td.number {{formatNumber price}}
-                    td.number
+                    td.number {{note}}
 
 
     .panel-footer
