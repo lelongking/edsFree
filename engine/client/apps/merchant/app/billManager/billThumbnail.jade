@@ -1,5 +1,5 @@
 template(name="billThumbnail")
-  .thumbnails.belize-hole(class="#{styles}")
+  .thumbnails(class="{{styles}}")
     +avatarImageComponent(avatar=avatarUrl name=countDay)
 
     .right-caption(style="font-size: 18px; top: 4px;") {{getBuyerName buyer}} - {{momentFormat accountingConfirmAt "DD/MM/YYYY"}}

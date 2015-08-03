@@ -13,6 +13,7 @@ template(name="customerGroupDetailSection")
         th(style="width:110px; text-align:center") GD GẦN NHẤT
         th.number(style="width:110px") GIÁ TRỊ PHIẾU
         th.number(style="width:140px") TỔNG TIỀN
+
     .panel-body.debt-details
       table.lemon-grid(style="cursor: pointer;")
         +customerGroupHeader
@@ -21,7 +22,7 @@ template(name="customerGroupDetailSection")
             if isManager
               td.command.icon-ok-6
             td {{name}}
-            td.date {{latestTradingDay}}
+            td.date {{momentFormat latestTradingDay 'DD/MM/YYYY'}}
             td.number {{latestTradingTotalCash}}
             td.number {{debtTotalCash}}
 

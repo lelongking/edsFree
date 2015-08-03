@@ -2,10 +2,9 @@ scope = logics.billManager
 Enums = Apps.Merchant.Enums
 lemon.defineWidget Template.billThumbnail,
   helpers:
+    styles: -> if moment().subtract(7, 'days').startOf('day')._d > @accountingConfirmAt then 'pumpkin' else 'belize-hole'
     customerAlias: -> Schema.customers.findOne(@buyer)?.name ? @contactName
-    countDay: ->
-      console.log moment(new Date()).diff(@accountingConfirmAt, 'days')
-      moment(new Date()).diff(@accountingConfirmAt, 'days').toString()
+    countDay: -> moment(new Date()).diff(@accountingConfirmAt, 'days').toString()
 
     isFinish: -> _.contains([Enums.getValue('OrderStatus', 'success'), Enums.getValue('OrderStatus', 'fail')], @orderStatus)
     showStatus: ->

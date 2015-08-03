@@ -45,7 +45,7 @@ template(name="customerManagementSalesHistorySection")
                   .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
               td.number(colspan="2")
               td.number(style="color: #666;")
-                unless beforeDebtBalance = 0
+                if showBeforeDebtBalance
                   span.icon-feather-1.s5 <b>{{formatNumberBeforeDebtBalance}}</b>
               td.number(align="right"): span.s5 <b>{{formatNumber latestDebtBalance}}</b>
 

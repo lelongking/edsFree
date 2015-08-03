@@ -11,7 +11,9 @@ lemon.defineHyper Template.customerGroupDetailSection,
     customerLists: ->
       return [] if !@customers or @customers.length is 0
       customerListId = _.intersection(@customers, Session.get('myProfile').customers)
-      customerList = Schema.customers.find({_id: {$in: customerListId}, group: @_id},{sort: {name: 1}}).map(
+      customerQuery = {group: @_id}
+      customerQuery._id = {$in: customerListId} unless User.roleIsManager()
+      customerList = Schema.customers.find(customerQuery,{sort: {name: 1}}).map(
         (item) ->
           order = Schema.orders.findOne({
             buyer       : item._id

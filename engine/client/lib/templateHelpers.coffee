@@ -11,6 +11,7 @@ Template.registerHelper 'isDisabled', (sessionName)-> if Session.get(sessionName
 Template.registerHelper 'isNotDisabled', (sessionName)-> if Session.get(sessionName) then '' else 'disabled'
 Template.registerHelper 'isManager', -> User.roleIsManager()
 Template.registerHelper 'formatNumberBeforeDebtBalance', -> accounting.formatNumber(@beforeDebtBalance) if @beforeDebtBalance isnt 0
+Template.registerHelper 'showBeforeDebtBalance', -> @beforeDebtBalance isnt 0
 Template.registerHelper 'orderCode', (orderCode)->
   return orderCode if orderCode
   if @orderCode then @orderCode else '----/----'
