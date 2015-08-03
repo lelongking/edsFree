@@ -12,7 +12,7 @@ lemon.defineHyper Template.customerGroupDetailSection,
       return [] if !@customers or @customers.length is 0
       customerListId = _.intersection(@customers, Session.get('myProfile').customers)
       customerQuery = {group: @_id}
-      customerQuery._id = {$in: customerListId} unless User.roleIsManager()
+      customerQuery._id = {$in: customerListId} unless User.hasManagerRoles()
       customerList = Schema.customers.find(customerQuery,{sort: {name: 1}}).map(
         (item) ->
           order = Schema.orders.findOne({
@@ -32,11 +32,11 @@ lemon.defineHyper Template.customerGroupDetailSection,
 
   events:
     "click .detail-row:not(.selected) td.command": (event, template) ->
-      scope.currentCustomerGroup.selectedCustomer(@_id) if User.roleIsManager()
+      scope.currentCustomerGroup.selectedCustomer(@_id) if User.hasManagerRoles()
       event.stopPropagation()
 
     "click .detail-row.selected td.command": (event, template) ->
-      scope.currentCustomerGroup.unSelectedCustomer(@_id) if User.roleIsManager()
+      scope.currentCustomerGroup.unSelectedCustomer(@_id) if User.hasManagerRoles()
       event.stopPropagation()
 
     "click .detail-row": (event, template) ->

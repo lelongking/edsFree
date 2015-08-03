@@ -8,7 +8,7 @@ Apps.Merchant.orderManagerInit.push (scope) ->
 Apps.Merchant.orderManagerReactiveRun.push (scope) ->
   if Session.get('mySession')
     orderQuery = {_id: Session.get('mySession').currentOrderBill}
-    orderQuery.seller = Meteor.userId() unless User.roleIsManager()
+    orderQuery.seller = Meteor.userId() unless User.hasManagerRoles()
     scope.currentOrderBill = Schema.orders.findOne orderQuery
     Session.set 'currentOrderBill', scope.currentOrderBill
 

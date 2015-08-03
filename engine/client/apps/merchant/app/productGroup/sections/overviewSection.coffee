@@ -28,7 +28,7 @@ lemon.defineApp Template.productGroupOverviewSection,
     "input .editable": (event, template) -> scope.checkAllowUpdateOverviewProductGroup(template)
     "keyup input.editable": (event, template) ->
       if Session.get("currentProductGroup")
-        scope.editProductGroup(template) if event.which is 13 and User.roleIsManager()
+        scope.editProductGroup(template) if event.which is 13 and User.hasManagerRoles()
 
         if event.which is 27
           if $(event.currentTarget).attr('name') is 'productGroupName'
@@ -39,5 +39,5 @@ lemon.defineApp Template.productGroupOverviewSection,
 
           scope.checkAllowUpdateOverviewProductGroup(template)
 
-    "click .syncProductEdit": (event, template) -> scope.editProduct(template) if User.roleIsManager()
-    "click .productDelete": (event, template) -> scope.currentProductGroup.remove() if User.roleIsManager()
+    "click .syncProductEdit": (event, template) -> scope.editProduct(template) if User.hasManagerRoles()
+    "click .productDelete": (event, template) -> scope.currentProductGroup.remove() if User.hasManagerRoles()

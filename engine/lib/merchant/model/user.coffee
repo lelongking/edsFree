@@ -101,9 +101,9 @@ Meteor.users.attachSchema new SimpleSchema
   allowDelete : type: Boolean   , defaultValue: true
 
 class @User
-  @roleIsManager: ->
+  @hasManagerRoles: ->
     if Session.get('myProfile').roles isnt 'seller' then true
     else if Session.get('myProfile').roles is undefined then false
     else false
 
-  @roleIsAdmin: -> Session.get('myProfile').roles is 'admin'
+  @hasAdminRoles: -> Session.get('myProfile').roles is 'admin'

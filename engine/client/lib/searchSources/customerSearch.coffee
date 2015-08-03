@@ -9,7 +9,7 @@
     selector = {$or: [
       {nameSearch: regExp}
     ]}
-  unless User.roleIsManager()
+  unless User.hasManagerRoles()
     if searchText
       selector.$or[0]._id = {$in: Session.get('myProfile').customers}
     else

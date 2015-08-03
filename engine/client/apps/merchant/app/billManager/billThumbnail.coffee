@@ -18,22 +18,22 @@ lemon.defineWidget Template.billThumbnail,
       Router.go 'billDetail'
 
     "click .success-command": (event, template)->
-      if User.roleIsManager()
+      if User.hasManagerRoles()
         Meteor.call 'orderSuccessConfirm', @_id, (error, result) -> if error then console.log error
       event.stopPropagation()
 
     "click .fail-command": (event, template)->
-      if User.roleIsManager()
+      if User.hasManagerRoles()
         Meteor.call 'orderSuccessConfirm', @_id, false, (error, result) -> if error then console.log error
       event.stopPropagation()
 
     "click .cancel-command": (event, template)->
-      if User.roleIsManager()
+      if User.hasManagerRoles()
         Meteor.call 'orderUndoConfirm', @_id, (error, result) -> if error then console.log error
       event.stopPropagation()
 
     "click .finish-command": (event, template)->
-      if User.roleIsManager()
+      if User.hasManagerRoles()
         order = @
         if order.orderStatus is Enums.getValue('OrderStatus', 'fail')
           Meteor.call 'orderImportConfirm', order._id, (error, result) ->

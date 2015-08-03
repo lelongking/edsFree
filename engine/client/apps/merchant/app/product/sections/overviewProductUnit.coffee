@@ -37,7 +37,7 @@ lemon.defineHyper Template.overviewProductUnit,
 
   events:
     "click span.icon-ok-6": ->
-      Session.set('productManagementAllowAddUnit', !Session.get('productManagementAllowAddUnit')) if User.roleIsManager()
+      Session.set('productManagementAllowAddUnit', !Session.get('productManagementAllowAddUnit')) if User.hasManagerRoles()
 
 
 lemon.defineHyper Template.productUnitTableDetail,
@@ -46,7 +46,7 @@ lemon.defineHyper Template.productUnitTableDetail,
 
   events:
     "keyup [name='editImportQuality']": (event, template) ->
-      if User.roleIsManager()
+      if User.hasManagerRoles()
         $importPrice  = template.ui.$editImportQuality
         console.log accounting.parse($importPrice.val()), @_id
         if event.which is 13
@@ -59,21 +59,21 @@ lemon.defineHyper Template.productUnitDetail,
 
   events:
     "keyup [name='productUnitName']": (event, template) ->
-      if User.roleIsManager()
+      if User.hasManagerRoles()
         console.log $(template.find("[name='productUnitName']")).val()
         scope.currentProduct.unitUpdate(@_id, {name: $(template.find("[name='productUnitName']")).val()})
 
     "keyup [name='productUnitConversion']": (event, template) ->
-      if User.roleIsManager()
+      if User.hasManagerRoles()
         $conversion = $(template.find("[name='productUnitConversion']"))
         if isNaN(Number($conversion.val())) then $conversion.val(@conversion)
         else scope.currentProduct.unitUpdate(@_id, {conversion: $conversion.val()})
 
-    "click .deleteProductUnit": (event, template) -> scope.deleteNewProductUnit(@, event, template) if User.roleIsManager()
+    "click .deleteProductUnit": (event, template) -> scope.deleteNewProductUnit(@, event, template) if User.hasManagerRoles()
 
 lemon.defineHyper Template.productUnitCreateUnit,
   helpers:
     currentProduct: -> scope.currentProduct
 
   events:
-    "click .addProductUnit": (event, template) -> scope.createNewProductUnit(event, template) if User.roleIsManager()
+    "click .addProductUnit": (event, template) -> scope.createNewProductUnit(event, template) if User.hasManagerRoles()

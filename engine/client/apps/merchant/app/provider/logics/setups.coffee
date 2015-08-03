@@ -12,7 +12,7 @@ Apps.Merchant.providerManagementInit.push (scope) ->
     #        else if event.which is 38 then scope.ProviderSearchFindPreviousProvider(providerSearch)
     #        else if event.which is 40 then scope.ProviderSearchFindNextProvider(providerSearch)
       else
-        if User.roleIsManager()
+        if User.hasManagerRoles()
           scope.createNewProvider(template, providerSearch) if event.which is 13
           scope.providerManagementCreationMode(providerSearch)
         else

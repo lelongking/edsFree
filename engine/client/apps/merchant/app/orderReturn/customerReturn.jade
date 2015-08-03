@@ -21,10 +21,12 @@ template(name="customerReturn")
     .editor-row
       .editor-wrapper(style="width: 200px")
         span.ilabel.optional khách hàng
-        +iSelect(options=customerSelectOptions class="field")
+        +iSelect(options=customerSelectOptions class="field customerSelect")
+
       .editor-wrapper(style="width: 200px")
         span.ilabel.optional phiếu bán
-        +iSelect(options=customerSelectOptions class="field")
+        +iSelect(options=orderSelectOptions class="field orderSelect")
+
       .editor-wrapper.pull-right
         button.lemon.btn.lime.pull-right.returnSubmit(class="{{allowSuccessReturn}}" type='submit' style="margin-right: 5px;") HOÀN TẤT
 

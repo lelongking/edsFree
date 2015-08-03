@@ -11,7 +11,7 @@ Enums = Apps.Merchant.Enums
     regExp = Helpers.BuildRegExp(searchText)
     selector = {$or: [{nameSearch: regExp}]}
 
-  unless User.roleIsManager()
+  unless User.hasManagerRoles()
     if(searchText)
       selector.$or[0].status = Enums.getValue('ProductStatuses', 'confirmed')
     else

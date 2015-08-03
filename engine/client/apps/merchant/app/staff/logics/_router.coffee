@@ -4,7 +4,7 @@ lemon.addRoute
   template: 'staffManagement'
   onBeforeAction: ->
     if @ready()
-      Router.go('/merchant') unless User.roleIsAdmin()
+      Router.go('/merchant') unless User.hasAdminRoles()
       Apps.setup(scope, Apps.Merchant.staffManagementInit, 'staffManagement')
       Session.set "currentAppInfo",
         name: "nhân viên"

@@ -35,7 +35,7 @@ lemon.defineApp Template.productManagement,
 #        Product.setSession(nextRow._id) if nextRow
 
       else
-        if User.roleIsManager() and event.which is 13
+        if User.hasManagerRoles() and event.which is 13
           newProduct = Helpers.splitName(searchFilter)
           unless newProduct.name is ""
             newProduct.merchant = Session.get("myProfile").merchant

@@ -28,7 +28,7 @@ lemon.defineApp Template.productGroup,
         else if event.which is 38 then scope.searchFindPreviousProductGroup()
         else if event.which is 40 then scope.searchFindNextProductGroup()
         else
-          if User.roleIsManager()
+          if User.hasManagerRoles()
             nameIsExisted = ProductGroup.nameIsExisted(Session.get("productGroupSearchFilter"), Session.get("myProfile").merchant)
             Session.set("productGroupCreationMode", !nameIsExisted)
             scope.createNewProductGroup(template) if event.which is 13
@@ -38,5 +38,5 @@ lemon.defineApp Template.productGroup,
       , "productGroupSearchPeople"
       , 50
 
-    "click .createProductGroupBtn": (event, template) -> scope.createNewProductGroup(template) if User.roleIsManager()
+    "click .createProductGroupBtn": (event, template) -> scope.createNewProductGroup(template) if User.hasManagerRoles()
     "click .list .doc-item": (event, template) -> ProductGroup.setSessionProductGroup(@_id)

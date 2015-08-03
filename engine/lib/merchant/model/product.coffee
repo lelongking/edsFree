@@ -259,7 +259,7 @@ Schema.add 'products', "Product", class Product
         Schema.products.update @_id, $set:{status: Enums.getValue('ProductStatuses', 'confirmed')}
 
     doc.submitInventory = (inventoryDetails)->
-      if User.roleIsManager()
+      if User.hasManagerRoles()
         isValid = false
         (isValid = true if detail.quality > 0) for detail in inventoryDetails
 

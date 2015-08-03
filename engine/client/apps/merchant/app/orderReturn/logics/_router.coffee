@@ -13,9 +13,10 @@ customerReturnRoute =
     Apps.setup(scope, Apps.Merchant.customerReturnReactiveRun)
 
     return {
-      tabCustomerReturnOptions   : scope.tabCustomerReturnOptions
-      customerSelectOptions      : scope.customerSelectOptions
-      allReturnProduct           : scope.managedReturnProductList
+      tabCustomerReturnOptions : scope.tabCustomerReturnOptions
+      customerSelectOptions    : scope.customerSelectOptions
+      orderSelectOptions       : scope.orderSelectOptions
+      allReturnProduct         : scope.managedReturnProductList
     }
 
 lemon.addRoute [customerReturnRoute], Apps.Merchant.RouterBase

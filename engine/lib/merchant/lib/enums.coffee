@@ -196,6 +196,20 @@ Apps.Merchant.Enums.TransactionStatuses = [
   display: 'Het No'
 ]
 
+#----------Return---------->
+Apps.Merchant.Enums.ReturnTypes = [
+  _id    : 0
+  value  : 'provider'
+  display: 'Nha Cung Cap'
+,
+  _id    : 1
+  value  : 'customer'
+  display: 'Khach Hang'
+,
+  _id    : 2
+  value  : 'other'
+  display: 'Khac'
+]
 
 #----------Product---------->
 Apps.Merchant.Enums.ProductStatuses = [
@@ -243,6 +257,7 @@ Apps.Merchant.Enums.Product33Statuses = [
   display: 'HTX'
 ]
 
+#---------Khu Vuc 63 tinh thanh---
 Apps.Merchant.Enums.Area = [
   _id    : 0
   value  : 'VN'

@@ -41,5 +41,5 @@ lemon.defineApp Template.customerGroupOverviewSection,
 
           scope.checkAllowUpdateOverviewCustomerGroup(template)
 
-    "click .syncCustomerEdit": (event, template) -> scope.editCustomer(template) if User.roleIsManager()
-    "click .customerDelete": (event, template) -> scope.currentCustomerGroup.remove() if User.roleIsManager()
+    "click .syncCustomerEdit": (event, template) -> scope.editCustomer(template) if User.hasManagerRoles()
+    "click .customerDelete": (event, template) -> scope.currentCustomerGroup.remove() if User.hasManagerRoles()

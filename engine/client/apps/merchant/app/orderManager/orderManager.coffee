@@ -9,7 +9,7 @@ lemon.defineApp Template.orderManager,
         orderType   : {$in:[ Enums.getValue('OrderTypes', 'success')]}
         orderStatus : Enums.getValue('OrderStatus', 'finish')
 
-      orderQuery.seller = Meteor.userId() unless User.roleIsManager()
+      orderQuery.seller = Meteor.userId() unless User.hasManagerRoles()
       orders = Schema.orders.find(orderQuery, {sort:{accountingConfirmAt: -1}}).fetch()
 
       if orders.length > 0

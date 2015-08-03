@@ -1,23 +1,27 @@
+Enums = Apps.Merchant.Enums
 simpleSchema.returns = new SimpleSchema
   returnName  : simpleSchema.DefaultString('Trả hàng')
   returnType  : simpleSchema.DefaultNumber()
   status      : simpleSchema.DefaultNumber()
   owner       : simpleSchema.OptionalString
+  parent      : simpleSchema.OptionalString
+
+  description      : simpleSchema.OptionalString
+  returnCode       : simpleSchema.OptionalString
+  returnMethods    : simpleSchema.DefaultNumber()
+
+  discountCash : type: Number, defaultValue: 0
+  depositCash  : type: Number, defaultValue: 0
+  totalPrice   : type: Number, defaultValue: 0
+  finalPrice   : type: Number, defaultValue: 0
 
   merchant    : simpleSchema.DefaultMerchant
   allowDelete : simpleSchema.DefaultBoolean()
   creator     : simpleSchema.DefaultCreator
   version: { type: simpleSchema.Version }
 
-  profiles                    : type: Object , optional: true
-  'profiles.description'      : simpleSchema.OptionalString
-  'profiles.returnCode'       : simpleSchema.OptionalString
-  'profiles.returnMethods'    : simpleSchema.DefaultNumber()
 
-  'profiles.discountCash'     : simpleSchema.DefaultNumber()
-  'profiles.depositCash'      : simpleSchema.DefaultNumber()
-  'profiles.totalPrice'       : simpleSchema.DefaultNumber()
-  'profiles.finalPrice'       : simpleSchema.DefaultNumber()
+
 
   details                   : type: [Object], defaultValue: []
   'details.$._id'           : simpleSchema.UniqueId
@@ -31,7 +35,8 @@ simpleSchema.returns = new SimpleSchema
 
 Schema.add 'returns', "Return", class Return
   @transform: (doc) ->
-    doc.remove = -> Schema.returns.remove @_id if @allowDelete
+    doc.remove = ->
+      Schema.returns.remove @_id if @allowDelete and User.hasManagerRoles()
 
     doc.changeDescription = (description)->
       option = $set:{'profiles.description': description}

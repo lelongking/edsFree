@@ -9,7 +9,7 @@ Template.registerHelper 'avatarUrl', -> if @avatar then AvatarImages.findOne(@av
 Template.registerHelper 'activeClass', (sessionName)-> if Session.get(sessionName)?._id is @_id  then 'active' else ''
 Template.registerHelper 'isDisabled', (sessionName)-> if Session.get(sessionName) then '' else 'disabled'
 Template.registerHelper 'isNotDisabled', (sessionName)-> if Session.get(sessionName) then '' else 'disabled'
-Template.registerHelper 'isManager', -> User.roleIsManager()
+Template.registerHelper 'isManager', -> User.hasManagerRoles()
 Template.registerHelper 'formatNumberBeforeDebtBalance', -> accounting.formatNumber(@beforeDebtBalance) if @beforeDebtBalance isnt 0
 Template.registerHelper 'showBeforeDebtBalance', -> @beforeDebtBalance isnt 0
 Template.registerHelper 'orderCode', (orderCode)->

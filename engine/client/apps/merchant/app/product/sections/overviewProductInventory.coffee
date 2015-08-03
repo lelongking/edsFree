@@ -20,13 +20,13 @@ lemon.defineHyper Template.overviewProductInventory,
 
   events:
     "click .denyInventory": (event, template) ->
-      if User.roleIsManager()
+      if User.hasManagerRoles()
         unless scope.currentProduct.inventoryInitial
           Session.set('productManagementAllowInventory', false)
           Session.set('productManagementInventoryDetails', false)
 
     "click .allowInventory": (event, template) ->
-      if User.roleIsManager()
+      if User.hasManagerRoles()
         unless scope.currentProduct.inventoryInitial
           Session.set('productManagementAllowInventory', true)
           details = []
@@ -46,7 +46,7 @@ lemon.defineHyper Template.overviewProductInventoryDetail,
 
   events:
     "keyup [name='unitQuality']": (event, template) ->
-      if User.roleIsManager()
+      if User.hasManagerRoles()
         $quality = $(template.find("[name='unitQuality']"))
         inventoryDetails = Session.get('productManagementInventoryDetails')
         (detailIndex = index if detail._id is @_id) for detail, index in inventoryDetails
@@ -58,7 +58,7 @@ lemon.defineHyper Template.overviewProductInventoryDetail,
           Session.set('productManagementInventoryDetails', inventoryDetails)
 
     "change [name ='deliveryDate']": (event, template) ->
-      if User.roleIsManager()
+      if User.hasManagerRoles()
         productUnit = @; inventoryDetails = Session.get('productManagementInventoryDetails')
         date = $(template.find("[name='deliveryDate']")).datepicker().data().datepicker.dates[0]
 

@@ -36,7 +36,7 @@ lemon.defineApp Template.customerManagement,
         else if event.which is 38 then scope.CustomerSearchFindPreviousCustomer(customerSearch)
         else if event.which is 40 then scope.CustomerSearchFindNextCustomer(customerSearch)
         else
-          if User.roleIsManager()
+          if User.hasManagerRoles()
             scope.createNewCustomer(template, customerSearch) if event.which is 13
             scope.customerManagementCreationMode(customerSearch)
           else
@@ -46,7 +46,7 @@ lemon.defineApp Template.customerManagement,
       , 50
 
     "click .createCustomerBtn": (event, template) ->
-      if User.roleIsManager()
+      if User.hasManagerRoles()
         fullText      = Session.get("customerManagementSearchFilter")
         customerSearch = Helpers.Searchify(fullText)
         scope.createNewCustomer(template, customerSearch)

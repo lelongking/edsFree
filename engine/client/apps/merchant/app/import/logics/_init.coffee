@@ -1,3 +1,4 @@
+Enums = Apps.Merchant.Enums
 logics.import = {}
 Apps.Merchant.importInit = []
 Apps.Merchant.importReload = []

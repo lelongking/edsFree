@@ -23,7 +23,7 @@ lemon.defineApp Template.billManager,
         merchant    : Merchant.getId()
         orderType   : Enums.getValue('OrderTypes', 'tracking')
         orderStatus : Enums.getValue('OrderStatus', 'sellerConfirm')
-      orderQuery.seller = Meteor.userId() unless User.roleIsManager()
+      orderQuery.seller = Meteor.userId() unless User.hasManagerRoles()
 
       Schema.orders.find(orderQuery).map (item) ->
         item.buyerName  = -> Schema.customers.findOne(item.buyer)?.name ? item.orderName
@@ -38,14 +38,14 @@ lemon.defineApp Template.billManager,
       itemTemplate: 'billThumbnail'
       reactiveSourceGetter: ->
         gridOrderQuery.accountingConfirmAt = {$gte: moment().subtract(7, 'days').startOf('day')._d}
-        gridOrderQuery.seller = Meteor.userId() unless User.roleIsManager()
+        gridOrderQuery.seller = Meteor.userId() unless User.hasManagerRoles()
         Schema.orders.find(gridOrderQuery)
 
     deliveringGridOptions:
       itemTemplate: 'billThumbnail'
       reactiveSourceGetter: ->
         gridOrderQuery.accountingConfirmAt = {$lt: moment().subtract(7, 'days').startOf('day')._d}
-        gridOrderQuery.seller = Meteor.userId() unless User.roleIsManager()
+        gridOrderQuery.seller = Meteor.userId() unless User.hasManagerRoles()
         Schema.orders.find(gridOrderQuery)
 
   events:

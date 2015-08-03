@@ -25,7 +25,7 @@ Schema.add 'customerGroups', "CustomerGroup", class CustomerGroup
   @transform: (doc) ->
     doc.customerCount = ->
       if @customers
-        if User.roleIsManager()
+        if User.hasManagerRoles()
           @customers.length
         else
           _.intersection(@customers, Meteor.users.findOne(Meteor.userId()).profile.customers).length
