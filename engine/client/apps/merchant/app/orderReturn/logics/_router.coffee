@@ -13,7 +13,7 @@ customerReturnRoute =
     Apps.setup(scope, Apps.Merchant.customerReturnReactiveRun)
 
     return {
-      tabOptions                 : scope.tabOptions
+      tabCustomerReturnOptions   : scope.tabCustomerReturnOptions
       customerSelectOptions      : scope.customerSelectOptions
       allReturnProduct           : scope.managedReturnProductList
     }

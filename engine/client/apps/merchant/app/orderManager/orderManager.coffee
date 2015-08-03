@@ -10,10 +10,10 @@ lemon.defineApp Template.orderManager,
         orderStatus : Enums.getValue('OrderStatus', 'finish')
 
       orderQuery.seller = Meteor.userId() unless User.roleIsManager()
-      orders = Schema.orders.find(orderQuery).fetch()
+      orders = Schema.orders.find(orderQuery, {sort:{accountingConfirmAt: -1}}).fetch()
 
       if orders.length > 0
-        for key, value of _.groupBy(orders, (item) -> moment(item.version.createdAt).format('MM/YYYY'))
+        for key, value of _.groupBy(orders, (item) -> moment(item.accountingConfirmAt).format('MM/YYYY'))
           details.push({createdAt: key, data: value})
       details
 

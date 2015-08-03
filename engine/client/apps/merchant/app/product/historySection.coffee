@@ -24,12 +24,12 @@ lemon.defineHyper Template.productManagementSalesHistorySection,
           (order) ->
             for detail in order.details
               detail.buyer     = order.buyer
-              detail.createdAt = order.version.createdAt
+              detail.createdAt = order.accountingConfirmAt
 
             order.isOrder = true
             order
         )
-        for key, value of _.groupBy(allImports.concat(allOrders), (item) -> moment(item.version.createdAt).format('L'))
+        for key, value of _.groupBy(allImports.concat(allOrders), (item) -> moment(item.accountingConfirmAt ? item.version.createdAt).format('L'))
           details.push({createdAt: key, data: value})
 
       return details

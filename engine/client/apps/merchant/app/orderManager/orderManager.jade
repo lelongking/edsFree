@@ -18,6 +18,6 @@ template(name="orderManager")
                   .caption.inner.advanced.product-selection(class="{{activeClass 'currentOrderBill'}}")
                     +avatarImageComponent(avatar=avatarUrl alias=orderName)
                     span.text {{orderName}}
-                      .commands {{momentFormat version.createdAt 'DD/MM/YYYY'}}
+                      .commands {{momentFormat accountingConfirmAt 'DD/MM/YYYY'}}
                     span.left-info {{getSellerName seller}}
                     span.right-info {{formatNumber finalPrice}} VND

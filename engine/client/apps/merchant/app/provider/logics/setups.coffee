@@ -97,4 +97,5 @@ Apps.Merchant.providerManagementInit.push (scope) ->
         receivable      = Session.get("providerManagementOldDebt")
         Meteor.call 'createTransaction', ownerId, debitCash, null, description, transactionType, receivable, (error, result) ->
           Session.set("allowCreateTransactionOfImport", false)
+          Session.set("providerManagementOldDebt")
           $payDescription.val(''); $payAmount.val('')

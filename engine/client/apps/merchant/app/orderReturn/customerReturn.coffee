@@ -7,11 +7,7 @@ lemon.defineApp Template.customerReturn,
   created: ->
     CustomerSearch.search('')
     UnitProductSearch.search('')
-#    lemon.dependencies.resolve('customerReturn')
 
-#  rendered: ->
-#    if customer = Session.get('customerReturnCurrentCustomer')
-#      Meteor.subscribe('customerReturnProductData', customer._id)
 
   events:
     "keyup input[name='searchFilter']": (event, template) ->

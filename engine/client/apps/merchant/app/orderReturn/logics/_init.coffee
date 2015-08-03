@@ -15,7 +15,7 @@ Apps.Merchant.customerReturnReactiveRun.push (scope) ->
 #    Session.set 'currentCustomerReturn'
 
 Apps.Merchant.customerReturnInit.push (scope) ->
-  scope.tabOptions =
+  scope.tabCustomerReturnOptions =
     source: Return.findNotSubmitOf('customer')
     currentSource: 'currentCustomerReturn'
     caption: 'returnName'

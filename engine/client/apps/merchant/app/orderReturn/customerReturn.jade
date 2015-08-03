@@ -1,34 +1,31 @@
 template(name="customerReturn")
-  //#header
-  //  .editor-row
 
   #content.modern.sales-app
     .dual-content
       .dual-detail-wrapper
-        .dual-detail
-          .nano: .nano-content
-            +customerReturnDetailSection getSession 'currentCustomerReturn'
+        .dual-detail: .nano: .nano-content: +customerReturnDetailSection getSession 'currentCustomerReturn'
 
       .dual-addon
-        .search-filter.icon-search-8
-          input(name='searchFilter' type="text" placeholder="tìm sản phẩm...")
-        .nano: .nano-content
-          .group-wrapper
-            each unitProductSearches
-              .caption.advanced.inner.product-selection(class="{{productSelectionActiveClass}}")
-                +avatarImageComponent(avatar=avatarUrl alias=name)
-                span.text {{name}}
-                  .commands
-                    span.icon-right-open-big.addReturnDetail
-                span.right-info {{unitName}}
+        .search-filter.icon-search-8: input(name='searchFilter' type="text" placeholder="tìm sản phẩm...")
+        .nano: .nano-content: .group-wrapper
+          each unitProductSearches
+            .caption.advanced.inner.product-selection(class="{{productSelectionActiveClass}}")
+              +avatarImageComponent(avatar=avatarUrl alias=name)
+              span.text {{name}}
+                .commands
+                  span.icon-right-open-big.addReturnDetail
+              span.right-info {{unitName}}
 
   #footer.modern
     .editor-wrapper.dual-spacer
     .editor-row
-      .editor-wrapper(style="width: 170px")
+      .editor-wrapper(style="width: 200px")
         span.ilabel.optional khách hàng
+        +iSelect(options=customerSelectOptions class="field")
+      .editor-wrapper(style="width: 200px")
+        span.ilabel.optional phiếu bán
         +iSelect(options=customerSelectOptions class="field")
       .editor-wrapper.pull-right
         button.lemon.btn.lime.pull-right.returnSubmit(class="{{allowSuccessReturn}}" type='submit' style="margin-right: 5px;") HOÀN TẤT
 
-    +tabComponent(options=tabOptions)
+    +tabComponent(options=tabCustomerReturnOptions)

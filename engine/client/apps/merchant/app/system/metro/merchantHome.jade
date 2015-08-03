@@ -107,8 +107,8 @@ template(name="merchantHome")
                 .tile.carrot
                   //.app-icon.icon-flash-3
                   .app-count
-                  .app-count-description quản lý
-                  span.caption.app-name.bottom.right thu chi
+                  .app-count-description thu chi
+                  span.caption.app-name.bottom.right Tài Chính
 
                 .tile.amethyst.order-management(data-app="sales")
                   //.app-icon.icon-basket
@@ -157,7 +157,7 @@ template(name="merchantHome")
                   .app-count-description hệ thống
                   span.caption.app-name.bottom.right tùy chỉnh
 
-                .tile.pink
+                .tile.pink(data-app='customerReturn')
                   //.app-icon.icon-reply-outline
                   .app-count {{getPublishedCount 'customerReturns'}}
                   .app-count-description khách hàng

@@ -43,7 +43,7 @@ template(name="providerManagementImportsHistorySection")
         each allImports
           +providerManagementImportDetails this
 
-        tr.editors
+        tr.editors(style="{{showTransaction}}")
           td(colspan="1"): input.transaction-field(type="text" size="10"
           name='payImportDescription' placeholder="{{transactionDescription}}")
 
