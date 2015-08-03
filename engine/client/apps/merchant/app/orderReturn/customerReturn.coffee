@@ -8,6 +8,14 @@ lemon.defineApp Template.customerReturn,
     CustomerSearch.search('')
     UnitProductSearch.search('')
 
+  rendered: ->
+    if customerReturn = Session.get('currentCustomerReturn')
+      $(".customerSelect").select2("readonly", false)
+      $(".orderSelect").select2("readonly", if customerReturn.owner then false else true)
+    else
+      $(".customerSelect").select2("readonly", true)
+      $(".orderSelect").select2("readonly", true)
+
 
   events:
     "keyup input[name='searchFilter']": (event, template) ->

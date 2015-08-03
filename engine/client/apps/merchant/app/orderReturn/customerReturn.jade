@@ -8,13 +8,13 @@ template(name="customerReturn")
       .dual-addon
         .search-filter.icon-search-8: input(name='searchFilter' type="text" placeholder="tìm sản phẩm...")
         .nano: .nano-content: .group-wrapper
-          each unitProductSearches
+          each getSession 'currentReturnParent'
             .caption.advanced.inner.product-selection(class="{{productSelectionActiveClass}}")
               +avatarImageComponent(avatar=avatarUrl alias=name)
-              span.text {{name}}
+              span.text {{getProductName product}}
                 .commands
                   span.icon-right-open-big.addReturnDetail
-              span.right-info {{unitName}}
+              span.right-info {{quality}} {{getProductUnitName productUnit}}
 
   #footer.modern
     .editor-wrapper.dual-spacer

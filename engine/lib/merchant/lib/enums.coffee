@@ -23,19 +23,19 @@ Apps.Merchant.Enums.GenderTypes = [
 Apps.Merchant.Enums.OrderTypes = [
   _id    : 0
   value  : 'initialize'
-  display: 'theo doi'
+  display: 'moi tao'
 ,
   _id    : 1
   value  : 'tracking'
-  display: 'moi tao'
+  display: 'theo doi'
 ,
   _id    : 2
   value  : 'success'
-  display: 'moi tao'
+  display: 'thanh cong'
 ,
   _id    : 3
   value  : 'fail'
-  display: 'moi tao'
+  display: 'that bai'
 ]
 
 Apps.Merchant.Enums.OrderStatus = [
@@ -209,6 +209,20 @@ Apps.Merchant.Enums.ReturnTypes = [
   _id    : 2
   value  : 'other'
   display: 'Khac'
+]
+
+Apps.Merchant.Enums.ReturnStatus = [
+  _id    : 0
+  value  : 'initialize'
+  display: 'moi tao'
+,
+  _id    : 1
+  value  : 'tracking'
+  display: 'Con No'
+,
+  _id    : 2
+  value  : 'closed'
+  display: 'Het No'
 ]
 
 #----------Product---------->

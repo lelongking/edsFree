@@ -1,14 +1,16 @@
 Enums = Apps.Merchant.Enums
 simpleSchema.returns = new SimpleSchema
-  returnName  : simpleSchema.DefaultString('Trả hàng')
-  returnType  : simpleSchema.DefaultNumber()
-  status      : simpleSchema.DefaultNumber()
-  owner       : simpleSchema.OptionalString
-  parent      : simpleSchema.OptionalString
-
-  description      : simpleSchema.OptionalString
-  returnCode       : simpleSchema.OptionalString
   returnMethods    : simpleSchema.DefaultNumber()
+
+  owner  : simpleSchema.OptionalString
+  parent : simpleSchema.OptionalString
+
+  returnName  : type: String, defaultValue: 'Trả hàng'
+  description : simpleSchema.OptionalString
+  returnCode  : simpleSchema.OptionalString
+
+  returnType  : type: Number,  defaultValue: Enums.getValue('ReturnTypes', 'customer')
+  returnStatus: type: Number,  defaultValue: Enums.getValue('ReturnStatus', 'initialize')
 
   discountCash : type: Number, defaultValue: 0
   depositCash  : type: Number, defaultValue: 0
@@ -19,9 +21,6 @@ simpleSchema.returns = new SimpleSchema
   allowDelete : simpleSchema.DefaultBoolean()
   creator     : simpleSchema.DefaultCreator
   version: { type: simpleSchema.Version }
-
-
-
 
   details                   : type: [Object], defaultValue: []
   'details.$._id'           : simpleSchema.UniqueId
@@ -42,16 +41,47 @@ Schema.add 'returns', "Return", class Return
       option = $set:{'profiles.description': description}
       Schema.returns.update @_id, option
 
-    doc.changeOwner = (ownerId)->
-      if @returnType is 0
+    doc.selectOwner = (ownerId)->
+      if @returnType is Enums.getValue('ReturnTypes', 'customer')
         if customer = Schema.customers.findOne ownerId
-          changeOwnerUpdate = $set:{ owner: customer._id, returnName: Helpers.shortName2(customer.name) }
-
-      else if @returnType is 1
+          changeOwnerUpdate = $unset:{parent: true}, $set:{
+            owner       : customer._id
+            returnName  : Helpers.shortName2(customer.name)
+            discountCash: 0
+            depositCash : 0
+            totalPrice  : 0
+            finalPrice  : 0
+            details     : []
+          }
+      else if @returnType is Enums.getValue('ReturnTypes', 'provider')
         if provider = Schema.providers.findOne ownerId
-          changeOwnerUpdate = $set:{ owner: provider._id, returnName: Helpers.shortName2(provider.name) }
+          changeOwnerUpdate = $unset:{parent: true}, $set:{
+            owner       : provider._id
+            returnName  : Helpers.shortName2(provider.name)
+            discountCash: 0
+            depositCash : 0
+            totalPrice  : 0
+            finalPrice  : 0
+            details     : []
+          }
 
-      Schema.returns.update @_id, changeOwnerUpdate unless _.isEmpty(changeOwnerUpdate.$set)
+      Schema.returns.update(@_id, changeOwnerUpdate) if changeOwnerUpdate
+
+    doc.selectParent = (parentId)->
+      if @returnType is Enums.getValue('ReturnTypes', 'customer')
+        parent = Schema.orders.findOne({_id: parentId, merchant: Merchant.getId(), buyer: @owner})
+      else if @returnType is Enums.getValue('ReturnTypes', 'provider')
+        parent = Schema.imports.findOne({_id: parentId, merchant: Merchant.getId(), provider: @owner})
+
+      if parent
+        Schema.returns.update @_id, $set:{
+          parent      : parent._id
+          discountCash: 0
+          depositCash : 0
+          totalPrice  : 0
+          finalPrice  : 0
+          details     : []
+        }
 
     doc.addReturnDetail = (productUnitId, quality = 1, callback)->
       product = Schema.products.findOne({'units._id': productUnitId})
@@ -110,14 +140,52 @@ Schema.add 'returns', "Return", class Return
       removeDetailQuery.$pull.details = self.details[detailIndex]
       recalculationReturn(@_id) if Schema.returns.update(@_id, removeDetailQuery, callback)
 
-  @insert: (returnType = 'customer')->
-    Schema.returns.insert {}
+  @insert: (ownerId = undefined, parentId = undefined, returnType = Enums.getValue('OrderTypes', 'customer'))->
+    insertOption = {}
+    if Enums.getValue('OrderTypes', 'customer') is returnType or Enums.getValue('OrderTypes', 'provider') is returnType
+      insertOption.returnType = returnType
+    else return
+
+    if ownerId
+      ownerIsCustomer = Schema.customers.findOne(ownerId)
+      ownerIsProvider = Schema.providers.findOne(ownerId) unless ownerIsCustomer
+
+      if ownerIsCustomer
+        parent = Schema.orders.findOne({
+          _id         : parentId
+          buyer       : ownerId
+          orderType   : Enums.getValue('OrderTypes', 'success')
+          orderStatus : Enums.getValue('OrderStatus', 'finish')
+        })
+      else if ownerIsProvider
+        parent = Schema.imports.findOne({
+          _id        : parentId
+          provider   : ownerId
+          importType : Enums.getValue('ImportTypes', 'success')
+        })
+
+      insertOption.parent = parentId if parent
+
+      if ownerIsCustomer or ownerIsProvider
+        insertOption.owner = ownerId
+        if ownerIsCustomer
+          insertOption.returnType = Enums.getValue('OrderTypes', 'customer')
+          insertOption.returnName = Helpers.shortName2(ownerIsCustomer.name)
+        else
+          insertOption.returnType = Enums.getValue('OrderTypes', 'provider')
+          insertOption.returnName = Helpers.shortName2(ownerIsProvider.name)
+
+    Schema.returns.insert insertOption
 
   @findNotSubmitOf: (returnType = 'customer')->
-    if returnType is 'customer'
-      Schema.returns.find({returnType: 0})
-    else if returnType is 'provider'
-      Schema.returns.find({returnType: 1})
+    if returnType is 'customer' or returnType is 'provider'
+      Schema.returns.find({
+        creator     : Meteor.userId()
+        merchant    : Merchant.getId()
+        returnType  : Enums.getValue('ReturnTypes', returnType)
+        returnStatus: Enums.getValue('ReturnStatus', 'initialize')
+      })
+
 
   @setReturnSession: (returnId, returnType = 'customer')->
     if returnType is 'customer'
@@ -125,7 +193,7 @@ Schema.add 'returns', "Return", class Return
     else if returnType is 'provider'
       updateSession = $set: {'sessions.currentProviderReturn': returnId}
 
-    Meteor.users.update Meteor.userId(), updateSession
+    Meteor.users.update(Meteor.userId(), updateSession) if updateSession
 
 recalculationReturn = (returnId) ->
   if returnFound = Schema.returns.findOne(returnId)
