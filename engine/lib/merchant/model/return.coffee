@@ -17,6 +17,9 @@ simpleSchema.returns = new SimpleSchema
   totalPrice   : type: Number, defaultValue: 0
   finalPrice   : type: Number, defaultValue: 0
 
+  staffConfirm: type: String, optional: true
+  successDate : type: Date  , optional: true
+
   merchant    : simpleSchema.DefaultMerchant
   allowDelete : simpleSchema.DefaultBoolean()
   creator     : simpleSchema.DefaultCreator
@@ -38,7 +41,7 @@ Schema.add 'returns', "Return", class Return
       Schema.returns.remove @_id if @allowDelete and User.hasManagerRoles()
 
     doc.changeDescription = (description)->
-      option = $set:{'profiles.description': description}
+      option = $set:{description: description}
       Schema.returns.update @_id, option
 
     doc.selectOwner = (ownerId)->
@@ -76,6 +79,7 @@ Schema.add 'returns', "Return", class Return
       if parent
         Schema.returns.update @_id, $set:{
           parent      : parent._id
+          returnCode  : parent.orderCode ? parent.importCode
           discountCash: 0
           depositCash : 0
           totalPrice  : 0
@@ -83,34 +87,35 @@ Schema.add 'returns', "Return", class Return
           details     : []
         }
 
-    doc.addReturnDetail = (productUnitId, quality = 1, callback)->
-      product = Schema.products.findOne({'units._id': productUnitId})
-      return console.log('Khong tim thay Product') if !product
+    doc.addReturnDetail = (productUnitId, quality = 1, price, callback)->
+      if @parent
+        product = Schema.products.findOne({'units._id': productUnitId})
+        return console.log('Khong tim thay Product') if !product
 
-      productUnit = _.findWhere(product.units, {_id: productUnitId})
-      return console.log('Khong tim thay ProductUnit') if !productUnit
+        productUnit = _.findWhere(product.units, {_id: productUnitId})
+        return console.log('Khong tim thay ProductUnit') if !productUnit
 
-      price = product.getPrice(productUnitId, @provider, 'import')
-      return console.log('Price not found..') if !price
+        price = product.getPrice(productUnitId, @provider, 'import') unless price
+        return console.log('Price not found..') if price is undefined
 
-      return console.log("Price invalid (#{price})") if price < 0
-      return console.log("Quality invalid (#{quality})") if quality < 1
+        return console.log("Price invalid (#{price})") if price < 0
+        return console.log("Quality invalid (#{quality})") if quality < 1
 
-      detailFindQuery = {product: product._id, productUnit: productUnitId, price: price}
-      detailFound = _.findWhere(@details, detailFindQuery)
+        detailFindQuery = {product: product._id, productUnit: productUnitId, price: price}
+        detailFound = _.findWhere(@details, detailFindQuery)
 
-      if detailFound
-        detailIndex = _.indexOf(@details, detailFound)
-        updateQuery = {$inc:{}}; basicQuality = quality * productUnit.conversion
-        updateQuery.$inc["details.#{detailIndex}.quality"]          = quality
-        updateQuery.$inc["details.#{detailIndex}.basicQuality"]     = basicQuality
-        recalculationReturn(@_id) if Schema.returns.update(@_id, updateQuery, callback)
+        if detailFound
+          detailIndex = _.indexOf(@details, detailFound)
+          updateQuery = {$inc:{}}; basicQuality = quality * productUnit.conversion
+          updateQuery.$inc["details.#{detailIndex}.quality"]          = quality
+          updateQuery.$inc["details.#{detailIndex}.basicQuality"]     = basicQuality
+          recalculationReturn(@_id) if Schema.returns.update(@_id, updateQuery, callback)
 
-      else
-        detailFindQuery.quality       = quality
-        detailFindQuery.conversion    = productUnit.conversion
-        detailFindQuery.basicQuality  = quality * productUnit.conversion
-        recalculationReturn(@_id) if Schema.returns.update(@_id, { $push: {details: detailFindQuery} }, callback)
+        else
+          detailFindQuery.quality       = quality
+          detailFindQuery.conversion    = productUnit.conversion
+          detailFindQuery.basicQuality  = quality * productUnit.conversion
+          recalculationReturn(@_id) if Schema.returns.update(@_id, { $push: {details: detailFindQuery} }, callback)
 
     doc.editReturnDetail = (detailId, quality, discountCash, price, callback) ->
       for instance, i in @details
@@ -139,6 +144,56 @@ Schema.add 'returns', "Return", class Return
       removeDetailQuery = { $pull:{} }
       removeDetailQuery.$pull.details = self.details[detailIndex]
       recalculationReturn(@_id) if Schema.returns.update(@_id, removeDetailQuery, callback)
+
+    doc.submitCustomerReturn = ->
+      currentReturn = Schema.returns.findOne(@_id)
+      return console.log('Ban khong co quyen.') unless User.hasManagerRoles()
+      return console.log('Return đã hoàn thành.') if @returnStatus is Enums.getValue('ReturnStatus', 'success')
+      return console.log('Return không đúng.') unless @returnType is Enums.getValue('ReturnTypes', 'customer')
+      return console.log('Return rỗng.') if @details.length is 0
+      return console.log('Phieu Order Khong Chinh Xac.') if (parent = Schema.orders.findOne(@parent)) is undefined
+
+      productUpdateList = []
+      orderUpdateOption = $push:{}
+
+      for returnDetail in currentReturn.details
+        currentProductQuality = 0; findProductUnit = false
+        productUpdateList.push(updateProductQuery(returnDetail))
+
+
+        for orderDetail, index in parent.details
+          if orderDetail.productUnit is returnDetail.productUnit
+            findProductUnit = true
+            currentProductQuality += orderDetail.basicQuality
+
+            updateReturnOfOrderDetail =
+              _id         : currentReturn._id
+              detailId    : returnDetail._id
+              basicQuality: returnDetail.basicQuality
+            if orderUpdateOption.$push["details.#{index}.return"]
+              orderUpdateOption.$push["details.#{index}.return"].$each.push updateReturnOfOrderDetail
+            else
+              orderUpdateOption.$push["details.#{index}.return"] = {$each: [updateReturnOfOrderDetail]}
+
+            if orderDetail.return?.length > 0
+              (currentProductQuality -= item.basicQuality) for item in orderDetail.return
+
+        return console.log('ReturnDetail Khong Chinh Xac.') unless findProductUnit
+        return console.log('So luong tra qua lon') if (currentProductQuality - returnDetail.basicQuality) < 0
+
+      if createTransaction(currentReturn)
+        Schema.products.update(product._id, product.updateOption) for product in productUpdateList
+        Schema.orders.update @parent, orderUpdateOption
+        Schema.returns.update @_id, $set:{
+          returnStatus: Enums.getValue('ReturnStatus', 'success')
+          staffConfirm: Meteor.userId()
+          successDate : new Date()
+        }
+
+
+    doc.submitProviderReturn = ->
+      dasd =0
+
 
   @insert: (ownerId = undefined, parentId = undefined, returnType = Enums.getValue('OrderTypes', 'customer'))->
     insertOption = {}
@@ -186,7 +241,6 @@ Schema.add 'returns', "Return", class Return
         returnStatus: Enums.getValue('ReturnStatus', 'initialize')
       })
 
-
   @setReturnSession: (returnId, returnType = 'customer')->
     if returnType is 'customer'
       updateSession = $set: {'sessions.currentCustomerReturn': returnId}
@@ -197,11 +251,51 @@ Schema.add 'returns', "Return", class Return
 
 recalculationReturn = (returnId) ->
   if returnFound = Schema.returns.findOne(returnId)
-    totalPrice = 0; discountCash = returnFound.profiles.discountCash
+    totalPrice = 0; discountCash = returnFound.discountCash
     (totalPrice += detail.quality * detail.price) for detail in returnFound.details
-    discountCash = totalPrice if returnFound.profiles.discountCash > totalPrice
+    discountCash = totalPrice if returnFound.discountCash > totalPrice
     Schema.returns.update returnFound._id, $set:{
-      'profiles.totalPrice'  : totalPrice
-      'profiles.discountCash': discountCash
-      'profiles.finalPrice'  : totalPrice - discountCash
+      totalPrice  : totalPrice
+      discountCash: discountCash
+      finalPrice  : totalPrice - discountCash
     }
+
+updateProductQuery = (returnDetail)->
+  detailIndex = 0; productUpdate = {$inc:{}}
+  product = Schema.products.findOne({'units._id': returnDetail.productUnit})
+
+  for unit, index in product.units
+    if unit._id is returnDetail.productUnit
+      productUpdate.$inc["units.#{index}.quality.inStockQuality"]    = returnDetail.basicQuality
+      productUpdate.$inc["units.#{index}.quality.availableQuality"]  = returnDetail.basicQuality
+      productUpdate.$inc["units.#{index}.quality.returnSaleQuality"] = returnDetail.basicQuality
+      break
+
+  productUpdate.$inc["qualities.#{detailIndex}.inStockQuality"]    = returnDetail.basicQuality
+  productUpdate.$inc["qualities.#{detailIndex}.availableQuality"]  = returnDetail.basicQuality
+  productUpdate.$inc["qualities.#{detailIndex}.returnSaleQuality"] = returnDetail.basicQuality
+
+  return {_id: returnDetail.product, updateOption: productUpdate}
+
+createTransaction = (currentReturn)->
+  if customer = Schema.customers.findOne(currentReturn.owner)
+    transactionInsert =
+      transactionName : 'Phiếu Trả Hàng'
+  #      transactionCode :
+  #    description      : 'Phiếu Bán'
+      transactionType  : Enums.getValue('TransactionTypes', 'customer')
+      receivable       : false #khach hang da tra
+      owner            : customer._id
+      parent           : currentReturn._id
+      beforeDebtBalance: customer.debtCash
+      debtBalanceChange: currentReturn.depositCash
+      paidBalanceChange: currentReturn.finalPrice
+      latestDebtBalance: customer.debtCash - currentReturn.finalPrice - currentReturn.depositCash
+
+    transactionInsert.dueDay    = currentReturn.dueDay if currentReturn.dueDay
+    transactionInsert.owedCash  = currentReturn.finalPrice + currentReturn.depositCash
+    transactionInsert.status    = Enums.getValue('TransactionStatuses', 'tracking')
+
+    if transactionId = Schema.transactions.insert(transactionInsert)
+      Schema.customers.update customer._id, $inc: {debtCash: -currentReturn.finalPrice}
+      Schema.customerGroups.update customer.group, $inc:{totalCash: -currentReturn.finalPrice} if customer.group

@@ -1,37 +1,5 @@
 scope = logics.customerReturn
 lemon.defineHyper Template.customerReturnRowEdit,
-  helpers:
-    finalPrice: -> @quality * (@price - @discountCash)
-  #  crossReturnAvailableQuality: ->
-  #    returnDetail = @
-  #    if currentReturn = Session.get('currentCustomerReturn')
-  #      currentProduct = []
-  #      Schema.sales.find({buyer: currentReturn.customer}).forEach(
-  #        (sale)->
-  #          Schema.saleDetails.find({sale: sale._id, product: returnDetail.product}).forEach(
-  #            (saleDetail)-> currentProduct.push saleDetail
-  #          )
-  #      )
-  #      sameProducts = Schema.returnDetails.find({return: returnDetail.return, product: returnDetail.product}).fetch()
-  #
-  #      crossProductQuality = 0
-  #      currentProductQuality = 0
-  #      crossProductQuality += item.returnQuality for item in sameProducts
-  #      currentProductQuality += (item.quality - item.returnQuality) for item in currentProduct
-  #
-  #      crossAvailable = currentProductQuality - crossProductQuality
-  #      if crossAvailable < 0
-  #        crossAvailable = Math.ceil(Math.abs(crossAvailable/returnDetail.conversionQuality))*(-1)
-  #      else
-  #        Math.ceil(Math.abs(crossAvailable/returnDetail.conversionQuality))
-  #
-  #      return {
-  #        crossAvailable: crossAvailable
-  #        isValid: crossAvailable > 0
-  #        invalid: crossAvailable < 0
-  #        errorClass: if crossAvailable >= 0 then '' else 'errors'
-  #      }
-
   rendered: ->
     @ui.$editQuality.inputmask "numeric",
       {autoGroup: true, groupSeparator:",", radixPoint: ".", integerDigits:11, rightAlign: false}
@@ -52,13 +20,41 @@ lemon.defineHyper Template.customerReturnRowEdit,
       if event.which is 13
         discountCash = undefined if discountCash is Template.currentData().price
         quality      = undefined if quality is Template.currentData().quality
+
         if quality isnt undefined or discountCash isnt undefined
           scope.currentCustomerReturn.editReturnDetail(rowId, quality, discountCash)
-          Session.set("editingId", nextRow._id) if nextRow = details.getNextBy("_id", rowId)
+
+        nextRow = details.getNextBy("_id", rowId)
+        Session.set("editingId", if nextRow then nextRow._id else undefined)
+
       else if event.which is 40  #downArrow
         Session.set("editingId", nextRow._id) if nextRow = details.getNextBy("_id", rowId)
+
       else if event.which is 38  #upArrow
         Session.set("editingId", previousRow._id) if previousRow = details.getPreviousBy("_id", rowId)
 
-lemon.defineHyper Template.customerReturnRowDisplay,
-  finalPrice: -> @quality * (@price - @discountCash)
+#lemon.defineHyper Template.customerReturnRowDisplay,
+#  helpers:
+#    crossReturnAvailableQuality: ->
+#      currentDetail = @; currentProductQuality = 0
+#      currentParent = Session.get('currentReturnParent')
+#      if currentDetail and currentParent
+#        for orderDetail in currentParent
+#          if orderDetail.productUnit is currentDetail.productUnit
+#            currentProductQuality += orderDetail.basicQuality
+#
+#            if orderDetail.returnDetails?.length > 0
+#              (currentProductQuality -= currentDetail.basicQuality) for currentDetail in orderDetail.returnDetails
+#
+#        crossAvailable = currentProductQuality - currentDetail.basicQuality
+#        if crossAvailable < 0
+#          crossAvailable = Math.ceil(Math.abs(crossAvailable/currentDetail.conversion))*(-1)
+#        else
+#          Math.ceil(Math.abs(crossAvailable/currentDetail.conversion))
+#
+#        return {
+#          crossAvailable: crossAvailable
+#          isValid: crossAvailable > 0
+#          invalid: crossAvailable < 0
+#          errorClass: if crossAvailable >= 0 then '' else 'errors'
+#        }

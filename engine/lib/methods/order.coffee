@@ -43,28 +43,30 @@ createTransaction = (customer, order)->
     receivable       : true
     owner            : customer._id
     parent           : order._id
-    beforeDebtBalance: customer.debtCash + customer.loanCash
+    beforeDebtBalance: customer.debtCash
     debtBalanceChange: order.finalPrice
     paidBalanceChange: order.depositCash
-    latestDebtBalance: customer.debtCash + customer.loanCash +  order.finalPrice - order.depositCash
+    latestDebtBalance: customer.debtCash + order.finalPrice - order.depositCash
 
-  transactionInsert.dueDay = order.dueDay if order.dueDay
+  transactionInsert.dueDay    = order.dueDay if order.dueDay
+  transactionInsert.owedCash  = order.finalPrice - order.depositCash
 
   if order.depositCash >= order.finalPrice # phiếu nhập đã thanh toán hết cho NCC
-    transactionInsert.owedCash = 0
-    transactionInsert.status   = Enums.getValue('TransactionStatuses', 'closed')
+    transactionInsert.status = Enums.getValue('TransactionStatuses', 'closed')
   else
-    transactionInsert.owedCash = order.finalPrice - order.depositCash
-    transactionInsert.status   = Enums.getValue('TransactionStatuses', 'tracking')
+    transactionInsert.status = Enums.getValue('TransactionStatuses', 'tracking')
 
   if transactionId = Schema.transactions.insert(transactionInsert)
     customerUpdate =
       allowDelete : false
-      paidCash    : customer.paidCash  + order.depositCash
-      debtCash    : customer.debtCash  + order.finalPrice - order.depositCash
-      totalCash   : customer.totalCash + order.finalPrice
-    Schema.customers.update order.buyer, $set: customerUpdate
-    Schema.customerGroups.update order.group, $inc:{totalCash: (order.finalPrice - order.depositCash)} if customer.group
+      paidCash    : order.depositCash
+      returnCash  : 0
+      totalCash   : order.finalPrice
+      loanCash    : 0
+    customerUpdate.debtCash = customerUpdate.totalCash + customerUpdate.loanCash - customerUpdate.paidCash - customerUpdate.returnCash
+
+    Schema.customers.update order.buyer, $inc: customerUpdate
+    Schema.customerGroups.update order.group, $inc:{totalCash: customerUpdate.debtCash} if customer.group
 
   return transactionId
 

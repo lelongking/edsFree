@@ -11,11 +11,11 @@ template(name="customerReturnDetailSection")
       .panel-body
          table.lemon-grid
             tr.table-header
-               th.bill-name(style="width:auto") SẢN PHẨM
-               th.price(style="width:110px") ĐƠN GIÁ
-               th.quality(style="width:70px") S.LƯỢNG
-               th.skull(style="width:70px; text-align:center") ĐƠN VỊ
-               th.number.final-price(style="width:140px") THÀNH TIỀN
+               th(style="width:auto") SẢN PHẨM
+               th(style="width:110px") ĐƠN GIÁ
+               th(style="width:70px") S.LƯỢNG
+               th(style="width:80px") ĐƠN VỊ
+               th.number(style="width:140px") THÀNH TIỀN
 
             each details
                if isRowEditing
@@ -25,6 +25,6 @@ template(name="customerReturnDetailSection")
 
 
       .panel-footer
-         input.editable.dashed.note(name="returnDescription"  value="{{profiles.description}}" placeholder="ghi chú đơn hàng" size="40" maxlength="120")
+         input.editable.dashed.note(name="returnDescription"  value="{{description}}" placeholder="ghi chú đơn hàng" size="40" maxlength="200")
          .right-float
-            span.s3 <b>{{formatNumber debtBalanceChange}}</b> VNĐ
+            span.s3 <b>{{formatNumber finalPrice}}</b> VNĐ

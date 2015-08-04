@@ -41,8 +41,9 @@ Apps.Merchant.customerManagementInit.push (scope) ->
       )
 
       returns = Schema.returns.find({
-        owner     : customerId
-        importType: 4
+        owner       : customerId
+        returnType  : Enums.getValue('ReturnTypes', 'customer')
+        returnStatus: Enums.getValue('ReturnStatus', 'success')
       }).map(
         (item) ->
           item.transactions = scope.transactionFind(item._id).fetch()

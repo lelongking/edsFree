@@ -26,7 +26,7 @@ Apps.Merchant.customerReturnInit.push (scope) ->
     query: (query) -> query.callback
       results: findOrderByCustomer(Session.get('currentCustomerReturn')?.owner)
       text: '_id'
-    initSelection: (element, callback) -> callback Schema.orders.findOne(scope.currentCustomerReturn.parent)
+    initSelection: (element, callback) -> callback Schema.orders.findOne(scope.currentCustomerReturn?.parent)
     formatSelection: (item) -> "#{item.orderCode}" if item
     formatResult: (item) -> "#{item.orderCode}" if item
     id: '_id'

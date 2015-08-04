@@ -1,4 +1,4 @@
-
+Enums = Apps.Merchant.Enums
 simpleSchema.customers = new SimpleSchema
   name        : simpleSchema.StringUniqueIndex
   nameSearch  : simpleSchema.searchSource('name')
@@ -11,9 +11,11 @@ simpleSchema.customers = new SimpleSchema
   orderFailure : type: [String], defaultValue: []
   orderSuccess : type: [String], defaultValue: []
 
-  paidCash  : simpleSchema.DefaultNumber()
+  beginCash : simpleSchema.DefaultNumber()
   debtCash  : simpleSchema.DefaultNumber()
   loanCash  : simpleSchema.DefaultNumber()
+  paidCash  : simpleSchema.DefaultNumber()
+  returnCash: simpleSchema.DefaultNumber()
   totalCash : simpleSchema.DefaultNumber()
 
   salePaid      : type: Number, optional: true
@@ -58,6 +60,37 @@ Schema.add 'customers', "Customer", class Customer
       (if Schema.customers.remove(@_id)
         totalCash = @debtCash + @loanCash
         Schema.customerGroups.update @group, {$pull: {customers: @_id }, $inc:{totalCash: -totalCash}} if @group) if @allowDelete
+
+    doc.calculateBalance = ->
+      customerUpdate = {paidCash: 0, returnCash: 0, totalCash: 0, loanCash: 0, beginCash: 0, debtCash: 0}
+      Schema.transactions.find({owner: @_id}).forEach(
+        (transaction) ->
+          console.log transaction
+          if transaction.transactionType is Enums.getValue('TransactionTypes', 'customer')
+            if transaction.parent
+              customerUpdate.beginCash  += 0
+              customerUpdate.debtCash   += transaction.debtBalanceChange
+              customerUpdate.loanCash   += 0
+              customerUpdate.paidCash   += transaction.paidBalanceChange
+              customerUpdate.returnCash += 0
+
+            else
+              customerUpdate.beginCash  += transaction.debtBalanceChange - transaction.paidBalanceChange
+              customerUpdate.debtCash   += 0
+              customerUpdate.loanCash   += 0
+              customerUpdate.paidCash   += 0
+              customerUpdate.returnCash += 0
+
+          if transaction.transactionType is Enums.getValue('TransactionTypes', 'return')
+            customerUpdate.beginCash  += 0
+            customerUpdate.debtCash   += 0
+            customerUpdate.loanCash   += 0
+            customerUpdate.paidCash   += 0
+            customerUpdate.returnCash += transaction.paidBalanceChange
+      )
+      customerUpdate.totalCash = customerUpdate.beginCash + customerUpdate.debtCash + customerUpdate.loanCash - customerUpdate.paidCash - customerUpdate.returnCash
+      console.log customerUpdate
+      Schema.customers.update @_id, $set: customerUpdate
 
   @calculate: ->
     Schema.customers.find({}).forEach(

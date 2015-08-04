@@ -12,6 +12,11 @@ Template.registerHelper 'isNotDisabled', (sessionName)-> if Session.get(sessionN
 Template.registerHelper 'isManager', -> User.hasManagerRoles()
 Template.registerHelper 'formatNumberBeforeDebtBalance', -> accounting.formatNumber(@beforeDebtBalance) if @beforeDebtBalance isnt 0
 Template.registerHelper 'showBeforeDebtBalance', -> @beforeDebtBalance isnt 0
+Template.registerHelper 'showConversion', -> @conversion is 1
+Template.registerHelper 'calculateTotalPrice', -> @quality * @price
+Template.registerHelper 'calculateFinalPrice', -> @quality * (@price - @discountCash)
+
+
 Template.registerHelper 'orderCode', (orderCode)->
   return orderCode if orderCode
   if @orderCode then @orderCode else '----/----'
@@ -23,10 +28,38 @@ Template.registerHelper 'transactionClass', (value)->
 Template.registerHelper 'getBuyerName', (buyerId)-> Schema.customers.findOne(buyerId)?.name ? 'Khách hàng không tồn tại'
 Template.registerHelper 'getSellerName', (sellerId)-> Meteor.users.findOne(sellerId)?.profile.name ? 'Nhân viên không tồn tại'
 Template.registerHelper 'getProductName', (productId)-> Schema.products.findOne(productId)?.name ? 'Sản phẩm không tồn tại'
+Template.registerHelper 'getProductBasicName', (unitId)-> Schema.products.findOne({'units._id': unitId})?.unitName()
 Template.registerHelper 'getProductUnitName', (unitId)->
   if product = Schema.products.findOne({'units._id': unitId})
     productUnit = _.findWhere(product.units, {_id: unitId})
     productUnit.name
+
+
+Template.registerHelper 'crossReturnAvailableQuality', ->
+  currentDetail = @; currentProductQuality = 0
+  currentParent = Session.get('currentReturnParent')
+
+  if currentDetail and currentParent
+    for orderDetail in currentParent
+      if orderDetail.productUnit is currentDetail.productUnit
+        currentProductQuality += orderDetail.basicQuality
+
+        if orderDetail.return?.length > 0
+          (currentProductQuality -= item.basicQuality) for item in orderDetail.return
+
+    crossAvailable = currentProductQuality - currentDetail.basicQuality
+
+    if crossAvailable < 0
+      crossAvailable = Math.ceil(Math.abs(crossAvailable/currentDetail.conversion))*(-1)
+    else
+      Math.ceil(Math.abs(crossAvailable/currentDetail.conversion))
+
+    return {
+      crossAvailable: crossAvailable
+      isValid: crossAvailable > 0
+      invalid: crossAvailable < 0
+      errorClass: if crossAvailable >= 0 then '' else 'errors'
+    }
 
 
 #old----------------------------------------------->
@@ -62,6 +95,8 @@ Template.registerHelper 'ownerNameFromId', (id) -> Schema.customers.findOne(id)?
 
 Template.registerHelper 'genderString', (gender) -> if gender then 'Nam' else 'Nữ'
 Template.registerHelper 'allowAction', (val) -> if val then '' else 'disabled'
+
+
 
 Template.registerHelper 'crossBillAvailableQuality', ->
   cross = logics.sales.validation.getCrossProductQuality(@product, @branchProduct, @order)

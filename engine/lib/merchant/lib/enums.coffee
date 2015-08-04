@@ -178,8 +178,8 @@ Apps.Merchant.Enums.TransactionTypes = [
   display: 'Khach Hang'
 ,
   _id    : 2
-  value  : 'other'
-  display: 'Thu Chi'
+  value  : 'return'
+  display: 'Tra Hang'
 ]
 
 Apps.Merchant.Enums.TransactionStatuses = [
@@ -217,12 +217,8 @@ Apps.Merchant.Enums.ReturnStatus = [
   display: 'moi tao'
 ,
   _id    : 1
-  value  : 'tracking'
-  display: 'Con No'
-,
-  _id    : 2
-  value  : 'closed'
-  display: 'Het No'
+  value  : 'success'
+  display: 'hoan thanh'
 ]
 
 #----------Product---------->

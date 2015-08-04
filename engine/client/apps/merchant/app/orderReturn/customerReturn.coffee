@@ -2,7 +2,33 @@ scope = logics.customerReturn
 
 lemon.defineApp Template.customerReturn,
   helpers:
-    allowSuccessReturn: -> if Session.get('currentCustomerReturn')?.owner then '' else 'disabled'
+    allowSuccessReturn: ->
+      currentReturnDetails = Session.get('currentCustomerReturn')?.details
+      currentParentDetails = Session.get('currentReturnParent')
+
+      if currentReturnDetails?.length > 0 and currentParentDetails?.length > 0
+        for returnDetail in currentReturnDetails
+          currentProductQuality = 0
+
+          for parentDetail in currentParentDetails
+            if parentDetail.productUnit is returnDetail.productUnit
+              currentProductQuality += parentDetail.basicQuality
+
+              if parentDetail.return?.length > 0
+                (currentProductQuality -= item.basicQuality) for item in parentDetail.return
+
+          return 'disabled' if (currentProductQuality - returnDetail.basicQuality) < 0
+
+      else
+        return 'disabled'
+
+    availableQuality: ->
+      quality = @quality
+      if @return?.length > 0
+        (quality -= currentDetail.basicQuality) for currentDetail in @return
+      quality
+
+
 
   created: ->
     CustomerSearch.search('')
@@ -18,14 +44,14 @@ lemon.defineApp Template.customerReturn,
 
 
   events:
-    "keyup input[name='searchFilter']": (event, template) ->
-      searchFilter  = template.ui.$searchFilter.val()
-      productSearch = Helpers.Searchify searchFilter
-      if event.which is 17 then console.log 'up' else UnitProductSearch.search productSearch
+#    "keyup input[name='searchFilter']": (event, template) ->
+#      searchFilter  = template.ui.$searchFilter.val()
+#      productSearch = Helpers.Searchify searchFilter
+#      if event.which is 17 then console.log 'up' else UnitProductSearch.search productSearch
 
 
     'click .addReturnDetail': (event, template)->
-      scope.currentCustomerReturn.addReturnDetail(@_id)
+      scope.currentCustomerReturn.addReturnDetail(@productUnit, 1, @price)
       event.stopPropagation()
 
     "click .returnSubmit": (event, template) ->
@@ -38,4 +64,4 @@ lemon.defineApp Template.customerReturn,
         else
           Return.setReturnSession(Return.insert(), 'customer')
 
-        scope.currentCustomerReturn.returnSubmit()
+        scope.currentCustomerReturn.submitCustomerReturn()

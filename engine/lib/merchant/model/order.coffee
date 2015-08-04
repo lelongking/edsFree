@@ -81,9 +81,10 @@ simpleSchema.orders = new SimpleSchema
   'details.$.import.$.basicQuality' : type: Number  , optional: true
   'details.$.import.$.note'         : type: String  , optional: true
 
-  'details.$.returnDetails'               : type: [Object], optional: true
-  'details.$.returnDetails.$._id'         : type: String
-  'details.$.returnDetails.$.basicQuality': type: Number, optional: true
+  'details.$.return'               : type: [Object], optional: true
+  'details.$.return.$._id'         : type: String
+  'details.$.return.$.detailId'    : type: String
+  'details.$.return.$.basicQuality': type: Number, optional: true
 
 Schema.add 'orders', "Order", class Order
   @transform: (doc) ->
