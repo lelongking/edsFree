@@ -182,7 +182,7 @@ Schema.add 'returns', "Return", class Return
         return console.log('ReturnDetail Khong Chinh Xac.') unless findProductUnit
         return console.log('So luong tra qua lon') if (currentProductQuality - returnDetail.basicQuality) < 0
 
-      if transactionId = createTransaction(currentReturn)
+      if transactionId = createTransactionByCustomer(currentReturn)
         Schema.products.update(product._id, product.updateOption) for product in productUpdateList
         Schema.orders.update @parent, orderUpdateOption
         Schema.returns.update @_id, $set:{
@@ -194,7 +194,50 @@ Schema.add 'returns', "Return", class Return
 
 
     doc.submitProviderReturn = ->
-      dasd =0
+      currentReturn = Schema.returns.findOne(@_id)
+      return console.log('Ban khong co quyen.') unless User.hasManagerRoles()
+      return console.log('Return đã hoàn thành.') if @returnStatus is Enums.getValue('ReturnStatus', 'success')
+      return console.log('Return không đúng.') unless @returnType is Enums.getValue('ReturnTypes', 'provider')
+      return console.log('Return rỗng.') if @details.length is 0
+      return console.log('Phieu Order Khong Chinh Xac.') if (parent = Schema.imports.findOne(@parent)) is undefined
+
+      productUpdateList = []
+      importUpdateOption = $push:{}
+
+      for returnDetail in currentReturn.details
+        currentProductQuality = 0; findProductUnit = false
+        productUpdateList.push(updateProductQuery(returnDetail, currentReturn.returnType))
+
+
+        for importDetail, index in parent.details
+          if importDetail.productUnit is returnDetail.productUnit
+            findProductUnit = true
+            currentProductQuality += importDetail.basicQuality
+
+            updateReturnOfOrderDetail =
+              _id         : currentReturn._id
+              detailId    : returnDetail._id
+              basicQuality: returnDetail.basicQuality
+            if importUpdateOption.$push["details.#{index}.return"]
+              importUpdateOption.$push["details.#{index}.return"].$each.push updateReturnOfOrderDetail
+            else
+              importUpdateOption.$push["details.#{index}.return"] = {$each: [updateReturnOfOrderDetail]}
+
+            if importDetail.return?.length > 0
+              (currentProductQuality -= item.basicQuality) for item in importDetail.return
+
+        return console.log('ReturnDetail Khong Chinh Xac.') unless findProductUnit
+        return console.log('So luong tra qua lon') if (currentProductQuality - returnDetail.basicQuality) < 0
+
+      if transactionId = createTransactionByProvider(currentReturn)
+        Schema.products.update(product._id, product.updateOption) for product in productUpdateList
+        Schema.imports.update @parent, importUpdateOption
+        Schema.returns.update @_id, $set:{
+          returnStatus: Enums.getValue('ReturnStatus', 'success')
+          transaction : transactionId
+          staffConfirm: Meteor.userId()
+          successDate : new Date()
+        }
 
 
   @insert: (returnType = Enums.getValue('ReturnTypes', 'customer'), ownerId = undefined, parentId = undefined)->
@@ -262,37 +305,50 @@ recalculationReturn = (returnId) ->
       finalPrice  : totalPrice - discountCash
     }
 
-updateProductQuery = (returnDetail)->
+updateProductQuery = (returnDetail, returnType)->
   detailIndex = 0; productUpdate = {$inc:{}}
   product = Schema.products.findOne({'units._id': returnDetail.productUnit})
 
-  for unit, index in product.units
-    if unit._id is returnDetail.productUnit
-      productUpdate.$inc["units.#{index}.quality.inStockQuality"]    = returnDetail.basicQuality
-      productUpdate.$inc["units.#{index}.quality.availableQuality"]  = returnDetail.basicQuality
-      productUpdate.$inc["units.#{index}.quality.returnSaleQuality"] = returnDetail.basicQuality
-      break
+  if returnType is Enums.getValue('ReturnTypes', 'provider')
+    for unit, index in product.units
+      if unit._id is returnDetail.productUnit
+        productUpdate.$inc["units.#{index}.quality.inStockQuality"]      = -returnDetail.basicQuality
+        productUpdate.$inc["units.#{index}.quality.availableQuality"]    = -returnDetail.basicQuality
+        productUpdate.$inc["units.#{index}.quality.returnImportQuality"] = returnDetail.basicQuality
+        break
 
-  productUpdate.$inc["qualities.#{detailIndex}.inStockQuality"]    = returnDetail.basicQuality
-  productUpdate.$inc["qualities.#{detailIndex}.availableQuality"]  = returnDetail.basicQuality
-  productUpdate.$inc["qualities.#{detailIndex}.returnSaleQuality"] = returnDetail.basicQuality
+    productUpdate.$inc["qualities.#{detailIndex}.inStockQuality"]      = -returnDetail.basicQuality
+    productUpdate.$inc["qualities.#{detailIndex}.availableQuality"]    = -returnDetail.basicQuality
+    productUpdate.$inc["qualities.#{detailIndex}.returnImportQuality"] = returnDetail.basicQuality
+
+  else if returnType is Enums.getValue('ReturnTypes', 'customer')
+    for unit, index in product.units
+      if unit._id is returnDetail.productUnit
+        productUpdate.$inc["units.#{index}.quality.inStockQuality"]    = returnDetail.basicQuality
+        productUpdate.$inc["units.#{index}.quality.availableQuality"]  = returnDetail.basicQuality
+        productUpdate.$inc["units.#{index}.quality.returnSaleQuality"] = returnDetail.basicQuality
+        break
+
+    productUpdate.$inc["qualities.#{detailIndex}.inStockQuality"]    = returnDetail.basicQuality
+    productUpdate.$inc["qualities.#{detailIndex}.availableQuality"]  = returnDetail.basicQuality
+    productUpdate.$inc["qualities.#{detailIndex}.returnSaleQuality"] = returnDetail.basicQuality
 
   return {_id: returnDetail.product, updateOption: productUpdate}
 
-createTransaction = (currentReturn)->
+createTransactionByCustomer = (currentReturn)->
   if customer = Schema.customers.findOne(currentReturn.owner)
     transactionInsert =
       transactionName : 'Phiếu Trả Hàng'
   #      transactionCode :
   #    description      : 'Phiếu Bán'
-      transactionType  : Enums.getValue('TransactionTypes', 'customer')
+      transactionType  : Enums.getValue('TransactionTypes', 'return')
       receivable       : false #khach hang da tra
       owner            : customer._id
       parent           : currentReturn._id
-      beforeDebtBalance: customer.debtCash
+      beforeDebtBalance: customer.totalCash
       debtBalanceChange: currentReturn.depositCash
       paidBalanceChange: currentReturn.finalPrice
-      latestDebtBalance: customer.debtCash - currentReturn.finalPrice - currentReturn.depositCash
+      latestDebtBalance: customer.totalCash - currentReturn.finalPrice - currentReturn.depositCash
 
     transactionInsert.dueDay    = currentReturn.dueDay if currentReturn.dueDay
     transactionInsert.owedCash  = currentReturn.finalPrice + currentReturn.depositCash
@@ -301,5 +357,27 @@ createTransaction = (currentReturn)->
     if transactionId = Schema.transactions.insert(transactionInsert)
       Schema.customers.update customer._id, $inc: {debtCash: -currentReturn.finalPrice}
       Schema.customerGroups.update customer.group, $inc:{totalCash: -currentReturn.finalPrice} if customer.group
+    return transactionId
 
+createTransactionByProvider = (currentReturn)->
+  if provider = Schema.providers.findOne(currentReturn.owner)
+    transactionInsert =
+      transactionName : 'Phiếu Trả Hàng'
+  #      transactionCode :
+  #    description      : 'Phiếu Bán'
+      transactionType  : Enums.getValue('TransactionTypes', 'return')
+      receivable       : false #nha cung cap da tra
+      owner            : provider._id
+      parent           : currentReturn._id
+      beforeDebtBalance: provider.totalCash
+      debtBalanceChange: currentReturn.depositCash
+      paidBalanceChange: currentReturn.finalPrice
+      latestDebtBalance: provider.totalCash - currentReturn.finalPrice - currentReturn.depositCash
+
+    transactionInsert.dueDay    = currentReturn.dueDay if currentReturn.dueDay
+    transactionInsert.owedCash  = currentReturn.finalPrice + currentReturn.depositCash
+    transactionInsert.status    = Enums.getValue('TransactionStatuses', 'tracking')
+
+    if transactionId = Schema.transactions.insert(transactionInsert)
+      Schema.providers.update provider._id, $inc: {debtCash: -currentReturn.finalPrice}
     return transactionId

@@ -1,3 +1,4 @@
+Enums = Apps.Merchant.Enums
 logics.providerManagement = {}
 Apps.Merchant.providerManagementInit = []
 Apps.Merchant.providerManagementReactive = []
@@ -30,12 +31,27 @@ Apps.Merchant.providerManagementInit.push (scope) ->
 
   scope.findAllImport = ->
     if providerId = Session.get("providerManagementProviderId")
-      imports = Schema.imports.find({provider: providerId, importType: 4}).map(
-        (item) -> item.transactions = scope.transactionFind(item._id);  item
+      imports = Schema.imports.find({
+        provider  : providerId
+        importType: Enums.getValue('ImportTypes', 'success')
+      }).map(
+        (item) ->
+          item.transactions = scope.transactionFind(item._id).fetch()
+          item.transactions[item.transactions.length-1].isLastTransaction = true if item.transactions.length > 0
+          item
       )
-      returns = Schema.returns.find({owner: providerId, returnType: 4}).map(
-        (item) -> item.transactions = scope.transactionFind(item._id);  item
+
+      returns = Schema.returns.find({
+        owner       : providerId
+        returnType  : Enums.getValue('ReturnTypes', 'provider')
+        returnStatus: Enums.getValue('ReturnStatus', 'success')
+      }).map(
+        (item) ->
+          item.transactions = scope.transactionFind(item._id).fetch()
+          item.transactions[item.transactions.length-1].isLastTransaction = true if item.transactions.length > 0
+          item
       )
+
       _.sortBy imports.concat(returns), (item) -> item.version.createdAt
     else []
 

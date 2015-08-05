@@ -4,7 +4,6 @@ lemon.defineApp Template.customerManagement,
   helpers:
     creationMode: -> Session.get("customerManagementCreationMode")
     currentCustomer: -> Session.get("customerManagementCurrentCustomer")
-    debtTotalCash: -> @debtCash + @loanCash
     customerLists: ->
       selector = {}; options  = {sort: {nameSearch: 1}}; searchText = Session.get("customerManagementSearchFilter")
       if(searchText)

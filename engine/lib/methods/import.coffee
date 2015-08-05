@@ -76,10 +76,10 @@ Meteor.methods
       receivable       : true
       owner            : providerFound._id
       parent           : importFound._id
-      beforeDebtBalance: providerFound.debtCash
+      beforeDebtBalance: providerFound.totalCash
       debtBalanceChange: importFound.finalPrice
       paidBalanceChange: importFound.depositCash
-      latestDebtBalance: providerFound.debtCash + importFound.finalPrice - importFound.depositCash
+      latestDebtBalance: providerFound.totalCash + importFound.finalPrice - importFound.depositCash
 
     transactionInsert.dueDay = importFound.dueDay if importFound.dueDay
 
@@ -119,11 +119,13 @@ Meteor.methods
     importFound = Schema.imports.findOne importQuery
     return {valid: false, error: 'import not found!'} if !importFound
 
-    providerFound = Schema.customers.findOne(importFound.provider)
+    providerFound = Schema.providers.findOne(importFound.provider)
     return {valid: false, error: 'provider not found!'} if !providerFound
 
     merchantFound = Schema.merchants.findOne(user.profile?.merchant)
     return {valid: false, error: 'merchant not found!'} if !merchantFound
+
+    console.log importUpdate
 
     for detail in importFound.details
       detailIndex = 0; updateQuery = {$inc:{}}
@@ -141,10 +143,12 @@ Meteor.methods
       updateQuery.$set = {lastExpire: detail.expire} if detail.expire
       Schema.products.update detail.product, updateQuery
 
+
     importUpdate = $set:
       importType : Enums.getValue('ImportTypes', 'success')
       successDate: new Date()
       billNo     : "#{Helpers.orderCodeCreate(providerFound.billNo)}/#{Helpers.orderCodeCreate(merchantFound.importBill)}"
 
+    console.log importUpdate
     Schema.providers.update importFound.provider, $set:{allowDelete: false}
     Schema.imports.update importFound._id, importUpdate

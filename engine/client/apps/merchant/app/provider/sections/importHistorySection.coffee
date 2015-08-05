@@ -17,7 +17,7 @@ lemon.defineHyper Template.providerManagementImportsHistorySection,
 
     totalPaidCash: ->
       if provider = Session.get('providerManagementCurrentProvider')
-        provider.paidCash + provider.returnCash
+        (unless provider.paidCash is undefined then provider.paidCash else 0) + (unless provider.returnCash is undefined then provider.returnCash else 0)
       else 0
 
     transactionDescription: -> if Session.get("providerManagementOldDebt") then 'ghi chú nợ cũ' else 'ghi chú trả tiền'

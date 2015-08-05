@@ -22,7 +22,7 @@ template(name="providerManagement")
                 .doc-info
                   .title {{name}}
                   .sub-title {{description}}
-                if debtTotalCash
+                if totalCash
                   .price-stamp
-                    <b>{{formatNumber debtTotalCash}}</b>
+                    <b>{{formatNumber totalCash}}</b>
                     span(style="font-size: 11px;") <b>VND</b>

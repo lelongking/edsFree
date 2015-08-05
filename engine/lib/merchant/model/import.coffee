@@ -60,9 +60,10 @@ simpleSchema.imports = new SimpleSchema
   'details.$.orderId.$.basicQuality': type: Number
   'details.$.orderId.$.createdAt'   : type: Date
 
-  'details.$.returnDetails'               : type: [Object], optional: true
-  'details.$.returnDetails.$._id'         : type: String
-  'details.$.returnDetails.$.basicQuality': type: Number, optional: true
+  'details.$.return'               : type: [Object], optional: true
+  'details.$.return.$._id'         : type: String
+  'details.$.return.$.detailId'    : type: String
+  'details.$.return.$.basicQuality': type: Number, optional: true
 
 Schema.add 'imports', "Import", class Import
   @transform: (doc) ->
