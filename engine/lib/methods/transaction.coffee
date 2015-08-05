@@ -8,6 +8,15 @@ Meteor.methods
 
     if owner
       transaction = Schema.transactions.findOne({owner: owner._id}, {sort: {'version.createdAt': -1}})
+
+      ownerUpdate = $set: {allowDelete : false}, $inc:{}
+      ownerUpdate.$inc.totalCash = if receivable then money else -money
+      if transaction # tao phieu tra tien, no cu. ko co tao phieu ban voi tra hang
+        ownerUpdate.$inc.paidCash  = if receivable then 0 else money
+        ownerUpdate.$inc.loanCash  = if receivable then money else 0
+      else #Nhap ton dau ky
+        ownerUpdate.$inc.beginCash = if receivable then money else -money
+
       transactionInsert =
   #      transactionCode :
         transactionType   : transactionType
@@ -29,21 +38,11 @@ Meteor.methods
 
       else if transactionType is Enums.getValue('TransactionTypes', 'customer')
         transactionInsert.transactionName   = if receivable then 'Phiếu Chi' else 'Phiếu Thu'
-        transactionInsert.debtBalanceChange = if receivable then 0 else money
-        transactionInsert.paidBalanceChange = if receivable then money else 0
+        transactionInsert.debtBalanceChange = if receivable then money else 0
+        transactionInsert.paidBalanceChange = if receivable then 0 else money
 
-      latestDebtBalance = transactionInsert.beforeDebtBalance + transactionInsert.debtBalanceChange - transactionInsert.paidBalanceChange
+      latestDebtBalance = transactionInsert.beforeDebtBalance + ownerUpdate.$inc.totalCash
       transactionInsert.latestDebtBalance = latestDebtBalance
-
-
-      ownerUpdate = $set: {allowDelete : false}, $inc:{}
-      ownerUpdate.$inc.totalCash = if receivable then money else -money
-      if transaction # tao phieu tra tien, no cu. ko co tao phieu ban voi tra hang
-        ownerUpdate.$inc.paidCash  = if receivable then 0 else money
-        ownerUpdate.$inc.loanCash  = if receivable then money else 0
-      else #Nhap ton dau ky
-        ownerUpdate.$inc.beginCash = if receivable then money else -money
-
 
       if Schema.transactions.insert(transactionInsert)
         if transactionType is Enums.getValue('TransactionTypes', 'provider')
@@ -69,7 +68,11 @@ Meteor.methods
 
         Schema.transactions.find(query, {sort: {'version.createdAt': 1}}).forEach(
           (item) ->
-            latestDebtBalance = beforeDebtBalance + item.debtBalanceChange - item.paidBalanceChange
+            if item.transactionType is Enums.getValue('TransactionTypes', 'provider')
+              latestDebtBalance = beforeDebtBalance + item.debtBalanceChange - item.paidBalanceChange
+            else if item.transactionType is Enums.getValue('TransactionTypes', 'customer')
+              latestDebtBalance = beforeDebtBalance + item.debtBalanceChange - item.paidBalanceChange
+
             Schema.transactions.update item._id, $set:{beforeDebtBalance: beforeDebtBalance, latestDebtBalance: latestDebtBalance}
             beforeDebtBalance = latestDebtBalance
         )
@@ -90,13 +93,13 @@ Meteor.methods
           else if transaction.transactionType is Enums.getValue('TransactionTypes', 'customer')
             if transaction.isBeginCash #no ton day ky
               updateOwner =
-                beginCash  : transaction.debtBalanceChange - transaction.paidBalanceChange
-                totalCash  : transaction.debtBalanceChange - transaction.paidBalanceChange
+                beginCash  : transaction.paidBalanceChange - transaction.debtBalanceChange
+                totalCash  : transaction.paidBalanceChange - transaction.debtBalanceChange
             else
               updateOwner =
-                paidCash   : -transaction.debtBalanceChange
-                loanCash   : -transaction.paidBalanceChange
-                totalCash  : transaction.debtBalanceChange - transaction.paidBalanceChange
+                paidCash   : -transaction.paidBalanceChange
+                loanCash   : -transaction.debtBalanceChange
+                totalCash  : transaction.paidBalanceChange - transaction.debtBalanceChange
 
             Schema.customers.update transaction.owner, $inc: updateOwner
             if customer = Schema.customers.findOne(transaction.owner)
