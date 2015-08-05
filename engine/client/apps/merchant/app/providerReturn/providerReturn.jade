@@ -1,0 +1,32 @@
+template(name="providerReturn")
+  #content.modern.sales-app
+    .dual-content
+      .dual-detail-wrapper
+        .dual-detail: .nano: .nano-content: +providerReturnDetailSection getSession 'currentProviderReturn'
+
+      .dual-addon
+        .search-filter.icon-search-8: input(name='searchFilter' type="text" placeholder="tìm sản phẩm...")
+        .nano: .nano-content: .group-wrapper
+          each getSession 'currentReturnParent'
+            .caption.advanced.inner.product-selection(class="{{productSelectionActiveClass}}")
+              +avatarImageComponent(avatar=avatarUrl alias=name)
+              span.text {{getProductName product}}
+                .commands
+                  span.icon-right-open-big.addReturnDetail
+              span.right-info {{availableQuality}} {{getProductUnitName productUnit}}
+
+  #footer.modern
+    .editor-wrapper.dual-spacer
+    .editor-row
+      .editor-wrapper(style="width: 200px")
+        span.ilabel.optional khách hàng
+        +iSelect(options=providerSelectOptions class="field providerSelect")
+
+      .editor-wrapper(style="width: 200px")
+        span.ilabel.optional phiếu bán
+        +iSelect(options=importSelectOptions class="field importSelect")
+
+      .editor-wrapper.pull-right
+        button.lemon.btn.lime.pull-right.returnSubmit(class="{{allowSuccessReturn}}" type='submit' style="margin-right: 5px;") HOÀN TẤT
+
+    +tabComponent(options=tabProviderReturnOptions)

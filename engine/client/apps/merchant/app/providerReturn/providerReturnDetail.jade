@@ -1,0 +1,30 @@
+template(name="providerReturnDetailSection")
+   .section.top.panel.panel-default.printable-area
+      .panel-heading
+         .hide-on-print
+            span <b>{{timeHM}}<sup>{{timeS}}</sup></b>, ngày <b>{{timeDMY}}</b> <b>{{fullDay}}</b>
+         .show-on-print
+            +merchantPrintingHeader
+            .printing-info
+               .document-name PHIẾU TRẢ HÀNG
+
+      .panel-body
+         table.lemon-grid
+            tr.table-header
+               th(style="width:auto") SẢN PHẨM
+               th(style="width:110px") ĐƠN GIÁ
+               th(style="width:70px") S.LƯỢNG
+               th(style="width:80px") ĐƠN VỊ
+               th.number(style="width:140px") THÀNH TIỀN
+
+            each details
+               if isRowEditing
+                  +providerReturnRowEdit
+               else
+                  +providerReturnRowDisplay
+
+
+      .panel-footer
+         input.editable.dashed.note(name="returnDescription"  value="{{description}}" placeholder="ghi chú đơn hàng" size="40" maxlength="200")
+         .right-float
+            span.s3 <b>{{formatNumber finalPrice}}</b> VNĐ
