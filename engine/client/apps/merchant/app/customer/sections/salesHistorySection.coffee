@@ -31,6 +31,7 @@ lemon.defineHyper Template.customerManagementSalesHistorySection,
 
     "click .deleteTransaction": (event, template) ->
       Meteor.call 'deleteTransaction', @_id
+      event.stopPropagation()
 
     "click .createTransaction": (event, template) ->
       scope.createTransactionOfCustomer(event, template)

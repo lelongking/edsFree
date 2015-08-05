@@ -17,6 +17,7 @@ simpleSchema.returns = new SimpleSchema
   totalPrice   : type: Number, defaultValue: 0
   finalPrice   : type: Number, defaultValue: 0
 
+  transaction : type: String, optional: true
   staffConfirm: type: String, optional: true
   successDate : type: Date  , optional: true
 
@@ -181,11 +182,12 @@ Schema.add 'returns', "Return", class Return
         return console.log('ReturnDetail Khong Chinh Xac.') unless findProductUnit
         return console.log('So luong tra qua lon') if (currentProductQuality - returnDetail.basicQuality) < 0
 
-      if createTransaction(currentReturn)
+      if transactionId = createTransaction(currentReturn)
         Schema.products.update(product._id, product.updateOption) for product in productUpdateList
         Schema.orders.update @parent, orderUpdateOption
         Schema.returns.update @_id, $set:{
           returnStatus: Enums.getValue('ReturnStatus', 'success')
+          transaction : transactionId
           staffConfirm: Meteor.userId()
           successDate : new Date()
         }
@@ -299,3 +301,5 @@ createTransaction = (currentReturn)->
     if transactionId = Schema.transactions.insert(transactionInsert)
       Schema.customers.update customer._id, $inc: {debtCash: -currentReturn.finalPrice}
       Schema.customerGroups.update customer.group, $inc:{totalCash: -currentReturn.finalPrice} if customer.group
+
+    return transactionId

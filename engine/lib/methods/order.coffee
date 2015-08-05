@@ -49,7 +49,7 @@ createTransaction = (customer, order)->
     latestDebtBalance: customer.debtCash + order.finalPrice - order.depositCash
 
   transactionInsert.dueDay    = order.dueDay if order.dueDay
-  transactionInsert.owedCash  = order.finalPrice - order.depositCash
+  transactionInsert.owedCash  = Math.abs(order.finalPrice - order.depositCash)
 
   if order.depositCash >= order.finalPrice # phiếu nhập đã thanh toán hết cho NCC
     transactionInsert.status = Enums.getValue('TransactionStatuses', 'closed')
@@ -60,13 +60,11 @@ createTransaction = (customer, order)->
     customerUpdate =
       allowDelete : false
       paidCash    : order.depositCash
-      returnCash  : 0
-      totalCash   : order.finalPrice
-      loanCash    : 0
-    customerUpdate.debtCash = customerUpdate.totalCash + customerUpdate.loanCash - customerUpdate.paidCash - customerUpdate.returnCash
+      debtCash    : order.finalPrice
+      totalCash   : order.finalPrice - order.depositCash
 
     Schema.customers.update order.buyer, $inc: customerUpdate
-    Schema.customerGroups.update order.group, $inc:{totalCash: customerUpdate.debtCash} if customer.group
+    Schema.customerGroups.update order.group, $inc:{totalCash: customerUpdate.totalCash} if customer.group
 
   return transactionId
 

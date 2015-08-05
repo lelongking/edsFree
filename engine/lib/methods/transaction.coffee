@@ -8,13 +8,16 @@ Meteor.methods
 
     if owner
       transaction = Schema.transactions.findOne({owner: owner._id}, {sort: {'version.createdAt': -1}})
-      ownerUpdate = $set: {allowDelete : false}, $inc:{}
       transactionInsert =
   #      transactionCode :
-        transactionType  : transactionType
-        owner            : owner._id
-        receivable       : receivable
-        beforeDebtBalance: owner.debtCash
+        transactionType   : transactionType
+        owner             : owner._id
+        receivable        : receivable
+        beforeDebtBalance : owner.totalCash
+        owedCash          : money
+        status            : Enums.getValue('TransactionStatuses', if receivable then 'tracking' else 'closed')
+        debtBalanceChange : if receivable then 0 else money
+        paidBalanceChange : if receivable then money else 0
 
       if transactionType is Enums.getValue('TransactionTypes', 'provider')
         transactionInsert.transactionName = if receivable then 'Phiếu Thu' else 'Phiếu Chi'
@@ -25,80 +28,37 @@ Meteor.methods
       transactionInsert.description = description if description
       transactionInsert.parent = transaction.parent if transaction?.parent
 
-
-
-      if transaction
-        if receivable #no cu
-          ownerUpdate.$inc.beginCash = 0
-          ownerUpdate.$inc.debtCash  = 0
-          ownerUpdate.$inc.paidCash  = 0
-          ownerUpdate.$inc.returnCash= 0
-          ownerUpdate.$inc.loanCash  = money
-          ownerUpdate.$inc.totalCash = money
-
-          transactionInsert.owedCash          = money
-          transactionInsert.status            = Enums.getValue('TransactionStatuses', 'tracking')
-          transactionInsert.debtBalanceChange = money
-          transactionInsert.paidBalanceChange = 0
-        else #tra no
-          ownerUpdate.$inc.beginCash = 0
-          ownerUpdate.$inc.paidCash  = money
-          ownerUpdate.$inc.returnCash= 0
-          ownerUpdate.$inc.loanCash  = 0
-          ownerUpdate.$inc.debtCash  = 0
-          ownerUpdate.$inc.totalCash = -money
-
-          transactionInsert.owedCash          = -money
-          transactionInsert.status            = Enums.getValue('TransactionStatuses', 'closed')
-          transactionInsert.debtBalanceChange = 0
-          transactionInsert.paidBalanceChange = money
-
-      else #Nhap ton dau ky
-        if receivable #no cu
-          ownerUpdate.$inc.beginCash = money
-          ownerUpdate.$inc.debtCash  = 0
-          ownerUpdate.$inc.paidCash  = 0
-          ownerUpdate.$inc.returnCash= 0
-          ownerUpdate.$inc.loanCash  = 0
-          ownerUpdate.$inc.totalCash = money
-
-          transactionInsert.owedCash          = money
-          transactionInsert.status            = Enums.getValue('TransactionStatuses', 'tracking')
-          transactionInsert.debtBalanceChange = money
-          transactionInsert.paidBalanceChange = 0
-        else #tra no
-        ownerUpdate.$inc.beginCash = -money
-        ownerUpdate.$inc.paidCash  = 0
-        ownerUpdate.$inc.returnCash= 0
-        ownerUpdate.$inc.loanCash  = 0
-        ownerUpdate.$inc.totalCash = 0
-        ownerUpdate.$inc.debtCash  = -money
-
-        transactionInsert.owedCash          = -money
-        transactionInsert.status            = Enums.getValue('TransactionStatuses', 'closed')
-        transactionInsert.debtBalanceChange = 0
-        transactionInsert.paidBalanceChange = money
-
-      #transaction dang tru sai, sai so
       latestDebtBalance = transactionInsert.beforeDebtBalance + transactionInsert.debtBalanceChange - transactionInsert.paidBalanceChange
       transactionInsert.latestDebtBalance = latestDebtBalance
+
+
+      ownerUpdate = $set: {allowDelete : false}, $inc:{}
+      ownerUpdate.$inc.totalCash = if receivable then money else -money
+
+      if transaction # tao phieu tra tien, no cu. ko co tao phieu ban voi tra hang
+        ownerUpdate.$inc.paidCash  = if receivable then 0 else money
+        ownerUpdate.$inc.loanCash  = if receivable then money else 0
+      else #Nhap ton dau ky
+        ownerUpdate.$inc.beginCash = if receivable then money else -money
+
 
       if Schema.transactions.insert(transactionInsert)
         if transactionType is Enums.getValue('TransactionTypes', 'provider')
           Schema.providers. update owner._id, ownerUpdate
         else if transactionType is Enums.getValue('TransactionTypes', 'customer')
           Schema.customers.update owner._id, ownerUpdate
-          totalCash = (ownerUpdate.$inc.money + ownerUpdate.$inc.loanCash)
-          Schema.customerGroups.update owner.group, $inc:{totalCash: totalCash} if owner.group
+          Schema.customerGroups.update owner.group, $inc:{totalCash: ownerUpdate.$inc.totalCash} if owner.group
 
 
-
+  # chi xoa transaction no dau ky, voi phieu tra tien, no cu, ko xoa dc phieu ban hang va tra hang
   deleteTransaction: (transactionId) ->
     if transaction = Schema.transactions.findOne transactionId
       if transaction.transactionType is Enums.getValue('TransactionTypes', 'provider')
         parent = Schema.imports.findOne(transaction.parent)
       else if transaction.transactionType is Enums.getValue('TransactionTypes', 'customer')
         parent = Schema.orders.findOne(transaction.parent)
+      else
+        parent = Schema.returns.findOne(transaction.parent)
 
       if !parent or parent.transaction isnt transaction._id
         latestDebtBalance = 0; beforeDebtBalance = transaction.beforeDebtBalance
@@ -112,15 +72,20 @@ Meteor.methods
         )
 
         if Schema.transactions.remove transaction._id
-          updateOwner =
-            paidCash  : -transaction.paidBalanceChange
-            debtCash  : +transaction.paidBalanceChange
-            loanCash  : -transaction.debtBalanceChange
-            totalCash : -transaction.debtBalanceChange
+          if parent
+            updateOwner =
+              paidCash   : -transaction.paidBalanceChange
+              loanCash   : -transaction.debtBalanceChange
+              totalCash  : (transaction.paidBalanceChange - transaction.debtBalanceChange)
+          else
+            updateOwner =
+              paidCash   : -transaction.paidBalanceChange
+              loanCash   : -transaction.debtBalanceChange
+              totalCash  : (transaction.paidBalanceChange - transaction.debtBalanceChange)
 
           if transaction.transactionType is Enums.getValue('TransactionTypes', 'provider')
             Schema.providers.update transaction.owner, $inc: updateOwner
           else if transaction.transactionType is Enums.getValue('TransactionTypes', 'customer')
             Schema.customers.update transaction.owner, $inc: updateOwner
             if customer = Schema.customers.findOne(transaction.owner)
-              Schema.customerGroups.update customer.group, $inc:{totalCash: (transaction.paidBalanceChange - transaction.debtBalanceChange)} if customer.group
+              Schema.customerGroups.update customer.group, $inc:{totalCash: updateOwner.totalCash} if customer.group

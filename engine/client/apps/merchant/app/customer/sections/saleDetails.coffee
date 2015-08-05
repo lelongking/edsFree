@@ -1,9 +1,13 @@
 lemon.defineWidget Template.customerManagementSaleDetails,
   helpers:
-    allowDelete: -> @_id is Template.parentData().transaction
+    allowDelete: -> @_id isnt Template.parentData().transaction
     billNo: ->
-      if @model is 'orders' then 'Số phiếu: ' + @orderCode
-      else if @model is 'returns' then 'Trả hàng phiếu: ' + @returnCode
+      if @model is 'orders'
+        'Số phiếu: ' + @orderCode + if @description then " (#{@description})" else ''
+      else if @model is 'returns'
+        'Trả hàng phiếu: ' + @returnCode + if @description then " (#{@description})" else ''
 
   events:
-    "click .deleteTransaction": (event, template) -> Meteor.call 'deleteTransaction', @_id
+    "click .deleteTransaction": (event, template) ->
+      Meteor.call 'deleteTransaction', @_id
+      event.stopPropagation()
