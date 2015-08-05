@@ -38,7 +38,7 @@ template(name="providerManagementImportsHistorySection")
               td.number(style="color: #666;")
                 if showBeforeDebtBalance
                   span.icon-feather-1.s5 <b>{{formatNumberBeforeDebtBalance}}</b>
-              td.number(align="right"): span.s5 <b>{{formatNumber latestDebtBalance}}</b>
+              td.number(align="right"): span.s5 <b>{{formatNumber owedCash}}</b>
 
         each allImports
           +providerManagementImportDetails this
@@ -54,6 +54,28 @@ template(name="providerManagementImportsHistorySection")
           class="{{isNotDisabled 'allowCreateTransactionOfImport'}}") {{transactionStatus}}
 
     .panel-footer
-      .right-float
-        span.s5 TỔNG NỢ:
-        span.s3 <b>{{formatNumber debtTotalCash}}</b> VNĐ
+      table.lemon-grid.safe
+        tr
+          th(style="width:auto")
+          th(style="width:200px")
+          th(style="width:200px")
+
+        tr
+          td
+          td Nợ tồn đầu kỳ:
+          td.number <b>{{formatNumber beginCash}}</b> VND
+
+        tr
+          td
+          td Phát sinh trong kỳ:
+          td.number <b>{{formatNumber totalDebtCash}}</b> VND
+
+        tr
+          td
+          td Thu nợ trong kỳ:
+          td.number <b>{{formatNumber totalPaidCash}}</b> VND
+
+        tr
+          td
+          td Nợ tồn cuối kỳ:
+          td.number <b>{{formatNumber totalCash}}</b> VND

@@ -1,7 +1,7 @@
 Enums = Apps.Merchant.Enums
 
-Apps.Merchant.providerManagementInit.push (scope) ->
 #-----------------Edit Provider-----------------------------------
+Apps.Merchant.providerManagementInit.push (scope) ->
   scope.searchOrCreateProviderByInput = (event, template)->
     Helpers.deferredAction ->
       searchFilter  = template.ui.$searchFilter.val()
@@ -69,21 +69,22 @@ Apps.Merchant.providerManagementInit.push (scope) ->
         template.ui.$providerPhone.val() isnt (Session.get("providerManagementCurrentProvider").phone ? '') or
         template.ui.$providerAddress.val() isnt (Session.get("providerManagementCurrentProvider").address ? '')
 
-Apps.Merchant.providerManagementInit.push (scope) ->
-#-----------------Create Transaction-----------------------------------
-  scope.checkAllowCreateAndCreateTransaction = (event, template) ->
-    if event.which is 13 then scope.createTransactionOfImport(event, template)
-    else scope.checkAllowCreateTransactionOfImport(event, template)
 
-  scope.checkAllowCreateTransactionOfImport = (event, template) ->
+#-----------------Create Transaction-----------------------------------
+Apps.Merchant.providerManagementInit.push (scope) ->
+  scope.checkAllowCreateAndCreateTransaction = (event, template) ->
+    if event.which is 13 then scope.createTransactionOfProvider(event, template)
+    else scope.checkAllowCreateTransactionOfProvider(event, template)
+
+  scope.checkAllowCreateTransactionOfProvider = (event, template) ->
     payAmount = parseInt($(template.find("[name='payImportAmount']")).inputmask('unmaskedvalue'))
     if payAmount != 0 and !isNaN(payAmount)
       Session.set("allowCreateTransactionOfImport", true)
     else
       Session.set("allowCreateTransactionOfImport", false)
 
-  scope.createTransactionOfImport = (event, template) ->
-    scope.checkAllowCreateTransactionOfImport(event, template)
+  scope.createTransactionOfProvider= (event, template) ->
+    scope.checkAllowCreateTransactionOfProvider(event, template)
     if Session.get("allowCreateTransactionOfImport")
       $payDescription = template.ui.$payImportDescription
       $payAmount      = template.ui.$payImportAmount

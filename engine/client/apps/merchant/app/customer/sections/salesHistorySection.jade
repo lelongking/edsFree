@@ -47,7 +47,7 @@ template(name="customerManagementSalesHistorySection")
               td.number(style="color: #666;")
                 if showBeforeDebtBalance
                   span.icon-feather-1.s5 <b>{{formatNumberBeforeDebtBalance}}</b>
-              td.number(align="right"): span.s5 <b>{{formatNumber latestDebtBalance}}</b>
+              td.number(align="right"): span.s5 <b>{{formatNumber owedCash}}</b>
 
         each allSales
           +customerManagementSaleDetails this

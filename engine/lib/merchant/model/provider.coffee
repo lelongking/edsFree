@@ -9,9 +9,11 @@ simpleSchema.providers = new SimpleSchema
   representative : simpleSchema.OptionalString
   manufacturer   : simpleSchema.OptionalString
 
-  paidCash  : simpleSchema.DefaultNumber()
+  beginCash : simpleSchema.DefaultNumber()
   debtCash  : simpleSchema.DefaultNumber()
   loanCash  : simpleSchema.DefaultNumber()
+  paidCash  : simpleSchema.DefaultNumber()
+  returnCash: simpleSchema.DefaultNumber()
   totalCash : simpleSchema.DefaultNumber()
 
   merchant    : simpleSchema.DefaultMerchant

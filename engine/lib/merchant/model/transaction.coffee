@@ -12,6 +12,7 @@ simpleSchema.transactions = new SimpleSchema
   owner           : type: String  , optional: true      # chu no (KH hoac NCC)
   parent          : type: String  , optional: true      # thong tin phiu ban, phiu nhap (Nhap - Ban - ko co) tuy theo
   dueDay          : type: Date    , optional: true      # han no
+  isBeginCash     : type: Boolean , optional: true      # han no
 
   beforeDebtBalance: type: Number, defaultValue: 0
   debtBalanceChange: type: Number, defaultValue: 0

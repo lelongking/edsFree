@@ -9,9 +9,15 @@ lemon.defineHyper Template.providerManagementImportsHistorySection,
     allImports: -> scope.findAllImport()
     oldDebts: -> scope.findOldDebt()
     hasOldDebts: -> scope.findOldDebt().length > 0
-    debtTotalCash: ->
+
+    totalDebtCash: ->
       if provider = Session.get('providerManagementCurrentProvider')
         provider.debtCash + provider.loanCash
+      else 0
+
+    totalPaidCash: ->
+      if provider = Session.get('providerManagementCurrentProvider')
+        provider.paidCash + provider.returnCash
       else 0
 
     transactionDescription: -> if Session.get("providerManagementOldDebt") then 'ghi chú nợ cũ' else 'ghi chú trả tiền'
@@ -26,7 +32,7 @@ lemon.defineHyper Template.providerManagementImportsHistorySection,
       Meteor.call 'deleteTransaction', @_id
 
     "click .createTransaction": (event, template) ->
-      scope.createTransactionOfImport(event, template)
+      scope.createTransactionOfProvider(event, template)
 
 
 
