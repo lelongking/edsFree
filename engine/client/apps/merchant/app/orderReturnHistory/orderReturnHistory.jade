@@ -1,0 +1,23 @@
+template(name="orderReturnHistory")
+  #content.modern.sales-app
+    .dual-content
+      .dual-detail-wrapper
+        .dual-detail
+          .nano: .nano-content
+            +orderReturnHistoryDetailSection sessionGet 'currentCustomerReturnHistory'
+
+      .dual-addon
+        .search-filter.icon-search-8
+          input(name='searchFilter' type="text" placeholder="tìm đơn hàng..." value="{{productTextSearch}}")
+
+        .nano: .nano-content
+          each details
+            .group-wrapper
+              .caption.group {{createdAt}}
+                each data
+                  .caption.inner.advanced.product-selection(class="{{activeClass 'currentCustomerReturnHistory'}}")
+                    +avatarImageComponent(avatar=avatarUrl alias=returnName)
+                    span.text {{returnName}}
+                      .commands {{momentFormat successDate 'DD/MM/YYYY'}}
+                    span.left-info {{returnCode}}
+                    span.right-info {{formatNumber finalPrice}} VND

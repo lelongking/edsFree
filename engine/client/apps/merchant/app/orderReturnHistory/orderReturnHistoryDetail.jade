@@ -1,0 +1,61 @@
+template(name="orderReturnHistoryDetailSection")
+   .section.top.panel.panel-default.printable-area
+      .panel-heading
+         .hide-on-print
+            span <b>{{timeHM}}<sup>{{timeS}}</sup></b>, ngày <b>{{timeDMY}}</b> <b>{{fullDay}}</b>
+         .show-on-print
+            +merchantPrintingHeader
+            .bill-info
+              .seller-info {{sellerName}} bán hàng
+              .bill-no {{billNo}}
+            .printing-info
+              .document-name
+                span.s4 PHIẾU BÁN HÀNG <br />
+                span.uppercase {{buyer.name}}
+              .document-info
+                .right-info
+                  if buyer.profiles.phone
+                    span {{buyer.profiles.phone}}
+                    span.icon-phone-circled <br/>
+                  if buyer.profiles.address
+                    span {{buyer.profiles.address}}
+                    span.icon-location-outline
+
+      .panel-body
+         table.lemon-grid
+            tr.table-header
+               th.bill-name(style="width:auto") SẢN PHẨM
+               th.date.quality(style="width:50px") SL
+               th(style="width:90px") ĐƠN VỊ TÍNH
+               th.number.price(style="width:80px") ĐƠN GIÁ
+               th.number.bill-discount(style="width:80px") GIẢM GIÁ
+               th.number.final-price(style="width:130px") THÀNH TIỀN
+
+            each details
+               tr.detail-row.click-enable
+                  td.bill-name.has-commands {{productName}}
+                  td.date.quality.editable-field.error-field {{formatNumber quality}}
+                  td: span
+                     |{{unitName}}
+                     unless isBase
+                        span.super.s7.color-lime {{conversion}} {{basicName}}
+
+                  td.number.price.editable-field {{formatNumber price}}
+                  td.number.bill-discount.editable-field: span {{formatNumber discountCash}}
+                  td.number.final-price <b>{{formatNumber finalPrice}}</b>
+
+
+            tr.top-dashed.space: td(colspan="6" style="height: 25px") {{description}}
+            tr
+               td
+               td
+               td.number(colspan="2"): span.s5 TỔNG CỘNG:
+               td.number(colspan="2"): span.s4 <b>{{formatNumber finalPrice}}</b> VNĐ
+
+
+      .panel-footer.show-on-print
+         .grea-print-message
+            .rounded-gera-logo: .rounded-wrapper
+               img(src="/images/white-pixel.jpg")
+               img.rounded-img(src="/images/gera-small.png")
+            i In từ hệ thống EDS - công ty Công Nghệ Thiên Ban (0838 111 766) - Hạn nợ {{dueDate}} ({{dueDay}} ngày)

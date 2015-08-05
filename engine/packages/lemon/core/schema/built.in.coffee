@@ -36,6 +36,7 @@ simpleSchema.Location = new SimpleSchema
 simpleSchema.StringUniqueIndex   = { type: String, unique: true, index: 1 }
 #----------------- Optional Value ------------------------>
 simpleSchema.OptionalString      = { type: String  , optional: true }
+simpleSchema.OptionalString      = { type: String  , optional: true }
 simpleSchema.OptionalStringArray = { type: [String], optional: true }
 simpleSchema.OptionalObject      = { type: Object  , optional: true }
 simpleSchema.OptionalObjectArray = { type: [Object], optional: true }

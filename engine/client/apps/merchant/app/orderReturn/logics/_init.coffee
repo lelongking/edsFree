@@ -5,8 +5,6 @@ Apps.Merchant.customerReturnReactiveRun = []
 
 
 Apps.Merchant.customerReturnInit.push (scope) ->
-  scope.ddd = 0
-
 
 Apps.Merchant.customerReturnReactiveRun.push (scope) ->
   if Session.get('mySession')

@@ -55,6 +55,9 @@ userSession = new SimpleSchema
   currentCustomerReturn : simpleSchema.OptionalString
   currentProviderReturn : simpleSchema.OptionalString
 
+  currentCustomerReturnHistory : simpleSchema.OptionalString
+  currentProviderReturnHistory : simpleSchema.OptionalString
+
   customerSelected        : type: Object, blackbox: true, optional: true
   productSelected         : type: Object, blackbox: true, optional: true
   productUnitSelected     : type: Object, blackbox: true, optional: true
