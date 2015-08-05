@@ -1,5 +1,5 @@
 scope = logics.customerReturn
-
+Enums = Apps.Merchant.Enums
 lemon.defineApp Template.customerReturn,
   helpers:
     allowSuccessReturn: ->
@@ -62,6 +62,6 @@ lemon.defineApp Template.customerReturn,
         else if previousRow = customerReturnLists.getPreviousBy("_id", currentReturn._id)
           Return.setReturnSession(previousRow._id, 'customer')
         else
-          Return.setReturnSession(Return.insert(), 'customer')
+          Return.setReturnSession(Return.insert(Enums.getValue('OrderTypes', 'customer')), 'customer')
 
         scope.currentCustomerReturn.submitCustomerReturn()

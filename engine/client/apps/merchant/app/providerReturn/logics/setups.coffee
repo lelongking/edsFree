@@ -5,7 +5,7 @@ Apps.Merchant.providerReturnInit.push (scope) ->
     currentSource: 'currentProviderReturn'
     caption: 'returnName'
     key: '_id'
-    createAction  : -> Return.insert('provider')
+    createAction  : -> Return.insert(Enums.getValue('ReturnTypes', 'provider'))
     destroyAction : (instance) -> if instance then instance.remove(); Return.findNotSubmitOf('provider').count() else -1
     navigateAction: (instance) -> Return.setReturnSession(instance._id, 'provider')
 
@@ -17,20 +17,20 @@ Apps.Merchant.providerReturnInit.push (scope) ->
     formatSelection: formatProviderSearch
     formatResult: formatProviderSearch
     id: '_id'
-    placeholder: 'CHỌN KHÁCH HÀNG'
+    placeholder: 'CHỌN NHÀ CUNG CẤP'
     readonly: -> true
     changeAction: (e) -> scope.currentProviderReturn.selectOwner(e.added._id)
     reactiveValueGetter: -> Session.get('currentProviderReturn')?.owner ? 'skyReset'
 
   scope.importSelectOptions =
     query: (query) -> query.callback
-      results: findOrderByProvider(Session.get('currentProviderReturn')?.owner)
+      results: findImportByProvider(Session.get('currentProviderReturn')?.owner)
       text: '_id'
     initSelection: (element, callback) -> callback Schema.imports.findOne(scope.currentProviderReturn?.parent)
     formatSelection: (item) -> "#{item.importCode}" if item
     formatResult: (item) -> "#{item.importCode}" if item
     id: '_id'
-    placeholder: 'CHỌN PHIẾU BÁN'
+    placeholder: 'CHỌN PHIẾU NHẬP'
     minimumResultsForSearch: -1
     readonly: -> true
     changeAction: (e) -> scope.currentProviderReturn.selectParent(e.added._id)
@@ -45,14 +45,13 @@ providerSearch = (query) ->
     ]}
   Schema.providers.find(selector, options).fetch()
 
-findOrderByProvider = (providerId) ->
+findImportByProvider = (providerId) ->
   importLists = []
   if providerId
     importLists = Schema.imports.find({
-      merchant    : Merchant.getId()
-      buyer       : providerId
-      importType   : Enums.getValue('OrderTypes', 'success')
-      importStatus : Enums.getValue('OrderStatus', 'finish')
+      merchant   : Merchant.getId()
+      provider   : providerId
+      importType : Enums.getValue('ImportTypes', 'success')
     }).fetch()
   importLists
 

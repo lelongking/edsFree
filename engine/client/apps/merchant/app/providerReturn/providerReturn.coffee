@@ -1,5 +1,5 @@
 scope = logics.providerReturn
-
+Enums = Apps.Merchant.Enums
 lemon.defineApp Template.providerReturn,
   helpers:
     allowSuccessReturn: ->
@@ -62,6 +62,6 @@ lemon.defineApp Template.providerReturn,
         else if previousRow = providerReturnLists.getPreviousBy("_id", currentReturn._id)
           Return.setReturnSession(previousRow._id, 'provider')
         else
-          Return.setReturnSession(Return.insert(), 'provider')
+          Return.setReturnSession(Return.insert(Enums.getValue('OrderTypes', 'provider')), 'provider')
 
         scope.currentProviderReturn.submitProviderReturn()

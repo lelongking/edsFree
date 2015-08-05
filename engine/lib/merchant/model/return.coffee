@@ -197,9 +197,9 @@ Schema.add 'returns', "Return", class Return
       dasd =0
 
 
-  @insert: (ownerId = undefined, parentId = undefined, returnType = Enums.getValue('OrderTypes', 'customer'))->
+  @insert: (returnType = Enums.getValue('ReturnTypes', 'customer'), ownerId = undefined, parentId = undefined)->
     insertOption = {}
-    if Enums.getValue('OrderTypes', 'customer') is returnType or Enums.getValue('OrderTypes', 'provider') is returnType
+    if Enums.getValue('ReturnTypes', 'customer') is returnType or Enums.getValue('ReturnTypes', 'provider') is returnType
       insertOption.returnType = returnType
     else return
 

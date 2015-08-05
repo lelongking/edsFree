@@ -65,7 +65,6 @@ findPrice = (priceBookId, priceBookList, priceType = 'sale') ->
     return undefined
   else if priceType is 'import'
     for priceBook in priceBookList
-      console.log priceBook.importPrice, priceBook.priceBook, priceBookId
       return priceBook.importPrice if priceBook.priceBook is priceBookId
     return undefined
 

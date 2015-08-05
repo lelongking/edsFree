@@ -5,7 +5,7 @@ Apps.Merchant.customerReturnInit.push (scope) ->
     currentSource: 'currentCustomerReturn'
     caption: 'returnName'
     key: '_id'
-    createAction  : -> Return.insert('customer')
+    createAction  : -> Return.insert(Enums.getValue('OrderTypes', 'customer'))
     destroyAction : (instance) -> if instance then instance.remove(); Return.findNotSubmitOf('customer').count() else -1
     navigateAction: (instance) -> Return.setReturnSession(instance._id, 'customer')
 

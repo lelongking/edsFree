@@ -7,7 +7,7 @@ providerReturnRoute =
     if @ready()
       Apps.setup(scope, Apps.Merchant.providerReturnInit, 'providerReturn')
       Session.set "currentAppInfo",
-        name: "trả hàng"
+        name: "trả hàng nhà cung cấp"
         navigationPartial:
           template: "providerReturnNavigationPartial"
           data: {}

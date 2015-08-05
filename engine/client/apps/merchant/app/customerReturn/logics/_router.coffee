@@ -7,7 +7,7 @@ customerReturnRoute =
     if @ready()
       Apps.setup(scope, Apps.Merchant.customerReturnInit, 'customerReturn')
       Session.set "currentAppInfo",
-        name: "trả hàng"
+        name: "khách hàng trả hàng"
         navigationPartial:
           template: "customerReturnNavigationPartial"
           data: {}
