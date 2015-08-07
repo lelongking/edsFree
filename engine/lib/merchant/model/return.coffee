@@ -170,21 +170,26 @@ Schema.add 'returns', "Return", class Return
       return console.log('Return rỗng.') if @details.length is 0
       return console.log('Phieu Order Khong Chinh Xac.') if (orderFound = Schema.orders.findOne(@parent)) is undefined
 
-      productUpdateList = []; orderUpdateOption = $inc:{}
+      productUpdateList = []; orderUpdateOption = $inc:{}, $set:{}
       for returnDetail in currentReturn.details
         currentProductQuality = 0; findProductUnit = false
         productUpdateList.push(updateProductQuery(returnDetail, currentReturn.returnType))
 
         for orderDetail, index in orderFound.details
+          console.log orderDetail
           if orderDetail.productUnit is returnDetail.productUnit
             findProductUnit = true; currentProductQuality += orderDetail.basicQualityAvailable
 
             orderUpdateOption.$inc["details.#{index}.basicQualityReturn"]    = returnDetail.basicQuality
             orderUpdateOption.$inc["details.#{index}.basicQualityAvailable"] = -returnDetail.basicQuality
 
-            basicImportQualityReturn = orderDetail.basicImportQuality - (orderDetail.basicQualityAvailable - returnDetail.basicQuality)
-            if basicImportQualityReturn > 0
-              orderUpdateOption.$inc["details.#{index}.basicImportQualityReturn"] = basicImportQualityReturn
+            basicImportQualityReturn = orderDetail.basicImportQuality - (orderDetail.basicQuality - returnDetail.basicQuality)
+            if basicImportQualityReturn < 0
+              orderUpdateOption.$set["details.#{index}.basicImportQualityDebit"]  = basicImportQualityReturn
+              orderUpdateOption.$set["details.#{index}.basicImportQualityReturn"] = 0
+            else
+              orderUpdateOption.$set["details.#{index}.basicImportQualityDebit"]   = 0
+              orderUpdateOption.$set["details.#{index}.basicImportQualityReturn"]  = Math.abs(basicImportQualityReturn)
 
               returnQuality = 0
               for detail, indexDetail in orderDetail.imports
@@ -194,8 +199,10 @@ Schema.add 'returns', "Return", class Return
                 requiredQuality = basicImportQualityReturn - returnQuality
                 availableQuality = detail.basicQualityAvailable - requiredQuality
 
-                if availableQuality > 0 then takenQuality = requiredQuality
-                else takenQuality = detail.basicQualityAvailable
+                if availableQuality > 0
+                  takenQuality = requiredQuality
+                else
+                  takenQuality = detail.basicQualityAvailable
 
                 for importDetail, indexImportDetail in Schema.imports.findOne(detail._id).details
                   if importDetail._id is detail.detailId
@@ -203,7 +210,6 @@ Schema.add 'returns', "Return", class Return
                     updateImport.$inc["details.#{indexImportDetail}.basicQualityAvailable"]   = takenQuality
                     updateImport.$inc["details.#{indexImportDetail}.basicOrderQualityReturn"] = takenQuality
                     Schema.imports.update detail._id, updateImport
-
 
         return console.log('ReturnDetail Khong Chinh Xac.') unless findProductUnit
         return console.log('So luong tra qua lon') if (currentProductQuality - returnDetail.basicQuality) < 0
