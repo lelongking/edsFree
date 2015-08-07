@@ -57,12 +57,12 @@ simpleSchema.orders = new SimpleSchema
 
   'details.$.conversion'  : type: Number, min: 1
   'details.$.basicQuality': type: Number, min: 0
-  'details.$.basicQualityReturn'   : simpleSchema.DefaultNumber()
-  'details.$.basicQualityAvailable': simpleSchema.DefaultNumber() #basicQuality - basicReturnQuality
+  'details.$.basicQualityReturn'   : type: Number, min: 0
+  'details.$.basicQualityAvailable': type: Number, min: 0 #basicQuality - basicReturnQuality
 
-  'details.$.basicImportQuality'      : simpleSchema.DefaultNumber()
-  'details.$.basicImportQualityDebit' : simpleSchema.DefaultNumber() #(basicImportQuality - basicReturnQuality) if basicImportQuality > basicReturnQuality
-  'details.$.basicImportQualityReturn': simpleSchema.DefaultNumber() #(basicReturnQuality - basicImportQuality) if basicImportQuality < basicReturnQuality
+  'details.$.basicImportQuality'      : type: Number, min: 0
+  'details.$.basicImportQualityDebit' : type: Number, min: 0 #(basicImportQuality - basicReturnQuality) if basicImportQuality > basicReturnQuality
+  'details.$.basicImportQualityReturn': type: Number, min: 0 #(basicReturnQuality - basicImportQuality) if basicImportQuality < basicReturnQuality
 
 #------------ ImportDetail ------------
   'details.$.imports': type: [Object], optional: true #Import Detail
@@ -179,19 +179,29 @@ Schema.add 'orders', "Order", class Order
       return console.log("Quality invalid (#{quality})") if quality < 1
 
       detailFindQuery = {product: product._id, productUnit: productUnitId, price: price}
-      detailFound = _.findWhere(@details, detailFindQuery)
+      detailFound  = _.findWhere(@details, detailFindQuery)
+      basicQuality = quality * productUnit.conversion
 
       if detailFound
         detailIndex = _.indexOf(@details, detailFound)
         updateQuery = {$inc:{}}
         updateQuery.$inc["details.#{detailIndex}.quality"]      = quality
-#        updateQuery.$inc["details.#{detailIndex}.conversion"]   = productUnit.conversion
-        updateQuery.$inc["details.#{detailIndex}.basicQuality"] = quality * productUnit.conversion
+        updateQuery.$inc["details.#{detailIndex}.basicQuality"] = basicQuality
+        updateQuery.$inc["details.#{detailIndex}.basicQualityAvailable"]   = basicQuality
+        updateQuery.$inc["details.#{detailIndex}.basicImportQualityDebit"] = basicQuality
         recalculationOrder(@_id) if Schema.orders.update(@_id, updateQuery, callback)
+
       else
-        detailFindQuery.quality      = quality
-        detailFindQuery.conversion   = productUnit.conversion
-        detailFindQuery.basicQuality = quality * productUnit.conversion
+        detailFindQuery.importIsValid         = false
+        detailFindQuery.quality               = quality
+        detailFindQuery.conversion            = productUnit.conversion
+        detailFindQuery.basicQuality          = basicQuality
+        detailFindQuery.basicQualityAvailable = basicQuality
+        detailFindQuery.basicQualityReturn    = 0
+
+        detailFindQuery.basicImportQuality       = 0
+        detailFindQuery.basicImportQualityDebit  = basicQuality
+        detailFindQuery.basicImportQualityReturn = 0
         recalculationOrder(@_id) if Schema.orders.update(@_id, { $push: {details: detailFindQuery} }, callback)
 
     doc.editDetail = (detailId, quality, discountCash, price, callback) ->

@@ -32,9 +32,9 @@ simpleSchema.returns = new SimpleSchema
   'details.$.product'       : type: String
   'details.$.productUnit'   : type: String
   'details.$.quality'       : {type: Number, min: 0}
-  'details.$.price'         : {type: Number, min: 0}
   'details.$.basicQuality'  : {type: Number, min: 0}
   'details.$.conversion'    : {type: Number, min: 1}
+  'details.$.price'         : {type: Number, min: 0}
   'details.$.discountCash'  : simpleSchema.DefaultNumber()
 
   'details.$.imports': type: [Object], optional: true #Import Detail
@@ -104,7 +104,7 @@ Schema.add 'returns', "Return", class Return
           details     : []
         }
 
-    doc.addReturnDetail = (productUnitId, quality = 1, price, callback)->
+    doc.addReturnDetail = (detailId, productUnitId, quality = 1, price, callback)->
       if @parent
         product = Schema.products.findOne({'units._id': productUnitId})
         return console.log('Khong tim thay Product') if !product
@@ -118,7 +118,7 @@ Schema.add 'returns', "Return", class Return
         return console.log("Price invalid (#{price})") if price < 0
         return console.log("Quality invalid (#{quality})") if quality < 1
 
-        detailFindQuery = {product: product._id, productUnit: productUnitId, price: price}
+        detailFindQuery = {detailId: detailId, product: product._id, productUnit: productUnitId, price: price}
         detailFound = _.findWhere(@details, detailFindQuery)
 
         if detailFound
@@ -181,7 +181,7 @@ Schema.add 'returns', "Return", class Return
         for orderDetail, index in parent.details
           if orderDetail.productUnit is returnDetail.productUnit
             findProductUnit = true
-            currentProductQuality += orderDetail.basicQuality
+            currentProductQuality += orderDetail.basicQualityAvailable
 
             updateReturnOfOrderDetail =
               _id         : currentReturn._id
@@ -196,7 +196,7 @@ Schema.add 'returns', "Return", class Return
               (currentProductQuality -= item.basicQuality) for item in orderDetail.return
 
         return console.log('ReturnDetail Khong Chinh Xac.') unless findProductUnit
-        return console.log('So luong tra qua lon') if (currentProductQuality - returnDetail.basicQuality) < 0
+        return console.log('So luong tra qua lon') if (currentProductQuality - returnDetail.basicQualityAvailable) < 0
 
       if transactionId = createTransactionByCustomer(currentReturn)
         Schema.products.update(product._id, product.updateOption) for product in productUpdateList
@@ -215,32 +215,19 @@ Schema.add 'returns', "Return", class Return
       return console.log('Return đã hoàn thành.') if @returnStatus is Enums.getValue('ReturnStatus', 'success')
       return console.log('Return không đúng.') unless @returnType is Enums.getValue('ReturnTypes', 'provider')
       return console.log('Return rỗng.') if @details.length is 0
-      return console.log('Phieu Order Khong Chinh Xac.') if (parent = Schema.imports.findOne(@parent)) is undefined
+      return console.log('Phieu Order Khong Chinh Xac.') if (importFound = Schema.imports.findOne(@parent)) is undefined
 
-      productUpdateList = []
-      importUpdateOption = $push:{}
-
+      productUpdateList = []; importUpdateOption = $inc:{}
       for returnDetail in currentReturn.details
         currentProductQuality = 0; findProductUnit = false
         productUpdateList.push(updateProductQuery(returnDetail, currentReturn.returnType))
 
-
-        for importDetail, index in parent.details
+        for importDetail, index in importFound.details
           if importDetail.productUnit is returnDetail.productUnit
-            findProductUnit = true
-            currentProductQuality += importDetail.basicQuality
+            findProductUnit = true; currentProductQuality += importDetail.basicQualityAvailable
 
-            updateReturnOfOrderDetail =
-              _id         : currentReturn._id
-              detailId    : returnDetail._id
-              basicQuality: returnDetail.basicQuality
-            if importUpdateOption.$push["details.#{index}.return"]
-              importUpdateOption.$push["details.#{index}.return"].$each.push updateReturnOfOrderDetail
-            else
-              importUpdateOption.$push["details.#{index}.return"] = {$each: [updateReturnOfOrderDetail]}
-
-            if importDetail.return?.length > 0
-              (currentProductQuality -= item.basicQuality) for item in importDetail.return
+            importUpdateOption.$inc["details.#{index}.basicQualityReturn"]    = returnDetail.basicQuality
+            importUpdateOption.$inc["details.#{index}.basicQualityAvailable"] = -returnDetail.basicQuality
 
         return console.log('ReturnDetail Khong Chinh Xac.') unless findProductUnit
         return console.log('So luong tra qua lon') if (currentProductQuality - returnDetail.basicQuality) < 0
@@ -395,5 +382,8 @@ createTransactionByProvider = (currentReturn)->
     transactionInsert.status    = Enums.getValue('TransactionStatuses', 'tracking')
 
     if transactionId = Schema.transactions.insert(transactionInsert)
-      Schema.providers.update provider._id, $inc: {debtCash: -currentReturn.finalPrice}
+      Schema.providers.update provider._id, $inc: {
+        returnCash: currentReturn.finalPrice
+        totalCash : -currentReturn.finalPrice
+      }
     return transactionId

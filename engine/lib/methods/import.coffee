@@ -125,9 +125,6 @@ Meteor.methods
     merchantFound = Schema.merchants.findOne(user.profile?.merchant)
     return {valid: false, error: 'merchant not found!'} if !merchantFound
 
-
-
-
     importUpdate = $set:
       importType : Enums.getValue('ImportTypes', 'success')
       successDate: new Date()
@@ -160,5 +157,6 @@ Meteor.methods
       else
         importUpdate.$set["details.#{detailIndex}.note"] = 'Nhập kho mới'
 
-    Schema.providers.update importFound.provider, $set:{allowDelete: false}
     Schema.imports.update importFound._id, importUpdate
+    Schema.merchants.update(merchantFound._id, $inc:{importBill: 1})
+    Schema.providers.update importFound.provider, {$set:{allowDelete: false}, $inc: {billNo: 1}}

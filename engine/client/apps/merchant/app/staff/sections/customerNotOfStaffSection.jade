@@ -15,7 +15,7 @@ template(name="customerNotOfStaffSection")
 
     .panel-body.debt-details
       table.lemon-grid(style="cursor: pointer;")
-        +customerOfStaffGroupHeader
+        +customerOfNotStaffGroupHeader
         each customerLists
           tr.detail-row(class="{{selected}}")
             td.command.icon-ok-6.hide-on-print

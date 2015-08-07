@@ -12,21 +12,14 @@ lemon.defineApp Template.providerReturn,
 
           for parentDetail in currentParentDetails
             if parentDetail.productUnit is returnDetail.productUnit
-              currentProductQuality += parentDetail.basicQuality
-
-              if parentDetail.return?.length > 0
-                (currentProductQuality -= item.basicQuality) for item in parentDetail.return
+              currentProductQuality += parentDetail.basicQualityAvailable
 
           return 'disabled' if (currentProductQuality - returnDetail.basicQuality) < 0
 
       else
         return 'disabled'
 
-    availableQuality: ->
-      quality = @quality
-      if @return?.length > 0
-        (quality -= currentDetail.basicQuality) for currentDetail in @return
-      quality
+    availableQuality: ->  @basicQualityAvailable/@conversion
 
 
 
@@ -51,7 +44,8 @@ lemon.defineApp Template.providerReturn,
 
 
     'click .addReturnDetail': (event, template)->
-      scope.currentProviderReturn.addReturnDetail(@productUnit, 1, @price)
+      console.log @
+      scope.currentProviderReturn.addReturnDetail(@_id, @productUnit, 1, @price)
       event.stopPropagation()
 
     "click .returnSubmit": (event, template) ->

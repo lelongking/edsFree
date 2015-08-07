@@ -44,10 +44,10 @@ simpleSchema.imports = new SimpleSchema
 #------------ Quality Detail ------------
   'details.$.conversion'  : {type: Number, min: 1}
   'details.$.basicQuality': {type: Number, min: 0}
-  'details.$.basicQualityReturn': simpleSchema.DefaultNumber()
-  'details.$.basicOrderQuality' : simpleSchema.DefaultNumber()
-  'details.$.basicOrderQualityReturn': simpleSchema.DefaultNumber() #(basicReturnQuality - basicImportQuality) if basicImportQuality < basicReturnQuality
-  'details.$.basicQualityAvailable'  : simpleSchema.DefaultNumber()
+  'details.$.basicQualityReturn': {type: Number, min: 0}
+  'details.$.basicOrderQuality' : {type: Number, min: 0}
+  'details.$.basicOrderQualityReturn': {type: Number, min: 0} #(basicReturnQuality - basicImportQuality) if basicImportQuality < basicReturnQuality
+  'details.$.basicQualityAvailable'  : {type: Number, min: 0}
 
 
 #------------ Method Import ------------
@@ -106,23 +106,27 @@ Schema.add 'imports', "Import", class Import
       detailFound = _.findWhere(@details, detailFindQuery)
 
       if detailFound
-        detailIndex = _.indexOf(@details, detailFound)
-        updateQuery = {$inc:{}}; basicQuality = quality * productUnit.conversion
+        detailIndex   = _.indexOf(@details, detailFound)
+        updateQuery   = {$inc:{}}
+        basicQuality  = quality * productUnit.conversion
+
         updateQuery.$inc["details.#{detailIndex}.quality"]               = quality
         updateQuery.$inc["details.#{detailIndex}.basicQuality"]          = basicQuality
-        updateQuery.$inc["details.#{detailIndex}.availableBasicQuality"] = basicQuality
+        updateQuery.$inc["details.#{detailIndex}.basicQualityAvailable"] = basicQuality
         recalculationImport(@_id) if Schema.imports.update(@_id, updateQuery, callback)
 
       else
-        detailFindQuery.expire            = expireDay if expireDay
-        detailFindQuery.note              = note if note
-        detailFindQuery.orderId           = []
-        detailFindQuery.quality           = quality
-        detailFindQuery.conversion        = productUnit.conversion
-        detailFindQuery.basicQuality      = quality * productUnit.conversion
-        detailFindQuery.importQuality     = detailFindQuery.basicQuality
-        detailFindQuery.availableQuality  = detailFindQuery.basicQuality
-        detailFindQuery.inStockQuality    = detailFindQuery.basicQuality
+        detailFindQuery.expire       = expireDay if expireDay
+        detailFindQuery.note         = note if note
+
+        detailFindQuery.quality      = quality
+        detailFindQuery.conversion   = productUnit.conversion
+        detailFindQuery.basicQuality            = quality * productUnit.conversion
+        detailFindQuery.basicQualityAvailable   = quality * productUnit.conversion
+        detailFindQuery.basicQualityReturn      = 0
+        detailFindQuery.basicOrderQuality       = 0
+        detailFindQuery.basicOrderQualityReturn = 0
+
         if Schema.imports.update(@_id, { $push: {details: detailFindQuery} }, callback)
           recalculationImport(@_id); product.unitDenyDelete(productUnitId)
 

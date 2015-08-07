@@ -42,10 +42,7 @@ Template.registerHelper 'crossReturnAvailableQuality', ->
   if currentDetail and currentParent
     for orderDetail in currentParent
       if orderDetail.productUnit is currentDetail.productUnit
-        currentProductQuality += orderDetail.basicQuality
-
-        if orderDetail.return?.length > 0
-          (currentProductQuality -= item.basicQuality) for item in orderDetail.return
+        currentProductQuality += orderDetail.basicQualityAvailable
 
     crossAvailable = currentProductQuality - currentDetail.basicQuality
 

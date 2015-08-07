@@ -83,73 +83,61 @@ updateSubtractQualityInProductUnit = (product, orderDetail) ->
 
 findAllImport = (productUnitId) ->
   basicImport = Schema.imports.find({
-    importType              : $in:[Enums.getValue('ImportTypes', 'inventorySuccess'), Enums.getValue('ImportTypes', 'success')]
-    'details.productUnit'   : productUnitId
-    'details.availableBasicQuality': {$gt: 0}
+    importType : $in:[Enums.getValue('ImportTypes', 'inventorySuccess'), Enums.getValue('ImportTypes', 'success')]
+    'details.productUnit' : productUnitId
+    'details.basicQualityAvailable': {$gt: 0}
   }, {sort: {importType: 1} }).fetch()
   combinedImports = basicImport; console.log combinedImports
   combinedImports
 
 updateSubtractQualityInImport = (orderFound, orderDetail, detailIndex, combinedImports) ->
   transactionQuality = 0
-  for currentImport in combinedImports
-
-    for importDetail, index in currentImport.details
-
-      if importDetail.productUnit is orderDetail.productUnit
+  for currentImport in combinedImports #danh sach phieu Import
+    for importDetail, index in currentImport.details #danh sach ImportDetail
+      if importDetail.productUnit is orderDetail.productUnit #so sanh ProductUnit
         requiredQuality = orderDetail.basicQuality - transactionQuality
 
-        availableQuality = importDetail.availableBasicQuality - requiredQuality
+        availableQuality = importDetail.basicQualityAvailable - requiredQuality
         if availableQuality > 0
           takenQuality = requiredQuality
-          orderDetailNote = "còn #{availableQuality}, phiếu #{currentImport.importCode}"
+#          orderDetailNote = "còn #{availableQuality}, phiếu #{currentImport.importCode}"
         else
-          takenQuality = importDetail.availableBasicQuality
-          orderDetailNote = "hết hàng, phiếu #{currentImport.importCode}"
+          takenQuality = importDetail.basicQualityAvailable
+#          orderDetailNote = "hết hàng, phiếu #{currentImport.importCode}"
 
-        orderDetailOfImport =
-          owner       : orderFound.buyer
-          _id         : orderFound._id
-          detailId    : orderDetail._id
-          product     : orderDetail.product
-          productUnit : orderDetail.productUnit
-          conversion  : orderDetail.conversion
-          quality     : takenQuality/orderDetail.conversion
-          basicQuality: takenQuality
-          price       : orderDetail.price
-          note        : orderDetailNote
-          createdAt   : new Date()
-
-        updateImport = {$inc:{}, $push:{}}
-        updateImport.$push["details.#{index}.orders"] = orderDetailOfImport
-        updateImport.$inc["details.#{index}.orderBasicQuality"]     = takenQuality
-        updateImport.$inc["details.#{index}.availableBasicQuality"] = -takenQuality
-        console.log updateImport
+        updateImport = $inc:{}
+        updateImport.$inc["details.#{index}.basicOrderQuality"]     = takenQuality
+        updateImport.$inc["details.#{index}.basicQualityAvailable"] = -takenQuality
         Schema.imports.update currentImport._id, updateImport
 
-
-        updateOrderQuery = {$push:{}, $set:{}, $inc:{}}
+        updateOrderQuery = {$push:{}, $inc:{}}
         importDetailOfOrder =
-          owner       : currentImport.provider
           _id         : currentImport._id
           detailId    : importDetail._id
           product     : importDetail.product
           productUnit : importDetail.productUnit
+          provider    : currentImport.provider
+          price       : importDetail.price
           conversion  : importDetail.conversion
           quality     : takenQuality/importDetail.conversion
-          basicQuality: takenQuality
-          price       : importDetail.price
-          note        : orderDetailNote
+#          note        : orderDetailNote
           createdAt   : new Date()
+          basicQuality          : takenQuality
+          basicQualityReturn    : 0
+          basicQualityAvailable : takenQuality
 
-        updateOrderQuery.$set["details.#{detailIndex}.importIsValid"]       = true
-        updateOrderQuery.$inc["details.#{detailIndex}.importBasicQuality"]  = takenQuality
-        updateOrderQuery.$push["details.#{detailIndex}.imports"]             = importDetailOfOrder
-        Schema.orders.update orderFound._id, updateOrderQuery
+        updateOrderQuery.$push["details.#{detailIndex}.imports"]                = importDetailOfOrder
+        updateOrderQuery.$inc["details.#{detailIndex}.basicImportQuality"]      = takenQuality
+        updateOrderQuery.$inc["details.#{detailIndex}.basicImportQualityDebit"] = -takenQuality
+
+        if transactionQuality is orderDetail.basicQuality
+          updateOrderQuery.$set = {}
+          updateOrderQuery.$set["details.#{detailIndex}.importIsValid"] = true
+        Schema.orders.update(orderFound._id, updateOrderQuery)
 
         transactionQuality += takenQuality
-        break if transactionQuality == orderDetail.basicQuality
-    break if transactionQuality == orderDetail.basicQuality
+        break if transactionQuality is orderDetail.basicQuality
+    break if transactionQuality is orderDetail.basicQuality
 
 Enums = Apps.Merchant.Enums
 Meteor.methods
@@ -177,7 +165,7 @@ Meteor.methods
     catch error
       throw new Meteor.Error('customerToOrder', error)
 
-
+Meteor.methods
   orderSellerConfirm: (orderId)->
     user = Meteor.users.findOne(Meteor.userId())
     return {valid: false, error: 'user not found!'} if !user
@@ -377,13 +365,12 @@ Meteor.methods
             combinedImports = findAllImport(orderDetail.productUnit)
             updateSubtractQualityInImport(orderFound, orderDetail, detailIndex, combinedImports)
 
-      orderUpdate = $set:
+      updateOrderQuery = $set:
         orderStatus : Enums.getValue('OrderStatus', 'finish')
         transaction : transactionId
         successDate : new Date()
         orderCode   :"#{Helpers.orderCodeCreate(customerFound.billNo)}/#{Helpers.orderCodeCreate(merchantFound.saleBill)}"
-
-      Schema.orders.update orderFound._id, orderUpdate
+      Schema.orders.update(orderFound._id, updateOrderQuery)
       Schema.customers.update customerFound._id, {$inc: {billNo: 1},$addToSet:{orderSuccess: orderFound._id}, $pull: {orderWaiting: orderFound._id}}
       Schema.merchants.update(merchantFound._id, $inc:{saleBill: 1})
 
@@ -394,7 +381,7 @@ Meteor.methods
       Schema.customers.update orderFound.buyer, {$addToSet:{orderFailure: orderFound._id}, $pull: {orderWaiting: orderFound._id}}
 
 
-
+Meteor.methods
   orderSuccessConfirmed: (orderId)->
     user = Meteor.users.findOne(Meteor.userId())
     return {valid: false, error: 'user not found!'} if !user

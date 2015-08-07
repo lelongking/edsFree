@@ -52,7 +52,7 @@ Apps.Merchant.providerManagementInit.push (scope) ->
           item
       )
 
-      _.sortBy imports.concat(returns), (item) -> item.version.createdAt
+      _.sortBy imports.concat(returns), (item) -> item.successDate
     else []
 
   scope.providerManagementCreationMode = () ->
