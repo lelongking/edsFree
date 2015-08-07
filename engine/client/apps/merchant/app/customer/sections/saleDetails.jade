@@ -2,7 +2,7 @@ template(name="customerManagementSaleDetails")
   tr.header-row
     td.has-commands(colspan="5" style="border-left: solid 2px #f39c12")
       | &nbsp;
-      .bill-header(style="background-color: #f39c12;") <b>{{momentFormat version.createdAt "DD/MM/YYYY"}}</b>
+      .bill-header(style="background-color: #f39c12;") <b>{{momentFormat successDate "DD/MM/YYYY"}}</b>
       .bill-header.hide-on-print(style="background-color: #fff; left: 90px; color: #7ac5f9") {{billNo}}
       .bill-header.show-on-print(style="background-color: #fff; left: 120px; color: #7ac5f9") {{billNo}}
       //.commands

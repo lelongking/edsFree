@@ -51,5 +51,5 @@ Apps.Merchant.customerManagementInit.push (scope) ->
           item
       )
 
-      _.sortBy orders.concat(returns), (item) -> item.version.createdAt
+      _.sortBy orders.concat(returns), (item) -> item.successDate
     else []

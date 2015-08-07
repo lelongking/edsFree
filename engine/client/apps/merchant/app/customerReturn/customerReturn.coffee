@@ -22,13 +22,7 @@ lemon.defineApp Template.customerReturn,
       else
         return 'disabled'
 
-    availableQuality: ->
-      quality = @quality
-      if @return?.length > 0
-        (quality -= currentDetail.basicQuality) for currentDetail in @return
-      quality
-
-
+    availableQuality: -> @basicQualityAvailable/@conversion
 
   created: ->
     CustomerSearch.search('')
@@ -51,7 +45,7 @@ lemon.defineApp Template.customerReturn,
 
 
     'click .addReturnDetail': (event, template)->
-      scope.currentCustomerReturn.addReturnDetail(@productUnit, 1, @price)
+      scope.currentCustomerReturn.addReturnDetail(@_id, @productUnit, 1, @price)
       event.stopPropagation()
 
     "click .returnSubmit": (event, template) ->

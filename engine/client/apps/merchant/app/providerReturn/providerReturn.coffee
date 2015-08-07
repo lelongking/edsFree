@@ -19,7 +19,7 @@ lemon.defineApp Template.providerReturn,
       else
         return 'disabled'
 
-    availableQuality: ->  @basicQualityAvailable/@conversion
+    availableQuality: -> @basicQualityAvailable/@conversion
 
 
 

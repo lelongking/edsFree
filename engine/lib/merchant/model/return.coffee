@@ -168,35 +168,45 @@ Schema.add 'returns', "Return", class Return
       return console.log('Return đã hoàn thành.') if @returnStatus is Enums.getValue('ReturnStatus', 'success')
       return console.log('Return không đúng.') unless @returnType is Enums.getValue('ReturnTypes', 'customer')
       return console.log('Return rỗng.') if @details.length is 0
-      return console.log('Phieu Order Khong Chinh Xac.') if (parent = Schema.orders.findOne(@parent)) is undefined
+      return console.log('Phieu Order Khong Chinh Xac.') if (orderFound = Schema.orders.findOne(@parent)) is undefined
 
-      productUpdateList = []
-      orderUpdateOption = $push:{}
-
+      productUpdateList = []; orderUpdateOption = $inc:{}
       for returnDetail in currentReturn.details
         currentProductQuality = 0; findProductUnit = false
-        productUpdateList.push(updateProductQuery(returnDetail))
+        productUpdateList.push(updateProductQuery(returnDetail, currentReturn.returnType))
 
-
-        for orderDetail, index in parent.details
+        for orderDetail, index in orderFound.details
           if orderDetail.productUnit is returnDetail.productUnit
-            findProductUnit = true
-            currentProductQuality += orderDetail.basicQualityAvailable
+            findProductUnit = true; currentProductQuality += orderDetail.basicQualityAvailable
 
-            updateReturnOfOrderDetail =
-              _id         : currentReturn._id
-              detailId    : returnDetail._id
-              basicQuality: returnDetail.basicQuality
-            if orderUpdateOption.$push["details.#{index}.return"]
-              orderUpdateOption.$push["details.#{index}.return"].$each.push updateReturnOfOrderDetail
-            else
-              orderUpdateOption.$push["details.#{index}.return"] = {$each: [updateReturnOfOrderDetail]}
+            orderUpdateOption.$inc["details.#{index}.basicQualityReturn"]    = returnDetail.basicQuality
+            orderUpdateOption.$inc["details.#{index}.basicQualityAvailable"] = -returnDetail.basicQuality
 
-            if orderDetail.return?.length > 0
-              (currentProductQuality -= item.basicQuality) for item in orderDetail.return
+            basicImportQualityReturn = orderDetail.basicImportQuality - (orderDetail.basicQualityAvailable - returnDetail.basicQuality)
+            if basicImportQualityReturn > 0
+              orderUpdateOption.$inc["details.#{index}.basicImportQualityReturn"] = basicImportQualityReturn
+
+              returnQuality = 0
+              for detail, indexDetail in orderDetail.imports
+                orderUpdateOption.$inc["details.#{index}.imports.#{indexDetail}.basicQualityReturn"]    = basicImportQualityReturn
+                orderUpdateOption.$inc["details.#{index}.imports.#{indexDetail}.basicQualityAvailable"] = -basicImportQualityReturn
+
+                requiredQuality = basicImportQualityReturn - returnQuality
+                availableQuality = detail.basicQualityAvailable - requiredQuality
+
+                if availableQuality > 0 then takenQuality = requiredQuality
+                else takenQuality = detail.basicQualityAvailable
+
+                for importDetail, indexImportDetail in Schema.imports.findOne(detail._id).details
+                  if importDetail._id is detail.detailId
+                    updateImport = $inc:{}
+                    updateImport.$inc["details.#{indexImportDetail}.basicQualityAvailable"]   = takenQuality
+                    updateImport.$inc["details.#{indexImportDetail}.basicOrderQualityReturn"] = takenQuality
+                    Schema.imports.update detail._id, updateImport
+
 
         return console.log('ReturnDetail Khong Chinh Xac.') unless findProductUnit
-        return console.log('So luong tra qua lon') if (currentProductQuality - returnDetail.basicQualityAvailable) < 0
+        return console.log('So luong tra qua lon') if (currentProductQuality - returnDetail.basicQuality) < 0
 
       if transactionId = createTransactionByCustomer(currentReturn)
         Schema.products.update(product._id, product.updateOption) for product in productUpdateList
@@ -328,13 +338,13 @@ updateProductQuery = (returnDetail, returnType)->
     for unit, index in product.units
       if unit._id is returnDetail.productUnit
         productUpdate.$inc["units.#{index}.quality.inStockQuality"]    = returnDetail.basicQuality
-        productUpdate.$inc["units.#{index}.quality.availableQuality"]  = returnDetail.basicQuality
         productUpdate.$inc["units.#{index}.quality.returnSaleQuality"] = returnDetail.basicQuality
+        productUpdate.$inc["units.#{index}.quality.availableQuality"]  = returnDetail.basicQuality
         break
 
     productUpdate.$inc["qualities.#{detailIndex}.inStockQuality"]    = returnDetail.basicQuality
-    productUpdate.$inc["qualities.#{detailIndex}.availableQuality"]  = returnDetail.basicQuality
     productUpdate.$inc["qualities.#{detailIndex}.returnSaleQuality"] = returnDetail.basicQuality
+    productUpdate.$inc["qualities.#{detailIndex}.availableQuality"]  = returnDetail.basicQuality
 
   return {_id: returnDetail.product, updateOption: productUpdate}
 
@@ -358,7 +368,7 @@ createTransactionByCustomer = (currentReturn)->
     transactionInsert.status    = Enums.getValue('TransactionStatuses', 'tracking')
 
     if transactionId = Schema.transactions.insert(transactionInsert)
-      Schema.customers.update customer._id, $inc: {debtCash: -currentReturn.finalPrice}
+      Schema.customers.update customer._id, $inc: {returnCash: currentReturn.finalPrice, totalCash : -currentReturn.finalPrice}
       Schema.customerGroups.update customer.group, $inc:{totalCash: -currentReturn.finalPrice} if customer.group
     return transactionId
 

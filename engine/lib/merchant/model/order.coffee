@@ -219,6 +219,8 @@ Schema.add 'orders', "Order", class Order
       if quality isnt undefined
         predicate.$set["details.#{updateIndex}.quality"] = quality
         predicate.$set["details.#{updateIndex}.basicQuality"] = quality * updateInstance.conversion
+        predicate.$set["details.#{updateIndex}.basicQualityAvailable"]   = quality * updateInstance.conversion
+        predicate.$set["details.#{updateIndex}.basicImportQualityDebit"] = quality * updateInstance.conversion
 
       if _.keys(predicate.$set).length > 0
         recalculationOrder(@_id) if Schema.orders.update(@_id, predicate, callback)
