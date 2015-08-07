@@ -70,6 +70,17 @@ Meteor.publish null, ->
   customerGroupQuery = merchant: merchantId, customers: {$in: myProfile.customers}
   Counts.publish @, 'customerGroupOfStaff', Schema.customerGroups.find(customerGroupQuery)
 
+  Counts.publish @, 'customerReturnHistories', Schema.returns.find(
+    merchant    : merchantId
+    returnType  : Enums.getValue('ReturnTypes', 'customer')
+    returnStatus: Enums.getValue('ReturnStatus', 'success')
+  )
+  Counts.publish @, 'providerReturnHistories', Schema.returns.find(
+    merchant    : merchantId
+    returnType  : Enums.getValue('ReturnTypes', 'provider')
+    returnStatus: Enums.getValue('ReturnStatus', 'success')
+  )
+
 
 
 
