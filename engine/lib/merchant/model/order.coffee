@@ -50,19 +50,37 @@ simpleSchema.orders = new SimpleSchema
   'details.$.productUnit'   : type: String
 
   'details.$.quality'       : type: Number, min: 0
-  'details.$.basicQuality'  : type: Number, min: 0
-  'details.$.conversion'    : type: Number, min: 1
-  'details.$.importBasicQuality' : simpleSchema.DefaultNumber()
-  'details.$.returnBasicQuality' : simpleSchema.DefaultNumber()
-
   'details.$.price'         : type: Number, min: 0
   'details.$.discountCash'  : simpleSchema.DefaultNumber()
   'details.$.isExport'      : simpleSchema.DefaultBoolean(false)
   'details.$.importIsValid' : type: Boolean, optional: true
 
-#------------ ImportDetail Or ReturnDetail ------------
-  'details.$.imports': type: [simpleSchema.Detail], optional: true #Import Detail
-  'details.$.returns': type: [simpleSchema.Detail], optional: true #Return Detail
+  'details.$.conversion'  : type: Number, min: 1
+  'details.$.basicQuality': type: Number, min: 0
+  'details.$.basicQualityReturn'   : simpleSchema.DefaultNumber()
+  'details.$.basicQualityAvailable': simpleSchema.DefaultNumber() #basicQuality - basicReturnQuality
+
+  'details.$.basicImportQuality'      : simpleSchema.DefaultNumber()
+  'details.$.basicImportQualityDebit' : simpleSchema.DefaultNumber() #(basicImportQuality - basicReturnQuality) if basicImportQuality > basicReturnQuality
+  'details.$.basicImportQualityReturn': simpleSchema.DefaultNumber() #(basicReturnQuality - basicImportQuality) if basicImportQuality < basicReturnQuality
+
+#------------ ImportDetail ------------
+  'details.$.imports': type: [Object], optional: true #Import Detail
+  'details.$.imports.$._id'         : type: String, optional: true
+  'details.$.imports.$.detailId'    : type: String, optional: true
+  'details.$.imports.$.product'     : type: String, optional: true
+  'details.$.imports.$.productUnit' : type: String, optional: true
+  'details.$.imports.$.provider'    : type: String, optional: true
+
+  'details.$.imports.$.conversion'  : type: Number, min: 1
+  'details.$.imports.$.quality'     : type: Number, min: 0
+  'details.$.imports.$.basicQuality': type: Number, min: 0
+  'details.$.imports.$.basicQualityReturn'   : type: Number, min: 0
+  'details.$.imports.$.basicQualityAvailable': type: Number, min: 0
+
+  'details.$.imports.$.price'       : type: Number
+  'details.$.imports.$.note'        : type: String, optional: true
+  'details.$.imports.$.createdAt'   : type: Date
 
 
 #khi co xac nhan thu tien va xuat kho, moi co the tiep tuc chuyen sang che do di giao hang

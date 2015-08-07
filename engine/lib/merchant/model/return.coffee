@@ -28,6 +28,7 @@ simpleSchema.returns = new SimpleSchema
 
   details                   : type: [Object], defaultValue: []
   'details.$._id'           : simpleSchema.UniqueId
+  'details.$.detailId'      : type: String
   'details.$.product'       : type: String
   'details.$.productUnit'   : type: String
   'details.$.quality'       : {type: Number, min: 0}
@@ -35,6 +36,21 @@ simpleSchema.returns = new SimpleSchema
   'details.$.basicQuality'  : {type: Number, min: 0}
   'details.$.conversion'    : {type: Number, min: 1}
   'details.$.discountCash'  : simpleSchema.DefaultNumber()
+
+  'details.$.imports': type: [Object], optional: true #Import Detail
+  'details.$.imports.$._id'         : type: String, optional: true
+  'details.$.imports.$.detailId'    : type: String, optional: true
+  'details.$.imports.$.product'     : type: String, optional: true
+  'details.$.imports.$.productUnit' : type: String, optional: true
+  'details.$.imports.$.provider'    : type: String, optional: true
+
+  'details.$.imports.$.conversion'        : type: Number, min: 1
+  'details.$.imports.$.qualityReturn'     : type: Number, min: 0
+  'details.$.imports.$.basicQualityReturn': type: Number, min: 0
+
+  'details.$.imports.$.price'       : type: Number
+  'details.$.imports.$.note'        : type: String, optional: true
+  'details.$.imports.$.createdAt'   : type: Date
 
 Schema.add 'returns', "Return", class Return
   @transform: (doc) ->

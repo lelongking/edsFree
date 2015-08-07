@@ -35,10 +35,6 @@ simpleSchema.imports = new SimpleSchema
   'details.$.productUnit'   : type: String
 
   'details.$.quality'               : {type: Number, min: 0}
-  'details.$.availableBasicQuality' : {type: Number, min: 0}
-  'details.$.basicQuality'          : {type: Number, min: 0}
-  'details.$.conversion'            : {type: Number, min: 1}
-
   'details.$.price'         : {type: Number, min: 0}
   'details.$.discountCash'  : simpleSchema.DefaultNumber()
 
@@ -46,15 +42,12 @@ simpleSchema.imports = new SimpleSchema
   'details.$.note'          : {type: String , optional: true}
 
 #------------ Quality Detail ------------
-  'details.$.orderBasicQuality'        : simpleSchema.DefaultNumber()
-  'details.$.returnOrderBasicQuality'  : simpleSchema.DefaultNumber()
-  'details.$.returnImportBasicQuality' : simpleSchema.DefaultNumber()
-
-#------------ OrderDetail Or ReturnDetail ------------
-  'details.$.orders' : type: [simpleSchema.Detail], optional: true #Order Detail
-  'details.$.returns': type: [simpleSchema.Detail], optional: true #Return Detail
-
-
+  'details.$.conversion'  : {type: Number, min: 1}
+  'details.$.basicQuality': {type: Number, min: 0}
+  'details.$.basicQualityReturn': simpleSchema.DefaultNumber()
+  'details.$.basicOrderQuality' : simpleSchema.DefaultNumber()
+  'details.$.basicOrderQualityReturn': simpleSchema.DefaultNumber() #(basicReturnQuality - basicImportQuality) if basicImportQuality < basicReturnQuality
+  'details.$.basicQualityAvailable'  : simpleSchema.DefaultNumber()
 
 
 #------------ Method Import ------------

@@ -29,19 +29,10 @@ template(name="productManagementSalesHistorySection")
           tr.header-row
             td.has-commands(colspan="7")
               | &nbsp;
-              .bill-header <b>{{momentFormat successDate "DD/MM/YYYY"}}</b>, {{orderCode}}
+              .bill-header <b>{{momentFormat successDate "DD/MM/YYYY"}}</b> - {{orderCode}}
               //.commands(style="left: 80px; top:0px; font-style: italic; color:#7ac5f9") <b>{{description}}</b>
 
           each details
-            tr.detail-row
-              td.first-column.has-commands {{getBuyerName buyer}}
-              td.date
-              td.number {{quality}}
-              td.date {{getProductUnitName productUnit}}
-              td.number {{formatNumber price}}
-              td.number {{note}}
-
-          each return
             tr.detail-row
               td.first-column.has-commands {{getBuyerName buyer}}
               td.date

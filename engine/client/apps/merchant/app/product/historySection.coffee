@@ -14,8 +14,12 @@ lemon.defineHyper Template.productManagementSalesHistorySection,
         }
         details = Schema.orders.find(orderSelector, orderOption).map(
           (order) ->
+            details = []
             for detail, index in order.details
-              detail.buyer = order.buyer
+              if detail.product is product._id
+                detail.buyer = order.buyer
+                details.push(detail)
+            order.details = details
             order
         )
       details
