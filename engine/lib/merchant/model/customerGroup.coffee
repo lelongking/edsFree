@@ -99,6 +99,5 @@ Schema.add 'customerGroups', "CustomerGroup", class CustomerGroup
     group = Schema.customerGroups.findOne({isBase: true})
     if customer and group
       Schema.customers.update customer._id, $set: {group: group._id}
-      totalCash = customer.debtCash + customer.loanCash
-      Schema.customerGroups.update customer.group, {$pull: {customers: customer._id }, $inc:{totalCash: -totalCash}} if customer.group
-      Schema.customerGroups.update group._id, {$addToSet: {customers: customer._id }, $inc:{totalCash: totalCash}}
+      Schema.customerGroups.update customer.group, {$pull: {customers: customer._id }, $inc:{totalCash: -customer.totalCash}} if customer.group
+      Schema.customerGroups.update group._id, {$addToSet: {customers: customer._id }, $inc:{totalCash: customer.totalCash}}

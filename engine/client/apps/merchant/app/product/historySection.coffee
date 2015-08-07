@@ -6,7 +6,24 @@ lemon.defineHyper Template.productManagementSalesHistorySection,
     allSaleDetails: ->
       details = []
       if product = Session.get("productManagementCurrentProduct")
-        importOption   = sort: {importType: Enums.getValue('ImportTypes', 'success') , 'version.createdAt': -1}
+        orderOption   = sort: {orderType: Enums.getValue('OrderTypes', 'success') , 'successDate': 1}
+        orderSelector = {
+          'details.product': product._id
+          orderType        : Enums.getValue('OrderTypes', 'success')
+          orderStatus      : Enums.getValue('OrderStatus', 'finish')
+        }
+        details = Schema.orders.find(orderSelector, orderOption).map(
+          (order) ->
+            for detail, index in order.details
+              detail.buyer = order.buyer
+            order
+        )
+      details
+
+    allSaleDetailsss: ->
+      details = []
+      if product = Session.get("productManagementCurrentProduct")
+        importOption   = sort: {importType: Enums.getValue('ImportTypes', 'success') , 'version.createdAt': 1}
         importSelector = {'details.product': product._id}
         allImports = Schema.imports.find(importSelector, importOption).map(
           (item) ->
@@ -25,6 +42,8 @@ lemon.defineHyper Template.productManagementSalesHistorySection,
             for detail in order.details
               detail.buyer     = order.buyer
               detail.createdAt = order.accountingConfirmAt
+              if detail.import?.length > 0
+                item.buyer = order.buyer for item in detail.import
 
             order.isOrder = true
             order

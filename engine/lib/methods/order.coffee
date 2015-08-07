@@ -58,12 +58,11 @@ createTransaction = (customer, order)->
 
   if transactionId = Schema.transactions.insert(transactionInsert)
     customerUpdate =
-      allowDelete : false
       paidCash    : order.depositCash
       debtCash    : order.finalPrice
       totalCash   : order.finalPrice - order.depositCash
 
-    Schema.customers.update order.buyer, $inc: customerUpdate
+    Schema.customers.update order.buyer, { $inc: customerUpdate, $set: {allowDelete : false} }
     Schema.customerGroups.update order.group, $inc:{totalCash: customerUpdate.totalCash} if customer.group
 
   return transactionId
@@ -86,7 +85,7 @@ findAllImport = (productUnitId) ->
   basicImport = Schema.imports.find({
     importType              : $in:[Enums.getValue('ImportTypes', 'inventorySuccess'), Enums.getValue('ImportTypes', 'success')]
     'details.productUnit'   : productUnitId
-    'details.inStockQuality': {$gt: 0}
+    'details.availableBasicQuality': {$gt: 0}
   }, {sort: {importType: 1} }).fetch()
   combinedImports = basicImport; console.log combinedImports
   combinedImports
@@ -94,48 +93,58 @@ findAllImport = (productUnitId) ->
 updateSubtractQualityInImport = (orderFound, orderDetail, detailIndex, combinedImports) ->
   transactionQuality = 0
   for currentImport in combinedImports
+
     for importDetail, index in currentImport.details
+
       if importDetail.productUnit is orderDetail.productUnit
         requiredQuality = orderDetail.basicQuality - transactionQuality
-        if importDetail.inStockQuality > requiredQuality
-          takenQuality = requiredQuality
-        else
-          takenQuality = importDetail.inStockQuality
 
-        order =
+        availableQuality = importDetail.availableBasicQuality - requiredQuality
+        if availableQuality > 0
+          takenQuality = requiredQuality
+          orderDetailNote = "còn #{availableQuality}, phiếu #{currentImport.importCode}"
+        else
+          takenQuality = importDetail.availableBasicQuality
+          orderDetailNote = "hết hàng, phiếu #{currentImport.importCode}"
+
+        orderDetailOfImport =
+          owner       : orderFound.buyer
           _id         : orderFound._id
-          buyer       : orderFound.buyer
+          detailId    : orderDetail._id
+          product     : orderDetail.product
           productUnit : orderDetail.productUnit
+          conversion  : orderDetail.conversion
           quality     : takenQuality/orderDetail.conversion
-          salePrice   : orderDetail.price
           basicQuality: takenQuality
+          price       : orderDetail.price
+          note        : orderDetailNote
           createdAt   : new Date()
 
         updateImport = {$inc:{}, $push:{}}
-        updateImport.$push["details.#{index}.orderId"]          = order
-        updateImport.$inc["details.#{index}.saleQuality"]       = takenQuality
-        updateImport.$inc["details.#{index}.inStockQuality"]    = -takenQuality
-        updateImport.$inc["details.#{index}.availableQuality"]  = -takenQuality
-
+        updateImport.$push["details.#{index}.orders"] = orderDetailOfImport
+        updateImport.$inc["details.#{index}.orderBasicQuality"]     = takenQuality
+        updateImport.$inc["details.#{index}.availableBasicQuality"] = -takenQuality
+        console.log updateImport
         Schema.imports.update currentImport._id, updateImport
 
-#        if currentImport.importType is Enums.getValue('ImportTypes', 'inventorySuccess')
-#
-#        else if currentImport.importType is Enums.getValue('ImportTypes', 'success')
 
-        updateOrderQuery = {$push:{}}
-        importDetail =
+        updateOrderQuery = {$push:{}, $set:{}, $inc:{}}
+        importDetailOfOrder =
+          owner       : currentImport.provider
           _id         : currentImport._id
           detailId    : importDetail._id
-          price       : orderDetail.price
-          quality     : takenQuality/orderDetail.conversion
+          product     : importDetail.product
+          productUnit : importDetail.productUnit
+          conversion  : importDetail.conversion
+          quality     : takenQuality/importDetail.conversion
           basicQuality: takenQuality
-          note        : 'Hang Ton'
+          price       : importDetail.price
+          note        : orderDetailNote
+          createdAt   : new Date()
 
-#        "Hết TKĐK"
-#        "Còn #{d}"
-
-        updateOrderQuery.$push["details.#{detailIndex}.import"] = importDetail
+        updateOrderQuery.$set["details.#{detailIndex}.importIsValid"]       = true
+        updateOrderQuery.$inc["details.#{detailIndex}.importBasicQuality"]  = takenQuality
+        updateOrderQuery.$push["details.#{detailIndex}.imports"]             = importDetailOfOrder
         Schema.orders.update orderFound._id, updateOrderQuery
 
         transactionQuality += takenQuality
@@ -179,7 +188,6 @@ Meteor.methods
       merchant    : user.profile.merchant
       orderType   : Enums.getValue('OrderTypes', 'initialize')
       orderStatus : Enums.getValue('OrderStatus', 'initialize')
-    console.log orderQuery
     orderFound = Schema.orders.findOne orderQuery
 
     return {valid: false, error: 'order not found!'} if !orderFound
@@ -316,8 +324,8 @@ Meteor.methods
     orderFound = Schema.orders.findOne orderQuery
     return {valid: false, error: 'order not found!'} if !orderFound
 
-    for detail in orderFound.details
-      detailIndex = 0; updateQuery = {$inc:{}}
+    for detail, detailIndex in orderFound.details
+      updateQuery = {$inc:{}}
 
       product = Schema.products.findOne(detail.product)
       for unit, index in product.units
@@ -326,8 +334,8 @@ Meteor.methods
           updateQuery.$inc["units.#{index}.quality.availableQuality"] = detail.basicQuality
           break
 
-      updateQuery.$inc["qualities.#{detailIndex}.inOderQuality"]    = -detail.basicQuality
-      updateQuery.$inc["qualities.#{detailIndex}.availableQuality"] = detail.basicQuality
+      updateQuery.$inc["qualities.0.inOderQuality"]    = -detail.basicQuality
+      updateQuery.$inc["qualities.0.availableQuality"] = detail.basicQuality
       Schema.products.update detail.product, updateQuery
 
     orderUpdate = $set:

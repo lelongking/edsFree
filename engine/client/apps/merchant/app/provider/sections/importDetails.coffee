@@ -2,7 +2,7 @@ lemon.defineWidget Template.providerManagementImportDetails,
   helpers:
     allowDelete: -> @_id isnt Template.parentData().transaction
     billNo: ->
-      if @model is 'import'
+      if @model is 'imports'
         'Số phiếu: ' + @importCode + if @description then " (#{@description})" else ''
       else if @model is 'returns'
         'Trả hàng phiếu: ' + @returnCode + if @description then " (#{@description})" else ''

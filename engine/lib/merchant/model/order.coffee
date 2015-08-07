@@ -1,54 +1,71 @@
 Enums = Apps.Merchant.Enums
 
+#------------ Models Order ------------
 simpleSchema.orders = new SimpleSchema
+  depositCash : simpleSchema.DefaultNumber()
+  discountCash: simpleSchema.DefaultNumber()
+  totalPrice  : simpleSchema.DefaultNumber()
+  finalPrice  : simpleSchema.DefaultNumber()
+
   merchant    : simpleSchema.DefaultMerchant
   allowDelete : simpleSchema.DefaultBoolean()
   creator     : simpleSchema.DefaultCreator
   version     : { type: simpleSchema.Version }
 
-  buyer       : type: String, optional: true
-  orderName   : type: String, defaultValue: 'ĐƠN HÀNG'
-  description : type: String, optional: true
-
-  billNoOfBuyer     : type: String, optional: true
-  billNoOfMerchant  : type: String, optional: true
-
-  depositCash  : simpleSchema.DefaultNumber()
-  discountCash : simpleSchema.DefaultNumber()
-  totalPrice   : simpleSchema.DefaultNumber()
-  finalPrice   : simpleSchema.DefaultNumber()
-
-  orderCode        : simpleSchema.OptionalString
   orderType        : type: Number, defaultValue: Enums.getValue('OrderTypes', 'initialize')
   orderStatus      : type: Number, defaultValue: Enums.getValue('OrderStatus', 'initialize')
   paymentMethod    : type: Number, defaultValue: Enums.getValue('PaymentMethods', 'direct')
   paymentsDelivery : type: Number, defaultValue: Enums.getValue('DeliveryTypes', 'direct')
-  dueDay           : type: Number, optional: true
 
-  #nhan vien tao phieu
+  buyer       : type: String, optional: true
+  dueDay      : type: Number, optional: true
+  description : type: String, optional: true
+  orderName   : type: String, defaultValue: 'ĐƠN HÀNG'
+
+  orderCode        : type: String, optional: true
+  billNoOfBuyer    : type: String, optional: true
+  billNoOfMerchant : type: String, optional: true
+
+#nhan vien tao phieu
   seller          : simpleSchema.DefaultCreator
   sellerConfirmAt : type: Date, optional: true
-
-  #ke toan xac nhan phieu
+#ke toan xac nhan phieu
   accounting          : type: String  , optional: true
   accountingConfirmAt : type: Date, optional: true
-
-  #xac nhan xuat kho khi giao hang
+#xac nhan xuat kho khi giao hang
   export          : type: String  , optional: true
   exportConfirmAt : type: Date    , optional: true
-
-  #xac nhan nhap kho khi giao hang that bai
+#xac nhan nhap kho khi giao hang that bai
   import          : type: String  , optional: true
   importConfirmAt : type: Date    , optional: true
-
-  transaction     : type: String  , optional: true
-
-  #ngay xac nhan
+#ngay xac nhan
+  transaction : type: String  , optional: true
   saleDate    : type: Date, optional: true
   shipperDate : type: Date, optional: true
   successDate : type: Date, optional: true
 
-  #khi co xac nhan thu tien va xuat kho, moi co the tiep tuc chuyen sang che do di giao hang
+  details                   : type: [Object], defaultValue: []
+  'details.$._id'           : simpleSchema.UniqueId
+  'details.$.product'       : type: String
+  'details.$.productUnit'   : type: String
+
+  'details.$.quality'       : type: Number, min: 0
+  'details.$.basicQuality'  : type: Number, min: 0
+  'details.$.conversion'    : type: Number, min: 1
+  'details.$.importBasicQuality' : simpleSchema.DefaultNumber()
+  'details.$.returnBasicQuality' : simpleSchema.DefaultNumber()
+
+  'details.$.price'         : type: Number, min: 0
+  'details.$.discountCash'  : simpleSchema.DefaultNumber()
+  'details.$.isExport'      : simpleSchema.DefaultBoolean(false)
+  'details.$.importIsValid' : type: Boolean, optional: true
+
+#------------ ImportDetail Or ReturnDetail ------------
+  'details.$.imports': type: [simpleSchema.Detail], optional: true #Import Detail
+  'details.$.returns': type: [simpleSchema.Detail], optional: true #Return Detail
+
+
+#khi co xac nhan thu tien va xuat kho, moi co the tiep tuc chuyen sang che do di giao hang
   delivery                     : type: Object , optional: true
   'delivery.deliveryCode'      : simpleSchema.OptionalString
   'delivery.status'            : simpleSchema.DefaultNumber(Enums.getValue('DeliveryStatus', 'unDelivered'))
@@ -62,36 +79,15 @@ simpleSchema.orders = new SimpleSchema
   'delivery.description'       : simpleSchema.OptionalString
   'delivery.transportationFee' : simpleSchema.OptionalNumber
 
-  details                   : type: [Object], defaultValue: []
-  'details.$._id'           : simpleSchema.UniqueId
-  'details.$.product'       : type: String
-  'details.$.productUnit'   : type: String
-  'details.$.quality'       : type: Number, min: 0
-  'details.$.price'         : type: Number, min: 0
-  'details.$.basicQuality'  : type: Number, min: 0
-  'details.$.conversion'    : type: Number, min: 1
-  'details.$.discountCash'  : simpleSchema.DefaultNumber()
-  'details.$.isExport'      : simpleSchema.DefaultBoolean(false)
 
-  'details.$.import'                : type: [Object], optional: true
-  'details.$.import.$._id'          : type: String  , optional: true
-  'details.$.import.$.detailId'     : type: String  , optional: true
-  'details.$.import.$.price'        : type: Number  , optional: true
-  'details.$.import.$.quality'      : type: Number  , optional: true
-  'details.$.import.$.basicQuality' : type: Number  , optional: true
-  'details.$.import.$.note'         : type: String  , optional: true
 
-  'details.$.return'               : type: [Object], optional: true
-  'details.$.return.$._id'         : type: String
-  'details.$.return.$.detailId'    : type: String
-  'details.$.return.$.basicQuality': type: Number, optional: true
 
+#------------ Method Order ------------
 Schema.add 'orders', "Order", class Order
   @transform: (doc) ->
     doc.remove = -> Schema.orders.remove @_id if @allowDelete
 
-    doc.changeDueDay = (dueDay, callback)->
-      Schema.orders.update @_id, $set:{dueDay: Math.abs(Number(dueDay))}, callback
+    doc.changeDueDay = (dueDay, callback)-> Schema.orders.update @_id, $set:{dueDay: Math.abs(Number(dueDay))}, callback
 
     doc.changeBuyer = (customerId, callback)->
       customer = Schema.customers.findOne(customerId)

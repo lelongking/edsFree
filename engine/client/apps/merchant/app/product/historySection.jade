@@ -6,7 +6,6 @@ template(name="productManagementSalesHistorySection")
         .printing-info
           .document-name {{name}}
 
-    .panel-body.debt-details
       table.lemon-grid.safe
         tr
           th(style="width:250px") ĐỐI TÁC
@@ -16,42 +15,83 @@ template(name="productManagementSalesHistorySection")
           th.number(style="width:100px") GIÁ
           th.number(style="width:auto") GHI CHÚ
 
+    .panel-body.debt-details
+      table.lemon-grid.safe
+        tr
+          th(style="width:250px")
+          th.date(style="width:80px")
+          th.number(style="width:40px")
+          th.date(style="width:70px")
+          th.number(style="width:100px")
+          th.number(style="width:auto")
+
         each allSaleDetails
           tr.header-row
             td.has-commands(colspan="7")
               | &nbsp;
-              .bill-header <b>{{createdAt}}</b>
+              .bill-header <b>{{momentFormat successDate "DD/MM/YYYY"}}</b>, {{orderCode}}
               //.commands(style="left: 80px; top:0px; font-style: italic; color:#7ac5f9") <b>{{description}}</b>
 
-          each data
-            if isImport
-              each details
-                if isProduct
-                  tr.detail-row
-                    td.first-column.has-commands
-                      if isInventory
-                        | Tồn kho đầu kỳ
-                      else
-                        |NCC {{providerName}}
-                      .commands Hết Hạn
-                    td.date {{momentFormat expire "DD/MM/YYYY"}}
-                    td.number {{formatNumber quality}}
-                    td.date {{getProductUnitName productUnit}}
-                    td.number {{formatNumber price}}
-                    td.number {{note}}
+          each details
+            tr.detail-row
+              td.first-column.has-commands {{getBuyerName buyer}}
+              td.date
+              td.number {{quality}}
+              td.date {{getProductUnitName productUnit}}
+              td.number {{formatNumber price}}
+              td.number {{note}}
 
-            if isOrder
-              each details
-                if isProduct
-                  tr.detail-row
-                    td.first-column.has-commands
-                      span.icon-forward-3 {{getBuyerName buyer}}
-                      .commands Ngày Bán
-                    td.date {{momentFormat createdAt "DD/MM/YYYY"}}
-                    td.number {{quality}}
-                    td.date {{getProductUnitName productUnit}}
-                    td.number {{formatNumber price}}
-                    td.number {{note}}
+          each return
+            tr.detail-row
+              td.first-column.has-commands {{getBuyerName buyer}}
+              td.date
+              td.number {{quality}}
+              td.date {{getProductUnitName productUnit}}
+              td.number {{formatNumber price}}
+              td.number {{note}}
+
+
+
+          //each data
+          //  if isImport
+          //    each details
+          //      if isProduct
+          //        tr.detail-row
+          //          td.first-column.has-commands
+          //            if isInventory
+          //              | Tồn kho đầu kỳ
+          //            else
+          //              |NCC {{providerName}}
+          //            .commands Hết Hạn
+          //          td.date {{momentFormat expire "DD/MM/YYYY"}}
+          //          td.number {{formatNumber quality}}
+          //          td.date {{getProductUnitName productUnit}}
+          //          td.number {{formatNumber price}}
+          //          td.number {{note}}
+          //
+          //  if isOrder
+          //    each details
+          //      if isProduct
+          //        //tr.detail-row
+          //        //  td.first-column.has-commands
+          //        //    span.icon-forward-3 {{getBuyerName buyer}}
+          //        //    .commands Ngày Bán
+          //        //  td.date {{momentFormat createdAt "DD/MM/YYYY"}}
+          //        //  td.number {{quality}}
+          //        //  td.date {{getProductUnitName productUnit}}
+          //        //  td.number {{formatNumber price}}
+          //        //  td.number {{note}}
+          //        each import
+          //          tr.detail-row
+          //            td.first-column.has-commands
+          //              span.icon-forward-3 {{getBuyerName buyer}}
+          //              .commands Ngày Bán
+          //            td.date {{momentFormat createdAt "DD/MM/YYYY"}}
+          //            td.number {{quality}}
+          //            td.date {{getProductUnitName productUnit}}
+          //            td.number {{formatNumber price}}
+          //            td.number {{note}}
+
 
 
     .panel-footer

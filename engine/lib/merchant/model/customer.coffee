@@ -18,10 +18,6 @@ simpleSchema.customers = new SimpleSchema
   returnCash: simpleSchema.DefaultNumber()
   totalCash : simpleSchema.DefaultNumber()
 
-  salePaid      : type: Number, optional: true
-  saleDebt      : type: Number, optional: true
-  saleTotalCash : type: Number, optional: true
-
   merchant    : simpleSchema.DefaultMerchant
   avatar      : simpleSchema.OptionalString
   allowDelete : simpleSchema.DefaultBoolean()
@@ -102,7 +98,7 @@ Schema.add 'customers', "Customer", class Customer
     )
 
   @insert: (name, description) ->
-    customerId = Schema.customers.insert({name: name, description: description})
+    customerId = Schema.customers.insert({name: name, description: description, totalCash: 0})
     CustomerGroup.addCustomer(customerId) if customerId
 
   @splitName: (fullText) ->

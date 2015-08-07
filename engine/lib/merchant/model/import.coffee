@@ -1,70 +1,63 @@
 Enums = Apps.Merchant.Enums
+
+#------------ Model Import ------------
 simpleSchema.imports = new SimpleSchema
   importName : type: String, defaultValue: 'ĐƠN HÀNG'
-  provider   : simpleSchema.OptionalString
-  importCode : simpleSchema.OptionalString
   importType : type: Number, defaultValue: Enums.getValue('ImportTypes', 'initialize')
   dueDay     : type: Number, defaultValue: 90
+  provider   : simpleSchema.OptionalString
+  description: simpleSchema.OptionalString
+  importCode : simpleSchema.OptionalString
 
-  description  : simpleSchema.OptionalString
+
+  accounting          : type: String  , optional: true
+  accountingConfirmAt : type: Date    , optional: true
+  stocker             : type: String  , optional: true
+  stockerConfirmAt    : type: Date    , optional: true
+  transaction         : type: String  , optional: true
+  successDate         : type: Date    , optional: true
+
   discountCash : type: Number, defaultValue: 0
   depositCash  : type: Number, defaultValue: 0
   totalPrice   : type: Number, defaultValue: 0
   finalPrice   : type: Number, defaultValue: 0
-
-#  beforeDebtBalance: type: Number, defaultValue: 0
-#  debtBalanceChange: type: Number, defaultValue: 0
-#  latestDebtBalance: type: Number, defaultValue: 0
-
-  accounting          : type: String  , optional: true
-  accountingConfirm   : type: Boolean , optional: true
-  accountingConfirmAt : type: Date    , optional: true
-
-  stocker             : type: String  , optional: true
-  stockerConfirmAt    : type: Date    , optional: true
-
-  transaction         : type: String  , optional: true
-  successDate         : type: Date, optional: true
 
   merchant   : simpleSchema.DefaultMerchant
   allowDelete: simpleSchema.DefaultBoolean()
   creator    : simpleSchema.DefaultCreator
   version    : { type: simpleSchema.Version }
 
+
+#------------ Import Detail ------------
   details                   : type: [Object], defaultValue: []
   'details.$._id'           : simpleSchema.UniqueId
   'details.$.product'       : type: String
   'details.$.productUnit'   : type: String
-  'details.$.quality'       : {type: Number, min: 0}
+
+  'details.$.quality'               : {type: Number, min: 0}
+  'details.$.availableBasicQuality' : {type: Number, min: 0}
+  'details.$.basicQuality'          : {type: Number, min: 0}
+  'details.$.conversion'            : {type: Number, min: 1}
+
   'details.$.price'         : {type: Number, min: 0}
-  'details.$.basicQuality'  : {type: Number, min: 0}
-  'details.$.conversion'    : {type: Number, min: 1}
   'details.$.discountCash'  : simpleSchema.DefaultNumber()
+
   'details.$.expire'        : {type: Date   , optional: true}
   'details.$.note'          : {type: String , optional: true}
 
-  'details.$.importQuality'       : {type: Number, min: 0}
-  'details.$.saleQuality'         : simpleSchema.DefaultNumber()
-  'details.$.returnSaleQuality'   : simpleSchema.DefaultNumber()
-  'details.$.returnImportQuality' : simpleSchema.DefaultNumber()
-  'details.$.inStockQuality'      : {type: Number, min: 0}
-  'details.$.inOderQuality'       : simpleSchema.DefaultNumber()
-  'details.$.availableQuality'    : {type: Number, min: 0}
+#------------ Quality Detail ------------
+  'details.$.orderBasicQuality'        : simpleSchema.DefaultNumber()
+  'details.$.returnOrderBasicQuality'  : simpleSchema.DefaultNumber()
+  'details.$.returnImportBasicQuality' : simpleSchema.DefaultNumber()
 
-  'details.$.orderId'               : type: [Object], defaultValue: []
-  'details.$.orderId.$._id'         : type: String
-  'details.$.orderId.$.buyer'       : type: String
-  'details.$.orderId.$.productUnit' : type: String
-  'details.$.orderId.$.quality'     : type: Number
-  'details.$.orderId.$.salePrice'   : type: Number
-  'details.$.orderId.$.basicQuality': type: Number
-  'details.$.orderId.$.createdAt'   : type: Date
+#------------ OrderDetail Or ReturnDetail ------------
+  'details.$.orders' : type: [simpleSchema.Detail], optional: true #Order Detail
+  'details.$.returns': type: [simpleSchema.Detail], optional: true #Return Detail
 
-  'details.$.return'               : type: [Object], optional: true
-  'details.$.return.$._id'         : type: String
-  'details.$.return.$.detailId'    : type: String
-  'details.$.return.$.basicQuality': type: Number, optional: true
 
+
+
+#------------ Method Import ------------
 Schema.add 'imports', "Import", class Import
   @transform: (doc) ->
     doc.changeField = (field = undefined, value = undefined)->
@@ -122,11 +115,9 @@ Schema.add 'imports', "Import", class Import
       if detailFound
         detailIndex = _.indexOf(@details, detailFound)
         updateQuery = {$inc:{}}; basicQuality = quality * productUnit.conversion
-        updateQuery.$inc["details.#{detailIndex}.quality"]          = quality
-        updateQuery.$inc["details.#{detailIndex}.basicQuality"]     = basicQuality
-        updateQuery.$inc["details.#{detailIndex}.importQuality"]    = basicQuality
-        updateQuery.$inc["details.#{detailIndex}.inStockQuality"]   = basicQuality
-        updateQuery.$inc["details.#{detailIndex}.availableQuality"] = basicQuality
+        updateQuery.$inc["details.#{detailIndex}.quality"]               = quality
+        updateQuery.$inc["details.#{detailIndex}.basicQuality"]          = basicQuality
+        updateQuery.$inc["details.#{detailIndex}.availableBasicQuality"] = basicQuality
         recalculationImport(@_id) if Schema.imports.update(@_id, updateQuery, callback)
 
       else
@@ -158,11 +149,9 @@ Schema.add 'imports', "Import", class Import
 
       if quality isnt undefined
         basicQuality = quality * updateInstance.conversion
-        predicate.$set["details.#{updateIndex}.quality"] = quality
-        predicate.$set["details.#{updateIndex}.basicQuality"]     = basicQuality
-        predicate.$set["details.#{updateIndex}.importQuality"]    = basicQuality
-        predicate.$set["details.#{updateIndex}.inStockQuality"]   = basicQuality
-        predicate.$set["details.#{updateIndex}.availableQuality"] = basicQuality
+        predicate.$set["details.#{updateIndex}.quality"]               = quality
+        predicate.$set["details.#{updateIndex}.basicQuality"]          = basicQuality
+        predicate.$set["details.#{updateIndex}.availableBasicQuality"] = basicQuality
 
       if _.keys(predicate.$set).length > 0
         recalculationImport(@_id) if Schema.imports.update(@_id, predicate, callback)
@@ -222,11 +211,11 @@ Schema.add 'imports', "Import", class Import
 
 
 recalculationImport = (orderId) ->
-  if orderFound = Schema.imports.findOne(orderId)
-    totalPrice = 0; discountCash = orderFound.discountCash ? 0
-    (totalPrice += detail.quality * detail.price) for detail in orderFound.details
-    discountCash = totalPrice if orderFound.discountCash > totalPrice
-    Schema.imports.update orderFound._id, $set:{
+  if importFound = Schema.imports.findOne(orderId)
+    totalPrice = 0; discountCash = importFound.discountCash ? 0
+    (totalPrice += detail.quality * detail.price) for detail in importFound.details
+    discountCash = totalPrice if importFound.discountCash > totalPrice
+    Schema.imports.update importFound._id, $set:{
       totalPrice  : totalPrice
       discountCash: discountCash
       finalPrice  : totalPrice - discountCash

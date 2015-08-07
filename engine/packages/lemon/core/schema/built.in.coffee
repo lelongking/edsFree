@@ -10,7 +10,6 @@ simpleSchema.Version = new SimpleSchema
         return new Date
       else if @isUpsert
         return { $setOnInsert: new Date }
-
       return
 
   updateAt:
@@ -30,7 +29,40 @@ simpleSchema.Location = new SimpleSchema
     type: [String]
     optional: true
 
+simpleSchema.Detail = new SimpleSchema
+  _id:
+    type: String
 
+  detailId:
+    type: String
+
+  product:
+    type: String
+
+  productUnit:
+    type: String
+
+  owner:
+    type: String
+
+  note:
+    type    : String
+    optional: true
+
+  quality:
+    type: Number
+
+  basicQuality:
+    type: Number
+
+  conversion:
+    type: Number
+
+  price:
+    type: Number
+
+  createdAt:
+    type: Date
 
 
 simpleSchema.StringUniqueIndex   = { type: String, unique: true, index: 1 }

@@ -125,30 +125,40 @@ Meteor.methods
     merchantFound = Schema.merchants.findOne(user.profile?.merchant)
     return {valid: false, error: 'merchant not found!'} if !merchantFound
 
-    console.log importUpdate
 
-    for detail in importFound.details
-      detailIndex = 0; updateQuery = {$inc:{}}
-      product = Schema.products.findOne(detail.product)
-      for unit, index in product.units
-        if unit._id is detail.productUnit
-          updateQuery.$inc["units.#{index}.quality.availableQuality"] = detail.availableQuality
-          updateQuery.$inc["units.#{index}.quality.inStockQuality"]   = detail.inStockQuality
-          updateQuery.$inc["units.#{index}.quality.importQuality"]    = detail.importQuality
-          break
-
-      updateQuery.$inc["qualities.#{detailIndex}.availableQuality"] = detail.availableQuality
-      updateQuery.$inc["qualities.#{detailIndex}.inStockQuality"]   = detail.inStockQuality
-      updateQuery.$inc["qualities.#{detailIndex}.importQuality"]    = detail.importQuality
-      updateQuery.$set = {lastExpire: detail.expire} if detail.expire
-      Schema.products.update detail.product, updateQuery
 
 
     importUpdate = $set:
       importType : Enums.getValue('ImportTypes', 'success')
       successDate: new Date()
-      billNo     : "#{Helpers.orderCodeCreate(providerFound.billNo)}/#{Helpers.orderCodeCreate(merchantFound.importBill)}"
+      importCode : "#{Helpers.orderCodeCreate(providerFound.billNo)}/#{Helpers.orderCodeCreate(merchantFound.importBill)}"
 
-    console.log importUpdate
+    for detail, detailIndex in importFound.details
+      if product = Schema.products.findOne(detail.product)
+        productDetailIndex = 0; updateQuery = {$inc:{}}
+        for unit, index in product.units
+          if unit._id is detail.productUnit
+            updateQuery.$inc["units.#{index}.quality.availableQuality"] = detail.basicQuality
+            updateQuery.$inc["units.#{index}.quality.inStockQuality"]   = detail.basicQuality
+            updateQuery.$inc["units.#{index}.quality.importQuality"]    = detail.basicQuality
+            break
+
+        updateQuery.$inc["qualities.#{productDetailIndex}.availableQuality"] = detail.basicQuality
+        updateQuery.$inc["qualities.#{productDetailIndex}.inStockQuality"]   = detail.basicQuality
+        updateQuery.$inc["qualities.#{productDetailIndex}.importQuality"]    = detail.basicQuality
+        updateQuery.$set = {lastExpire: detail.expire} if detail.expire
+        Schema.products.update detail.product, updateQuery
+
+      #Todo: tim phieu ban chua tru kho, roi tru kho tai day, cap nhat ghi chu
+      orderFounds = Schema.orders.find({
+        merchant                : Merchant.getId()
+        'detail.$.productUnit'  : detail.productUnit
+        'detail.$.importIsValid': {$ne: true}
+      }).fetch()
+
+      if orderFounds.length > 0
+      else
+        importUpdate.$set["details.#{detailIndex}.note"] = 'Nhập kho mới'
+
     Schema.providers.update importFound.provider, $set:{allowDelete: false}
     Schema.imports.update importFound._id, importUpdate
