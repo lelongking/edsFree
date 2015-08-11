@@ -171,15 +171,19 @@ Apps.Merchant.Enums.ImportTypes = [
 Apps.Merchant.Enums.TransactionTypes = [
   _id    : 0
   value  : 'provider'
-  display: 'Nha Cung Cap'
+  display: 'Nhà Cung Cấp'
 ,
   _id    : 1
   value  : 'customer'
-  display: 'Khach Hang'
+  display: 'Khách Hàng'
 ,
   _id    : 2
   value  : 'return'
-  display: 'Tra Hang'
+  display: 'Trả Hàng'
+#,
+#  _id    : 3
+#  value  : 'other'
+#  display: 'Thu Chi Khác'
 ]
 
 Apps.Merchant.Enums.TransactionStatuses = [
@@ -194,6 +198,16 @@ Apps.Merchant.Enums.TransactionStatuses = [
   _id    : 2
   value  : 'closed'
   display: 'Het No'
+]
+
+Apps.Merchant.Enums.TransactionReceivable = [
+  _id    : false
+  value  : 'false'
+  display: 'Phiếu Chi'
+,
+  _id    : true
+  value  : 'true'
+  display: 'Phiếu Thu'
 ]
 
 #----------Return---------->

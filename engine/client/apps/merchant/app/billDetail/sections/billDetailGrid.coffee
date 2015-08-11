@@ -5,11 +5,11 @@ lemon.defineHyper Template.billDetailGridSection,
     buyer: -> Session.get('currentBuyer')
     billNo: -> Helpers.orderCodeCreate(Session.get('currentBuyer')?.billNo ? '0000')
 
-    customerOldDebt: -> if customer = Session.get('currentBuyer') then customer.debtCash + customer.loanCash else 0
+    customerOldDebt: -> if customer = Session.get('currentBuyer') then customer.totalCash else 0
     customerFinalDebt: ->
       if order = Session.get("currentBillHistory")
         if customer = Session.get('currentBuyer')
-          customer.debtCash + customer.loanCash + order.finalPrice - order.depositCash
+          customer.totalCash + order.finalPrice - order.depositCash
         else
           order.finalPrice - order.depositCash
       else 0

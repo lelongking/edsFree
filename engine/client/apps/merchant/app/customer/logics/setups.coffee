@@ -93,4 +93,5 @@ Apps.Merchant.customerManagementInit.push (scope) ->
         Session.set("allowCreateTransactionOfCustomer", false)
         Session.set("customerManagementOldDebt")
         $payDescription.val(''); $payAmount.val('')
+        console.log ownerId, debitCash, null, description, transactionType, receivable
         Meteor.call 'createTransaction', ownerId, debitCash, null, description, transactionType, receivable, (error, result) ->

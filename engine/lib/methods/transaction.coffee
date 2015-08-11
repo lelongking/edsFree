@@ -1,6 +1,9 @@
 Enums = Apps.Merchant.Enums
 Meteor.methods
-  createTransaction: (ownerId, money, name = null, description = null, transactionType = Enums.getValue('TransactionTypes', 'customer'), receivable = false)->
+  createTransaction: (ownerId, money, name = null, description = null, transactionType = Enums.getValue('TransactionTypes', 'customer'), receivable = undefined)->
+    console.log ownerId, money, name, description, transactionType, receivable
+
+
     if transactionType is Enums.getValue('TransactionTypes', 'provider')
       owner = Schema.providers.findOne(ownerId)
     else if transactionType is Enums.getValue('TransactionTypes', 'customer')

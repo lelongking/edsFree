@@ -1,0 +1,38 @@
+template(name="transaction")
+  #header
+    .editor-row
+      .editor-wrapper.dual-spacer
+      .editor-wrapper(style="width: 150px")
+        span.ilabel.optional cho nhóm:
+        +iSelect(options=typeSelectOptions class="field")
+
+      .editor-wrapper(style="width: 200px")
+        span.ilabel.optional đối tượng áp dung:
+        +iSelect(options=ownerSelectOptions class="field")
+
+      .editor-wrapper(style="width: 150px")
+        span.ilabel.optional loại thu chi:
+        +iSelect(options=receivableSelectOptions class="field")
+
+      .editor-wrapper.pull-right
+        button.flat.btn.lime.createTransaction(class="{{getSession 'transactionCreateNewIsDisabled'}}") XÁC NHẬN
+
+
+  #content.modern.product-management
+    .dual-content
+      .dual-detail-wrapper
+        .dual-detail
+          .nano: .nano-content
+            +transactionOverviewSection
+
+      .dual-addon
+      //  .search-filter.icon-search-8
+      //    input(name='searchFilter' type="text" placeholder="tìm kiếm...")
+      //
+      //  .nano: .nano-content
+      //    .group-wrapper
+      //      .caption.group &nbsp;
+      //      each transactionMenus
+      //        .caption.inner
+      //          span.avatar.letter(class="{{icon}}")
+      //          span.text.uppercase.light-font {{display}}

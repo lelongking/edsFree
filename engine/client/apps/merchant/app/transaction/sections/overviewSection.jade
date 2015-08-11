@@ -1,0 +1,41 @@
+template(name="transactionOverviewSection")
+  .section.panel.panel-default.printable-area
+    .panel-heading
+      .hide-on-print
+        span <b>{{timeHM}}<sup>{{timeS}}</sup></b>, ngày <b>{{timeDMY}}</b> <b>{{fullDay}}</b>
+
+    .panel-body
+      table.lemon-grid
+        tr
+          th(style="width:auto")
+          th(style="width:150px")
+          th(style="width:250px")
+
+
+        tr.editors(style="{{showTransaction}}")
+          td(colspan="2"): input.transaction-field(type="text" size="10"  name='transactionDescription' placeholder="ghi chú thu chi")
+          td: input.transaction-field.number(type="text" size="10"  name='transactionAmount' placeholder="số tiền")
+
+        tr
+          td.date: span NGƯỜI NHẬN
+          td.number: span.s5 {{transaction.typeDisplay}}:
+          td.number: span.s4 {{owner.name}}
+        tr
+          td.date
+          td.number: span.s5 TIỀN CŨ:
+          td.number: span.s4 <b>{{formatNumber owner.totalCash}}</b> VNĐ
+        tr
+          td.date: span.s6.note (<i>Chữ ký và Họ Tên</i>)
+          td.number: span.s5 {{transaction.receivableDisplay}}:
+          td.number: span.s4 <b>{{formatNumber transaction.amount}}</b> VNĐ
+        tr
+          td
+          td
+          td.number(style="border-top: solid 1px #d7d7d7"): span.s4 <b>{{formatNumber transaction.finalDebtCash}}</b> VNĐ
+
+    //.panel-footer.show-on-print
+    //  .grea-print-message
+    //    .rounded-gera-logo: .rounded-wrapper
+    //      img(src="/images/white-pixel.jpg")
+    //      img.rounded-img(src="/images/gera-small.png")
+    //    i In từ hệ thống EDS - công ty Công Nghệ Thiên Ban (0838 111 766) - Hạn nợ {{dueDate}} ({{dueDay}} ngày)

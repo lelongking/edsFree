@@ -43,10 +43,10 @@ createTransaction = (customer, order)->
     receivable       : true
     owner            : customer._id
     parent           : order._id
-    beforeDebtBalance: customer.debtCash
+    beforeDebtBalance: customer.totalCash
     debtBalanceChange: order.finalPrice
     paidBalanceChange: order.depositCash
-    latestDebtBalance: customer.debtCash + order.finalPrice - order.depositCash
+    latestDebtBalance: customer.totalCash + order.finalPrice - order.depositCash
 
   transactionInsert.dueDay    = order.dueDay if order.dueDay
   transactionInsert.owedCash  = Math.abs(order.finalPrice - order.depositCash)

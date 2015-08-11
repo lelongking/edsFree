@@ -16,11 +16,9 @@ lemon.addRoute
   data: ->
     Apps.setup(scope, Apps.Merchant.merchantOptionsReactive)
 
-#    return {
-#      settings: scope.settings
-#      merchantProfile: scope.myMerchantProfile
-#      myProfile: scope.myProfile
-#    }
+    return {
+      settings: scope.settings
+    }
 , Apps.Merchant.RouterBase
 
 Apps.Merchant.merchantOptionsReactive.push (scope) ->
