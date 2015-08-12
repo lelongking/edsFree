@@ -99,7 +99,10 @@ lemon.defineApp Template.transaction,
 
   events:
     "click .createTransaction":  (event, template) ->
+      $payDescription = template.ui.$transactionDescription
+      $payAmount      = template.ui.$transactionAmount
       transaction = Session.get('transactionDetail')
+
       if transaction.transactionType isnt undefined and
         transaction.receivable isnt undefined and
         transaction.owner and
@@ -116,3 +119,7 @@ lemon.defineApp Template.transaction,
             transaction.receivable
             (error, result) -> console.log error, result
           )
+
+          $payDescription.val(''); $payAmount.val('')
+          transaction.amount = 0
+          Session.set('transactionDetail', transaction)

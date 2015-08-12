@@ -1,0 +1,27 @@
+template(name="bankPaymentVoucherTransactionHistorySection")
+  .section.panel.panel-default.printable-area
+    .panel-heading
+      table.lemon-grid
+        tr
+          th(style="width:100px") Ngày Tạo
+          th(style="width:150px") Nhà Cung Cấp
+          th(style="width:100px") Loại Phiếu
+          th(style="width:150px") Nhân Viên
+          th.number(style="width:150px") Tổng Tiền
+
+    .panel-body
+      table.lemon-grid
+        tr
+          th(style="width:100px")
+          th(style="width:150px")
+          th(style="width:100px")
+          th(style="width:150px")
+          th.number(style="width:150px")
+
+        each details
+          tr.detail-row
+            td.first-column {{momentFormat version.createdAt 'DD/MM/YYYY'}}
+            td {{ownerName}}
+            td {{transactionName}}
+            td {{staffName}}
+            td.number {{formatNumber owedCash}} VND
