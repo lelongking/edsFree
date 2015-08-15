@@ -1,0 +1,5 @@
+template(name="warehouseNavigationPartial")
+  if getSession 'warehouseShowAll'
+    li.blue.teleport.inav.icon-tags.animated.fadeInUp.warehouseShowTradeProducts sản phẩm có giao dịch
+  else
+    li.blue.teleport.inav.icon-tags.animated.fadeInUp.warehouseShowAllProducts tất cả sản phầm

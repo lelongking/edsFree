@@ -72,8 +72,12 @@ Schema.add 'products', "Product", class Product
   @transform: (doc) ->
     doc.unitName = -> doc.units[0].name if doc.units.length > 0
     doc.basicUnit= -> doc.units[0]._id if doc.units.length > 0
-    doc.allQuality = -> doc.qualities[0].inStockQuality if doc.qualities.length > 0
-    doc.changeName = (name)->
+    if doc.qualities.length > 0
+      doc.allQuality   = doc.qualities[0].inStockQuality
+      doc.upperQuality = doc.qualities[0].upperGapQuality
+      doc.upperGapQualityCount = doc.qualities[0].upperGapQuality - doc.qualities[0].inStockQuality
+
+      doc.changeName = (name)->
 
     doc.getPrice = (productUnitId, ownerId, priceType = 'sale') ->
       priceFound = undefined; merchantId = Merchant.getId()

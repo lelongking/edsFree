@@ -1,6 +1,6 @@
 lemon.defineApp Template.salesReport,
   rendered: ->
-    salesData = Schema.sales.find({}).fetch()
+    salesData = Schema.orders.find({}).fetch()
     salesGroup = _.groupBy(salesData, (o) -> o.version.createdAt.getMonth())
     dateGroup = _.groupBy(salesGroup["9"], (o) -> o.version.createdAt.getDate())
 

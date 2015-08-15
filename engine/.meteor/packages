@@ -10,7 +10,6 @@ select2
 meteor-platform
 accounts-password
 coffeescript
-d3
 email
 
 
@@ -40,4 +39,3 @@ cfs:standard-packages
 cfs:graphicsmagick
 
 anti:i18n
-mrt:nvd3js

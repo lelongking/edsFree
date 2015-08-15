@@ -1,0 +1,86 @@
+template(name="warehouse")
+  #content.modern.product-management
+    .dual-content
+      .dual-detail-wrapper
+        //.dual-detail
+        .nano: .nano-content
+          .section.panel.panel-default.printable-area
+            .panel-heading
+              table.lemon-grid
+                tr
+                  th(style="width:30px") STT
+                  th(style="width:auto") Tên Sản Phẩm
+                  th.number(style="width:100px") Đinh Mức
+                  th.number(style="width:90px") Tồn Kho
+                  th.number(style="width:135px") Giá Vốn
+                  th.number(style="width:140px") Doanh Số
+
+            .panel-body
+              table.lemon-grid
+                tr
+                  th(style="width:40px")
+                  th(style="width:auto")
+                  th(style="width:40px")
+                  th(style="width:35px")
+                  th(style="width:60px")
+                  th(style="width:35px")
+                  th(style="width:130px")
+                  th(style="width:150px")
+
+                //each isUsingProductLists
+                //each isUnusedProductLists
+
+                each listProductsTrade
+                  tr.detail-row
+                    td {{count}}
+                    td.first-column {{name}}
+                    td.number: input.number.upperGap(type="text" size="10" name="{{_id}}" placeholder="số tiền" value="{{upperQuality}}")
+                    td(style="padding-left: 5px;") {{unitName}}
+                    td.number {{allQuality}}
+                    td(style="padding-left: 5px;") {{unitName}}
+                    td.number {{formatNumber costPrice}} VND
+                    td.number {{formatNumber revenue}} VND
+
+                if getSession 'warehouseShowAll'
+                  each listProductsNotTrade
+                    tr.detail-row
+                      td {{count}}
+                      td.first-column {{name}}
+                      td.number: input.number.upperGap(type="text" size="10" name="{{_id}}" placeholder="số tiền" value="{{upperQuality}}")
+                      td(style="padding-left: 5px;") {{unitName}}
+                      td.number {{allQuality}}
+                      td(style="padding-left: 5px;") {{unitName}}
+                      td.number {{formatNumber costPrice}} VND
+                      td.number {{formatNumber revenue}} VND
+
+            .panel-footer
+              table.lemon-grid.safe
+                tr
+                  th(style="width:auto")
+                  th(style="width:200px")
+                  th(style="width:200px")
+
+                tr
+                  td
+                  td Giá Tri Kho Hàng:
+                  td.number <b>{{formatNumber totalCostPrice}}</b> VND
+
+                tr
+                  td
+                  td Doanh Số Dự Kiến:
+                  td.number <b>{{formatNumber totalRevenue}}</b> VND
+
+      //.dual-addon
+      //  //.search-filter.icon-search-8
+      //  //  input(name='searchFilter' type="text")
+      //  //  if creationMode
+      //  //    .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createStockBtn
+      //
+      //  .nano: .nano-content
+      //    .group-wrapper
+      //      .caption.inner
+      //        span.avatar.letter(class="{{icon}}")
+      //        span.text.uppercase.light-font Tất Cả
+      //      .caption.inner
+      //        span.avatar.letter(class="{{icon}}")
+      //        span.text.uppercase.light-font Danh Sách Đang Bán

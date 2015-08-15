@@ -1,6 +1,6 @@
 scope = logics.merchantReport
 lemon.addRoute
-  template: 'merchantReport'
+  template: 'd'
   onBeforeAction: ->
     if @ready()
       Apps.setup(scope, Apps.Merchant.merchantReportInit, 'merchantReport')

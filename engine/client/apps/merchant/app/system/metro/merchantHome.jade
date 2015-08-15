@@ -128,11 +128,11 @@ template(name="merchantHome")
                   .app-count {{getPublishedCount 'imports'}}
                   .app-count-description phiếu
                   span.caption.app-name.bottom.right nhập kho
-                .tile.carrot
+                .tile.carrot(data-app="warehouse")
                   //.app-icon.icon-edit
-                  .app-count {{getPublishedCount 'inventories'}}
+                  .app-count
                   .app-count-description
-                  span.caption.app-name.bottom.right kiểm kho
+                  span.caption.app-name.bottom.right kho hàng
 
                 .tile.peter-river(data-app="productGroup")
                   .app-count {{getPublishedCount 'productGroups'}}
@@ -179,7 +179,7 @@ template(name="merchantHome")
                   //.app-count-description
                   span.caption.app-name.bottom.right nhật ký
 
-                .tile.double.amethyst
+                .tile.double.amethyst(data-app="basicReport")
                   //.app-icon.icon-chart-pie-outline
                   .app-count {{formatNumber revenueDay}}
                   .app-count-description

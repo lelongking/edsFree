@@ -1,0 +1,51 @@
+template(name="warehouseOverviewSection")
+  .section.top.panel.panel-default
+    if isManager
+      input.hidden.avatarFile(type="file")
+      .panel-heading
+        +avatarImageComponent(avatar=avatarUrl alias=name)
+        .caption: input.editable.dashed(name="productName" value="{{name}}" maxlength="50" placeholder="tên của sản phẩm"
+        data-toggle="tooltip" data-container="body" data-placement="right" title="tên của sản phẩm")
+
+        .sub1: input.editable.dashed(name="productPrice" value="{{formatNumber currentProduct.getPrice}} VNĐ" maxlength="20" placeholder="giá bán"
+        data-toggle="tooltip" data-container="body" data-placement="right" title="giá bán")
+
+        .sub2: input.editable.dashed(name="productBasicUnit" value="{{currentProduct.unitName}}" maxlength="20" style="width: 125px" placeholder="đơn vị tính"
+        data-toggle="tooltip" data-container="body" data-placement="right" title="đơn vị tính nhỏ nhất")
+
+        .commands
+          //if showCreateUnitMode
+          //  .lemon.btn.rounded.lime.icon-flow-merge.createUnit
+          //if showEditCommand
+          //  .lemon.btn.rounded.lime.icon-ok-6.syncProductEdit
+          if allowDelete
+            .lemon.btn.rounded.red.icon-minus-4.productDelete
+    else
+      .panel-heading
+        +avatarImageComponent(avatar=avatarUrl alias=name)
+        .caption: span.editable.dashed(data-toggle="tooltip" data-container="body" data-placement="right"
+        placeholder="tên của sản phẩm" title="tên của sản phẩm") {{name}}
+
+        .sub1: spam.editable.dashed(data-toggle="tooltip" data-container="body" data-placement="right"
+        placeholder="giá bán" title="giá bán") {{formatNumber currentProduct.getPrice}} VNĐ
+
+        .sub2: span.editable.dashed(style="width: 125px" data-toggle="tooltip" data-container="body" data-placement="right"
+        placeholder="đơn vị tính" title="đơn vị tính nhỏ nhất") {{currentProduct.unitName}}
+
+
+
+
+    .panel-footer
+      .region
+        .title.productUnit
+          if getSession 'productManagementIsShowProductUnit'
+            span.s5.note.icon-angle-right <b>Thu gọn</b>
+          else
+            span.s5.note.icon-angle-right <b>Thông tin chi tiết</b>
+
+        if getSession 'productManagementIsShowProductUnit'
+          +overviewProductUnit this
+          +overviewProductInventory this
+
+          if isShowSubmit
+            .right-float: .lemon.btn.lime.pull-right.icon-ok-6.submitInventory Hoàn Tất
