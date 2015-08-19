@@ -6,6 +6,8 @@ lemon.defineHyper Template.overviewProductInventory,
 
   helpers:
     currentProduct: -> scope.currentProduct
+    upperGapQuality: -> Session.get('productManagementCurrentProduct').qualities[0].upperGapQuality ? 0
+
     importUnit: ->
       importUnitFound = {quality:0}
       if importDetails = Schema.imports.findOne({importType: -2, 'details.productUnit': @_id})?.details
@@ -32,6 +34,19 @@ lemon.defineHyper Template.overviewProductInventory,
           details = []
           (details.push {_id : unit._id, quality: 0}) for unit in scope.currentProduct.units
           Session.set('productManagementInventoryDetails', details)
+
+    "keyup [name='upperGapQuality']": (event, template) ->
+      $quality = $(template.find("[name='upperGapQuality']"))
+#      console.log Number($quality.val())
+#      inventoryDetails = Session.get('productManagementInventoryDetails')
+#      (detailIndex = index if detail._id is @_id) for detail, index in inventoryDetails
+#
+      if isNaN(Number($quality.val()))
+        $quality.val(Session.get('productManagementCurrentProduct').qualities[0].upperGapQuality)
+      else
+        Schema.products.update(Session.get('productManagementCurrentProduct')._id, $set:{'qualities.0.upperGapQuality': Number($quality.val())})
+#        inventoryDetails[detailIndex].quality = Number($quality.val())
+#        Session.set('productManagementInventoryDetails', inventoryDetails)
 
 lemon.defineHyper Template.overviewProductInventoryDetail,
   rendered: -> $("[name=deliveryDate]").datepicker()

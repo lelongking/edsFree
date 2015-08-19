@@ -1,5 +1,13 @@
 template(name="overviewProductInventory")
   .detail-wrapper
+    form.form-inline: .form-group: .input-group
+      .input-group-addon(style="width: 100px") Nhập định mức:
+      .input-group-addon(style="width: 100px")
+        input.form-control.editable.dashed(
+        name="upperGapQuality" data-toggle="tooltip" data-container="body" data-placement="right"
+        placeholder="Số lượng" title="Định mức" value="{{upperGapQuality}}")
+
+  .detail-wrapper
     span.denyInventory.icon-ok-6(class="{{isImport 'sale'}}")
     span Bán hàng trước, nhập tồn kho sau.
   .detail-wrapper

@@ -1,0 +1,10 @@
+template(name="productOfCustomerReport")
+  .section.top.panel.panel-default.printable-area
+    .editor-row
+      .editor-wrapper(style="width: 200px")
+        span.ilabel.optional khách hàng
+        +iSelect(options=customerSelectOptions class="field")
+
+    .panel-body
+      .with-3d-shadow.with-transitions
+        svg#productOfCustomer.mypiechart(style="display: block; float: left; height: 600px !important; width: 600px !important;")

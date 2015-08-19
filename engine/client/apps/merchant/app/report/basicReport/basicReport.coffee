@@ -1,6 +1,10 @@
 scope = logics.basicReport
 
 lemon.defineApp Template.basicReport,
+  created: ->
+    option = {name: 'revenueBasicArea',template: 'revenueBasicAreaReport', data: {}}
+    Session.set("basicReportDynamics", option)
+
   helpers:
     basicReportDynamics: -> Session.get("basicReportDynamics")
     optionActiveClass: (templateName)-> 'active' if Session.get("basicReportDynamics").name is templateName
@@ -17,10 +21,10 @@ lemon.defineApp Template.basicReport,
       Session.set("basicReportDynamics", option)
 
     "click .revenueOfArea": ->
-      option = {name: 'revenueOfArea',template: 'revenueOfAreaReport', data: {}}
+      option = {name: 'revenueOfArea',template: 'revenueOfAreaReport', data: Schema.customerGroups.findOne({totalCash: {$gt: 0}})}
       Session.set("basicReportDynamics", option)
     "click .revenueOfCustomer": ->
-      option = {name: 'revenueOfCustomer',template: 'revenueOfCustomerReport', data: {}}
+      option = {name: 'revenueOfCustomer',template: 'productOfCustomerReport', data: Schema.customers.findOne({debtCash: {$gt: 0}})}
       Session.set("basicReportDynamics", option)
     "click .revenueOfStaff": ->
       option = {name: 'revenueOfStaff',template: 'revenueOfStaffReport', data: {}}

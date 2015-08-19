@@ -1,10 +1,10 @@
 template(name="revenueOfAreaReport")
   .section.top.panel.panel-default.printable-area
-    .panel-heading
-      span Doanh So Tong Cua Cac Khu Vuc
-      .editor-wrapper.pull-right(style="width: 130px")
+    .editor-row
+      .editor-wrapper(style="width: 200px")
         span.ilabel.optional khu vực
-        +iSelect(options=customerSelectOptions class="field")
+        +iSelect(options=areaSelectOptions class="field")
 
     .panel-body
-      svg#productByCustomer.mypiechart(style="display: block; float: left; height: 600px !important; width: 600px !important;")
+      svg#revenueOfAreaReport.mypiechart(style="display: block; float: left; height: 600px !important; width: 600px !important;")
+

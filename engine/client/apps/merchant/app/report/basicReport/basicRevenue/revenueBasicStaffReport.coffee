@@ -12,7 +12,7 @@ lemon.defineApp Template.revenueBasicStaffReport,
       pieChart.labelType("percent")
       pieChart.showLabels(true)
       pieChart.labelsOutside(true)
-      pieChart.width(width).height(height)
+#      pieChart.width(width).height(height)
   #    pieChart.valueFormat((d)-> accounting.formatNumber(d) + " Tr")
 
 
@@ -25,7 +25,7 @@ lemon.defineApp Template.revenueBasicStaffReport,
 
       d3.select('#revenueOfCustomerReport')
       .datum(customerGroups)
-      .attr('width', width).attr('height', height)
+#      .attr('width', width).attr('height', height)
       .transition().duration(500)
       .call(pieChart)
       nv.utils.windowResize(pieChart.update)
