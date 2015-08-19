@@ -73,7 +73,7 @@ lemon.defineApp Template.transaction,
       formatSelection: formatOwnerSearch
       formatResult: formatOwnerSearch
       id: '_id'
-      placeholder: 'KH HOẶC NCC'
+      placeholder: 'KH Hoặc NCC'
       changeAction: (e) ->
         if e.added
           newTransaction = Session.get('transactionDetail')

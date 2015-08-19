@@ -21,3 +21,30 @@ Template.registerHelper 'customerSearches', ->
   CustomerSearch.getData
 #    transform : (matchText, regExp) -> matchText.replace(regExp, "<b>$&</b>")
     sort      : {name: 1}
+
+@FullSearch = new SearchSource 'fullSearches', ['name'],
+  keepHistory: 1000 * 60 * 5
+  localSearch: true
+
+@FullSearch.fetchData =(searchText, options, callback) ->
+  searchData = {orders: [], products: [], customers: [], providers: []}
+  if(searchText)
+    regExp = Helpers.BuildRegExp(searchText)
+    products  = Schema.products.find({$or: [{nameSearch: regExp}]}).fetch()
+    customers = Schema.customers.find({$or: [{nameSearch: regExp}]}).fetch()
+    providers = Schema.providers.find({$or: [{nameSearch: regExp}]}).fetch()
+    orders = Schema.orders.find({$or: [{orderCode: regExp}]}).fetch()
+
+    getSearchData = ->
+      searchData.orders    = orders
+      searchData.products  = products
+      searchData.customers = customers
+      searchData.providers = providers
+      [searchData]
+
+  callback(false, getSearchData())
+
+Template.registerHelper 'fullSearches', ->
+  FullSearch.getData
+#    transform : (matchText, regExp) -> matchText.replace(regExp, "<b>$&</b>")
+    sort      : {name: 1}

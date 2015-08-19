@@ -194,11 +194,59 @@ template(name="merchantHome")
           input(name='searchFilter' type="text" placeholder="tìm kiếm...")
         .nano: .nano-content
           .group-wrapper
-            .caption.group &nbsp;
-            //each appMenus
-            //  .caption.inner
-            //    span.avatar.letter(class="{{icon}}")
-            //    span.text.uppercase.light-font {{display}}
+            with getSession 'merchantFullSearches'
+              if isShowSearch 'orders'
+                .caption.group Phiếu Bán
+                each orders
+                  .caption.inner.advanced
+                    +avatarImageComponent(avatar=avatarUrl alias=orderName)
+                    span.text {{orderCode}}
+                      .commands {{momentFormat accountingConfirmAt 'DD/MM/YYYY'}}
+                    span.left-info {{orderName}}
+                    span.right-info {{formatNumber finalPrice}} VND
+
+              if isShowSearch 'imports'
+                .caption.group Phiếu Nhập
+                each imports
+                  .caption.inner.advanced
+                    +avatarImageComponent(avatar=avatarUrl alias=importName)
+                    span.text {{importCode}}
+                      .commands {{momentFormat accountingConfirmAt 'DD/MM/YYYY'}}
+                    span.left-info {{importName}}
+                    span.right-info {{formatNumber finalPrice}} VND
+
+              if isShowSearch 'customers'
+                .caption.group Khách Hàng
+                each customers
+                  .caption.inner.advanced
+                    +avatarImageComponent(avatar=avatarUrl alias=name)
+                    span.text {{name}}
+                      //.commands {{momentFormat accountingConfirmAt 'DD/MM/YYYY'}}
+                    //span.left-info {{importName}}
+                    //span.right-info {{formatNumber finalPrice}} VND
+
+              if isShowSearch 'providers'
+                .caption.group Nhà Cung Cấp
+                each providers
+                  .caption.inner.advanced
+                    +avatarImageComponent(avatar=avatarUrl alias=name)
+                    span.text {{name}}
+                      //.commands {{momentFormat accountingConfirmAt 'DD/MM/YYYY'}}
+                    //span.left-info {{orderName}}
+                    //span.right-info {{formatNumber finalPrice}} VND
+
+              if isShowSearch 'products'
+                .caption.group Sản Phẩm
+                each products
+                  .caption.inner.advanced
+                    +avatarImageComponent(avatar=avatarUrl alias=name)
+                    span.text {{name}}
+                      //.commands {{momentFormat accountingConfirmAt 'DD/MM/YYYY'}}
+                    //span.left-info {{orderName}}
+                    //span.right-info {{formatNumber finalPrice}} VND
+
+
+
 
   //#footer.modern
   //  .editor-row

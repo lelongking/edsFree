@@ -41,9 +41,9 @@ Helpers.createSaleCode = (buyerId)->
   #  oldSale = Schema.sales.findOne({buyer: buyerId, 'version.createdAt': {$gt: day}},{sort: {'version.createdAt': -1}})
   if oldSale
     code = Number(oldSale.orderCode.substring(oldSale.orderCode.length-4))+1
-    if 99 < code < 999 then code = "0#{code}"
-    if 9 < code < 100 then code = "00#{code}"
-    if code < 10 then code = "000#{code}"
+    if 99 < code < 999 then code = "#{code}"
+    if 9 < code < 100 then code = "#{code}"
+    if code < 10 then code = "0#{code}"
     orderCode = "#{code}"
 #    orderCode = "#{Helpers.FormatDate()}-#{code}"
   else
@@ -53,9 +53,9 @@ Helpers.createSaleCode = (buyerId)->
 
 Helpers.orderCodeCreate = (text)->
   code = Number(text)+1
-  if 99 < code < 999 then code = "0#{code}"
-  if 9 < code < 100 then code = "00#{code}"
-  if code < 10 then code = "000#{code}"
+  if 99 < code < 999 then code = "#{code}"
+  if 9 < code < 100 then code = "#{code}"
+  if code < 10 then code = "0#{code}"
   return code
 
 Helpers.shortName = (fullName, maxlength = 6) ->

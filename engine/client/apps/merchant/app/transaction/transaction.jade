@@ -1,17 +1,16 @@
 template(name="transaction")
   #header
     .editor-row
-      .editor-wrapper.dual-spacer
       .editor-wrapper(style="width: 150px")
-        span.ilabel.optional cho nhóm:
+        span.ilabel.optional chọn đối tượng:
         +iSelect(options=typeSelectOptions class="field")
 
       .editor-wrapper(style="width: 200px")
-        span.ilabel.optional đối tượng áp dung:
+        span.ilabel.optional tên:
         +iSelect(options=ownerSelectOptions class="field")
 
       .editor-wrapper(style="width: 150px")
-        span.ilabel.optional loại thu chi:
+        span.ilabel.optional loại phiếu:
         +iSelect(options=receivableSelectOptions class="field")
 
       .editor-wrapper.pull-right
@@ -21,11 +20,11 @@ template(name="transaction")
   #content.modern.product-management
     .dual-content
       .dual-detail-wrapper
-        .dual-detail
-          .nano: .nano-content
-            +transactionOverviewSection
-            +cashReceiptVoucherTransactionHistorySection
-            +bankPaymentVoucherTransactionHistorySection
+        //.dual-detail
+        .nano: .nano-content
+          +transactionOverviewSection
+          +cashReceiptVoucherTransactionHistorySection
+          +bankPaymentVoucherTransactionHistorySection
 
       //.dual-addon
       //  .search-filter.icon-search-8
