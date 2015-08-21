@@ -24,6 +24,7 @@ lemon.defineApp Template.providerManagement,
 
     "click .list .doc-item": (event, template) ->
       Provider.selectProvider(@_id)
+      Session.set('providerManagementIsShowProviderDetail', false)
 
 #    "click .excel-provider": (event, template) -> $(".excelFileSource").click()
 #    "change .excelFileSource": (event, template) ->

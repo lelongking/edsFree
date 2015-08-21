@@ -6,8 +6,8 @@ template(name="providerManagementOverviewSection")
       .caption
         input.editable.dashed(name="providerName" value="{{name}}" maxlength="50"
         data-toggle="tooltip" data-container="body" data-placement="right" title="tên nhà cung cấp")
-        if description
-          span.blured-color ({{description}})
+        //if description
+        //  span.blured-color ({{description}})
       .sub1: input.editable.dashed(name="providerPhone" value="{{phone}}" maxlength="50" size="10" placeholder="điện thoại"
       data-toggle="tooltip" data-container="body" data-placement="right" title="số điện thoại")
       .sub2: input.editable.dashed(name="providerAddress" value="{{address}}" maxlength="100" size="30" placeholder="địa chỉ"
@@ -19,4 +19,10 @@ template(name="providerManagementOverviewSection")
           .lemon.btn.rounded.red.icon-minus-4.providerDelete
 
     .panel-footer
-      span.icon-angle-right Thông Tin Chi Tiết
+      .region
+        .title.providerDetail
+          if getSession 'providerManagementIsShowProviderDetail'
+            span.s5.note.icon-angle-right <b>Thu gọn</b>
+            textarea.editDescription(name="editDescription" maxlength="2000" style="border:none; width:100%; resize:none; padding-left:20px; outline: none !important; height: 85px;") {{description}}
+          else
+            span.s5.note.icon-angle-right <b>Thông tin chi tiết</b>

@@ -12,6 +12,7 @@ lemon.defineHyper Template.providerManagementOverviewSection,
       @name
 
   rendered: ->
+    Session.set('providerManagementIsShowProviderDetail', false)
     scope.overviewTemplateInstance = @
     @ui.$providerName.autosizeInput({space: 10})
 
@@ -41,3 +42,14 @@ lemon.defineHyper Template.providerManagementOverviewSection,
 
     "click .syncProviderEdit": (event, template) -> scope.editProvider(template)
     "click .providerDelete": (event, template) -> scope.currentProvider.remove(@)
+    "click .providerDetail span": (event, template)->
+      Session.set('providerManagementIsShowProviderDetail', !Session.get('providerManagementIsShowProviderDetail'))
+
+    "keyup .editDescription": (event, template) ->
+      description = $(template.find(".editDescription")).val()
+      provider = Session.get("providerManagementCurrentProvider")
+      Helpers.deferredAction ->
+        if provider
+          Schema.providers.update(provider._id, $set:{description: description ? ""})
+      , "providerManagementUpdateDescription"
+      , 2000
