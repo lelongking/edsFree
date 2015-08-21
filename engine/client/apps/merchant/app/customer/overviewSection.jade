@@ -6,8 +6,8 @@ template(name="customerManagementOverviewSection")
         +avatarImageComponent(avatar=avatarUrl alias=firstName)
         .caption
           input.editable.dashed(name="customerName" value="{{name}}" maxlength="50")
-          if description
-            span.blured-color ({{description}})
+          //if description
+          //  span.blured-color ({{description}})
         .sub1: input.editable.dashed(name="customerPhone" value="{{profiles.phone}}" maxlength="100" size="30" placeholder="điện thoại")
         .sub2: input.editable.dashed(name="customerAddress" value="{{profiles.address}}" maxlength="200" size="50" placeholder="địa chỉ")
         .commands
@@ -15,8 +15,16 @@ template(name="customerManagementOverviewSection")
             .lemon.btn.rounded.lime.icon-ok-6.syncCustomerEdit
           if showDeleteCommand
             .lemon.btn.rounded.red.icon-minus-4.customerDelete
+
       .panel-footer
-        span.icon-angle-right Thông Tin Chi Tiết
+        .region
+          .title.customerDetail
+            if getSession 'customerManagementIsShowCustomerDetail'
+              span.s5.note.icon-angle-right <b>Thu gọn</b>
+              textarea.editDescription(name="editDescription" maxlength="2000" style="border:none; width:100%; resize:none; padding-left:20px; outline: none !important; height: 85px;") {{description}}
+            else
+              span.s5.note.icon-angle-right <b>Thông tin chi tiết</b>
+
 
   else
     .section.top.panel.panel-default

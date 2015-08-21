@@ -5,6 +5,7 @@ scope = logics.customerManagement
 
 lemon.defineHyper Template.customerManagementOverviewSection,
   rendered: ->
+    Session.set('customerManagementIsShowCustomerDetail', false)
     scope.overviewTemplateInstance = @
     @ui.$customerName.autosizeInput({space: 10}) if @ui.$customerName
 
@@ -29,6 +30,17 @@ lemon.defineHyper Template.customerManagementOverviewSection,
           AvatarImages.findOne(Session.get('customerManagementCurrentCustomer').avatar)?.remove()
 
     "input .editable": (event, template) -> scope.checkAllowUpdateOverview(template)
+    "keyup .editDescription": (event, template) ->
+      description = $(template.find(".editDescription")).val()
+      customer = Session.get("customerManagementCurrentCustomer")
+      Helpers.deferredAction ->
+        if customer
+          Schema.customers.update(customer._id, $set:{description: description ? ""})
+      , "customerManagementUpdateDescription"
+      , 2000
+
+
+
     "keyup input.editable": (event, template) ->
       if Session.get("customerManagementCurrentCustomer")
         scope.editCustomer(template) if event.which is 13
@@ -46,3 +58,5 @@ lemon.defineHyper Template.customerManagementOverviewSection,
 
     "click .syncCustomerEdit": (event, template) -> scope.editCustomer(template)
     "click .customerDelete": (event, template) -> scope.currentCustomer.remove()
+    "click .customerDetail span": (event, template)->
+      Session.set('customerManagementIsShowCustomerDetail', !Session.get('customerManagementIsShowCustomerDetail'))

@@ -55,6 +55,7 @@ lemon.defineApp Template.customerManagement,
       if userId = Meteor.userId()
 #        Meteor.subscribe('customerManagementCurrentCustomerData', @_id)
         Meteor.users.update(userId, {$set: {'sessions.currentCustomer': @_id}})
+        Session.set('customerManagementIsShowCustomerDetail', false)
 
 #    "click .excel-customer": (event, template) -> $(".excelFileSource").click()
 #    "change .excelFileSource": (event, template) ->
