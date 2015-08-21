@@ -1,7 +1,12 @@
 @import "../../styles/lib.import.styl"
 
 .editor-wrapper
+  .center
+    width 100%
+    text-align center
   .bootstrap-touchspin
+    padding-left: 20px
+
     .input-group-addon, .bootstrap-touchspin-up, .bootstrap-touchspin-down
       margin-bottom 0
       margin-top 0
@@ -20,6 +25,11 @@
       border-radius right 0
     input
       height 30px
-      text-align right
+      text-align center
       border-radius 0
       padding 4px 2px
+    .input-group-btn
+      &:first-child
+        left 10px
+      &:last-child
+        right 35px
