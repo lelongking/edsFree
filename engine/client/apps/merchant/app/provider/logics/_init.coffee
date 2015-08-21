@@ -52,7 +52,13 @@ Apps.Merchant.providerManagementInit.push (scope) ->
           item
       )
 
-      _.sortBy imports.concat(returns), (item) -> item.successDate
+      dataSource = _.sortBy(imports.concat(returns), (item) -> item.successDate)
+      classColor = false
+      for item in dataSource
+        item.classColor = classColor
+        classColor = !classColor
+      dataSource
+
     else []
 
   scope.providerManagementCreationMode = () ->

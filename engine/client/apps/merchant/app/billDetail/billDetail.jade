@@ -27,7 +27,7 @@ template(name="billDetail")
           input(type="text" placeholder="tìm sản phẩm..."
           name='searchFilter' value="{{productTextSearch}}")
 
-        .nano: .nano-content: .group-wrapper
+        .nano: .nano-content(style="margin-bottom: 35px;"): .group-wrapper
           if isManager
             each unitProductSearches
               if status

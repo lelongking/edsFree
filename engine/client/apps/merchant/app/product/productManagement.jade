@@ -17,7 +17,7 @@ template(name="productManagement")
           if creationMode
             .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createStockBtn
 
-        .nano: .nano-content:  .group-wrapper
+        .nano: .nano-content(style="margin-bottom: 35px;"):  .group-wrapper
           each productSearches
             .advanced.caption.inner.product-selection(class="{{activeClass}}")
               +avatarImageComponent(avatar=avatarUrl alias=name instance=this)

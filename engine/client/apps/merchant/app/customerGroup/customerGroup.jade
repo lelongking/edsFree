@@ -12,7 +12,7 @@ template(name="customerGroup")
           if getSession 'customerGroupCreationMode'
             .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createCustomerGroupBtn
 
-        .nano: .nano-content
+        .nano: .nano-content(style="margin-bottom: 35px;")
           .list
             each customerGroupLists
               .doc-item(class="{{activeClass 'currentCustomerGroup'}}")

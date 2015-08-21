@@ -36,9 +36,10 @@ template(name="customerManagementSalesHistorySection")
             td.has-commands(colspan="5")
               | &nbsp;
               .bill-header <b>Nợ tồn đầu kỳ</b>
+          tr(style="background-color: {{isColor}};")
 
           each oldDebts
-            tr.paid-row.top(class="{{transactionClass}}")
+            tr.paid-row.top(class="{{transactionClass}}" style="border-bottom: none;")
               td.has-commands(style="border-left: solid 2px #d35400;")
                 .bill-header {{description}}
                 if isManager

@@ -13,7 +13,7 @@ template(name="merchantTest")
       .dual-addon
         .search-filter.icon-search-8
           +esInput(index="products" name='searchFilter' placeholder="tìm sản phẩm...")
-        .nano: .nano-content
+        .nano: .nano-content(style="margin-bottom: 35px;")
           +ifEsIsSearching(index="products")
             span Đang tìm...
           else

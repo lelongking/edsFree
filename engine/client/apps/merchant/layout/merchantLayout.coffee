@@ -7,7 +7,7 @@ arrangeSideBar = (context) ->
 
 startHomeTracker = ->
   Apps.Merchant.homeTracker = Tracker.autorun ->
-    Router.go('/') if !Session.get("myProfile")
+    Router.go('/') if !Meteor.userId()
 
 #    if Session.get("myProfile")
 #      merchantProfile = Schema.merchantProfiles.findOne({merchant: Session.get("myProfile").currentMerchant})

@@ -18,7 +18,7 @@ template(name="staffManagement")
           if getSession 'staffManagementCreationMode'
             .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createStaffBtn
 
-        .nano: .nano-content: .group-wrapper
+        .nano: .nano-content(style="margin-bottom: 35px;"): .group-wrapper
           each staffSearcher
             .caption.advanced.inner.product-selection(class="{{activeClass 'staffManagementCurrentStaff'}}")
               +avatarImageComponent(avatar=avatarUrl alias=getEmails)

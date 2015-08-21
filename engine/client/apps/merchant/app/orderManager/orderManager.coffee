@@ -14,7 +14,9 @@ lemon.defineApp Template.orderManager,
 
       if orders.length > 0
         for key, value of _.groupBy(orders, (item) -> moment(item.accountingConfirmAt).format('MM/YYYY'))
-          details.push({createdAt: key, data: value})
+          totalCash = 0
+          totalCash += item.finalPrice for item in value
+          details.push({createdAt: key, data: value, totalCash: totalCash})
       details
 
   rendered: ->

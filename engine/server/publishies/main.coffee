@@ -67,7 +67,7 @@ Meteor.publish null, ->
   orderFinishQuery.creator = @userId
   Counts.publish @, 'orderHistoryOfStaff', Schema.orders.find(orderFinishQuery)
 
-  customerGroupQuery = merchant: merchantId, customers: {$in: myProfile.customers}
+  customerGroupQuery = merchant: merchantId, customers: {$in: myProfile.customers ? []}
   Counts.publish @, 'customerGroupOfStaff', Schema.customerGroups.find(customerGroupQuery)
 
   Counts.publish @, 'customerReturnHistories', Schema.returns.find(

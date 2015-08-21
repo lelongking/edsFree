@@ -1,0 +1,49 @@
+template(name="historySynthesisDebts")
+  .section.panel.panel-default.printable-area
+    .panel-heading
+      table.lemon-grid
+        tr
+          th(style="width:auto") Tên Khách Hàng
+          th.number(style="width:120px") Nợ Đầu Kỳ
+          th.number(style="width:110px") Mua Hàng
+          th.number(style="width:110px") Trả Hàng
+          th.number(style="width:110px") Thanh Toán
+          th.number(style="width:120px") Nợ Cuối Kỳ
+
+    .panel-body
+      table.lemon-grid
+        tr
+          th(style="width:auto")
+          th(style="width:120px")
+          th(style="width:110px")
+          th(style="width:110px")
+          th(style="width:110px")
+          th(style="width:130px")
+
+
+        each customerGroups
+          each customerDetails
+            tr(style="background-color: #fff;")
+              td.first-column {{name}}
+              td.number {{formatNumber beginCash}}
+              td.number {{formatNumber debtCash}}
+              td.number {{formatNumber returnCash}}
+              td.number {{formatNumber paidCash}}
+              td.number {{formatNumber totalCash}}
+
+          tr(style="background-color: #f0f0f0; color: #787878;")
+            td.number  <b>{{name}} : </b>
+            td.number <b>{{formatNumber beginCash}}</b>
+            td.number <b>{{formatNumber debtCash}}</b>
+            td.number <b>{{formatNumber returnCash}}</b>
+            td.number <b>{{formatNumber paidCash}}</b>
+            td.number <b>{{formatNumber totalCash}}</b>
+
+          tr(style="background-color: #f0f0f0;")
+            td.number  <b>Tổng Cộng :</b>
+            td.number.border-top <b>{{formatNumber sumBeginCash}}</b>
+            td.number.border-top <b>{{formatNumber sumDebtCash}}</b>
+            td.number.border-top <b>{{formatNumber sumReturnCash}}</b>
+            td.number.border-top <b>{{formatNumber sumPaidCash}}</b>
+            td.number.border-top <b>{{formatNumber sumTotalCash}}</b>
+

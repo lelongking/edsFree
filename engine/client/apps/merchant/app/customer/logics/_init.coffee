@@ -13,6 +13,10 @@ Apps.Merchant.customerManagementReactive.push (scope) ->
 
 
 Apps.Merchant.customerManagementInit.push (scope) ->
+  Schema.transactions.find().forEach(
+    (transaction)->
+      Schema.transactions.update transaction._id, $set:{isBeginCash: true}
+  )
   scope.resetShowEditCommand = -> Session.set "customerManagementShowEditCommand"
   scope.transactionFind = (parentId)-> Schema.transactions.find({parent: parentId}, {sort: {'version.createdAt': 1}})
   scope.findOldDebtCustomer = ->
@@ -51,5 +55,12 @@ Apps.Merchant.customerManagementInit.push (scope) ->
           item
       )
 
-      _.sortBy orders.concat(returns), (item) -> item.successDate
+      dataSource = _.sortBy(orders.concat(returns), (item) -> item.successDate )
+
+      classColor = false
+      for item in dataSource
+        item.classColor = classColor
+        classColor = !classColor
+      dataSource
+
     else []

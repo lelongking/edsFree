@@ -173,10 +173,10 @@ template(name="merchantHome")
                   .app-count {{getPublishedCount 'providerReturnHistories'}}
                   .app-count-description phiếu
                   span.caption.app-name.bottom.right trả hàng
-                .tile.peter-river
+                .tile.peter-river(data-app="basicHistory")
                   //.app-icon.icon-shareable
                   //.app-count 0
-                  //.app-count-description
+                  .app-count-description Báo Cáo
                   span.caption.app-name.bottom.right nhật ký
 
                 .tile.double.amethyst(data-app="basicReport")
@@ -192,7 +192,7 @@ template(name="merchantHome")
       .dual-addon
         .search-filter.icon-search-8
           input(name='searchFilter' type="text" placeholder="tìm kiếm...")
-        .nano: .nano-content
+        .nano: .nano-content(style="margin-bottom: 35px;")
           .group-wrapper
             with getSession 'merchantFullSearches'
               if isShowSearch 'orders'

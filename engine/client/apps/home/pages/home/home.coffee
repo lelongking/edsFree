@@ -36,7 +36,10 @@ lemon.defineWidget Template.home,
     registerSecretValid: -> Session.get('registerSecretValid')
     termButtonActive: -> if Session.get('topPanelMinimize') then '' else 'reading'
 
-  created: -> Router.go('/merchant') unless Meteor.userId() is null or (Session.get('autoNatigateDashboardOff'))
+#  created: -> Router.go('/merchant') unless Meteor.userId() is null or (Session.get('autoNatigateDashboardOff'))
+  created: ->
+    Router.go('/merchant') if Meteor.userId()
+
   rendered: ->
     self = @
     Meteor.setTimeout ->

@@ -36,11 +36,15 @@ Meteor.methods
 
       if transactionType is Enums.getValue('TransactionTypes', 'provider')
         transactionInsert.transactionName   = if receivable then 'Phiếu Thu' else 'Phiếu Chi'
+        unless description
+          transactionInsert.description     = if receivable then 'Nợ tiền' else 'Trả tiền'
         transactionInsert.debtBalanceChange = if receivable then money else 0
         transactionInsert.paidBalanceChange = if receivable then 0 else money
 
       else if transactionType is Enums.getValue('TransactionTypes', 'customer')
         transactionInsert.transactionName   = if receivable then 'Phiếu Chi' else 'Phiếu Thu'
+        unless description
+          transactionInsert.description     = if receivable then 'Nợ tiền' else 'Trả tiền'
         transactionInsert.debtBalanceChange = if receivable then money else 0
         transactionInsert.paidBalanceChange = if receivable then 0 else money
 

@@ -1,7 +1,6 @@
 scope = logics.basicReport
 
 lemon.defineApp Template.revenueBasicAreaReport,
-
   created: ->
     Session.set('revenueBasicAreaReportView', 'totalCash')
     scope.dataView =
@@ -71,6 +70,9 @@ lemon.defineApp Template.revenueBasicAreaReport,
               else if id is "data3"
                 parseFloat(value*100/scope.dataView.beginCash).toFixed(2) + ' %'
 
+
+  destroyed: ->
+    logics.basicReport.revenueBasicArea.destroy()
 
   helpers:
     isActive: (show)->

@@ -1,0 +1,22 @@
+template(name="basicHistory")
+   #content.modern
+      .dual-content
+         .dual-detail-wrapper
+            .dual-detail
+               .nano: .nano-content
+                  +Template.dynamic(template=basicHistoryDynamics.template data=basicHistoryDynamics.data)
+
+
+         .dual-addon
+            .search-filter.icon-search-8
+               input(name='searchFilter' type="text")
+
+            .nano: .nano-content(style="margin-bottom: 35px;")
+               .group-wrapper
+                  .caption.group Báo Cáo
+                  .caption.inner.active
+                     span.avatar.letter(class="{{icon}}")
+                     span.text.uppercase <b>Tổng Hợp Công Nợ</b>
+                  //.caption.inner.revenueBasicArea(class="{{optionActiveClass 'revenueBasicArea'}}")
+                  //   span.avatar.letter(class="{{icon}}")
+                  //   span.text.uppercase <b>Tổng Hợp Doanh Số</b>

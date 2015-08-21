@@ -20,8 +20,8 @@ lemon.defineHyper Template.providerManagementImportsHistorySection,
         (unless provider.paidCash is undefined then provider.paidCash else 0) + (unless provider.returnCash is undefined then provider.returnCash else 0)
       else 0
 
-    transactionDescription: -> if Session.get("providerManagementOldDebt") then 'ghi chú nợ cũ' else 'ghi chú trả tiền'
-    transactionStatus: -> if Session.get("providerManagementOldDebt") then 'Nợ Cũ' else 'Trả Tiền'
+    transactionDescription: -> if Session.get("providerManagementOldDebt") then 'ghi chú nợ tiền' else 'ghi chú trả tiền'
+    transactionStatus: -> if Session.get("providerManagementOldDebt") then 'Nợ Tiền' else 'Trả Tiền'
     showTransaction: -> if Session.get("providerManagementOldDebt") is undefined then 'display: none'
 
   events:

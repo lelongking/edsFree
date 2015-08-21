@@ -20,7 +20,7 @@ template(name="priceBook")
           if getSession 'priceBookCreationMode'
             .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createCustomerBtn
 
-        .nano: .nano-content
+        .nano: .nano-content(style="margin-bottom: 35px;")
           each priceBookLists
             .group-wrapper
               .caption.group {{_id}}

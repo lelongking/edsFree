@@ -13,7 +13,7 @@ template(name="providerManagement")
           if getSession 'providerManagementCreationMode'
             .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createProviderBtn
 
-        .nano: .nano-content
+        .nano: .nano-content(style="margin-bottom: 35px;")
           .list
             each providerLists
               .doc-item(class="{{activeClass 'providerManagementCurrentProvider'}}")

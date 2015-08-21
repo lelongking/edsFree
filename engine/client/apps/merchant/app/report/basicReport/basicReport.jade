@@ -11,7 +11,7 @@ template(name="basicReport")
         .search-filter.icon-search-8
           input(name='searchFilter' type="text")
 
-        .nano: .nano-content
+        .nano: .nano-content(style="margin-bottom: 35px;")
 
           .group-wrapper
             .caption.group DOANH SỐ CHUNG
@@ -19,9 +19,9 @@ template(name="basicReport")
               span.avatar.letter(class="{{icon}}")
               span.text.uppercase <b>Khu Vực</b>
 
-            .caption.inner.revenueBasicCustomer(class="{{optionActiveClass 'revenueBasicCustomer'}}")
-              span.avatar.letter(class="{{icon}}")
-              span.text.uppercase <b>Khách Hàng</b>
+            //.caption.inner.revenueBasicCustomer(class="{{optionActiveClass 'revenueBasicCustomer'}}")
+            //  span.avatar.letter(class="{{icon}}")
+            //  span.text.uppercase <b>Khách Hàng</b>
 
             //.caption.inner.revenueBasicStaff(class="{{optionActiveClass 'revenueBasicStaff'}}")
             //  span.avatar.letter(class="{{icon}}")
@@ -40,17 +40,17 @@ template(name="basicReport")
             //.caption.inner.revenueOfStaff(class="{{optionActiveClass 'revenueOfStaff'}}")
             //  span.avatar.letter(class="{{icon}}")
             //  span.text.uppercase <b>Nhân Viên</b>
-
-          .group-wrapper
-            .caption.group SẢN PHẨM
-            .caption.inner.totalRevenue(class="{{optionActiveClass 'totalRevenueAll'}}")
-              span.avatar.letter(class="{{icon}}")
-              span.text.uppercase <b>Bán Chạy</b>
-
-            .caption.inner.revenueArea(class="{{optionActiveClass 'totalRevenueArea'}}")
-              span.avatar.letter(class="{{icon}}")
-              span.text.uppercase <b>Doanh Số</b>
-
-            .caption.inner.customerProduct(class="{{optionActiveClass 'customerProduct'}}")
-              span.avatar.letter(class="{{icon}}")
-              span.text.uppercase <b>Lợi Nhuận</b>
+          //
+          //.group-wrapper
+          //  .caption.group SẢN PHẨM
+          //  .caption.inner.totalRevenue(class="{{optionActiveClass 'totalRevenueAll'}}")
+          //    span.avatar.letter(class="{{icon}}")
+          //    span.text.uppercase <b>Bán Chạy</b>
+          //
+          //  .caption.inner.revenueArea(class="{{optionActiveClass 'totalRevenueArea'}}")
+          //    span.avatar.letter(class="{{icon}}")
+          //    span.text.uppercase <b>Doanh Số</b>
+          //
+          //  .caption.inner.customerProduct(class="{{optionActiveClass 'customerProduct'}}")
+          //    span.avatar.letter(class="{{icon}}")
+          //    span.text.uppercase <b>Lợi Nhuận</b>

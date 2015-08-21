@@ -10,7 +10,7 @@ template(name="orderReturnHistory")
         .search-filter.icon-search-8
           input(name='searchFilter' type="text" placeholder="tìm đơn hàng..." value="{{productTextSearch}}")
 
-        .nano: .nano-content
+        .nano: .nano-content(style="margin-bottom: 35px;")
           each details
             .group-wrapper
               .caption.group {{createdAt}}
