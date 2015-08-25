@@ -3,7 +3,20 @@ scope = logics.productManagement
 
 lemon.defineHyper Template.productManagementSalesHistorySection,
   helpers:
-    allSaleDetails: ->
+    isProduct: -> @product is Session.get("productManagementCurrentProduct")?._id
+    getOwnerName: ->
+      data = Template.parentData()
+      if data.model is 'imports'
+        owner = Schema.providers.findOne(data.provider)
+      else if data.model is 'orders'
+        owner = Schema.customers.findOne(data.buyer)
+      else if data.model is 'returns'
+        owner = Schema.customers.findOne(data.owner)
+        owner = Schema.providers.findOne(data.owner) unless owner
+      owner?.name ? 'Error Not Find Name'
+
+
+    allSaleDetailsss: ->
       details = []
       if product = Session.get("productManagementCurrentProduct")
         orderOption   = sort: {orderType: Enums.getValue('OrderTypes', 'success') , 'successDate': 1}
@@ -24,37 +37,69 @@ lemon.defineHyper Template.productManagementSalesHistorySection,
         )
       details
 
-    allSaleDetailsss: ->
+    allSaleDetails: ->
       details = []
+      combined = []
       if product = Session.get("productManagementCurrentProduct")
-        importOption   = sort: {importType: Enums.getValue('ImportTypes', 'success') , 'version.createdAt': 1}
-        importSelector = {'details.product': product._id}
-        allImports = Schema.imports.find(importSelector, importOption).map(
+
+        importSelector = {
+          'details.product': product._id
+          importType       : $in: [Enums.getValue('ImportTypes', 'inventorySuccess'), Enums.getValue('ImportTypes', 'success')]
+        }
+        Schema.imports.find(importSelector).forEach(
           (item) ->
-            item.isImport = true
-            item
+            for detail in item.details
+              if detail.product is product._id
+                if item.importType is Enums.getValue('ImportTypes', 'inventorySuccess')
+                  detail.ownerName = 'Nhập Kho Đầu Kỳ'
+                  detail.billNo    = '----'
+                  detail.createdAt = item.version.createdAt
+                else
+                  owner = Schema.providers.findOne(item.provider)
+                  detail.ownerName = owner?.name ? 'Error Not Find Name'
+                  detail.billNo    = item.importCode
+                  detail.createdAt = item.successDate
+                detail.activity  = 'Nhập Kho'
+                combined.push(detail)
         )
 
-        orderOption   = sort: {orderType: Enums.getValue('OrderTypes', 'success') , 'version.createdAt': -1}
         orderSelector = {
           'details.product': product._id
           orderType        : Enums.getValue('OrderTypes', 'success')
           orderStatus      : Enums.getValue('OrderStatus', 'finish')
         }
-        allOrders = Schema.orders.find(orderSelector, orderOption).map(
-          (order) ->
-            for detail in order.details
-              detail.buyer     = order.buyer
-              detail.createdAt = order.accountingConfirmAt
-              if detail.import?.length > 0
-                item.buyer = order.buyer for item in detail.import
-
-            order.isOrder = true
-            order
+        Schema.orders.find(orderSelector).forEach(
+          (item) ->
+            for detail in item.details
+              if detail.product is product._id
+                owner = Schema.customers.findOne(item.buyer)
+                detail.ownerName = owner?.name ? 'Error Not Find Name'
+                detail.billNo    = item.orderCode
+                detail.createdAt = item.successDate
+                detail.activity  = 'Bán Hàng'
+                combined.push(detail)
         )
-        for key, value of _.groupBy(allImports.concat(allOrders), (item) -> moment(item.accountingConfirmAt ? item.version.createdAt).format('L'))
-          details.push({createdAt: key, data: value})
 
+        returnSelector = {
+          'details.product': product._id
+          returnStatus     : Enums.getValue('ReturnStatus', 'success')
+        }
+        Schema.returns.find(returnSelector).map(
+          (item) ->
+            for detail in item.details
+              if detail.product is product._id
+                owner = Schema.customers.findOne(item.owner)
+                owner = Schema.providers.findOne(item.owner) unless owner
+                detail.ownerName = owner?.name ? 'Error Not Find Name'
+                detail.billNo    = item.returnCode
+                detail.createdAt = item.successDate
+                detail.activity  = 'Trả Hàng'
+                combined.push(detail)
+        )
+
+        sorted = _.sortBy combined, (item) -> item.createdAt
+        combined = _.groupBy(sorted, (item) -> moment(item.createdAt).format('L'))
+        details.push({createdAt: key, details: value}) for key, value of combined
       return details
 
     saleQuality   : -> @qualities?[0].saleQuality ? 0

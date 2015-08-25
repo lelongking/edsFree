@@ -8,38 +8,40 @@ template(name="productManagementSalesHistorySection")
 
       table.lemon-grid.safe
         tr
-          th(style="width:250px") ĐỐI TÁC
-          th.date(style="width:80px") THỜI GIAN
-          th.number(style="width:40px") SL
+          th(style="width:auto") ĐỐI TÁC
+          th.date(style="width:100px") HOẠT ĐỘNG
+          th.date(style="width:80px") SỐ PHIẾU
+          th.number(style="width:50px") SL
           th.date(style="width:70px") ĐƠN VỊ
           th.number(style="width:100px") GIÁ
-          th.number(style="width:auto") GHI CHÚ
+
 
     .panel-body.debt-details
       table.lemon-grid.safe
         tr
-          th(style="width:250px")
+          th(style="width:auto")
+          th.date(style="width:100px")
           th.date(style="width:80px")
-          th.number(style="width:40px")
+          th.number(style="width:50px")
           th.date(style="width:70px")
-          th.number(style="width:100px")
-          th.number(style="width:auto")
+          th.number(style="width:110px")
+
 
         each allSaleDetails
           tr.header-row
             td.has-commands(colspan="7")
               | &nbsp;
-              .bill-header <b>{{momentFormat successDate "DD/MM/YYYY"}}</b> - {{orderCode}}
-              //.commands(style="left: 80px; top:0px; font-style: italic; color:#7ac5f9") <b>{{description}}</b>
+              .bill-header <b>{{createdAt}}</b>
+          tr
 
           each details
             tr.detail-row
-              td.first-column.has-commands {{getBuyerName buyer}}
-              td.date
+              td.first-column.has-commands {{ownerName}}
+              td.date {{activity}}
+              td.date {{billNo}}
               td.number {{quality}}
               td.date {{getProductUnitName productUnit}}
               td.number {{formatNumber price}}
-              td.number {{note}}
 
 
 
