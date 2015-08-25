@@ -12,7 +12,7 @@ template(name="customerManagementSalesHistorySection")
           th.number(style="width:50px") SL
           th.date(style="width:100px") ĐƠN VỊ
           th.number(style="width:180px") ĐƠN GIÁ
-          th.number(style="width:200px") THÀNH TIỀN
+          th.number(style="width:175px") THÀNH TIỀN
 
       .hide-on-print
         table.lemon-grid: tr
@@ -36,7 +36,7 @@ template(name="customerManagementSalesHistorySection")
             td.has-commands(colspan="5")
               | &nbsp;
               .bill-header <b>Nợ tồn đầu kỳ</b>
-          tr(style="background-color: {{isColor}};")
+          tr
 
           each oldDebts
             tr.paid-row.top(class="{{transactionClass}}" style="border-bottom: none;")

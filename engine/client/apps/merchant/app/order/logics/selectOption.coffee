@@ -4,10 +4,9 @@ formatDefaultSearch  = (item) -> "#{item.display}" if item
 findPaymentMethods   = (paymentMethodId)-> _.findWhere(Enums.PaymentMethods, {_id: paymentMethodId})
 findDeliveryTypes    = (deliveryTypeId)-> _.findWhere(Enums.DeliveryTypes, {_id: deliveryTypeId})
 customerSearch       = (query) -> CustomerSearch.search(query.term); CustomerSearch.getData({sort: {name: 1}})
-formatCustomerSearch = (item) ->
-  if item
-    name = "#{item.name} "; desc = if item.description then "(#{item.description})" else ""
-    name + desc
+formatCustomerSearch = (item) -> item.name if item
+#    name = "#{item.name} "; desc = if item.description then "(#{item.description})" else ""
+#    name + desc
 
 Apps.Merchant.salesInit.push (scope) ->
   scope.depositOptions =

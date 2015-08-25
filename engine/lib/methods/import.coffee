@@ -41,14 +41,15 @@ Meteor.methods
       product = Schema.products.findOne(detail.product)
       for unit, index in product.units
         if unit._id is detail.productUnit
-          updateQuery.$inc["units.#{index}.quality.availableQuality"] = detail.availableQuality
-          updateQuery.$inc["units.#{index}.quality.inStockQuality"]   = detail.inStockQuality
-          updateQuery.$inc["units.#{index}.quality.importQuality"]    = detail.importQuality
+          updateQuery.$inc["units.#{index}.quality.availableQuality"] = detail.basicQuality
+          updateQuery.$inc["units.#{index}.quality.inStockQuality"]   = detail.basicQuality
+          updateQuery.$inc["units.#{index}.quality.importQuality"]    = detail.basicQuality
           break
 
-      updateQuery.$inc["qualities.#{detailIndex}.availableQuality"]= detail.availableQuality
-      updateQuery.$inc["qualities.#{detailIndex}.inStockQuality"]  = detail.inStockQuality
-      updateQuery.$inc["qualities.#{detailIndex}.importQuality"]   = detail.importQuality
+      updateQuery.$inc["qualities.#{detailIndex}.availableQuality"]= detail.basicQuality
+      updateQuery.$inc["qualities.#{detailIndex}.inStockQuality"]  = detail.basicQuality
+      updateQuery.$inc["qualities.#{detailIndex}.importQuality"]   = detail.basicQuality
+      console.log updateQuery
       Schema.products.update detail.product, updateQuery
 
     Schema.imports.update importId, $set:{importType: Enums.getValue('ImportTypes', 'inventorySuccess')}

@@ -66,7 +66,7 @@ Schema.add 'priceBooks', "PriceBook", class PriceBook
             unitUpdateQuery = $set:{}; priceBookQuery = "units.#{productUnitIndex}.priceBooks"
 
             for item, index in product.units[productUnitIndex].priceBooks
-              if salePrice and salePrice >= 0 and salePrice isnt priceBookFound.salePrice
+              if salePrice isnt undefined and salePrice >= 0 and salePrice isnt priceBookFound.salePrice
                 unitUpdateQuery.$set["#{priceBookQuery}.#{index}.basicSale"]         = salePrice
                 unitUpdateQuery.$set["#{priceBookQuery}.#{index}.discountSalePrice"] = salePrice - item.salePrice
                 if item.priceBook is priceBookId
@@ -74,9 +74,10 @@ Schema.add 'priceBooks', "PriceBook", class PriceBook
                   unitUpdateQuery.$set["#{priceBookQuery}.#{index}.discountSalePrice"] = 0
                   unitUpdateQuery.$set["#{priceBookQuery}.#{index}.updateSalePriceAt"] = new Date()
 
-              if importPrice and importPrice >= 0 and importPrice isnt priceBookFound.importPrice
+              console.log importPrice, item, priceBookFound.importPrice
+              if importPrice isnt undefined and importPrice >= 0 and importPrice isnt priceBookFound.importPrice
                 unitUpdateQuery.$set["#{priceBookQuery}.#{index}.basicImport"]         = importPrice
-                unitUpdateQuery.$set["#{priceBookQuery}.#{index}.discountImportPrice"] = importPrice - item.importPrice
+                unitUpdateQuery.$set["#{priceBookQuery}.#{index}.discountImportPrice"] = importPrice - (item.importPrice ? 0)
                 if item.priceBook is priceBookId
                   unitUpdateQuery.$set["#{priceBookQuery}.#{index}.importPrice"]         = importPrice
                   unitUpdateQuery.$set["#{priceBookQuery}.#{index}.discountImportPrice"] = 0

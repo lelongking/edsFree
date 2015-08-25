@@ -15,7 +15,7 @@ Apps.Merchant.salesInit.push (scope) ->
 
   scope.debtDateOptions =
     reactiveSetter: (val) -> scope.currentOrder.changeDueDay(val)
-    reactiveValue: -> Session.get('currentOrder')?.dueDay ? 90
+    reactiveValue: -> Session.get('currentOrder')?.dueDay ? 0
     reactiveMax: -> 180
     reactiveMin: -> 0
     reactiveStep: -> 30

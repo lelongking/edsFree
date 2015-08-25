@@ -14,7 +14,9 @@ template(name="orderManager")
           each details
             .group-wrapper
               .caption.group
-                span {{createdAt}} - {{formatNumber totalCash}} VND
+                div(style="position: relative; padding-bottom: 2px;")
+                 |{{createdAt}}
+                 div(style="position: absolute; top: 0px; right: 5px;") <b>{{formatNumber totalCash}} VND</b>
 
                 each data
                   .caption.inner.advanced.product-selection(class="{{activeClass 'currentOrderBill'}}")

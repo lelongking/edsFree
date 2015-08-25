@@ -1,10 +1,10 @@
 template(name="customerManagementSaleDetails")
-  tr.header-row(style="background-color: {{isColor}};")
+  tr.header-row
     td.has-commands(colspan="5" style="border-left: solid 2px #f39c12")
       | &nbsp;
       .bill-header(style="background-color: #f39c12;") <b>{{momentFormat successDate "DD/MM/YYYY"}}</b>
-      .bill-header.hide-on-print(style="background-color: {{isColor}}; left: 90px; color: #7ac5f9") {{billNo}}
-      .bill-header.show-on-print(style="background-color: {{isColor}}; left: 120px; color: #7ac5f9") {{billNo}}
+      .bill-header.billNo.hide-on-print(style="left: 90px")  <b><i>{{billNo}}</i></b>
+      .bill-header.billNo.show-on-print(style="left: 120px") <b><i>{{billNo}}</i></b>
       //.commands
       //  if showDeleteSales
       //    .lemon.rounded.tiny.btn.red.deleteSales: span.icon-minus-4
@@ -12,43 +12,43 @@ template(name="customerManagementSaleDetails")
 
 
   each details
-    tr.detail-row(style="background-color: {{isColor}};")
+    tr.detail-row
       td.first-column {{getProductName product}}
       td.number {{quality}}
-      td(align="center") {{getProductUnitName productUnit}}
+      td.date {{getProductUnitName productUnit}}
       td.number {{formatNumber price}}
       td.last-column.number {{formatNumber totalPrice}}
 
 
   if discountCash
-    tr.detail-row(style="background-color: {{isColor}};")
+    tr.detail-row
       td.number(colspan="4"): span Tổng phiếu :
       td.number.receive.border-top: span.s5 <b>{{formatNumber totalPrice}}</b>
 
-    tr.detail-row(style="background-color: {{isColor}};")
+    tr.detail-row
       td.number(colspan="4"): span Chiết khấu :
       td.number.paid: span.s5 <b>{{formatNumber discountCash}}</b>
 
     if depositCash
-      tr.detail-row(style="background-color: {{isColor}};")
+      tr.detail-row
         td.number(colspan="4"): span Thanh toán :
         td.number.paid: span.s5 <b>{{formatNumber depositCash}}</b>
 
 
   else
     if depositCash
-      tr.detail-row(style="background-color: {{isColor}};")
+      tr.detail-row
         td.number(colspan="4"): span Tổng phiếu :
         td.number.receive.border-top: span.s5 <b>{{formatNumber totalPrice}}</b>
 
-      tr.detail-row(style="background-color: {{isColor}};")
+      tr.detail-row
         td.number(colspan="4"): span Thanh toán :
         td.number.paid: span.s5 <b>{{formatNumber depositCash}}</b>
 
 
 
   each transactions
-    tr.paid-row.top(class="{{transactionClass}}" style="background-color: {{isColor}}; border-bottom: none;")
+    tr.paid-row.top(class="{{transactionClass}}" style="border-bottom: none;")
       td.has-commands
         span {{description}}
         if allowDelete
@@ -62,7 +62,7 @@ template(name="customerManagementSaleDetails")
 
 
     if isLastTransaction
-      tr.detail-row(style="background-color: {{isColor}};")
+      tr.detail-row
         td.number(colspan="3")
         td.number.border-top
         td.number.border-top: span.s5 <b>{{formatNumber latestDebtBalance}}</b>

@@ -193,7 +193,8 @@ Schema.add 'imports', "Import", class Import
     newImport.importName  = Helpers.shortName2(importName) if importName
     newImport.importType  = -1 if importName and !providerId
     importId = Schema.imports.insert(newImport, callback)
-    Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentImport': importId}}) if importId
+    if importId and providerId
+      Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentImport': importId}})
     return importId
 
   @findNotSubmitted: ->
