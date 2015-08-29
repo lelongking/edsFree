@@ -9,16 +9,16 @@ lemon.addRoute
 #  waitOnDependency: 'merchantEssential'
   onBeforeAction: ->
     if @ready()
-      Apps.setup(scope, Apps.Merchant.merchantOptionsInit, 'customerManagement')
+      Apps.setup(scope, Apps.Merchant.merchantOptionsInit, 'systemOption')
       Session.set "currentAppInfo",
         name: "tuỳ chỉnh"
       @next()
   data: ->
     Apps.setup(scope, Apps.Merchant.merchantOptionsReactive)
 
-    return {
-      settings: scope.settings
-    }
+#    return {
+#      settings: scope.settings
+#    }
 , Apps.Merchant.RouterBase
 
 Apps.Merchant.merchantOptionsReactive.push (scope) ->
