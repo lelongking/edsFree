@@ -14,6 +14,7 @@ lemon.defineApp Template.staffManagement,
       scope.staffSearcher
 
     getEmails: -> @emails?[0].address
+    avatarUrl: -> if @profile and @profile.image then AvatarImages.findOne(@profile.image)?.url() else undefined
     permission: -> Enums.getObject('PermissionType', 'value')[@profile.roles].display
 
 

@@ -1,6 +1,8 @@
 template(name="sidebar")
   #sidebar
     .collapse-toggle(class="{{appCollapseClass}}")
+    .sidebar-header
+      span.logo Chat
     ul.messenger-list
       +myAvatarItem getSession 'myProfile'
       each friends

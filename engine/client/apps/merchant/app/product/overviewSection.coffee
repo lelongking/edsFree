@@ -42,16 +42,16 @@ lemon.defineHyper Template.productManagementOverviewSection,
 
   events:
     "click .avatar": (event, template) ->
-      if Session.get('myProfile').roles isnt 'seller'
+      if User.hasManagerRoles()
         template.find('.avatarFile').click()
 
     "change .avatarFile": (event, template) ->
-      if Session.get('myProfile').roles isnt 'seller'
+      if User.hasManagerRoles()
         files = event.target.files
         if files.length > 0
           AvatarImages.insert files[0], (error, fileObj) ->
-            Schema.products.update(Session.get('productManagementCurrentProduct')._id, {$set: {image: fileObj._id}})
-            AvatarImages.findOne(Session.get('productManagementCurrentProduct').image)?.remove()
+            Schema.products.update(Session.get('productManagementCurrentProduct')._id, {$set: {avatar: fileObj._id}})
+            AvatarImages.findOne(Session.get('productManagementCurrentProduct').avatar)?.remove()
 
     "click .productDelete": (event, template) ->
       if Session.get('myProfile').roles isnt 'seller' and @allowDelete

@@ -8,16 +8,28 @@
   width sidebar-size
   min-height 100%
   background-color sidebar-background-color
-  z-index 999
+  z-index 10
+  opacity: 0.9
 
   if sidebar-border-size > 0
     border-left solid sidebar-border-size sidebar-border-color
+
+  .sidebar-header
+    height 50px
+    text-align center
+    padding-top 15px
+    border-bottom solid 1px #434c5b
+
+    span.logo
+      font-weight bold
+      color #ff5c00
+      font-size 16px
 
   .collapse-toggle
     cursor pointer
     width 30px
     height 30px
-    absolute top -36px
+    absolute top 0px
     left -(@width+sidebar-border-size)
     background-color #7ac5f9
     border-radius left 2px
@@ -29,6 +41,7 @@
     clearfix()
     list-style none
     margin 0; padding 0
+    padding-top: 1px
     a > i { color: #4D4748; }
 
     li

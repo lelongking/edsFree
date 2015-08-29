@@ -7,4 +7,4 @@ Schema.add 'messages', "Messenger", class Messenger
 
   @read: (messageId) ->
     currentMessage = @schema.findOne(messageId)
-    @schema.update(messageId, {$push: {reads: Meteor.userId()}}) if currentMessage
+    @schema.update(messageId, {$push: {reads: Meteor.userId()}}) if currentMessage and !_.contains(currentMessage.reads ? [], Meteor.userId())

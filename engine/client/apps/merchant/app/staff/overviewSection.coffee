@@ -4,7 +4,7 @@ lemon.defineHyper Template.staffManagementOverviewSection,
   helpers:
     userName: -> @emails?[0]?.address ? 'chưa tạo tài khoản đăng nhập.'
     genderName: -> if @profile?.gender then 'Nam' else 'Nữ'
-
+    avatarUrl: -> if @profile and @profile.image then AvatarImages.findOne(@profile.image)?.url() else undefined
     fullName: ->
       Meteor.setTimeout ->
         scope.overviewTemplateInstance.ui.$staffName.change()
@@ -22,13 +22,16 @@ lemon.defineHyper Template.staffManagementOverviewSection,
     $(".changeCustomer").select2("readonly", Template.currentData().creator is undefined)
 
   events:
-#    "click .avatar": (event, template) -> template.find('.avatarFile').click()
-#    "change .avatarFile": (event, template) ->
-#      files = event.target.files
-#      if files.length > 0
-#        AvatarImages.insert files[0], (error, fileObj) ->
-#          Schema.userProfiles.update(Session.get('staffManagementCurrentStaff')._id, {$set: {avatar: fileObj._id}})
-#          AvatarImages.findOne(Session.get('staffManagementCurrentStaff').avatar)?.remove()
+    "click .avatar": (event, template) ->
+      if User.hasAdminRoles()
+        template.find('.avatarFile').click()
+    "change .avatarFile": (event, template) ->
+      if User.hasAdminRoles()
+        files = event.target.files
+        if files.length > 0
+          AvatarImages.insert files[0], (error, fileObj) ->
+            Meteor.users.update Session.get('staffManagementCurrentStaff')._id, $set: {"profile.image": fileObj._id}
+            AvatarImages.findOne(Session.get('staffManagementCurrentStaff').profile.image)?.remove()
 
     "input .editable": (event, template) ->
       if staff = Session.get("staffManagementCurrentStaff")

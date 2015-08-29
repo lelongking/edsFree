@@ -79,6 +79,7 @@ Template.registerHelper 'formatNumberK', (context) ->  accounting.formatNumber(c
 
 Template.registerHelper 'pad', (number) -> if number < 10 then '0' + number else number
 Template.registerHelper 'round', (number) -> Math.round(number)
+Template.registerHelper 'momentFromNow', (date) -> moment(date).fromNow()
 Template.registerHelper 'momentFormat', (date, format) ->
   if date then moment(date).format(format)
   else '---/---/------'
@@ -139,8 +140,11 @@ Template.registerHelper 'onlineStatus', (userId)->
 
 #Notifications----------------------------------------------->
 Template.registerHelper 'notificationSenderAvatar', ->
-  profile = Schema.userProfiles.findOne({user: @sender})
-  return undefined if !profile?.avatar
-  AvatarImages.findOne(profile.avatar)?.url()
+  profile = Meteor.users.findOne(@sender)?.profile
+  return undefined if !profile?.image
+  AvatarImages.findOne(profile.image)?.url()
+Template.registerHelper 'notificationSenderName', ->
+  Meteor.users.findOne(@sender)?.profile?.name ? '?'
+
 Template.registerHelper 'notificationSenderAlias', ->
-  Schema.userProfiles.findOne({user: @sender})?.fullName.split(' ').pop() ? '?'
+  Meteor.users.findOne(@sender)?.profile?.name.split(' ').pop() ? '?'

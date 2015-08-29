@@ -45,6 +45,9 @@ lemon.defineHyper Template.overviewProductInventory,
         $quality.val(Session.get('productManagementCurrentProduct').qualities[0].upperGapQuality)
       else
         Schema.products.update(Session.get('productManagementCurrentProduct')._id, $set:{'qualities.0.upperGapQuality': Number($quality.val())})
+
+      if event.which is 13
+        console.log 'Enter'
 #        inventoryDetails[detailIndex].quality = Number($quality.val())
 #        Session.set('productManagementInventoryDetails', inventoryDetails)
 

@@ -13,19 +13,23 @@ template(name="customerManagement")
           if creationMode
             .lemon.btn.rounded.tiny.lime.icon-plus-6.create-command.createCustomerBtn
 
-        .nano: .nano-content(style="margin-bottom: 35px;")
-          .list
-            each customerLists
-              .doc-item(class="{{activeClass 'customerManagementCurrentCustomer'}}")
-                .avatar-wrapper: .avatar-image(class="missing"
-                style="background-image:url('')") {{aliasLetter firstName}}
-                .doc-info
-                  .title {{name}}
-                  //.sub-title {{description}}
-                  if totalCash
-                    .price-stamp
-                      <b>{{formatNumber totalCash}}</b>
-                      span(style="font-size: 11px;") <b>VND</b>
+        .nano
+          .nano-content(style="margin-bottom: 35px;")
+            .list
+
+              each customerLists
+                .doc-item(class="{{activeClass 'customerManagementCurrentCustomer'}}")
+                  .avatar-wrapper
+                    .avatar-image(class="{{hasAvatar}}" style="background-image:url('{{avatarUrl}}')") {{aliasLetter firstName}}
+
+                  .doc-info
+                    .title {{name}}
+                    //.sub-title {{description}}
+
+                    if totalCash
+                      .price-stamp
+                        <b>{{formatNumber totalCash}}</b>
+                        span(style="font-size: 11px;") <b>VND</b>
 
 
   //#footer.modern

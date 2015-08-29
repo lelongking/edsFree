@@ -17,13 +17,14 @@ lemon.defineHyper Template.providerManagementOverviewSection,
     @ui.$providerName.autosizeInput({space: 10})
 
   events:
-    "click .avatar": (event, template) -> template.find('.avatarFile').click()
+    "click .avatar": (event, template) -> template.find('.avatarFile').click() if User.hasManagerRoles()
     "change .avatarFile": (event, template) ->
-      files = event.target.files
-      if files.length > 0
-        AvatarImages.insert files[0], (error, fileObj) ->
-          Schema.providers.update(Session.get('providerManagementCurrentProvider')._id, {$set: {avatar: fileObj._id}})
-          AvatarImages.findOne(Session.get('providerManagementCurrentProvider').avatar)?.remove()
+      if User.hasManagerRoles()
+        files = event.target.files
+        if files.length > 0
+          AvatarImages.insert files[0], (error, fileObj) ->
+            Schema.providers.update(Session.get('providerManagementCurrentProvider')._id, {$set: {avatar: fileObj._id}})
+            AvatarImages.findOne(Session.get('providerManagementCurrentProvider').avatar)?.remove()
 
     "input .editable": (event, template) -> scope.checkAllowUpdateProviderOverview(template)
     "keyup input.editable": (event, template) ->

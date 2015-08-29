@@ -46,7 +46,7 @@ Apps.Merchant.salesInit.push (scope) ->
     initSelection: (element, callback) -> callback findDeliveryTypes(Session.get('currentOrder')?.paymentsDelivery)
     formatSelection: formatDefaultSearch
     formatResult: formatDefaultSearch
-    placeholder: 'CHỌN SẢN PTGD'
+    placeholder: 'CHỌN PTGD'
     minimumResultsForSearch: -1
     changeAction: (e) -> scope.currentOrder.changePaymentsDelivery(e.added._id)
     reactiveValueGetter: -> findDeliveryTypes(Session.get('currentOrder')?.paymentsDelivery)
@@ -58,7 +58,7 @@ Apps.Merchant.salesInit.push (scope) ->
     initSelection: (element, callback) -> callback findPaymentMethods(Session.get('currentOrder')?.paymentMethod)
     formatSelection: formatDefaultSearch
     formatResult: formatDefaultSearch
-    placeholder: 'CHỌN SẢN PTGD'
+    placeholder: 'CHỌN PTGD'
     minimumResultsForSearch: -1
     changeAction: (e) -> scope.currentOrder.changePaymentMethod(e.added._id)
     reactiveValueGetter: -> findPaymentMethods(Session.get('currentOrder')?.paymentMethod)

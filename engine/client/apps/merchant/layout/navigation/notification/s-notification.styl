@@ -29,10 +29,16 @@
       clearfix()
       list-style none
       border-top solid 1px #dedede
-      .avatar-img
+      padding 4px 10px
+      &.unread
+        background-color #E7E7E7
+      .avatar.image
         float left
-        width 50px; height 50px
+        width 32px; height 32px
         margin 1px
+        padding 0
+        img
+          width 32px; height 32px
       .avatar-letter
         background-color #BEBEBE
         float left
@@ -42,8 +48,29 @@
         font-size 25px
         font-weight bolder
         padding 0
+
+      &.message .content
+        padding-left 40px
+
       .content
-        width 300px
-        padding-left 55px
-        height 50px
+        width 300px; height 50px
         font-size 12px
+
+
+        h5, p
+          margin: 0
+
+        h5
+          font-family "Open Sans"
+          font-size 1.2em
+          font-weight 700
+          padding-top 1px
+          color #555
+
+        p.text
+          padding-top: 2px
+          font-size 1.2em
+
+        p.timestamp
+          font-size 0.8em
+          color #777

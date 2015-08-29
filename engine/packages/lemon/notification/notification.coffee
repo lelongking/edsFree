@@ -77,6 +77,11 @@ Schema.add 'notifications', "Notification", class Notification
     }
     Schema.notifications.insert newNotification
 
+  @read: (messageId) ->
+    currentNotification = @schema.findOne(messageId)
+    if currentNotification and !_.contains(currentNotification.reads ? [], Meteor.userId())
+      @schema.update(messageId, {$push: {reads: Meteor.userId()}})
+
   @productExpire: (product, profile)->
     if !profile then profile = Schema.userProfiles.findOne({user: Meteor.userId()})
     sendAllUserHasPermissionWarehouseManagementByProductExpire(product, profile)

@@ -3,7 +3,7 @@ simpleSchema.products = new SimpleSchema
   name            : {type: String   ,unique  : true, index: 1}
   nameSearch      : simpleSchema.searchSource('name')
   description     : {type: String ,optional: true}
-  image           : {type: String ,optional: true}
+  avatar          : {type: String ,optional: true}
   group           : {type: String ,optional: true}
   inventoryInitial: simpleSchema.DefaultBoolean(false)
   lastExpire      : {type: Date   ,optional: true}
@@ -70,8 +70,11 @@ findPrice = (priceBookId, priceBookList, priceType = 'sale') ->
 
 Schema.add 'products', "Product", class Product
   @transform: (doc) ->
-    doc.unitName = -> doc.units[0].name if doc.units.length > 0
-    doc.basicUnit= -> doc.units[0]._id if doc.units.length > 0
+    doc.hasAvatar = -> if doc.avatar then '' else 'missing'
+    doc.avatarUrl = -> if doc.avatar then AvatarImages.findOne(doc.avatar)?.url() else undefined
+    doc.unitName  = -> doc.units[0].name if doc.units.length > 0
+    doc.basicUnit = -> doc.units[0]._id if doc.units.length > 0
+
     if doc.qualities.length > 0
       doc.allQuality   = doc.qualities[0].inStockQuality
       doc.upperQuality = doc.qualities[0].upperGapQuality

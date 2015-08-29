@@ -3,6 +3,9 @@ template(name="messageNotifications")
     .header-caption TIN NHẮN
     ul.details
       each topMessages
-        li
+        li.message(class="{{hasRead}}")
           +avatarImageComponent(avatar=notificationSenderAvatar alias=notificationSenderAlias)
-          .content {{message}}
+          .content
+            h5 {{notificationSenderName}}
+            p.text {{message}}
+            p.timestamp {{momentFromNow version.createdAt}}

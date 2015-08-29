@@ -3,7 +3,7 @@
   localSearch: true
 
 @UnitProductSearch.fetchData =(searchText, options, callback) ->
-  selector = {status: 1}; options = {sort: {name: 1}, limit: 20}
+  selector = {status: 1}; options = {sort: {name: 1}, limit: 200}
   if(searchText)
     regExp = Helpers.BuildRegExp(searchText);
     selector = {$or: [

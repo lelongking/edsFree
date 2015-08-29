@@ -3,6 +3,8 @@ template(name="notificationDetails")
     .header-caption NHẮC NHỞ CHUNG
     ul.details
       each notifies
-        li
-          +avatarImageComponent(avatar=notificationSenderAvatar alias=notificationSenderAlias)
-          .content {{message}}
+        li.notification(class="{{hasRead}}")
+          //+avatarImageComponent(avatar=notificationSenderAvatar alias=notificationSenderAlias)
+          .content
+            p.text {{message}}
+            p.timestamp {{momentFromNow version.createdAt}}

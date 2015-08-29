@@ -3,6 +3,8 @@ Meteor.startup ->
   Router.configure
     progressDebug: false
 
+  Meteor.call('trackingProduct')
+
   Tracker.autorun ->
     if Meteor.userId()
       user = Meteor.user()

@@ -79,7 +79,35 @@ updateSubtractQualityInProductUnit = (product, orderDetail) ->
   updateProductQuery.$inc["qualities.#{detailIndex}.saleQuality"]    = orderDetail.basicQuality
   updateProductQuery.$inc["qualities.#{detailIndex}.inOderQuality"]  = -orderDetail.basicQuality
   updateProductQuery.$inc["qualities.#{detailIndex}.inStockQuality"] = -orderDetail.basicQuality
-  Schema.products.update product._id, updateProductQuery
+  if Schema.products.update(product._id, updateProductQuery)
+    if product.inventoryInitial
+      inStockQuality  = product.qualities[0].inStockQuality - orderDetail.basicQuality
+      upperGapQuality = product.qualities[0].upperGapQuality
+      optionQuality =
+        notificationType: 'notify'
+        product         : product._id
+        group           : Enums.getObject('NotificationGroups')['productQuality'].value
+      productQualityFound = Schema.notifications.findOne(optionQuality)
+      if inStockQuality > 0
+        if upperGapQuality > inStockQuality
+          optionQuality.message = "Sản phẩm #{product.name} sắp hết hàng. (còn #{inStockQuality}/#{upperGapQuality} #{product.units[0].name})"
+          if productQualityFound
+            Schema.notifications.update productQualityFound._id, $set:{message: optionQuality.message}
+          else
+            Schema.notifications.insert optionQuality
+
+        else
+          Schema.notifications.remove(productQualityFound._id) if productQualityFound
+
+      else
+        optionQuality.message = "Sản phẩm #{product.name} đã hết hàng."
+        if productQualityFound
+          Schema.notifications.update productQualityFound._id, $set:{message: optionQuality.message}
+        else
+          Schema.notifications.insert optionQuality
+
+
+
 
 findAllImport = (productUnitId) ->
   basicImport = Schema.imports.find({
@@ -188,7 +216,15 @@ Meteor.methods
       orderType      : Enums.getValue('OrderTypes', 'tracking')
       orderStatus    : Enums.getValue('OrderStatus', 'sellerConfirm')
       sellerConfirmAt: new Date()
-    Schema.orders.update orderFound._id, orderUpdate
+    if Schema.orders.update(orderFound._id, orderUpdate)
+      buyer = Schema.customers.findOne(orderFound.buyer)
+      optionNewOrder =
+        notificationType: 'notify'
+        group           : Enums.getObject('NotificationGroups')['newOrder'].value
+        message         : "Nhân viên #{user.profile.name} tạo phiếu bán cho khách hàng #{buyer.name}"
+        reads           : [Meteor.userId()]
+      Schema.notifications.insert(optionNewOrder)
+
 
   orderAccountConfirm: (orderId)->
     user = Meteor.users.findOne(Meteor.userId())
@@ -217,10 +253,20 @@ Meteor.methods
       accounting         : Meteor.userId()
       accountingConfirmAt: new Date()
     Schema.orders.update orderFound._id, orderUpdate
-    Schema.customers.update orderFound.buyer, $addToSet:{orderWaiting: orderFound._id}
+    if Schema.customers.update(orderFound.buyer, $addToSet:{orderWaiting: orderFound._id})
+      buyer = Schema.customers.findOne(orderFound.buyer)
+      optionNewOrder =
+        notificationType: 'notify'
+        sender          : Meteor.userId()
+        receiver        : orderFound.seller
+        group           : Enums.getObject('NotificationGroups')['newOrder'].value
+        message         : "Nhân viên #{user.profile.name} đã ghi nhận phiếu của khách hàng #{buyer.name}"
+        reads           : [Meteor.userId()]
+      Schema.notifications.insert(optionNewOrder)
 
     updateUserId = if orderFound.staff then orderFound.staff else orderFound.seller
     Meteor.users.update(updateUserId, $inc:{'profile.turnoverCash': orderFound.finalPrice})
+
 
   orderExportConfirm: (orderId)->
     user = Meteor.users.findOne(Meteor.userId())
@@ -370,9 +416,19 @@ Meteor.methods
         transaction : transactionId
         successDate : new Date()
         orderCode   :"#{Helpers.orderCodeCreate(customerFound.billNo)}/#{Helpers.orderCodeCreate(merchantFound.saleBill)}"
-      Schema.orders.update(orderFound._id, updateOrderQuery)
+      if Schema.orders.update(orderFound._id, updateOrderQuery)
+        buyer = Schema.customers.findOne(orderFound.buyer)
+        optionNewOrder =
+          notificationType: 'notify'
+          sender          : Meteor.userId()
+          receiver        : orderFound.seller
+          group           : Enums.getObject('NotificationGroups')['newOrder'].value
+          message         : "Nhân viên #{user.profile.name} xác nhận hoàn thành phiếu của khách hàng #{buyer.name}"
+          reads           : [Meteor.userId()]
+        Schema.notifications.insert(optionNewOrder)
       Schema.customers.update customerFound._id, {$inc: {billNo: 1},$addToSet:{orderSuccess: orderFound._id}, $pull: {orderWaiting: orderFound._id}}
       Schema.merchants.update(merchantFound._id, $inc:{saleBill: 1})
+
 
     else
       orderUpdate = $set:

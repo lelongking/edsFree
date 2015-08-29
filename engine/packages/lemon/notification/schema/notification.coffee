@@ -1,4 +1,44 @@
 simpleSchema.notifications = new SimpleSchema
+  message:
+    type: String
+
+  notificationType:
+    type: String
+
+  seen:
+    type: Boolean
+    defaultValue: false
+
+  reads:
+    type: [String]
+    optional: true
+
+  isRequest:
+    type: Boolean
+    defaultValue: false
+
+  confirmed:
+    type: Boolean
+    defaultValue: false
+
+
+  class:
+    type: String
+    optional: true
+
+  group:
+    type: String
+    optional: true
+
+  characteristic:
+    type: String
+    optional: true
+
+
+  merchant:
+    type: String
+    optional: true
+
   sender:
     type: String
     optional: true
@@ -7,34 +47,16 @@ simpleSchema.notifications = new SimpleSchema
     type: String
     optional: true
 
-  message:
-    type: String
-
   product:
     type: String
     optional: true
 
-  group:
+  customer:
     type: String
     optional: true
 
-  isRequest:
-    type: Boolean
-    defaultValue: false
-
-  notificationType:
-    type: String
-
-  characteristic:
+  provider:
     type: String
     optional: true
-
-  seen:
-    type: Boolean
-    defaultValue: false
-
-  confirmed:
-    type: Boolean
-    defaultValue: false
 
   version: { type: simpleSchema.Version }

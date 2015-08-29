@@ -1,0 +1,8 @@
+template(name="myNotificationDetails")
+  .dropdown-menu(role="menu")
+    .header-caption NHẮC NHỞ RIÊNG
+    ul.details
+      each notifies
+        li
+          +avatarImageComponent(avatar=notificationSenderAvatar alias=notificationSenderAlias)
+          .content {{message}}MESSAGES

@@ -84,7 +84,10 @@ Meteor.publish null, ->
 
 
 
+  collections.push Schema.notifications.find()
+  collections.push Schema.messages.find({receiver: @userId}, {sort: {'version.createdAt': -1}, limit: 10})
   collections.push Schema.merchants.find({_id: merchantId})
+  collections.push AvatarImages.find({})
   collections.push Schema.products.find()
   collections.push Schema.productGroups.find()
   collections.push Schema.customers.find()
@@ -95,6 +98,6 @@ Meteor.publish null, ->
   collections.push Schema.imports.find()
   collections.push Schema.priceBooks.find()
   collections.push Schema.transactions.find()
-  collections.push Meteor.users.find({'profile.merchant': merchantId}, {fields: {emails:1, profile: 1, sessions: 1, creator: 1} })
+  collections.push Meteor.users.find({'profile.merchant': merchantId}, {fields: {emails:1, profile: 1, sessions: 1, creator: 1, status: 1} })
 
   return collections

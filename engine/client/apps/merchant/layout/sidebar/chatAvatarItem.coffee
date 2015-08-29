@@ -1,13 +1,16 @@
 lemon.defineWidget Template.chatAvatarItem,
-  alias: ->
-    alias = @fullName ? Meteor.users.findOne(@user)?.emails[0].address
-    return {
-      shortName: Helpers.shortName(alias)
-      firstName: Helpers.firstName(alias)
-    }
-  avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
+  helpers:
+    alias: ->
+      alias =
+        if @profile and @profile.name then @profile.name
+        else Meteor.users.findOne(@_id)?.emails[0].address
+      return {
+        shortName: Helpers.shortName(alias)
+        firstName: Helpers.firstName(alias)
+      }
+    avatarUrl: -> if @profile and @profile.image then AvatarImages.findOne(@profile.image)?.url() else undefined
 
-  hasUnreadMessage: ->
-    return '' if @user is Meteor.userId()
-    result = Schema.messages.findOne { $and: [{sender: @user}, {reads: {$ne: Meteor.userId()}}] }
-    if result then 'active' else ''
+    hasUnreadMessage: ->
+      return '' if @user is Meteor.userId()
+      result = Schema.messages.findOne { $and: [{sender: @user}, {reads: {$ne: Meteor.userId()}}] }
+      if result then 'active' else ''

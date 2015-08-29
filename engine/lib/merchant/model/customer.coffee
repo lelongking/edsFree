@@ -44,6 +44,8 @@ simpleSchema.customers = new SimpleSchema
 
 Schema.add 'customers', "Customer", class Customer
   @transform: (doc) ->
+    doc.hasAvatar = -> if doc.avatar then '' else 'missing'
+    doc.avatarUrl = -> if doc.avatar then AvatarImages.findOne(doc.avatar)?.url() else undefined
     doc.orderWaitingCount = -> if @orderWaiting then @orderWaiting.length else 0
     doc.orderFailureCount = -> if @orderFailure then @orderFailure.length else 0
     doc.orderSuccessCount = -> if @orderSuccess then @orderSuccess.length else 0

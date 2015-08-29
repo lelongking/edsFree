@@ -24,7 +24,9 @@ simpleSchema.providers = new SimpleSchema
 
 Schema.add 'providers', "Provider", class Provider
   @transform: (doc) ->
-    doc.remove = -> Schema.providers.remove(@_id) if @allowDelete
+    doc.hasAvatar = -> if doc.avatar then '' else 'missing'
+    doc.avatarUrl = -> if doc.avatar then AvatarImages.findOne(doc.avatar)?.url() else undefined
+    doc.remove    = -> Schema.providers.remove(@_id) if @allowDelete
 
   @insert: (name, description, callback) ->
     Schema.providers.insert({name: name, description: description}, callback)

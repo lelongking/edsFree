@@ -17,8 +17,8 @@ template(name="providerManagement")
           .list
             each providerLists
               .doc-item(class="{{activeClass 'providerManagementCurrentProvider'}}")
-                .avatar-wrapper: .avatar-image(class="missing"
-                style="background-image:url('')") {{aliasLetter firstName}}
+                .avatar-wrapper: .avatar-image(class="{{hasAvatar}}"
+                style="background-image:url('{{avatarUrl}}')") {{aliasLetter firstName}}
                 .doc-info
                   .title {{name}}
                   //.sub-title {{description}}
