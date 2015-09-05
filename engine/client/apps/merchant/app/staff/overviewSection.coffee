@@ -2,6 +2,11 @@ scope = logics.staffManagement
 
 lemon.defineHyper Template.staffManagementOverviewSection,
   helpers:
+    genderSelectOptions: -> scope.genderSelectOptions
+    roleSelectOptions: -> scope.roleSelectOptions
+    customerGroupSelects: -> scope.customerGroupSelects
+
+
     userName: -> @emails?[0]?.address ? 'chưa tạo tài khoản đăng nhập.'
     genderName: -> if @profile?.gender then 'Nam' else 'Nữ'
     avatarUrl: -> if @profile and @profile.image then AvatarImages.findOne(@profile.image)?.url() else undefined
@@ -11,20 +16,17 @@ lemon.defineHyper Template.staffManagementOverviewSection,
       ,50 if scope.overviewTemplateInstance
       @profile?.name
 
-    genderSelectOptions: -> scope.genderSelectOptions
-    roleSelectOptions: -> scope.roleSelectOptions
-    customerGroupSelects: -> scope.customerGroupSelects
 
   rendered: ->
     scope.overviewTemplateInstance = @
     @ui.$staffName.autosizeInput({space: 10})
-    $(".roleSelect").select2("readonly", Template.currentData().creator is undefined)
-    $(".changeCustomer").select2("readonly", Template.currentData().creator is undefined)
+    if Template.currentData().creator
+      $(".roleSelect").select2("readonly", Template.currentData().creator is undefined)
+      $(".changeCustomer").select2("readonly", Template.currentData().creator is undefined)
+
 
   events:
-    "click .avatar": (event, template) ->
-      if User.hasAdminRoles()
-        template.find('.avatarFile').click()
+    "click .avatar": (event, template) -> template.find('.avatarFile').click() if User.hasAdminRoles()
     "change .avatarFile": (event, template) ->
       if User.hasAdminRoles()
         files = event.target.files
@@ -47,11 +49,12 @@ lemon.defineHyper Template.staffManagementOverviewSection,
 
     "click .syncStaffEdit": (event, template) -> scope.editStaff(template)
 
+    #delete staff
     "click .staffDelete": (event, template) ->
       if staff = Session.get("staffManagementCurrentStaff")
         if staff.allowDelete and staff._id isnt Session.get('myProfile')._id
-          Schema.userProfiles.remove staff._id
-          UserSession.set('currentStaffManagementSelection', Schema.userProfiles.findOne()?._id ? '')
+          if Meteor.users.remove(staff._id)
+            Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentStaff': Meteor.users.findOne()?._id ? ''}})
 
     "click .addCustomerToStaff": (event, template)->
       if Session.get('showCustomerListNotOfStaff')

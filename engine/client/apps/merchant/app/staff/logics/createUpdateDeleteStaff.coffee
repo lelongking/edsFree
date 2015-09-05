@@ -1,16 +1,3 @@
-splitName = (fullText) ->
-  if fullText.indexOf("(") > 0
-    namePart    = fullText.substr(0, fullText.indexOf("(")).trim()
-    genderPart  = fullText.substr(fullText.indexOf("(")).replace("(", "").replace(")", "").trim()
-    if genderPart.length > 0 then genderPart  = (Helpers.RemoveVnSigns genderPart).toLowerCase()
-
-    option = { fullName: namePart }
-    option.gender = if genderPart is 'nu' then false else true
-
-    return option
-  else
-    return { fullName: fullText }
-
 Apps.Merchant.staffManagementInit.push (scope) ->
   scope.createStaff = (template) ->
     fullText    = Session.get("staffManagementSearchFilter")
@@ -58,3 +45,16 @@ Apps.Merchant.staffManagementInit.push (scope) ->
           $("[name='email']").notify("Email đã tồn tại.", {position: "bottom"})
         else
           Meteor.call "updateEmailStaff", email, password, staffProfile._id
+
+splitName = (fullText) ->
+  if fullText.indexOf("(") > 0
+    namePart    = fullText.substr(0, fullText.indexOf("(")).trim()
+    genderPart  = fullText.substr(fullText.indexOf("(")).replace("(", "").replace(")", "").trim()
+    if genderPart.length > 0 then genderPart  = (Helpers.RemoveVnSigns genderPart).toLowerCase()
+
+    option = { fullName: namePart }
+    option.gender = if genderPart is 'nu' then false else true
+
+    return option
+  else
+    return { fullName: fullText }

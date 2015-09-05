@@ -36,18 +36,15 @@ Apps.Merchant.warehouseInit.push (scope) ->
     productCount = findProductTrade.count(); totalCostPrice = 0; totalRevenue = 0
     lists = findProductNotTrade.map(
       (product) ->
-        productCount += 1
-        product.count = productCount
+        productCount += 1; product.count = productCount; basicUnitId = product.basicUnit()
+        costPrice = product.qualities[0].inStockQuality * product.getPrice(basicUnitId, undefined, 'import')
+        revenue   = product.qualities[0].inStockQuality * product.getPrice(basicUnitId)
 
-        costPrice = 0
-        revenue = 0
-        for unit in product.units
-          costPrice += unit.quality.inStockQuality/unit.conversion * product.getPrice(unit._id, undefined, 'import')
-          revenue += unit.quality.inStockQuality/unit.conversion * product.getPrice(unit._id)
-        totalCostPrice += costPrice
-        totalRevenue   +=  revenue
-        product.costPrice = costPrice
-        product.revenue   = revenue
+        product.costPrice = costPrice ? 0
+        product.revenue   = revenue ? 0
+        totalCostPrice += product.costPrice
+        totalRevenue   += product.revenue
+
         product
     )
     return {
@@ -60,18 +57,15 @@ Apps.Merchant.warehouseInit.push (scope) ->
     productCount = count; totalCostPrice = 0; totalRevenue = 0
     lists = findProductTrade.map(
       (product) ->
-        productCount += 1
-        product.count = productCount
+        productCount += 1; product.count = productCount; basicUnitId = product.basicUnit()
+        costPrice = product.qualities[0].inStockQuality * product.getPrice(basicUnitId, undefined, 'import')
+        revenue   = product.qualities[0].inStockQuality * product.getPrice(basicUnitId)
 
-        costPrice = 0
-        revenue = 0
-        for unit in product.units
-          costPrice += unit.quality.inStockQuality/unit.conversion * product.getPrice(unit._id, undefined, 'import')
-          revenue += unit.quality.inStockQuality/unit.conversion * product.getPrice(unit._id)
-        totalCostPrice += costPrice
-        totalRevenue   +=  revenue
-        product.costPrice = costPrice
-        product.revenue   = revenue
+        product.costPrice = costPrice ? 0
+        product.revenue   = revenue ? 0
+        totalCostPrice += product.costPrice
+        totalRevenue   += product.revenue
+
         product
     )
     return {

@@ -25,6 +25,7 @@ lemon.defineApp Template.customerManagement,
     Session.set("customerManagementSearchFilter", "")
 
   events:
+    # search customer and create customer if not search found
     "keyup input[name='searchFilter']": (event, template) ->
       Helpers.deferredAction ->
         searchFilter  = template.ui.$searchFilter.val()
@@ -37,7 +38,7 @@ lemon.defineApp Template.customerManagement,
         else
           if User.hasManagerRoles()
             scope.createNewCustomer(template, customerSearch) if event.which is 13
-            scope.customerManagementCreationMode(customerSearch)
+            setTimeout (-> scope.customerManagementCreationMode(customerSearch); return), 300
           else
             Session.set("customerManagementCreationMode", false)
 

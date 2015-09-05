@@ -5,6 +5,6 @@ Meteor.methods
       gender    : true
       name      : email
       merchant  : Merchant.getId()
-      roles     : Enums.getValue('PermissionType', 'seller')
+      roles     : Enums.getObject('PermissionType').seller.value
     }
     userId = Accounts.createUser {email: email, password: password, profile: profile}

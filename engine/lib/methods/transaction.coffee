@@ -85,6 +85,8 @@ Meteor.methods
         )
 
         if Schema.transactions.remove transaction._id
+          updateAllowDelete = {allowDelete: false}
+          updateAllowDelete.allowDelete = true if Schema.transactions.find({owner: transaction.owner}).count() is 0
           if transaction.transactionType is Enums.getValue('TransactionTypes', 'provider')
             if transaction.isBeginCash #no ton day ky
               updateOwner =
@@ -95,7 +97,7 @@ Meteor.methods
                 paidCash   : -transaction.paidBalanceChange
                 loanCash   : -transaction.debtBalanceChange
                 totalCash  : transaction.paidBalanceChange - transaction.debtBalanceChange
-            Schema.providers.update transaction.owner, $inc: updateOwner
+            Schema.providers.update(transaction.owner, {$inc: updateOwner, $set: updateAllowDelete})
 
           else if transaction.transactionType is Enums.getValue('TransactionTypes', 'customer')
             if transaction.isBeginCash #no ton day ky
@@ -107,7 +109,7 @@ Meteor.methods
                 paidCash   : -transaction.paidBalanceChange
                 loanCash   : -transaction.debtBalanceChange
                 totalCash  : transaction.paidBalanceChange - transaction.debtBalanceChange
+            Schema.customers.update(transaction.owner, {$inc: updateOwner, $set: updateAllowDelete})
 
-            Schema.customers.update transaction.owner, $inc: updateOwner
             if customer = Schema.customers.findOne(transaction.owner)
               Schema.customerGroups.update customer.group, $inc:{totalCash: updateOwner.totalCash} if customer.group

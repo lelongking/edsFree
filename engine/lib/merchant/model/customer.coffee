@@ -55,9 +55,15 @@ Schema.add 'customers', "Customer", class Customer
       else 0
 
     doc.remove = ->
-      (if Schema.customers.remove(@_id)
-        totalCash = @debtCash + @loanCash
-        Schema.customerGroups.update @group, {$pull: {customers: @_id }, $inc:{totalCash: -totalCash}} if @group) if @allowDelete
+      if @allowDelete and Schema.customers.remove(@_id)
+        randomGetCustomerId = Schema.customers.findOne()?._id ? ''
+        Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentCustomer': randomGetCustomerId}})
+
+        #update customer group
+        if @group
+          totalCash = @debtCash + @loanCash
+          Schema.customerGroups.update(@group, {$pull: {customers: @_id }, $inc:{totalCash: -totalCash}})
+
 
     doc.calculateBalance = ->
       customerUpdate = {paidCash: 0, returnCash: 0, totalCash: 0, loanCash: 0, beginCash: 0, debtCash: 0}

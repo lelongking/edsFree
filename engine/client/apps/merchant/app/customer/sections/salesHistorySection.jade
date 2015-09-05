@@ -43,7 +43,8 @@ template(name="customerManagementSalesHistorySection")
               td.has-commands(style="border-left: solid 2px #d35400;")
                 .bill-header {{description}}
                 if isManager
-                  .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
+                  if isDelete
+                    .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
               td.number(colspan="2")
               td.number(style="color: #666;")
                 if showBeforeDebtBalance

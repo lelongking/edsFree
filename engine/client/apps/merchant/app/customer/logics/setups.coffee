@@ -2,10 +2,13 @@ Enums = Apps.Merchant.Enums
 Apps.Merchant.customerManagementInit.push (scope) ->
 #-------------------Edit Customer-----------------------
   scope.customerManagementCreationMode = (customerSearch)->
-    if Session.get("customerManagementSearchFilter").length > 0
-      if scope.customerLists.length is 0 then nameIsExisted = true
-      else if scope.customerLists.length is 1
-        nameIsExisted = scope.customerLists[0].name isnt Session.get("customerManagementSearchFilter")
+    textSearch = Session.get("customerManagementSearchFilter")
+    if textSearch.length > 0
+      if scope.customerLists.length is 0
+        nameIsExisted = true
+      else
+        nameIsExisted = scope.customerLists[0].name.toLowerCase() isnt textSearch.toLowerCase()
+      console.log nameIsExisted
     Session.set("customerManagementCreationMode", nameIsExisted)
 
   scope.createNewCustomer = (template, customerSearch) ->

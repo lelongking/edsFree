@@ -37,6 +37,7 @@ Apps.Merchant.staffManagementInit.push (scope) ->
       return false
     reactiveValueGetter: -> Session.get('staffManagementResetCustomerSelect')
 
+
   scope.roleSelectOptions =
     query: (query) -> query.callback
       results: Enums.PermissionType
@@ -48,6 +49,7 @@ Apps.Merchant.staffManagementInit.push (scope) ->
     minimumResultsForSearch: -1
     changeAction: (e) -> Meteor.users.update(Session.get("staffManagementCurrentStaff")._id, $set:{'profile.roles': e.added.value})
     reactiveValueGetter: -> findPermissionType(Session.get('staffManagementCurrentStaff')?.profile.roles)
+
 
   scope.genderSelectOptions =
     query: (query) -> query.callback

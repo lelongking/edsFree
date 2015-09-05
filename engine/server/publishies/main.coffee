@@ -98,6 +98,8 @@ Meteor.publish null, ->
   collections.push Schema.imports.find()
   collections.push Schema.priceBooks.find()
   collections.push Schema.transactions.find()
-  collections.push Meteor.users.find({'profile.merchant': merchantId}, {fields: {emails:1, profile: 1, sessions: 1, creator: 1, status: 1} })
+  collections.push Meteor.users.find({'profile.merchant': merchantId}, {fields: {
+    emails:1, profile: 1, sessions: 1, creator: 1, status: 1, allowDelete : 1
+  } })
 
   return collections

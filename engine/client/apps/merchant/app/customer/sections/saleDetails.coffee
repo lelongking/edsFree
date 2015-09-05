@@ -1,5 +1,6 @@
 lemon.defineWidget Template.customerManagementSaleDetails,
   helpers:
+    isDelete: -> moment(@version.createdAt).diff(new Date(), 'days') < 1
     allowDelete: -> @_id isnt Template.parentData().transaction
     billNo: ->
       if @model is 'orders'

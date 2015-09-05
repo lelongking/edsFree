@@ -3,6 +3,10 @@ numericOption = {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: "
 
 lemon.defineHyper Template.customerManagementSalesHistorySection,
   helpers:
+    isDelete: ->
+      console.log @version.createdAt, moment(@version.createdAt).diff(new Date(), 'days')
+      console.log moment(@version.createdAt).diff(new Date(), 'days') is 0
+      moment(@version.createdAt).diff(new Date(), 'days') is 0
     allSales: -> logics.customerManagement.findAllOrders()
     oldDebts: -> logics.customerManagement.findOldDebtCustomer()
     hasOldDebts: -> logics.customerManagement.findOldDebtCustomer().length > 0
@@ -20,6 +24,8 @@ lemon.defineHyper Template.customerManagementSalesHistorySection,
     transactionDescription: -> if Session.get("customerManagementOldDebt") then 'ghi chú nợ tiền' else 'ghi chú trả tiền'
     transactionStatus: -> if Session.get("customerManagementOldDebt") then 'Nợ Tiền' else 'Trả Tiền'
     showTransaction: -> if Session.get("customerManagementOldDebt") is undefined then 'display: none'
+
+
 
   rendered: ->
     Session.get("customerManagementOldDebt")

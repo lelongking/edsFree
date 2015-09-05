@@ -1,0 +1,114 @@
+template(name="about")
+  #about
+    // Navigation
+    nav.navbar.navbar-default.navbar-fixed-top.topnav(role='navigation')
+      .container.topnav
+        // Brand and toggle get grouped for better mobile display
+        .navbar-login
+          if authenticated
+            .login-section.animated.fadeInDown
+              #gotoMerchantButton.btn.icon-shop
+              #logoutButton.btn.icon-power.background-pumpkin
+          else
+            .login-section
+              input.login-field#authAlias(type="text" placeholder="{{i18n 'form.userAccount'}}" maxlength="50" tabindex="1")
+              input.login-field#authSecret(type="password" placeholder="{{i18n 'form.password'}}" maxlength="30" tabindex="2")
+              #authButton.btn(class="{{sessionGet 'loginValid'}}" tabindex="3") ĐĂNG NHẬP
+
+        .navbar-header
+          button.navbar-toggle(type='button', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          //a.navbar-brand.topnav(href='#') Start Bootstrap
+
+
+
+        // Collect the nav links, forms, and other content for toggling
+        #bs-example-navbar-collapse-1.collapse.navbar-collapse
+          ul.nav.navbar-nav.navbar-right
+            li: a(href='#home') Giới Thiệu
+            li: a(href='#product') Sản Phẩm
+            li: a(href='#contact') Liên Hệ
+
+
+    // Header
+    a#home
+    .intro-header
+      .container
+        .row
+          .col-lg-12
+            .intro-message
+              h1 ASIA PACIFIC
+              h3 Công Ty Cổ Phần Châu Á Thái Bình Dương
+              hr.intro-divider
+              ul.list-inline.intro-social-buttons
+                li: img.img-responsive(src='images/about/logo.png', alt='' style="width: 300px;")
+
+
+    // Page Content
+    a#product
+    .content-section-a
+      .container
+        .row
+          .col-lg-5.col-sm-6
+            hr.section-heading-spacer
+            .clearfix
+            h2.section-heading
+              | Đội ngũ nhân viên
+              br
+              | Năng Động & Chuyên Nghiệp
+            p.lead
+              | Công ty CP Châu Á Thái Bình Dương tự hào với đội ngũ nhân viên trẻ trung, năng động,
+              |tận tâm với công việc và luôn nỗ lực không ngừng để đem đến những giá trị tốt nhất cho khách hàng.
+              //a(target='_blank', href='http://join.deathtothestockphoto.com/') Death to the Stock Photo
+              //|  for providing the photographs that you see in this template. Visit their website to become a member.
+          .col-lg-5.col-lg-offset-2.col-sm-6
+            img.img-responsive(src='images/about/staff.png', alt='')
+
+    .content-section-b
+      .container
+        .row
+          .col-lg-5.col-lg-offset-1.col-sm-push-6.col-sm-6
+            hr.section-heading-spacer
+            .clearfix
+            h2.section-heading
+              | Sản phẩm đa dạng với chất lượng cao
+            p.lead
+              | Tôn chỉ hoạt động của Công ty CP Châu Á Thái Bình Dương là cung cấp những sản phẩm, dịch vụ có chất lượng cao
+              | để mang lại giá trị tối ưu nhất cho bà con nông dân.
+
+          .col-lg-5.col-sm-pull-6.col-sm-6
+            img.img-responsive(src='images/about/product02.png', alt='' style="width: 350px;")
+
+    .content-section-a
+      .container
+        .row
+          .col-lg-5.col-sm-6
+            hr.section-heading-spacer
+            .clearfix
+            h2.section-heading
+              | Vụ mùa bội thu
+            p.lead
+              | Luôn sát cánh để hổ trợ cho bà con nông dân yên tâm sản xuất, thu về những mùa vụ bội thu.
+          .col-lg-5.col-lg-offset-2.col-sm-6
+            img.img-responsive(src='images/about/product01.png', alt='')
+
+    a#contact
+    .banner
+      .container
+        .row
+          .col-lg-6
+            h4 60 Trần Đại Nghĩa, Ninh Kiều, Cần Thơ.
+            h4 ĐT : 08 6295 9999
+            h4 Fax: 08 6294 9999
+
+
+    // Footer
+    footer
+      .container
+        .row
+          .col-lg-12
+            p.copyright.text-muted.small Được thiết kế bởi Công Ty Công Nghệ Thiên Ban
+
