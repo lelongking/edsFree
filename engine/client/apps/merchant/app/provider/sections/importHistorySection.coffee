@@ -10,6 +10,8 @@ lemon.defineHyper Template.providerManagementImportsHistorySection,
     oldDebts: -> scope.findOldDebt()
     hasOldDebts: -> scope.findOldDebt().length > 0
 
+    isDelete: -> moment().diff(@version.createdAt ? new Date(), 'days') < 1
+
     totalDebtCash: ->
       if provider = Session.get('providerManagementCurrentProvider')
         provider.debtCash + provider.loanCash

@@ -103,11 +103,15 @@ simpleSchema.orders = new SimpleSchema
 #------------ Method Order ------------
 Schema.add 'orders', "Order", class Order
   @transform: (doc) ->
-    doc.remove = -> Schema.orders.remove @_id if @allowDelete
+    doc.remove = ->
+      Schema.orders.remove @_id if @allowDelete
 
-    doc.changeDueDay = (dueDay, callback)-> Schema.orders.update @_id, $set:{dueDay: Math.abs(Number(dueDay))}, callback
+    doc.changeDueDay = (dueDay, callback)->
+      return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
+      Schema.orders.update @_id, $set:{dueDay: Math.abs(Number(dueDay))}, callback
 
     doc.changeBuyer = (customerId, callback)->
+      return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
       customer = Schema.customers.findOne(customerId)
       if customer
         totalPrice = 0; discountCash = 0
@@ -125,15 +129,17 @@ Schema.add 'orders', "Order", class Order
         predicate.$set.finalPrice   = totalPrice - discountCash
         Schema.orders.update @_id, predicate, callback
 
-    doc.changePaymentsDelivery = (paymentsDeliveryId, callback)->
+    doc.changePaymentsDelivery = (paymentsDeliveryId)->
+      return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
       option = $set:{
         'paymentsDelivery': paymentsDeliveryId
         'delivery.status' : paymentsDeliveryId
         'delivery.shipper': @creator
       }
-      Schema.orders.update @_id, option, callback
+      Schema.orders.update @_id, option
 
-    doc.changePaymentMethod = (paymentMethodId, callback)->
+    doc.changePaymentMethod = (paymentMethodId)->
+      return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
       option = $set:{'paymentMethod': paymentMethodId}
       option.$set['depositCash'] =
         if option.$set['paymentMethod'] is 0 then @finalPrice
@@ -141,17 +147,20 @@ Schema.add 'orders', "Order", class Order
       Schema.orders.update @_id, option, callback
 
     doc.changeDepositCash = (depositCash, callback) ->
+      return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
       option = $set:{'depositCash': Math.abs(depositCash)}
       option.$set.paymentMethod = if option.$set.depositCash > 0 then 0 else 1
-      Schema.orders.update @_id, option, callback
+      Schema.orders.update @_id, option
 
-    doc.changeDiscountCash = (discountCash, callback) ->
+    doc.changeDiscountCash = (discountCash) ->
+      return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
       discountCash = if Math.abs(discountCash) > @totalPrice then @totalPrice else Math.abs(discountCash)
       Schema.orders.update @_id, $set:{discountCash: discountCash, finalPrice: (@totalPrice - discountCash)}, callback
 
     doc.changeDescription = (description, callback)->
+      return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
       option = $set:{'description': description}
-      Schema.orders.update @_id, option, callback
+      Schema.orders.update @_id, option
 
     doc.recalculatePrices = (newId, newQuality, newPrice) ->
       totalPrice = 0
@@ -165,7 +174,9 @@ Schema.add 'orders', "Order", class Order
       finalPrice: totalPrice - @discountCash
 
 
-    doc.addDetail = (productUnitId, quality = 1, callback) ->
+    doc.addDetail = (productUnitId, quality = 1) ->
+      return console.log('Order da xac nhan') unless _.contains(statusCantEdit,doc.orderStatus)
+
       product = Schema.products.findOne({'units._id': productUnitId})
       return console.log('Khong tim thay Product') if !product
 
@@ -189,7 +200,7 @@ Schema.add 'orders', "Order", class Order
         updateQuery.$inc["details.#{detailIndex}.basicQuality"] = basicQuality
         updateQuery.$inc["details.#{detailIndex}.basicQualityAvailable"]   = basicQuality
         updateQuery.$inc["details.#{detailIndex}.basicImportQualityDebit"] = basicQuality
-        recalculationOrder(@_id) if Schema.orders.update(@_id, updateQuery, callback)
+        recalculationOrder(@_id) if Schema.orders.update(@_id, updateQuery)
 
       else
         detailFindQuery.importIsValid         = false
@@ -202,9 +213,11 @@ Schema.add 'orders', "Order", class Order
         detailFindQuery.basicImportQuality       = 0
         detailFindQuery.basicImportQualityDebit  = basicQuality
         detailFindQuery.basicImportQualityReturn = 0
-        recalculationOrder(@_id) if Schema.orders.update(@_id, { $push: {details: detailFindQuery} }, callback)
+        recalculationOrder(@_id) if Schema.orders.update(@_id, { $push: {details: detailFindQuery} })
 
     doc.editDetail = (detailId, quality, discountCash, price, callback) ->
+      return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
+
       for instance, i in @details
         if instance._id is detailId
           updateIndex = i
@@ -226,6 +239,7 @@ Schema.add 'orders', "Order", class Order
         recalculationOrder(@_id) if Schema.orders.update(@_id, predicate, callback)
 
     doc.removeDetail = (detailId, callback) ->
+      return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
       return console.log('Order không tồn tại.') if (!self = Schema.orders.findOne doc._id)
       return console.log('OrderDetail không tồn tại.') if (!detailFound = _.findWhere(self.details, {_id: detailId}))
       detailIndex = _.indexOf(self.details, detailFound)
@@ -234,6 +248,7 @@ Schema.add 'orders', "Order", class Order
       recalculationOrder(self._id) if Schema.orders.update(self._id, removeDetailQuery, callback)
 
     doc.orderConfirm = ->
+      return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
       return console.log('customer not found') unless @buyer
       orderId = @_id
       for detail in @details
@@ -329,3 +344,8 @@ recalculationOrder = (orderId) ->
       discountCash  : discountCash
       finalPrice    : totalPrice - discountCash
     }
+
+statusCantEdit = [
+  Enums.getValue('OrderStatus', 'initialize')
+  Enums.getValue('OrderStatus', 'sellerConfirm')
+]

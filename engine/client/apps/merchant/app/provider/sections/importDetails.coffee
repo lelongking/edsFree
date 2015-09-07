@@ -1,5 +1,6 @@
 lemon.defineWidget Template.providerManagementImportDetails,
   helpers:
+    isDelete: -> moment().diff(@version.createdAt ? new Date(), 'days') < 1
     isColor: -> '#fff'
 #      if Template.parentData().classColor then '#fff' else '#f0f0f0'
     allowDelete: -> @_id isnt Template.parentData().transaction

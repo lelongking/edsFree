@@ -44,7 +44,8 @@ template(name="providerManagementImportDetails")
         span {{description}}
         if allowDelete
           if isManager
-            .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
+            if isDelete
+              .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
       td.number(colspan="2")
       td.number.border-top(style="color: #666;")
         if showBeforeDebtBalance

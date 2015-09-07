@@ -54,6 +54,7 @@ simpleSchema.imports = new SimpleSchema
 Schema.add 'imports', "Import", class Import
   @transform: (doc) ->
     doc.changeField = (field = undefined, value = undefined)->
+      return console.log('Import da xac nhan') unless _.contains(typesCantEdit, doc.importType)
       if field isnt undefined and value isnt undefined
         optionUpdate = $set: {}
 
@@ -90,6 +91,8 @@ Schema.add 'imports', "Import", class Import
         Schema.imports.update(@_id, optionUpdate) if _.keys(optionUpdate.$set).length > 0
 
     doc.addImportDetail = (productUnitId, quality = 1, expireDay = undefined, note = undefined, callback) ->
+      return console.log('Import da xac nhan') unless _.contains(typesCantEdit, doc.importType)
+
       product = Schema.products.findOne({'units._id': productUnitId})
       return console.log('Khong tim thay Product') if !product
 
@@ -132,6 +135,8 @@ Schema.add 'imports', "Import", class Import
 
 
     doc.editImportDetail = (detailId, quality, expire, discountCash, price, callback) ->
+      return console.log('Import da xac nhan') unless _.contains(typesCantEdit, doc.importType)
+
       for instance, i in @details
         if instance._id is detailId
           updateIndex = i
@@ -154,14 +159,18 @@ Schema.add 'imports', "Import", class Import
         recalculationImport(@_id) if Schema.imports.update(@_id, predicate, callback)
 
     doc.removeImportDetail = (detailId, callback) ->
+      return console.log('Import da xac nhan') unless _.contains(typesCantEdit, doc.importType)
       return console.log('Import không tồn tại.') if (!self = Schema.imports.findOne doc._id)
       return console.log('ImportDetail không tồn tại.') if (!detailFound = _.findWhere(self.details, {_id: detailId}))
+
       detailIndex = _.indexOf(self.details, detailFound)
       removeDetailQuery = { $pull:{} }
       removeDetailQuery.$pull.details = self.details[detailIndex]
       recalculationImport(@_id) if Schema.imports.update(@_id, removeDetailQuery, callback)
 
     doc.importSubmit = ->
+      return console.log('Import da xac nhan') unless _.contains(typesCantEdit, doc.importType)
+
       importQuery =
         _id        : doc._id
         creator    : Meteor.userId()
@@ -169,7 +178,8 @@ Schema.add 'imports', "Import", class Import
         importType : Enums.getValue('ImportTypes', 'initialize')
       self = Schema.imports.findOne importQuery
       return console.log('Import không tồn tại.') if !self
-      #      return console.log('Import đã Submit') if self.orderType isnt Enum.orderType.created
+      return console.log('Import rong.') if self.details.length is 0
+      return console.log('Provider không tồn tại.') if !Schema.providers.findOne(self.provider)
 
       for detail, detailIndex in self.details
         product = Schema.products.findOne({'units._id': detail.productUnit})
@@ -218,3 +228,7 @@ recalculationImport = (orderId) ->
       discountCash: discountCash
       finalPrice  : totalPrice - discountCash
     }
+
+typesCantEdit = [
+  Enums.getValue('ImportTypes', 'initialize')
+]
