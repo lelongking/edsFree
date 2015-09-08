@@ -22,7 +22,9 @@ lemon.defineApp Template.customerReturn,
       else
         return 'disabled'
 
-    availableQuality: -> @basicQualityAvailable/@conversion
+    availableQuality: ->
+      console.log @
+      @basicQualityAvailable/@conversion
 
   created: ->
     CustomerSearch.search('')

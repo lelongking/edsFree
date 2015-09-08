@@ -9,78 +9,28 @@ lemon.defineHyper Template.priceBookDetailDefault,
       return true if bookType is 'provider' and (priceType is 3 or priceType is 4)
 
     allProductUnits: ->
-      productLists = []; priceBook = Session.get("currentPriceBook")
-      for product in Schema.products.find({'units.priceBooks.priceBook': priceBook._id}, {sort: {name: 1}}).fetch()
-        for unit in product.units
-          for item in unit.priceBooks
-            unit.productName     = product.name
-            unit.productUnitName = unit.name
-            unit.priceBookType   = priceBook.priceBookType
-            unit.conversion      = unit.conversion
+      productLists = []; priceBook = @;
+      lists = Schema.products.find(
+        {_id: {$in: priceBook.products} ,'priceBooks._id': priceBook._id}
+        {sort: {name: 1}}
+      ).fetch()
 
-            if item.priceBook is Session.get('currentPriceBook')._id
-              unit.salePrice        = item.salePrice
-              unit.basicSalePrice   = item.salePrice
-              unit.importPrice      = item.importPrice
-              unit.basicImportPrice = item.importPrice
-              break
-          productLists.push(unit)
-      scope.allProductUnits = productLists
-      return productLists
+      for product in lists
+        priceBook = _.findWhere(product.priceBooks, {_id: priceBook._id})
+        basicUnit = _.findWhere(product.units, {isBase: true})
 
-    allProductUnits01: ->
-      productLists = []; priceBook = Session.get("currentPriceBook")
-      for product in Schema.products.find({}, {sort: {name: 1}}).fetch()
-        for unit in product.units
-          unit.productName     = product.name
-          unit.productUnitName = unit.name
-          unit.priceBookType   = priceBook.priceBookType
+        if basicUnit and priceBook
+          basicUnit.product         = product._id
+          basicUnit.productName     = product.name
+          basicUnit.productUnitName = basicUnit.name
+          basicUnit.priceBookType   = priceBook.priceBookType
 
-          for item in unit.priceBooks
-            if item.priceBook is Session.get('priceBookBasic')._id
-              unit.salePrice   = item.salePrice
-              unit.importPrice = item.importPrice
-              break
+          basicUnit.salePrice        = priceBook.salePrice
+          basicUnit.basicSalePrice   = priceBook.salePrice
+          basicUnit.importPrice      = priceBook.importPrice
+          basicUnit.basicImportPrice = priceBook.importPrice
 
-          if priceBook.priceBookType is 1 or priceBook.priceBookType is 2
-            unit.salePriceBasic = unit.salePrice
-            salePriceTemp = undefined
-            for item in unit.priceBooks
-              if priceBook._id is item.priceBook
-                salePriceTemp = item.salePrice
-                break
-            if salePriceTemp is undefined
-              if priceBook.priceBookType is 1 and priceBook.owners?[0]
-                priceBookGroup = Schema.priceBooks.findOne({
-                  productUnits  : unit._id
-                  owners        : priceBook.owners[0]
-                  priceBookType : 2
-                  merchant      : Session.get('merchant')._id})
-                if priceBookGroup and item.priceBook is priceBookGroup._id
-                  salePriceTemp   = item.salePrice
-                  break
-            unit.salePrice = salePriceTemp if salePriceTemp isnt undefined
-          else if priceBook.priceBookType is 3 or priceBook.priceBookType is 4
-            unit.importPriceBasic = unit.importPrice
-            importPriceTemp = undefined
-            for item in unit.priceBooks
-              if priceBook._id is item.priceBook
-                console.log item.importPrice
-                importPriceTemp = item.importPrice
-                break
-            if importPriceTemp is undefined and priceBook.owners?[0]
-              if priceBook.priceBookType is 1 and priceBook.owners?[0]
-                priceBookGroup = Schema.priceBooks.findOne({
-                  productUnits  : unit._id
-                  owners        : priceBook.owners[0]
-                  priceBookType : 4
-                  merchant      : Session.get('merchant')._id})
-                if priceBookGroup and item.priceBook is priceBookGroup._id
-                  importPriceTemp = item.importPrice
-                  break
-            unit.importPrice = importPriceTemp if importPriceTemp isnt undefined
-
-          productLists.push(unit)
+          productLists.push(basicUnit)
 
       scope.allProductUnits = productLists
       return productLists

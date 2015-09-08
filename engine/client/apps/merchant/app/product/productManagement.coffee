@@ -17,6 +17,9 @@ lemon.defineApp Template.productManagement,
     avatarUrl: -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined
     activeClass:-> if Session.get("productManagementCurrentProduct")?._id is @._id then 'active' else ''
 
+    productLists: ->
+
+
   events:
     "keyup input[name='searchFilter']": (event, template) ->
       searchFilter  = template.ui.$searchFilter.val()

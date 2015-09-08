@@ -74,9 +74,10 @@ lemon.defineHyper Template.priceBookDefaultRowEdit,
       importPrice = Math.abs(Helpers.Number(template.ui.$editImportQuality.inputmask('unmaskedvalue')))
       importPrice = undefined if importPrice is productUnit.importPrice
 
+      console.log productUnit
       if event.which is 13
         if salePrice isnt undefined or importPrice isnt undefined
-          scope.currentPriceBook.updateProductUnitPrice(productUnit._id, salePrice, importPrice)
+          scope.currentPriceBook.updateProductPrice(productUnit.product, salePrice, importPrice)
 #          Session.set("editingId", nextRow._id) if nextRow = scope.allProductUnits.getNextBy("_id", productUnit._id)
         Session.set("editingId")
 
@@ -97,6 +98,6 @@ lemon.defineHyper Template.priceBookCustomerRowEdit,
 
       if event.which is 13
         if salePrice isnt undefined
-          scope.currentPriceBook.updateProductUnitPrice(productUnit._id, salePrice)
+          scope.currentPriceBook.updateProductUnitPrice(productUnit.product, salePrice)
 #          Session.set("editingId", nextRow._id) if nextRow = scope.allProductUnits.getNextBy("_id", productUnit._id)
         Session.set("editingId")

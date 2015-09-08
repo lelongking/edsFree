@@ -11,12 +11,13 @@
     ]}
   productLists = []
   for product in Schema.products.find(selector, options).fetch()
+    quality = product.quantities[0].availableQuality
     for unit in product.units
       unit.unitName = unit.name
       unit.name     = product.name
       unit.avatar   = product.avatar
       unit.status   = product.status
-      unit.stock    = if product.inventoryInitial then unit.quality.availableQuality/unit.conversion else ''
+      unit.stock    = if product.inventoryInitial then Math.floor(quality/unit.conversion) else ''
       unit.inventoryInitial = product.inventoryInitial
       productLists.push(unit)
 

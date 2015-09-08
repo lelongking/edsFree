@@ -3,17 +3,12 @@ Schema.merchants.allow
   update: -> true
   remove: -> true
 
-#Schema.warehouses.allow
-#  insert: -> true
-#  update: -> true
-#  remove: -> true
-#
-#Schema.skulls.allow
-#  insert: -> true
-#  update: -> true
-#  remove: -> true
-#
 Schema.products.allow
+  insert: -> true
+  update: -> true
+  remove: -> true
+
+Schema.groups.allow
   insert: -> true
   update: -> true
   remove: -> true

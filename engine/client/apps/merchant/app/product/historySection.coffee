@@ -102,9 +102,9 @@ lemon.defineHyper Template.productManagementSalesHistorySection,
         details.push({createdAt: key, details: value}) for key, value of combined
       return details
 
-    saleQuality   : -> @qualities?[0].saleQuality ? 0
-    inStockQuality: -> @qualities?[0].inStockQuality ? 0
-    importQuality : -> @qualities?[0].importQuality ? 0
+    saleQuality   : -> @quantities?[0].saleQuality ? 0
+    inStockQuality: -> @quantities?[0].inStockQuality ? 0
+    importQuality : -> @quantities?[0].importQuality ? 0
     totalPrice: -> @price * @quality
 
     isProduct: -> @product is Session.get("productManagementCurrentProduct")._id

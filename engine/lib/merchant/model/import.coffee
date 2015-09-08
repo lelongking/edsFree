@@ -1,6 +1,4 @@
 Enums = Apps.Merchant.Enums
-
-#------------ Model Import ------------
 simpleSchema.imports = new SimpleSchema
   importName : type: String, defaultValue: 'ĐƠN HÀNG'
   importType : type: Number, defaultValue: Enums.getValue('ImportTypes', 'initialize')
@@ -230,5 +228,6 @@ recalculationImport = (orderId) ->
     }
 
 typesCantEdit = [
+  Enums.getValue('ImportTypes', 'inventory')
   Enums.getValue('ImportTypes', 'initialize')
 ]

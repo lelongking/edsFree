@@ -5,7 +5,7 @@ Enums = Apps.Merchant.Enums
   localSearch: true
 
 @ProductSearch.fetchData =(searchText, options, callback) ->
-  selector = {}; options = {sort: {nameSearch: 1}, limit: 20}
+  selector = {}; options = {sort: {nameSearch: 1}}
 
   if(searchText)
     regExp = Helpers.BuildRegExp(searchText)

@@ -4,23 +4,23 @@ AvatarImages.allow
   remove: -> true
   download: -> true
 
-CustomerImages.allow
-  insert: -> true
-  update: -> true
-  remove: -> true
-  download: -> true
-
-ProductImages.allow
-  insert: -> true
-  update: -> true
-  remove: -> true
-  download: -> true
-
-ProviderImages.allow
-  insert: -> true
-  update: -> true
-  remove: -> true
-  download: -> true
+#CustomerImages.allow
+#  insert: -> true
+#  update: -> true
+#  remove: -> true
+#  download: -> true
+#
+#ProductImages.allow
+#  insert: -> true
+#  update: -> true
+#  remove: -> true
+#  download: -> true
+#
+#ProviderImages.allow
+#  insert: -> true
+#  update: -> true
+#  remove: -> true
+#  download: -> true
 
 
 

@@ -18,6 +18,21 @@ Apps.Merchant.Enums.GenderTypes = [
   _id: true
   display: 'NAM'
 ]
+#----------Group---------->
+Apps.Merchant.Enums.GroupTypes = [
+  _id    : 0
+  value  : 'product'
+  display: 'Sản Phẩm'
+,
+  _id    : 1
+  value  : 'customer'
+  display: 'Khách Hàng'
+,
+  _id    : 2
+  value  : 'provider'
+  display: 'Nhà Cung Cấp'
+]
+
 #----------Notification---------->
 Apps.Merchant.Enums.NotificationGroups = [
   _id    : 0

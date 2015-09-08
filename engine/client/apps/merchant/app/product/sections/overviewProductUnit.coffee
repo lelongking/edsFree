@@ -24,20 +24,23 @@ lemon.defineHyper Template.overviewProductUnit,
       unitTable.push(product)
 
       for unit in scope.currentProduct.units
+        console.log unit
         productUnit =
           _id         : unit._id
+          isBase      : unit.isBase
           class       : 'unit'
           isProduct   : false
           name        : unit.name
           barcode     : unit.barcode
-          importPrice : unit.priceBooks[0].importPrice
-          saleQuality : unit.priceBooks[0].salePrice
+          importPrice : scope.currentProduct.priceBooks[0].importPrice * unit.conversion
+          saleQuality : scope.currentProduct.priceBooks[0].salePrice * unit.conversion
         unitTable.push(productUnit)
       return unitTable
 
   events:
     "click span.icon-ok-6": ->
-      Session.set('productManagementAllowAddUnit', !Session.get('productManagementAllowAddUnit')) if User.hasManagerRoles()
+      if User.hasManagerRoles()
+        Session.set('productManagementAllowAddUnit', !Session.get('productManagementAllowAddUnit'))
 
 
 lemon.defineHyper Template.productUnitTableDetail,

@@ -12,8 +12,8 @@ checkProductInStockQuality = (orderDetails)->
   if details.length > 0
     for currentDetail in details
       currentProduct = Document.Product.findOne(currentDetail.product)
-      console.log currentProduct.qualities[0].availableQuality
-      if currentProduct.qualities[0].availableQuality < currentDetail.basicQuality
+      console.log currentProduct.quantities[0].availableQuality
+      if currentProduct.quantities[0].availableQuality < currentDetail.basicQuality
         result.errorItem.push detail for detail in _.where(orderDetails, {product: currentDetail.product})
         (result.valid = false; result.message = "sản phẩm không đủ số lượng") if result.valid
   else
@@ -76,13 +76,13 @@ updateSubtractQualityInProductUnit = (product, orderDetail) ->
       updateProductQuery.$inc["units.#{index}.quality.inStockQuality"] = -orderDetail.basicQuality
       break
 
-  updateProductQuery.$inc["qualities.#{detailIndex}.saleQuality"]    = orderDetail.basicQuality
-  updateProductQuery.$inc["qualities.#{detailIndex}.inOderQuality"]  = -orderDetail.basicQuality
-  updateProductQuery.$inc["qualities.#{detailIndex}.inStockQuality"] = -orderDetail.basicQuality
+  updateProductQuery.$inc["quantities.#{detailIndex}.saleQuality"]    = orderDetail.basicQuality
+  updateProductQuery.$inc["quantities.#{detailIndex}.inOderQuality"]  = -orderDetail.basicQuality
+  updateProductQuery.$inc["quantities.#{detailIndex}.inStockQuality"] = -orderDetail.basicQuality
   if Schema.products.update(product._id, updateProductQuery)
     if product.inventoryInitial
-      inStockQuality  = product.qualities[0].inStockQuality - orderDetail.basicQuality
-      upperGapQuality = product.qualities[0].upperGapQuality
+      inStockQuality  = product.quantities[0].inStockQuality - orderDetail.basicQuality
+      upperGapQuality = product.quantities[0].upperGapQuality
       optionQuality =
         notificationType: 'notify'
         product         : product._id
@@ -238,13 +238,17 @@ Meteor.methods
     orderFound = Schema.orders.findOne orderQuery
     return {valid: false, error: 'order not found!'} if !orderFound
 
-    for detail in orderFound.details
-      if product = Schema.products.findOne(detail.product)
-        for unit in product.units
-          if unit._id is detail.productUnit
-            crossAvailable = (unit.quality.availableQuality - detail.basicQuality)/unit.conversion
-            if product.inventoryInitial and crossAvailable < 0
-              return {valid: false, error: 'san pham khong du!'}
+    for productId, details of _.groupBy(orderFound.details, (item) -> item.product)
+      if product = Schema.products.findOne(productId)
+        availableQuality = product.quantities[0].availableQuality ? 0
+
+        for item in details
+          saleQuality  = 0 unless saleQuality
+          saleQuality += item.basicQuality
+
+        if product.inventoryInitial and (availableQuality - saleQuality) < 0
+          return {valid: false, error: 'san pham khong du!'}
+
       else
         return {valid: false, error: 'khong tim thay product!'}
 
@@ -290,8 +294,8 @@ Meteor.methods
           updateQuery.$inc["units.#{index}.quality.availableQuality"] = -detail.basicQuality
           break
 
-      updateQuery.$inc["qualities.#{detailIndex}.inOderQuality"]    = detail.basicQuality
-      updateQuery.$inc["qualities.#{detailIndex}.availableQuality"] = -detail.basicQuality
+      updateQuery.$inc["quantities.#{detailIndex}.inOderQuality"]    = detail.basicQuality
+      updateQuery.$inc["quantities.#{detailIndex}.availableQuality"] = -detail.basicQuality
       Schema.products.update detail.product, updateQuery
 
     orderUpdate = $set:
@@ -368,8 +372,8 @@ Meteor.methods
           updateQuery.$inc["units.#{index}.quality.availableQuality"] = detail.basicQuality
           break
 
-      updateQuery.$inc["qualities.0.inOderQuality"]    = -detail.basicQuality
-      updateQuery.$inc["qualities.0.availableQuality"] = detail.basicQuality
+      updateQuery.$inc["quantities.0.inOderQuality"]    = -detail.basicQuality
+      updateQuery.$inc["quantities.0.availableQuality"] = detail.basicQuality
       Schema.products.update detail.product, updateQuery
 
     orderUpdate = $set:
@@ -416,6 +420,7 @@ Meteor.methods
         transaction : transactionId
         successDate : new Date()
         orderCode   :"#{Helpers.orderCodeCreate(customerFound.billNo)}/#{Helpers.orderCodeCreate(merchantFound.saleBill)}"
+
       if Schema.orders.update(orderFound._id, updateOrderQuery)
         buyer = Schema.customers.findOne(orderFound.buyer)
         optionNewOrder =
@@ -426,8 +431,9 @@ Meteor.methods
           message         : "Nhân viên #{user.profile.name} xác nhận hoàn thành phiếu của khách hàng #{buyer.name}"
           reads           : [Meteor.userId()]
         Schema.notifications.insert(optionNewOrder)
-      Schema.customers.update customerFound._id, {$inc: {billNo: 1},$addToSet:{orderSuccess: orderFound._id}, $pull: {orderWaiting: orderFound._id}}
-      Schema.merchants.update(merchantFound._id, $inc:{saleBill: 1})
+
+        Schema.customers.update customerFound._id, {$inc: {billNo: 1},$addToSet:{orderSuccess: orderFound._id}, $pull: {orderWaiting: orderFound._id}}
+        Schema.merchants.update(merchantFound._id, $inc:{saleBill: 1})
 
 
     else

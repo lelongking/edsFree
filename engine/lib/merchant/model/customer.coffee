@@ -1,15 +1,28 @@
 Enums = Apps.Merchant.Enums
 simpleSchema.customers = new SimpleSchema
   name        : simpleSchema.StringUniqueIndex
-  nameSearch  : simpleSchema.searchSource('name')
   description : simpleSchema.OptionalString
   group       : simpleSchema.OptionalString
   staff       : simpleSchema.OptionalString
   billNo      : type: Number, defaultValue: 0
+  saleBillNo        : type: Number, defaultValue: 0 #số phiếu bán
+  importBillNo      : type: Number, defaultValue: 0 #số phiếu nhap
+  returnBillNo      : type: Number, defaultValue: 0 #số phiếu tra hang
+  transactionBillNo : type: Number, defaultValue: 0 #số phiếu thu chi
+
+
+  nameSearch  : simpleSchema.searchSource('name')
+  merchant    : simpleSchema.DefaultMerchant
+  avatar      : simpleSchema.OptionalString
+  allowDelete : simpleSchema.DefaultBoolean()
+  creator     : simpleSchema.DefaultCreator
+  version     : { type: simpleSchema.Version }
+
 
   orderWaiting : type: [String], defaultValue: []
   orderFailure : type: [String], defaultValue: []
   orderSuccess : type: [String], defaultValue: []
+
 
   beginCash : simpleSchema.DefaultNumber()
   debtCash  : simpleSchema.DefaultNumber()
@@ -18,17 +31,11 @@ simpleSchema.customers = new SimpleSchema
   returnCash: simpleSchema.DefaultNumber()
   totalCash : simpleSchema.DefaultNumber()
 
-  merchant    : simpleSchema.DefaultMerchant
-  avatar      : simpleSchema.OptionalString
-  allowDelete : simpleSchema.DefaultBoolean()
-  creator     : simpleSchema.DefaultCreator
-  version     : { type: simpleSchema.Version }
 
   profiles               : type: Object, optional: true
   'profiles.phone'       : simpleSchema.OptionalString
   'profiles.address'     : simpleSchema.OptionalString
   'profiles.gender'      : simpleSchema.DefaultBoolean()
-  'profiles.billNo'      : simpleSchema.DefaultString('000')
   'profiles.areas'       : simpleSchema.OptionalStringArray
 
   'profiles.dateOfBirth' : simpleSchema.OptionalString
@@ -44,11 +51,13 @@ simpleSchema.customers = new SimpleSchema
 
 Schema.add 'customers', "Customer", class Customer
   @transform: (doc) ->
-    doc.hasAvatar = -> if doc.avatar then '' else 'missing'
-    doc.avatarUrl = -> if doc.avatar then AvatarImages.findOne(doc.avatar)?.url() else undefined
     doc.orderWaitingCount = -> if @orderWaiting then @orderWaiting.length else 0
     doc.orderFailureCount = -> if @orderFailure then @orderFailure.length else 0
     doc.orderSuccessCount = -> if @orderSuccess then @orderSuccess.length else 0
+
+    doc.hasAvatar = -> if doc.avatar then '' else 'missing'
+    doc.avatarUrl = -> if doc.avatar then AvatarImages.findOne(doc.avatar)?.url() else undefined
+
     doc.totalDebtCash = ->
       if (typeof @debtCash is "number") and (typeof @loanCash is "number")
         @debtCash + @loanCash
@@ -123,3 +132,38 @@ Schema.add 'customers', "Customer", class Customer
 
   @setSession: (customerId) ->
     Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentCustomer': customerId}})
+
+  @updateCustomer: ->
+    Schema.customers.find({}).forEach(
+      (customer)->
+        console.log customer
+        Schema.customers.update(customer._id, {
+          $set:{
+            saleBillNo       : 0
+            importBillNo     : 0
+            returnBillNo     : 0
+            transactionBillNo: 0
+            beginCash : 0
+            debtCash  : 0
+            loanCash  : 0
+            paidCash  : 0
+            returnCash: 0
+            totalCash : 0
+            orderWaiting: []
+            orderFailure: []
+            orderSuccess: []
+            allowDelete : true
+          }
+        })
+    )
+
+  @updateGroup: ->
+    if defaultGroup = Schema.customerGroups.findOne({isBase: true})
+      listCustomerIds = []
+      Schema.customers.find({}).forEach(
+        (customer)->
+          Schema.customers.update(customer._id, { $set:{ group: defaultGroup._id } })
+          listCustomerIds.push(customer._id)
+      )
+      if Schema.customerGroups.update(defaultGroup._id, $set:{customers: []})
+        Schema.customerGroups.update(defaultGroup._id, $set:{customers: listCustomerIds})

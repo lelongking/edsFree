@@ -29,8 +29,11 @@ template(name="productUnitTableDetail")
   li: span {{barcode}}
   li: span {{formatNumber saleQuality}} VNĐ
   if isEditImportPrice
-    li(style="padding-top: 4px; padding-bottom: 2px;")
-      input.form-control.editable.dashed(name="editImportQuality" value="{{formatNumber importPrice}} VNĐ")
+    if isBase
+      li(style="padding-top: 4px; padding-bottom: 2px;")
+        input.form-control.editable.dashed(name="editImportQuality" value="{{formatNumber importPrice}} VNĐ")
+    else
+      li: span {{formatNumber importPrice}} VNĐ
   else
     li: span {{formatNumber importPrice}} VNĐ
 

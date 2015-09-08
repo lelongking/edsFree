@@ -46,9 +46,9 @@ Meteor.methods
           updateQuery.$inc["units.#{index}.quality.importQuality"]    = detail.basicQuality
           break
 
-      updateQuery.$inc["qualities.#{detailIndex}.availableQuality"]= detail.basicQuality
-      updateQuery.$inc["qualities.#{detailIndex}.inStockQuality"]  = detail.basicQuality
-      updateQuery.$inc["qualities.#{detailIndex}.importQuality"]   = detail.basicQuality
+      updateQuery.$inc["quantities.#{detailIndex}.availableQuality"]= detail.basicQuality
+      updateQuery.$inc["quantities.#{detailIndex}.inStockQuality"]  = detail.basicQuality
+      updateQuery.$inc["quantities.#{detailIndex}.importQuality"]   = detail.basicQuality
       console.log updateQuery
       Schema.products.update detail.product, updateQuery
 
@@ -141,9 +141,9 @@ Meteor.methods
             updateQuery.$inc["units.#{index}.quality.importQuality"]    = detail.basicQuality
             break
 
-        updateQuery.$inc["qualities.#{productDetailIndex}.availableQuality"] = detail.basicQuality
-        updateQuery.$inc["qualities.#{productDetailIndex}.inStockQuality"]   = detail.basicQuality
-        updateQuery.$inc["qualities.#{productDetailIndex}.importQuality"]    = detail.basicQuality
+        updateQuery.$inc["quantities.#{productDetailIndex}.availableQuality"] = detail.basicQuality
+        updateQuery.$inc["quantities.#{productDetailIndex}.inStockQuality"]   = detail.basicQuality
+        updateQuery.$inc["quantities.#{productDetailIndex}.importQuality"]    = detail.basicQuality
         updateQuery.$set = {lastExpire: detail.expire} if detail.expire
         Schema.products.update detail.product, updateQuery
 

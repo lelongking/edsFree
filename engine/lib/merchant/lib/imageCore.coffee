@@ -39,6 +39,6 @@ newFsCollection = (model)->
       extensions: ["png", "jpg", "jpeg"]
 
 @AvatarImages   = newFsCollection("avatarImages")
-@CustomerImages = newFsCollection("customerImages")
-@ProductImages  = newFsCollection("productImages")
-@ProviderImages = newFsCollection("providerImages")
+#@CustomerImages = newFsCollection("customerImages")
+#@ProductImages  = newFsCollection("productImages")
+#@ProviderImages = newFsCollection("providerImages")

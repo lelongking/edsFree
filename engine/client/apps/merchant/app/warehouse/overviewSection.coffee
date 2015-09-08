@@ -89,7 +89,7 @@ lemon.defineHyper Template.warehouseOverviewSection,
             Schema.products.update scope.currentProduct._id, {$set: {name: $productName.val()}}
 
           updateOption = {name: $basicUnitName.val(), salePrice: accounting.parse($salePrice.val())}
-          scope.currentProduct.unitUpdate scope.currentProduct.basicUnit(), updateOption
+          scope.currentProduct.unitUpdate scope.currentProduct.basicUnitId(), updateOption
 
           ProductSearch.cleanHistory()
           ProductSearch.search(ProductSearch.getCurrentQuery())

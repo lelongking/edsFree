@@ -6,7 +6,7 @@ lemon.defineHyper Template.overviewProductInventory,
 
   helpers:
     currentProduct: -> scope.currentProduct
-    upperGapQuality: -> Session.get('productManagementCurrentProduct').qualities[0].upperGapQuality ? 0
+    upperGapQuality: -> Session.get('productManagementCurrentProduct').quantities[0].upperGapQuality ? 0
 
     importUnit: ->
       importUnitFound = {quality:0}
@@ -36,19 +36,19 @@ lemon.defineHyper Template.overviewProductInventory,
           Session.set('productManagementInventoryDetails', details)
 
     "keyup [name='upperGapQuality']": (event, template) ->
-      $quality = $(template.find("[name='upperGapQuality']"))
-#      console.log Number($quality.val())
+      $quantity = $(template.find("[name='upperGapQuality']"))
+#      console.log Number($quantity.val())
 #      inventoryDetails = Session.get('productManagementInventoryDetails')
 #      (detailIndex = index if detail._id is @_id) for detail, index in inventoryDetails
 #
-      if isNaN(Number($quality.val()))
-        $quality.val(Session.get('productManagementCurrentProduct').qualities[0].upperGapQuality)
+      if isNaN(Number($quantity.val()))
+        $quantity.val(Session.get('productManagementCurrentProduct').quantities[0].upperGapQuantity)
       else
-        Schema.products.update(Session.get('productManagementCurrentProduct')._id, $set:{'qualities.0.upperGapQuality': Number($quality.val())})
+        Schema.products.update(Session.get('productManagementCurrentProduct')._id, $set:{'quantities.0.upperGapQuantity': Number($quantity.val())})
 
       if event.which is 13
         console.log 'Enter'
-#        inventoryDetails[detailIndex].quality = Number($quality.val())
+#        inventoryDetails[detailIndex].quality = Number($quantity.val())
 #        Session.set('productManagementInventoryDetails', inventoryDetails)
 
 lemon.defineHyper Template.overviewProductInventoryDetail,
@@ -65,14 +65,14 @@ lemon.defineHyper Template.overviewProductInventoryDetail,
   events:
     "keyup [name='unitQuality']": (event, template) ->
       if User.hasManagerRoles()
-        $quality = $(template.find("[name='unitQuality']"))
+        $quantity = $(template.find("[name='unitQuality']"))
         inventoryDetails = Session.get('productManagementInventoryDetails')
         (detailIndex = index if detail._id is @_id) for detail, index in inventoryDetails
 
-        if isNaN(Number($quality.val()))
-          $quality.val(inventoryDetails[detailIndex].quality)
+        if isNaN(Number($quantity.val()))
+          $quantity.val(inventoryDetails[detailIndex].quality)
         else
-          inventoryDetails[detailIndex].quality = Number($quality.val())
+          inventoryDetails[detailIndex].quality = Number($quantity.val())
           Session.set('productManagementInventoryDetails', inventoryDetails)
 
     "change [name ='deliveryDate']": (event, template) ->

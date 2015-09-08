@@ -1,30 +1,19 @@
+Enums = Apps.Merchant.Enums
 simpleSchema.priceBooks = new SimpleSchema
   name            : type: String ,unique  : true, index: 1
   owner           : type: String ,optional: true
   description     : type: String ,optional: true
-  priceBookType   : type: Number ,defaultValue: 2
-  products        : type: [Object] ,optional: true
-  'products.$._id' : type: String
-  'products.$.unit': type: String
+  priceBookType   : type: Number ,defaultValue: Enums.getValue('PriceBookTypes', 'customer')
+  products        : type: [String] ,optional: true
 
   childPriceBooks : type: [String] , optional: true
   parentPriceBook : type: String   ,optional: true
 
-
-
   merchant    : simpleSchema.DefaultMerchant
   allowDelete : simpleSchema.DefaultBoolean()
   creator     : simpleSchema.DefaultCreator
-  version     : {type: simpleSchema.Version}
-  isBase      :
-    type: Boolean
-    autoValue: ->
-      if @isInsert
-        return false
-      else if @isUpsert
-        return { $setOnInsert: false }
-
-      return
+  version     : type: simpleSchema.Version
+  isBase      : simpleSchema.BooleanNotUpdate(false)
 
 Schema.add 'priceBooks', "PriceBook", class PriceBook
   @transform: (doc) ->
@@ -46,6 +35,64 @@ Schema.add 'priceBooks', "PriceBook", class PriceBook
 
           basicPrice = Schema.priceBooks.findOne({isBase: true, merchant: Merchant.getId()})
           Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentPriceBook': basicPrice._id}})
+
+    doc.updateProductPrice = (productId, salePrice, importPrice) ->
+      priceBookId       = @_id
+      priceBookType     = @priceBookType
+      priceBookIndex    = undefined
+      productUnitIndex  = undefined
+      unitUpdateQuery   = $set:{}
+      if product = Schema.products.findOne({_id: productId, 'priceBooks._id': priceBookId, merchant: Merchant.getId()})
+        if @isBase
+          for item, index in product.priceBooks
+            priceBookQuery = "priceBooks.#{index}"
+            if salePrice isnt undefined and salePrice >= 0 and salePrice isnt @salePrice
+              unitUpdateQuery.$set["#{priceBookQuery}.basicSale"] = salePrice
+              unitUpdateQuery.$set["#{priceBookQuery}.salePrice"] = salePrice if item._id is priceBookId
+
+            if importPrice isnt undefined and importPrice >= 0 and importPrice isnt @importPrice
+              unitUpdateQuery.$set["#{priceBookQuery}.basicImport"] = importPrice
+              unitUpdateQuery.$set["#{priceBookQuery}.importPrice"] = importPrice if item._id is priceBookId
+
+          Schema.products.update(product._id, unitUpdateQuery) unless _.isEmpty(unitUpdateQuery.$set)
+
+
+#        else
+#          if priceBookIndex isnt undefined
+#            console.log 'update'
+#            unitUpdateQuery = $set:{}; priceBookQuery = "units.#{productUnitIndex}.priceBooks.#{priceBookIndex}"
+#
+#            if _.contains([0, 1, 2], priceBookType)
+#              if salePrice and salePrice >= 0
+#                unitUpdateQuery.$set["#{priceBookQuery}.salePrice"]         = salePrice
+#                unitUpdateQuery.$set["#{priceBookQuery}.discountSalePrice"] = priceBookFound.basicSale - salePrice
+#                unitUpdateQuery.$set["#{priceBookQuery}.updateSalePriceAt"] = new Date()
+#
+#            if _.contains([0, 3, 4], priceBookType)
+#              if importPrice and importPrice >= 0
+#                unitUpdateQuery.$set["#{priceBookQuery}.importPrice"]         = importPrice
+#                unitUpdateQuery.$set["#{priceBookQuery}.discountImportPrice"] = priceBookFound.basicImport - importPrice
+#                unitUpdateQuery.$set["#{priceBookQuery}.updateImportPriceAt"] = new Date()
+#
+#            Schema.products.update(product._id, unitUpdateQuery, callback) unless _.isEmpty(unitUpdateQuery.$set)
+#
+#          else
+#            console.log 'insert'
+#            unitUpdateQuery = $push: {}; priceBook = {priceBook: priceBookId}
+#            if _.contains([1, 2], priceBookType)
+#              if salePrice and salePrice >= 0 and salePrice isnt priceBookFound.salePrice
+#                priceBook.salePrice = salePrice
+#                unitUpdateQuery.$push["units.#{productUnitIndex}.priceBooks"] = priceBook
+#
+#            if _.contains([3, 4], priceBookType)
+#              if importPrice and importPrice >= 0 and importPrice isnt priceBookFound.importPrice
+#                priceBook.importPrice = importPrice
+#                unitUpdateQuery.$push["units.#{productUnitIndex}.priceBooks"] = priceBook
+#
+#            Schema.products.update(product._id, unitUpdateQuery, callback) unless _.isEmpty(unitUpdateQuery.$push)
+
+
+
 
     doc.updateProductUnitPrice = (productUnitId, salePrice, importPrice, callback) ->
       priceBookId = @_id; priceBookType = @priceBookType; priceBookIndex = undefined; productUnitIndex = undefined
@@ -257,34 +304,39 @@ Schema.add 'priceBooks', "PriceBook", class PriceBook
       priceBookType : 4
       merchant      : merchantId})
 
+
   @insert: (ownerId, name) ->
     if !PriceBook.findOneByOwner(ownerId)
       Schema.priceBooks.insert {owner: ownerId, name: name}
 
-  @reUpdateByRemoveProductUnit: (productUnitId)->
-    if userId = Meteor.userId()
-      merchantId = Meteor.users.findOne(userId).profile.merchant
-      product = Schema.products.findOne({'units._id': productUnitId, merchant: merchantId})
-      priceBook = Schema.priceBooks.findOne({productUnits: productUnitId, priceBookType: 0, merchant: merchantId})
-      if priceBook and !product
-        Schema.priceBooks.update priceBook._id, {$pull: {productUnits: productUnitId}}
 
-  @addProductUnit: (productUnitId)->
+  #xoa san pham vao bang priceBook basic
+  @reUpdateByRemoveProduct: (productId)->
     if userId = Meteor.userId()
       merchantId = Meteor.users.findOne(userId).profile.merchant
-      product = Schema.products.findOne({'units._id': productUnitId, merchant: merchantId})
-      console.log product
-      priceBook = Schema.priceBooks.findOne({productUnits: {$ne: productUnitId}, priceBookType: 0, merchant: merchantId})
-      if priceBook and product
-        Schema.priceBooks.update priceBook._id, {$addToSet: {productUnits: productUnitId}}
+      product = Schema.products.findOne({_id: productId, merchant: merchantId})
+      priceBook = Schema.priceBooks.findOne({products: productId, priceBookType: 0, merchant: merchantId})
+      Schema.priceBooks.update priceBook._id, {$pull: {products: productId}} if priceBook and !product
+
+
+  #them san pham vao bang priceBook basic
+  @addProduct: (productId)->
+    if userId = Meteor.userId()
+      merchantId = Meteor.users.findOne(userId).profile.merchant
+      product    = Schema.products.findOne({_id: productId, merchant: merchantId})
+      priceBook  = Schema.priceBooks.findOne({products: {$ne: productId}, priceBookType: 0, merchant: merchantId})
+      Schema.priceBooks.update(priceBook._id, {$addToSet: {products: productId}}) if priceBook and product
+
 
   @nameIsExisted: (name, merchant = null) ->
     existedQuery = {name: name, merchant: merchant ? Meteor.user().profile.merchant}
     Schema.priceBooks.findOne(existedQuery)
 
+
   @setSession: (priceBookId) ->
     Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentPriceBook': priceBookId}})
 
+#Dang FIx------------------------------------------->
 findUnitIndexAndPriceBookIndex = (unitId, priceBookFormId, priceBookToId, merchantId = Merchant.getId())->
   query =
     productId          : undefined

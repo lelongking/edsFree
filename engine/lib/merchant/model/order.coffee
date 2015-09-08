@@ -144,7 +144,7 @@ Schema.add 'orders', "Order", class Order
       option.$set['depositCash'] =
         if option.$set['paymentMethod'] is 0 then @finalPrice
         else if option.$set['paymentMethod'] is 1 then 0
-      Schema.orders.update @_id, option, callback
+      Schema.orders.update @_id, option
 
     doc.changeDepositCash = (depositCash, callback) ->
       return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
@@ -155,7 +155,7 @@ Schema.add 'orders', "Order", class Order
     doc.changeDiscountCash = (discountCash) ->
       return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
       discountCash = if Math.abs(discountCash) > @totalPrice then @totalPrice else Math.abs(discountCash)
-      Schema.orders.update @_id, $set:{discountCash: discountCash, finalPrice: (@totalPrice - discountCash)}, callback
+      Schema.orders.update @_id, $set:{discountCash: discountCash, finalPrice: (@totalPrice - discountCash)}
 
     doc.changeDescription = (description, callback)->
       return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
@@ -236,7 +236,7 @@ Schema.add 'orders', "Order", class Order
         predicate.$set["details.#{updateIndex}.basicImportQualityDebit"] = quality * updateInstance.conversion
 
       if _.keys(predicate.$set).length > 0
-        recalculationOrder(@_id) if Schema.orders.update(@_id, predicate, callback)
+        recalculationOrder(@_id) if Schema.orders.update(@_id, predicate)
 
     doc.removeDetail = (detailId, callback) ->
       return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
@@ -245,7 +245,7 @@ Schema.add 'orders', "Order", class Order
       detailIndex = _.indexOf(self.details, detailFound)
       removeDetailQuery = { $pull:{} }
       removeDetailQuery.$pull.details = self.details[detailIndex]
-      recalculationOrder(self._id) if Schema.orders.update(self._id, removeDetailQuery, callback)
+      recalculationOrder(self._id) if Schema.orders.update(self._id, removeDetailQuery)
 
     doc.orderConfirm = ->
       return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)

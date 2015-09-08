@@ -336,9 +336,9 @@ updateProductQuery = (returnDetail, returnType)->
         productUpdate.$inc["units.#{index}.quality.returnImportQuality"] = returnDetail.basicQuality
         break
 
-    productUpdate.$inc["qualities.#{detailIndex}.inStockQuality"]      = -returnDetail.basicQuality
-    productUpdate.$inc["qualities.#{detailIndex}.availableQuality"]    = -returnDetail.basicQuality
-    productUpdate.$inc["qualities.#{detailIndex}.returnImportQuality"] = returnDetail.basicQuality
+    productUpdate.$inc["quantities.#{detailIndex}.inStockQuality"]      = -returnDetail.basicQuality
+    productUpdate.$inc["quantities.#{detailIndex}.availableQuality"]    = -returnDetail.basicQuality
+    productUpdate.$inc["quantities.#{detailIndex}.returnImportQuality"] = returnDetail.basicQuality
 
   else if returnType is Enums.getValue('ReturnTypes', 'customer')
     for unit, index in product.units
@@ -348,9 +348,9 @@ updateProductQuery = (returnDetail, returnType)->
         productUpdate.$inc["units.#{index}.quality.availableQuality"]  = returnDetail.basicQuality
         break
 
-    productUpdate.$inc["qualities.#{detailIndex}.inStockQuality"]    = returnDetail.basicQuality
-    productUpdate.$inc["qualities.#{detailIndex}.returnSaleQuality"] = returnDetail.basicQuality
-    productUpdate.$inc["qualities.#{detailIndex}.availableQuality"]  = returnDetail.basicQuality
+    productUpdate.$inc["quantities.#{detailIndex}.inStockQuality"]    = returnDetail.basicQuality
+    productUpdate.$inc["quantities.#{detailIndex}.returnSaleQuality"] = returnDetail.basicQuality
+    productUpdate.$inc["quantities.#{detailIndex}.availableQuality"]  = returnDetail.basicQuality
 
   return {_id: returnDetail.product, updateOption: productUpdate}
 

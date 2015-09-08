@@ -47,38 +47,38 @@ Meteor.methods
     countUpperGapProduct     = 0
     countNotQualityProduct   = 0
     countLateExpireProduct   = 0
-    Schema.products.find({}).forEach(
-      (product) ->
-        quality = product.qualities[0]
-        if product.status is Enums.getValue('ProductStatuses', 'initialize') then countNewProduct += 1
-        else
-          unless product.inventoryInitial then countNotInventoryProduct += 1
-          else
-            optionExpire =
-              notificationType: 'notify'
-              product         : product._id
-              group           : Enums.getObject('NotificationGroups')['productExpire'].value
-            productExpireFound = Schema.notifications.findOne(optionExpire)
-            countDate = moment(product.lastExpire).diff(toDate, 'days') if product.lastExpire
-
-            unless quality.inStockQuality > 0
-              Schema.notifications.remove(productExpireFound._id) if productExpireFound
-
-            else
-              if countDate > 90
-                Schema.notifications.remove(productExpireFound._id) if productExpireFound
-
-              else if countDate > 0
-                optionExpire.message = "Sản phẩm #{product.name} sắp hết hạn sử dụng. (còn #{countDate} ngày)"
-                if productExpireFound
-                  Schema.notifications.update productExpireFound._id, $set:{message: optionExpire.message}
-                else
-                  Schema.notifications.insert optionExpire
-
-              else
-                optionExpire.message = "Sản phẩm #{product.name} đã hết hạn sử dụng."
-                if productExpireFound
-                  Schema.notifications.update productExpireFound._id, $set:{message: optionExpire.message}
-                else
-                  Schema.notifications.insert optionExpire
-    )
+#    Schema.products.find({}).forEach(
+#      (product) ->
+#        quality = product.quantities[0]
+#        if product.status is Enums.getValue('ProductStatuses', 'initialize') then countNewProduct += 1
+#        else
+#          unless product.inventoryInitial then countNotInventoryProduct += 1
+#          else
+#            optionExpire =
+#              notificationType: 'notify'
+#              product         : product._id
+#              group           : Enums.getObject('NotificationGroups')['productExpire'].value
+#            productExpireFound = Schema.notifications.findOne(optionExpire)
+#            countDate = moment(product.lastExpire).diff(toDate, 'days') if product.lastExpire
+#
+#            unless quality.inStockQuality > 0
+#              Schema.notifications.remove(productExpireFound._id) if productExpireFound
+#
+#            else
+#              if countDate > 90
+#                Schema.notifications.remove(productExpireFound._id) if productExpireFound
+#
+#              else if countDate > 0
+#                optionExpire.message = "Sản phẩm #{product.name} sắp hết hạn sử dụng. (còn #{countDate} ngày)"
+#                if productExpireFound
+#                  Schema.notifications.update productExpireFound._id, $set:{message: optionExpire.message}
+#                else
+#                  Schema.notifications.insert optionExpire
+#
+#              else
+#                optionExpire.message = "Sản phẩm #{product.name} đã hết hạn sử dụng."
+#                if productExpireFound
+#                  Schema.notifications.update productExpireFound._id, $set:{message: optionExpire.message}
+#                else
+#                  Schema.notifications.insert optionExpire
+#    )

@@ -20,34 +20,47 @@ lemon.defineHyper Template.saleDetailSection,
       else 0
 
     details: ->
+      console.log 'reCalculate'
       return [] if !@details
       isDisabled = true; isDisabled = if @details?.length > 0 then false else true
-      for item in @details
-        if product = Schema.products.findOne(item.product)
-          item.productName = product.name
-          item.basicName   = product.unitName()
 
-          for unit in product.units
-            item.basicName  = unit.name if item.isBase
-            if unit._id is item.productUnit
-              item.unitName   = unit.name
-              item.isBase     = unit.isBase
-              item.conversion = unit.conversion
-              item.finalPrice = item.quality * (item.price - item.discountCash)
-              if product.inventoryInitial
-                crossAvailable = (unit.quality.availableQuality - item.basicQuality)/unit.conversion
-                item.crossAvailable = crossAvailable
-                item.isValid        = crossAvailable > 0
-                item.invalid        = crossAvailable < 0
-                item.errorClass     = if crossAvailable >= 0 then '' else 'errors'
-              else
-                item.crossAvailable = 0
-                item.isValid        = true
-                item.invalid        = false
-                item.errorClass     = ''
+      productList = _.groupBy(@details, (item, index) -> item.index = index; item.product)
 
-        if item.invalid then isDisabled = item.invalid
-        (isDisabled = Session.get("currentOrder").buyer is undefined) unless isDisabled
+      for key, value of productList
+        if product = Schema.products.findOne(key)
+          availableQuality = product.quantities[0].availableQuality ? 0
+          (saleQuality  = 0 unless saleQuality; saleQuality += item.basicQuality) for item in value
+
+          for detail in value
+            item = @details[detail.index]
+            item.productName = product.name
+            item.basicName   = product.unitName()
+
+            if product = Schema.products.findOne(item.product)
+              item.productName = product.name
+              item.basicName   = product.unitName()
+
+              for unit in product.units
+                item.basicName  = unit.name if item.isBase
+                if unit._id is item.productUnit
+                  item.unitName   = unit.name
+                  item.isBase     = unit.isBase
+                  item.conversion = unit.conversion
+                  item.finalPrice = item.quality * (item.price - item.discountCash)
+                  if product.inventoryInitial
+                    crossAvailable = Math.floor((availableQuality - saleQuality)/item.conversion)
+                    item.crossAvailable = crossAvailable
+                    item.isValid        = crossAvailable > 0
+                    item.invalid        = crossAvailable < 0
+                    item.errorClass     = if crossAvailable >= 0 then '' else 'errors'
+                  else
+                    item.crossAvailable = 0
+                    item.isValid        = true
+                    item.invalid        = false
+                    item.errorClass     = ''
+
+            if item.invalid then isDisabled = item.invalid
+            (isDisabled = Session.get("currentOrder").buyer is undefined) unless isDisabled
       Session.set('currentOrderIsDisabled', if isDisabled then 'disabled' else '')
 
       @details

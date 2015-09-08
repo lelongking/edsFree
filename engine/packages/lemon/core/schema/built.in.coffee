@@ -146,3 +146,11 @@ simpleSchema.DefaultCreatedAt =
     return new Date unless @isSet
     return
 
+simpleSchema.BooleanNotUpdate = (value = true) ->
+  type: Boolean
+  autoValue: ->
+    if @isInsert
+      return value
+    else if @isUpsert
+      return { $setOnInsert: value }
+    return
