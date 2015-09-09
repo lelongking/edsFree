@@ -3,12 +3,12 @@ Meteor.methods
     try
       throw 'currentDistributorReturn sai' if !currentDistributorReturn
       returnDetails = Schema.returnDetails.find({return: currentDistributorReturn._id}).fetch()
-      (if detail.returnQuality is 0 then throw 'So luong lon hon 0.') for detail in returnDetails
+      (if detail.returnQuantity is 0 then throw 'So luong lon hon 0.') for detail in returnDetails
 
-      totalReturnQuality = 0
+      totalReturnQuantity = 0
       totalReturnPrice = 0
       for item in returnDetails
-        totalReturnQuality += item.returnQuality
+        totalReturnQuantity += item.returnQuantity
         totalReturnPrice += item.finalPrice
 
       returnDetailGroups = _.chain(returnDetails)
@@ -16,7 +16,7 @@ Meteor.methods
       .map (group, key) ->
         return {
         product: key
-        quality: _.reduce(group, ((res, current) -> res + current.returnQuality), 0)
+        quality: _.reduce(group, ((res, current) -> res + current.returnQuantity), 0)
         }
       .value()
 
@@ -25,8 +25,8 @@ Meteor.methods
         Schema.productDetails.find({
           distributor: currentDistributorReturn.distributor
           product: returnDetail.product
-          availableQuality: {$gt:0}
-        }).forEach((productDetail)-> quality += productDetail.availableQuality)
+          availableQuantity: {$gt:0}
+        }).forEach((productDetail)-> quality += productDetail.availableQuantity)
         if quality < returnDetail.quality then throw 'So luong khong du.'
 
       for product in returnDetailGroups
@@ -36,47 +36,47 @@ Meteor.methods
               distributor: currentDistributorReturn.distributor
               product: returnDetail.product
               unit: returnDetail.unit
-              availableQuality: {$gt:0}
+              availableQuantity: {$gt:0}
             }).fetch()
             productDetailUnLikeUnit = Schema.productDetails.find({
               distributor: currentDistributorReturn.distributor
               product: returnDetail.product
               unit: { $ne: returnDetail.unit }
-              availableQuality: {$gt:0}
+              availableQuantity: {$gt:0}
             }).fetch()
           else
             productDetailLikeUnit = Schema.productDetails.find({
               distributor: currentDistributorReturn.distributor
               product: returnDetail.product
               unit: { $exists: false }
-              availableQuality: {$gt:0}
+              availableQuantity: {$gt:0}
             }).fetch()
             productDetailUnLikeUnit = Schema.productDetails.find({
               distributor: currentDistributorReturn.distributor
               product: returnDetail.product
               unit: { $exists: true }
-              availableQuality: {$gt:0}
+              availableQuantity: {$gt:0}
             }).fetch()
 
-          transactionQuality = 0
+          transactionQuantity = 0
           for productDetail in productDetailLikeUnit.concat(productDetailUnLikeUnit)
-            requiredQuality = returnDetail.returnQuality - transactionQuality
-            if productDetail.availableQuality > requiredQuality then takenQuality = requiredQuality
-            else takenQuality = productDetail.availableQuality
+            requiredQuantity = returnDetail.returnQuantity - transactionQuantity
+            if productDetail.availableQuantity > requiredQuantity then takenQuantity = requiredQuantity
+            else takenQuantity = productDetail.availableQuantity
 
             productOption =
-              availableQuality: -takenQuality
-              inStockQuality  : -takenQuality
-              returnQualityByDistributor: takenQuality
+              availableQuantity: -takenQuantity
+              inStockQuantity  : -takenQuantity
+              returnQuantityByDistributor: takenQuantity
             Schema.productDetails.update productDetail._id, $inc: productOption
 
-            productOption.totalQuality = -takenQuality
+            productOption.totalQuantity = -takenQuantity
             Schema.products.update productDetail.product, $inc: productOption
             Schema.branchProductSummaries.update productDetail.branchProduct, $inc: productOption
 
-            transactionQuality += takenQuality
-            Schema.returnDetails.update returnDetail._id, $addToSet: {productDetail: {productDetail: productDetail._id, returnQuality: takenQuality}}
-            if transactionQuality == returnDetail.returnQuality then break
+            transactionQuantity += takenQuantity
+            Schema.returnDetails.update returnDetail._id, $addToSet: {productDetail: {productDetail: productDetail._id, returnQuantity: takenQuantity}}
+            if transactionQuantity == returnDetail.returnQuantity then break
 
         distributor = Schema.distributors.findOne(currentDistributorReturn.distributor)
         Schema.distributors.update distributor._id, $inc:{importTotalCash: -totalReturnPrice, importDebt: -totalReturnPrice}
@@ -106,12 +106,12 @@ Meteor.methods
 #    try
 #      throw 'currentCustomerReturn sai' if !currentCustomerReturn
 #      returnDetails = Schema.returnDetails.find({return: currentCustomerReturn._id}).fetch()
-#      (if detail.returnQuality is 0 then throw 'So luong lon hon 0.') for detail in returnDetails
+#      (if detail.returnQuantity is 0 then throw 'So luong lon hon 0.') for detail in returnDetails
 #
-#      totalReturnQuality = 0
+#      totalReturnQuantity = 0
 #      totalReturnPrice = 0
 #      for item in returnDetails
-#        totalReturnQuality += item.returnQuality
+#        totalReturnQuantity += item.returnQuantity
 #        totalReturnPrice += item.finalPrice
 #
 #      returnDetails = _.chain(returnDetails)
@@ -119,7 +119,7 @@ Meteor.methods
 #      .map (group, key) ->
 #        return {
 #        product: key
-#        quality: _.reduce(group, ((res, current) -> res + current.returnQuality), 0)
+#        quality: _.reduce(group, ((res, current) -> res + current.returnQuantity), 0)
 #        }
 #      .value()
 #
@@ -128,7 +128,7 @@ Meteor.methods
 #        Schema.sales.find({buyer: currentCustomerReturn.customer}).forEach(
 #          (sale)->
 #            Schema.saleDetails.find({sale: sale._id, product: returnDetail.product}).forEach(
-#              (saleDetail)-> quality += (saleDetail.quality - saleDetail.returnQuality)
+#              (saleDetail)-> quality += (saleDetail.quality - saleDetail.returnQuantity)
 #            )
 #        )
 #        if quality < returnDetail.quality then throw 'So luong khong du.'
@@ -142,29 +142,29 @@ Meteor.methods
 #            )
 #        )
 #
-#        transactionQuality = 0
+#        transactionQuantity = 0
 #        for saleDetail in saleDetails
-#          requiredQuality = returnDetail.quality - transactionQuality
-#          availableReturnQuality = saleDetail.quality - saleDetail.returnQuality
-#          if availableReturnQuality > requiredQuality then takenQuality = requiredQuality
-#          else takenQuality = availableReturnQuality
+#          requiredQuantity = returnDetail.quality - transactionQuantity
+#          availableReturnQuantity = saleDetail.quality - saleDetail.returnQuantity
+#          if availableReturnQuantity > requiredQuantity then takenQuantity = requiredQuantity
+#          else takenQuantity = availableReturnQuantity
 #
 #          branchProduct = Schema.branchProductSummaries.findOne(saleDetail.branchProduct)
 #          updateOption = {}
 #          if branchProduct.basicDetailModeEnabled is false
-#            updateOption.availableQuality = takenQuality
-#            updateOption.inStockQuality   = takenQuality
+#            updateOption.availableQuantity = takenQuantity
+#            updateOption.inStockQuantity   = takenQuantity
 #            Schema.productDetails.update saleDetail.productDetail, $inc: updateOption
 #
-#          updateOption.returnQualityByCustomer = takenQuality
+#          updateOption.returnQuantityByCustomer = takenQuantity
 #          Schema.products.update branchProduct.product, $inc: updateOption
 #          Schema.branchProductSummaries.update branchProduct._id, $inc: updateOption
 #
-#          Schema.saleDetails.update saleDetail._id, $inc:{returnQuality: takenQuality}
+#          Schema.saleDetails.update saleDetail._id, $inc:{returnQuantity: takenQuantity}
 #          Schema.sales.update saleDetail.sale, $set:{allowDelete: false}
 #
-#          transactionQuality += takenQuality
-#          if transactionQuality == returnDetail.quality then break
+#          transactionQuantity += takenQuantity
+#          if transactionQuantity == returnDetail.quality then break
 #
 #      if customer = Schema.customers.findOne(currentCustomerReturn.customer)
 #        Schema.customers.update customer._id, $inc:{saleTotalCash: -totalReturnPrice, saleDebt: -totalReturnPrice}

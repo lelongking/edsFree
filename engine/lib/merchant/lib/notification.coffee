@@ -12,7 +12,7 @@ Apps.Merchant.notificationGroup =
   expireDate:               {key: 'expireDate'}
   receivableDate:           {key: 'receivableDate'}
   payableDate:              {key: 'payableDate'}
-  alertQuality:             {key: 'alertQuality'}
+  alertQuantity:             {key: 'alertQuantity'}
 
 
 Apps.Merchant.NotificationMessages = {}
@@ -32,7 +32,7 @@ Apps.Merchant.NotificationMessages.productExpireDate   = (productName, date, pla
 
 Apps.Merchant.NotificationMessages.receivableExpireDate= (customerName, date, place)   -> "Khách hàng #{customerName} đã trể quá han trả tiền #{date} ngày."
 Apps.Merchant.NotificationMessages.payableExpireDate   = (companyName, date, place)    -> "C.Ty đã quá hạn trả tiền C.ty #{companyName} #{date} ngày."
-Apps.Merchant.NotificationMessages.productAlertQuality = (productName, quality, place) -> "Sản phẩm #{productName}, tại kho #{place} sắp hết hàng (còn #{quality} sản phẩm)."
+Apps.Merchant.NotificationMessages.productAlertQuantity = (productName, quality, place) -> "Sản phẩm #{productName}, tại kho #{place} sắp hết hàng (còn #{quality} sản phẩm)."
 
 Apps.Merchant.NotificationMessages.sendAccountingByNewSale  = (creator, orderCode, place)    -> "Có một đơn hàng mới #{orderCode} của #{creator}, cần bạn xác nhận đã thu tiền"
 Apps.Merchant.NotificationMessages.sendExporterBySaleExport = (creator, orderCode, place)    -> "Có một đơn hàng mới #{orderCode} của #{creator}, cần bạn xác nhận đã xuất kho"

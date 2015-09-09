@@ -19,7 +19,7 @@ Meteor.methods
 
           if !branchProduct = Schema.branchProductSummaries.findOne(saleDetail.branchProduct) then throw new Meteor.Error('saleExportError', 'Sai thong tin san pham.')
           if branchProduct.basicDetailModeEnabled is false
-            productOption = $inc:{inStockQuality: -saleDetail.quality}
+            productOption = $inc:{inStockQuantity: -saleDetail.quality}
             Schema.products.update saleDetail.product, productOption
             Schema.branchProductSummaries.update saleDetail.branchProduct, productOption
             Schema.productDetails.update saleDetail.productDetail, productOption
@@ -57,7 +57,7 @@ Meteor.methods
         paymentsDelivery: 1 })
 
         for saleDetail in Schema.saleDetails.find({sale: currentSale._id}).fetch()
-          option = {availableQuality: saleDetail.quality, inStockQuality  : saleDetail.quality}
+          option = {availableQuantity: saleDetail.quality, inStockQuantity  : saleDetail.quality}
           Schema.productDetails.update saleDetail.productDetail, $inc: option
           Schema.products.update saleDetail.product, $inc: option
           Schema.branchProductSummaries.update saleDetail.branchProduct, $inc: option

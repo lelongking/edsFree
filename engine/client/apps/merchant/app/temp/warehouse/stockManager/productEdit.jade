@@ -20,19 +20,19 @@ template(name="productEdit")
                   li.order-detail
                      .product-name <b>Ngày: {{formatDate version.createdAt}}</b>
                      .product-price
-                        span.individual-price Đã nhập: {{formatNumber importQuality}} [{{product.skulls}}]
+                        span.individual-price Đã nhập: {{formatNumber importQuantity}} [{{product.skulls}}]
                         span.final-price Giá nhập: {{formatNumber importPrice}}
 
             .bill-summary
                .editor-row
                   span Tổng Nhập:
-                  span.bill-final <b>{{formatNumber product.totalQuality}} {{product.skulls}}</b>
+                  span.bill-final <b>{{formatNumber product.totalQuantity}} {{product.skulls}}</b>
                .editor-row
                   span Tồn Kho:
-                  span.bill-final <b>{{formatNumber product.inStockQuality}} {{product.skulls}}</b>
+                  span.bill-final <b>{{formatNumber product.inStockQuantity}} {{product.skulls}}</b>
                .editor-row
                   span Có Thể Bán:
-                  span.bill-final <b>{{formatNumber product.availableQuality}} {{product.skulls}}</b>
+                  span.bill-final <b>{{formatNumber product.availableQuantity}} {{product.skulls}}</b>
          .modal-footer
             .editor-row
                if updateProductPrice

@@ -15,7 +15,7 @@ lemon.defineWidget Template.productManagementImportDetails,
 #      for detail in orderFound.details
 #        saleDetails.push detail if detail.productUnit is productUnitId
 
-#  unitSaleQuality: -> Math.round(@quality/@conversionQuality*100)/100
+#  unitSaleQuantity: -> Math.round(@quality/@conversionQuantity*100)/100
 #  isShowDisableMode: -> !Session.get("productManagementCurrentProduct")?.basicDetailModeEnabled
 #
 #  distributorName: ->
@@ -25,11 +25,11 @@ lemon.defineWidget Template.productManagementImportDetails,
 #
 #  buyerName: -> Schema.customers.findOne(Schema.sales.findOne(@sale)?.buyer)?.name
 #
-#  totalPrice: -> @unitPrice * @unitQuality
+#  totalPrice: -> @unitPrice * @unitQuantity
 #  expireDate: -> if @expire then moment(@expire).format('DD/MM/YYYY') else 'KHÔNG'
-#  saleQuality: -> @quality - @returnQuality
+#  saleQuantity: -> @quality - @returnQuantity
 #
-#  distributorReturnQuality: (temp)->
+#  distributorReturnQuantity: (temp)->
 #    console.log @
 #
 #  importDetails: ->
@@ -44,13 +44,13 @@ lemon.defineWidget Template.productManagementImportDetails,
 #    }
 #
 #lemon.defineWidget Template.productManagementReturnDetails,
-#  returnQuality: ->
+#  returnQuantity: ->
 #    for detail in @productDetail
 #      if detail.productDetail is Template.instance().data.productDetail._id
-#        return detail.returnQuality/@conversionQuality
+#        return detail.returnQuantity/@conversionQuantity
 #
 #  returnFinalPrice: ->
 #    for detail in @productDetail
 #      if detail.productDetail is Template.instance().data.productDetail._id
-#        return detail.returnQuality*@unitReturnsPrice/@conversionQuality
+#        return detail.returnQuantity*@unitReturnsPrice/@conversionQuantity
 #

@@ -12,11 +12,11 @@ template(name="orderRowEdit")
       |{{productName}}
       .commands
         .lemon.rounded.tiny.btn.blue.animated.bounceIn.deleteOrderDetail: span.icon-minus-4
-    td.quality: input.error-field(name="editQuality" min="0" style="text-align: center;")
+    td.quality: input.error-field(name="editQuantity" min="0" style="text-align: center;")
     td: span
       |{{unitName}}
       unless isBase
-        span.super.s7.color-lime {{conversion}} {{basicName}}
+        span.super.s7.color-lime {{formatNumber basicQuantity}} {{basicName}}
     td.number.price.editable-field {{formatNumber price}}
     td.bill-discount: input(name="editDiscountCash" min="0" max="30")
     td.number.final-price <b>{{formatNumber finalPrice}}</b>
@@ -43,7 +43,7 @@ template(name="orderRowDisplay")
     td: span
           |{{unitName}}
           unless isBase
-            span.super.s7.color-lime {{conversion}} {{basicName}}
+            span.super.s7.color-lime {{formatNumber basicQuantity}} {{basicName}}
 
     td.number.price.editable-field {{formatNumber price}}
 

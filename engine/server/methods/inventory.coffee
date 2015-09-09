@@ -14,7 +14,7 @@ createInventory = (warehouse, userProfile, description, productDetails)->
         inventory           : inventoryId
         product             : productDetail.product
         productDetail       : productDetail._id
-        lockOriginalQuality : productDetail.inStockQuality
+        lockOriginalQuantity : productDetail.inStockQuantity
       })
 
     Schema.inventories.update inventoryId, $set: {detail: true}
@@ -29,7 +29,7 @@ Meteor.methods
     if !warehouse then throw new Meteor.Error("Warehouse không chính xác"); return
     if warehouse.checkingInventory == true then throw new Meteor.Error("Warehouse đang kiểm kho."); return
 
-    productDetails = Schema.productDetails.find({warehouse: warehouseId,  inStockQuality: { $gt: 0 } })
+    productDetails = Schema.productDetails.find({warehouse: warehouseId,  inStockQuantity: { $gt: 0 } })
     if productDetails.count() < 1 then throw new Meteor.Error("Warehouse đang trống."); return
 
     createInventory(warehouse, userProfile, description, productDetails)

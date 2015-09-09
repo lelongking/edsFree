@@ -8,18 +8,18 @@ lemon.defineApp Template.providerReturn,
 
       if currentReturnDetails?.length > 0 and currentParentDetails?.length > 0
         for returnDetail in currentReturnDetails
-          currentProductQuality = 0
+          currentProductQuantity = 0
 
           for parentDetail in currentParentDetails
             if parentDetail.productUnit is returnDetail.productUnit
-              currentProductQuality += parentDetail.basicQualityAvailable
+              currentProductQuantity += parentDetail.basicQuantityAvailable
 
-          return 'disabled' if (currentProductQuality - returnDetail.basicQuality) < 0
+          return 'disabled' if (currentProductQuantity - returnDetail.basicQuantity) < 0
 
       else
         return 'disabled'
 
-    availableQuality: -> @basicQualityAvailable/@conversion
+    availableQuantity: -> @basicQuantityAvailable/@conversion
 
 
 

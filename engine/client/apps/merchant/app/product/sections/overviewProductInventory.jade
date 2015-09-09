@@ -1,35 +1,42 @@
 template(name="overviewProductInventory")
   .detail-wrapper
     form.form-inline: .form-group: .input-group
-      .input-group-addon(style="width: 100px") Tồn kho định mức:
-      .input-group-addon(style="width: 100px")
-        input.form-control.editable.dashed(
-        name="upperGapQuality" data-toggle="tooltip" data-container="body" data-placement="right"
-        placeholder="Số lượng" title="Định mức" value="{{upperGapQuality}}")
+      input.hide
+      .input-group-addon Tồn kho định mức:
+      .input-group-addon(style="width: 100px"): input.editable.dashed(
+        name="normsQuantity" data-toggle="tooltip" data-container="body" data-placement="right"
+        placeholder="Số lượng" title="Định mức" value="{{currentProduct.normsQuantity}}")
+      .input-group-addon {{currentProduct.unitName}}
 
   .detail-wrapper
     span.denyInventory.icon-ok-6(class="{{isImport 'sale'}}")
-    span Bán hàng trước, nhập tồn kho sau.
+    span Bán hàng trước, nhập tồn kho sau
+
   .detail-wrapper
     span.allowInventory.icon-ok-6(class="{{isImport 'import'}}")
-    span Nhập tồn kho ngay lúc này
+    if currentProduct.inventoryInitial
+      span Đã nhập tồn kho đầu kỳ
+    else
+      span Nhập tồn kho ngay lúc này
+
   if getSession 'productManagementAllowInventory'
     .detail-wrapper
       each currentProduct.units
-        if currentProduct.inventoryInitial
-          form.form-inline: .form-group: .input-group
-            .input-group-addon(style="width: 100px") {{importUnit.quality}}
-            .input-group-addon(style="width: 100px") {{name}}
-            .input-group-addon(style="width: 100px") {{momentFormat importUnit.expire "DD/MM/YYYY"}}
-            .input-group-addon(style="width: 100px") Hết hạn
-        else
-          +overviewProductInventoryDetail this
+        if isBase
+          if currentProduct.inventoryInitial
+            form.form-inline: .form-group: .input-group
+              .input-group-addon(style="width: 100px") {{importUnit.quality}}
+              .input-group-addon(style="width: 100px") {{name}}
+              .input-group-addon(style="width: 100px") {{momentFormat importUnit.expire "DD/MM/YYYY"}}
+              .input-group-addon(style="width: 100px") Hết hạn
+          else
+            +overviewProductInventoryDetail this
 
 
 template(name="overviewProductInventoryDetail")
   form.form-inline: .form-group: .input-group
     input.form-control.editable.dashed(
-    name="unitQuality" data-toggle="tooltip" data-container="body" data-placement="right"
+    name="unitQuantity" data-toggle="tooltip" data-container="body" data-placement="right"
     placeholder="Số lượng" title="Số lượng" value="{{quality}}")
 
     .input-group-addon(style="width: 100px") {{name}}

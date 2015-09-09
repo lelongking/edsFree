@@ -56,13 +56,13 @@ simpleSchema.orders = new SimpleSchema
   'details.$.importIsValid' : type: Boolean, optional: true
 
   'details.$.conversion'  : type: Number, min: 1
-  'details.$.basicQuality': type: Number, min: 0
-  'details.$.basicQualityReturn'   : type: Number, min: 0
-  'details.$.basicQualityAvailable': type: Number, min: 0 #basicQuality - basicReturnQuality
+  'details.$.basicQuantity': type: Number, min: 0
+  'details.$.basicQuantityReturn'   : type: Number, min: 0
+  'details.$.basicQuantityAvailable': type: Number, min: 0 #basicQuantity - basicReturnQuantity
 
-  'details.$.basicImportQuality'      : type: Number, min: 0
-  'details.$.basicImportQualityDebit' : type: Number, min: 0 #(basicImportQuality - basicReturnQuality) if basicImportQuality > basicReturnQuality
-  'details.$.basicImportQualityReturn': type: Number, min: 0 #(basicReturnQuality - basicImportQuality) if basicImportQuality < basicReturnQuality
+  'details.$.basicImportQuantity'      : type: Number, min: 0
+  'details.$.basicImportQuantityDebit' : type: Number, min: 0 #(basicImportQuantity - basicReturnQuantity) if basicImportQuantity > basicReturnQuantity
+  'details.$.basicImportQuantityReturn': type: Number, min: 0 #(basicReturnQuantity - basicImportQuantity) if basicImportQuantity < basicReturnQuantity
 
 #------------ ImportDetail ------------
   'details.$.imports': type: [Object], optional: true #Import Detail
@@ -74,9 +74,9 @@ simpleSchema.orders = new SimpleSchema
 
   'details.$.imports.$.conversion'  : type: Number, min: 1
   'details.$.imports.$.quality'     : type: Number, min: 0
-  'details.$.imports.$.basicQuality': type: Number, min: 0
-  'details.$.imports.$.basicQualityReturn'   : type: Number, min: 0
-  'details.$.imports.$.basicQualityAvailable': type: Number, min: 0
+  'details.$.imports.$.basicQuantity': type: Number, min: 0
+  'details.$.imports.$.basicQuantityReturn'   : type: Number, min: 0
+  'details.$.imports.$.basicQuantityAvailable': type: Number, min: 0
 
   'details.$.imports.$.price'       : type: Number
   'details.$.imports.$.note'        : type: String, optional: true
@@ -154,19 +154,22 @@ Schema.add 'orders', "Order", class Order
 
     doc.changeDiscountCash = (discountCash) ->
       return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
-      discountCash = if Math.abs(discountCash) > @totalPrice then @totalPrice else Math.abs(discountCash)
-      Schema.orders.update @_id, $set:{discountCash: discountCash, finalPrice: (@totalPrice - discountCash)}
+      discountCash = if Math.abs(discountCash) > doc.totalPrice then doc.totalPrice else Math.abs(discountCash)
+
+      orderUpdate = $set:{discountCash: discountCash, finalPrice: (doc.totalPrice - discountCash)}
+      orderUpdate.$set["details.#{index}.discountCash"] = 0 for orderDetail, index in doc.details
+      Schema.orders.update doc._id, orderUpdate
 
     doc.changeDescription = (description, callback)->
       return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
       option = $set:{'description': description}
       Schema.orders.update @_id, option
 
-    doc.recalculatePrices = (newId, newQuality, newPrice) ->
+    doc.recalculatePrices = (newId, newQuantity, newPrice) ->
       totalPrice = 0
       for detail in @details
         if detail._id is newId
-          totalPrice += newQuality * ((if newPrice then newPrice else detail.price) - detail.discountCash)
+          totalPrice += newQuantity * ((if newPrice then newPrice else detail.price) - detail.discountCash)
         else
           totalPrice += detail.quality * (detail.price - detail.discountCash)
 
@@ -187,32 +190,32 @@ Schema.add 'orders', "Order", class Order
       return console.log('Price not found..') if price is undefined
 
       return console.log("Price invalid (#{price})") if price < 0
-      return console.log("Quality invalid (#{quality})") if quality < 1
+      return console.log("Quantity invalid (#{quality})") if quality < 1
 
       detailFindQuery = {product: product._id, productUnit: productUnitId, price: price}
       detailFound  = _.findWhere(@details, detailFindQuery)
-      basicQuality = quality * productUnit.conversion
+      basicQuantity = quality * productUnit.conversion
 
       if detailFound
         detailIndex = _.indexOf(@details, detailFound)
         updateQuery = {$inc:{}}
         updateQuery.$inc["details.#{detailIndex}.quality"]      = quality
-        updateQuery.$inc["details.#{detailIndex}.basicQuality"] = basicQuality
-        updateQuery.$inc["details.#{detailIndex}.basicQualityAvailable"]   = basicQuality
-        updateQuery.$inc["details.#{detailIndex}.basicImportQualityDebit"] = basicQuality
+        updateQuery.$inc["details.#{detailIndex}.basicQuantity"] = basicQuantity
+        updateQuery.$inc["details.#{detailIndex}.basicQuantityAvailable"]   = basicQuantity
+        updateQuery.$inc["details.#{detailIndex}.basicImportQuantityDebit"] = basicQuantity
         recalculationOrder(@_id) if Schema.orders.update(@_id, updateQuery)
 
       else
         detailFindQuery.importIsValid         = false
         detailFindQuery.quality               = quality
         detailFindQuery.conversion            = productUnit.conversion
-        detailFindQuery.basicQuality          = basicQuality
-        detailFindQuery.basicQualityAvailable = basicQuality
-        detailFindQuery.basicQualityReturn    = 0
+        detailFindQuery.basicQuantity          = basicQuantity
+        detailFindQuery.basicQuantityAvailable = basicQuantity
+        detailFindQuery.basicQuantityReturn    = 0
 
-        detailFindQuery.basicImportQuality       = 0
-        detailFindQuery.basicImportQualityDebit  = basicQuality
-        detailFindQuery.basicImportQualityReturn = 0
+        detailFindQuery.basicImportQuantity       = 0
+        detailFindQuery.basicImportQuantityDebit  = basicQuantity
+        detailFindQuery.basicImportQuantityReturn = 0
         recalculationOrder(@_id) if Schema.orders.update(@_id, { $push: {details: detailFindQuery} })
 
     doc.editDetail = (detailId, quality, discountCash, price, callback) ->
@@ -226,14 +229,14 @@ Schema.add 'orders', "Order", class Order
       return console.log 'OrderDetailRow not found..' if !updateInstance
 
       predicate = $set:{}
-      predicate.$set["details.#{updateIndex}.discountCash"] = discountCash  if discountCash isnt undefined
+      predicate.$set["details.#{updateIndex}.discountCash"] = discountCash if discountCash isnt undefined
       predicate.$set["details.#{updateIndex}.price"] = price if price isnt undefined
 
       if quality isnt undefined
         predicate.$set["details.#{updateIndex}.quality"] = quality
-        predicate.$set["details.#{updateIndex}.basicQuality"] = quality * updateInstance.conversion
-        predicate.$set["details.#{updateIndex}.basicQualityAvailable"]   = quality * updateInstance.conversion
-        predicate.$set["details.#{updateIndex}.basicImportQualityDebit"] = quality * updateInstance.conversion
+        predicate.$set["details.#{updateIndex}.basicQuantity"] = quality * updateInstance.conversion
+        predicate.$set["details.#{updateIndex}.basicQuantityAvailable"]   = quality * updateInstance.conversion
+        predicate.$set["details.#{updateIndex}.basicImportQuantityDebit"] = quality * updateInstance.conversion
 
       if _.keys(predicate.$set).length > 0
         recalculationOrder(@_id) if Schema.orders.update(@_id, predicate)
@@ -251,30 +254,26 @@ Schema.add 'orders', "Order", class Order
       return console.log('Order da xac nhan') unless _.contains(statusCantEdit, doc.orderStatus)
       return console.log('customer not found') unless @buyer
       orderId = @_id
-      for detail in @details
-        if product = Schema.products.findOne(detail.product)
-          for unit in product.units
-            if unit._id is detail.productUnit
-              crossAvailable = (unit.quality.availableQuality - detail.basicQuality)/unit.conversion
-              if product.inventoryInitial and crossAvailable < 0
-                console.log('product quality nho'); return
-        else
-          console.log('product not Found'); return
 
-        Meteor.call 'orderSellerConfirm', orderId, (error, result) ->
-          console.log error, result, 'sellerConfirm'
-          unless Schema.orders.findOne({
-            merchant    : Merchant.getId()
-            orderType   : Enums.getValue('OrderTypes', 'initialize')
-            orderStatus : Enums.getValue('OrderStatus', 'initialize')
-          }) then Order.insert()
+      for productId, details of _.groupBy(@details, (item) -> item.product)
+        if !product = Schema.products.findOne(productId)
+          (console.log('product not Found'); return)
 
-#          Meteor.call 'orderAccountingConfirmed', orderId, (error, result) ->
-#            console.log result, 'accounting'
-#            Meteor.call 'orderExportConfirmed', orderId, (error, result) ->
-#              console.log result, 'export'
-#              Meteor.call 'orderSuccessConfirmed', orderId, (error, result) ->
-#                console.log result, 'success'
+        availableQuantity = product.quantities[0].availableQuantity ? 0
+        for orderDetail in details
+          saleQuantity  = 0 unless saleQuantity
+          saleQuantity += orderDetail.basicQuantity
+
+        if product.inventoryInitial and (availableQuantity - saleQuantity) < 0
+          console.log('product quality nho'); return
+
+      Meteor.call 'orderSellerConfirm', orderId, (error, result) ->
+        console.log error, result, 'sellerConfirm'
+        unless Schema.orders.findOne({
+          merchant    : Merchant.getId()
+          orderType   : Enums.getValue('OrderTypes', 'initialize')
+          orderStatus : Enums.getValue('OrderStatus', 'initialize')
+        }) then Order.insert()
 
 
     doc.addDelivery = (option, callback) ->
@@ -337,8 +336,8 @@ recalculationOrder = (orderId) ->
   if orderFound = Schema.orders.findOne(orderId)
     totalPrice = 0; discountCash = 0
     for detail in orderFound.details
-      totalPrice   += detail.quality * detail.price
-      discountCash += detail.quality * detail.discountCash
+      totalPrice   += detail.quality * detail.conversion * detail.price
+      discountCash += detail.quality * detail.conversion * detail.discountCash
     Schema.orders.update orderFound._id, $set:{
       totalPrice    : totalPrice
       discountCash  : discountCash

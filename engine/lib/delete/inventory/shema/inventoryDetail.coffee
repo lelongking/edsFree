@@ -18,27 +18,27 @@ simpleSchema.inventoryDetails = new SimpleSchema
     type: String
 
 #so luong trong kho
-  lockOriginalQuality:
+  lockOriginalQuantity:
     type: Number
     defaultValue: 0
 
 #so luong trong kho
-  originalQuality:
+  originalQuantity:
     type: Number
     defaultValue: 0
 
 #so luong kiem tra
-  realQuality:
+  realQuantity:
     type: Number
     defaultValue: 0
 
 #so luong ban khi kiem kho
-  saleQuality:
+  saleQuantity:
     type: Number
     defaultValue: 0
 
 #so luong mat tiem lai dc
-  lostQuality:
+  lostQuantity:
     type: Number
     defaultValue: 0
 

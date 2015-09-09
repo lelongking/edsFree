@@ -24,37 +24,6 @@ Meteor.methods
       throw new Meteor.Error('providerToImport', error)
 
 
-  importInventory: (importId)->
-    user = Meteor.users.findOne(Meteor.userId())
-    return {valid: false, error: 'user not found!'} if !user
-
-    importQuery =
-      _id        : importId
-      creator    : user._id
-      merchant   : user.profile.merchant
-      importType : Enums.getValue('ImportTypes', 'inventory')
-    importFound = Schema.imports.findOne importQuery
-    return {valid: false, error: 'import not found!'} if !importFound
-
-    for detail in importFound.details
-      detailIndex = 0; updateQuery = {$inc:{}}
-      product = Schema.products.findOne(detail.product)
-      for unit, index in product.units
-        if unit._id is detail.productUnit
-          updateQuery.$inc["units.#{index}.quality.availableQuality"] = detail.basicQuality
-          updateQuery.$inc["units.#{index}.quality.inStockQuality"]   = detail.basicQuality
-          updateQuery.$inc["units.#{index}.quality.importQuality"]    = detail.basicQuality
-          break
-
-      updateQuery.$inc["quantities.#{detailIndex}.availableQuality"]= detail.basicQuality
-      updateQuery.$inc["quantities.#{detailIndex}.inStockQuality"]  = detail.basicQuality
-      updateQuery.$inc["quantities.#{detailIndex}.importQuality"]   = detail.basicQuality
-      console.log updateQuery
-      Schema.products.update detail.product, updateQuery
-
-    Schema.imports.update importId, $set:{importType: Enums.getValue('ImportTypes', 'inventorySuccess')}
-
-
   importAccountingConfirmed: (importId)->
     user = Meteor.users.findOne(Meteor.userId())
     return {valid: false, error: 'user not found!'} if !user
@@ -129,21 +98,21 @@ Meteor.methods
     importUpdate = $set:
       importType : Enums.getValue('ImportTypes', 'success')
       successDate: new Date()
-      importCode : "#{Helpers.orderCodeCreate(providerFound.billNo)}/#{Helpers.orderCodeCreate(merchantFound.importBill)}"
+      importCode : "#{Helpers.orderCodeCreate(providerFound.importBillNo)}/#{Helpers.orderCodeCreate(merchantFound.importBillNo)}"
 
     for detail, detailIndex in importFound.details
       if product = Schema.products.findOne(detail.product)
         productDetailIndex = 0; updateQuery = {$inc:{}}
         for unit, index in product.units
           if unit._id is detail.productUnit
-            updateQuery.$inc["units.#{index}.quality.availableQuality"] = detail.basicQuality
-            updateQuery.$inc["units.#{index}.quality.inStockQuality"]   = detail.basicQuality
-            updateQuery.$inc["units.#{index}.quality.importQuality"]    = detail.basicQuality
+            updateQuery.$inc["units.#{index}.quality.availableQuantity"] = detail.basicQuantity
+            updateQuery.$inc["units.#{index}.quality.inStockQuantity"]   = detail.basicQuantity
+            updateQuery.$inc["units.#{index}.quality.importQuantity"]    = detail.basicQuantity
             break
 
-        updateQuery.$inc["quantities.#{productDetailIndex}.availableQuality"] = detail.basicQuality
-        updateQuery.$inc["quantities.#{productDetailIndex}.inStockQuality"]   = detail.basicQuality
-        updateQuery.$inc["quantities.#{productDetailIndex}.importQuality"]    = detail.basicQuality
+        updateQuery.$inc["quantities.#{productDetailIndex}.availableQuantity"] = detail.basicQuantity
+        updateQuery.$inc["quantities.#{productDetailIndex}.inStockQuantity"]   = detail.basicQuantity
+        updateQuery.$inc["quantities.#{productDetailIndex}.importQuantity"]    = detail.basicQuantity
         updateQuery.$set = {lastExpire: detail.expire} if detail.expire
         Schema.products.update detail.product, updateQuery
 
@@ -159,5 +128,5 @@ Meteor.methods
         importUpdate.$set["details.#{detailIndex}.note"] = 'Nhập kho mới'
 
     Schema.imports.update importFound._id, importUpdate
-    Schema.merchants.update(merchantFound._id, $inc:{importBill: 1})
-    Schema.providers.update importFound.provider, {$set:{allowDelete: false}, $inc: {billNo: 1}}
+    Schema.merchants.update(merchantFound._id, $inc:{importBill: 1, importBillNo: 1})
+    Schema.providers.update importFound.provider, {$set:{allowDelete: false}, $inc: {billNo: 1, importBillNo: 1}}

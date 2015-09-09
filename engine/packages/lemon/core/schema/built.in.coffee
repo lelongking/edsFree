@@ -52,7 +52,7 @@ simpleSchema.Detail = new SimpleSchema
   quality:
     type: Number
 
-  basicQuality:
+  basicQuantity:
     type: Number
 
   conversion:

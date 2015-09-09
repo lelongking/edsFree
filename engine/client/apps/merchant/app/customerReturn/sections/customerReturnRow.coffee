@@ -1,21 +1,21 @@
 scope = logics.customerReturn
 lemon.defineHyper Template.customerReturnRowEdit,
   rendered: ->
-    @ui.$editQuality.inputmask "numeric",
+    @ui.$editQuantity.inputmask "numeric",
       {autoGroup: true, groupSeparator:",", radixPoint: ".", integerDigits:11, rightAlign: false}
-    @ui.$editQuality.val Template.currentData().quality
+    @ui.$editQuantity.val Template.currentData().quality
 
-    @ui.$editQuality.select()
+    @ui.$editQuantity.select()
 
   events:
     "keyup": (event, template) ->
       rowId = Template.currentData()._id
       details = Template.parentData().details
 
-      quality = Number(template.ui.$editQuality.inputmask('unmaskedvalue'))
+      quality = Number(template.ui.$editQuantity.inputmask('unmaskedvalue'))
       if quality < 0
         quality = Math.abs(quality)
-        template.ui.$editQuality.val(quality)
+        template.ui.$editQuantity.val(quality)
 
       if event.which is 13
         discountCash = undefined if discountCash is Template.currentData().price
@@ -35,18 +35,18 @@ lemon.defineHyper Template.customerReturnRowEdit,
 
 #lemon.defineHyper Template.customerReturnRowDisplay,
 #  helpers:
-#    crossReturnAvailableQuality: ->
-#      currentDetail = @; currentProductQuality = 0
+#    crossReturnAvailableQuantity: ->
+#      currentDetail = @; currentProductQuantity = 0
 #      currentParent = Session.get('currentReturnParent')
 #      if currentDetail and currentParent
 #        for orderDetail in currentParent
 #          if orderDetail.productUnit is currentDetail.productUnit
-#            currentProductQuality += orderDetail.basicQuality
+#            currentProductQuantity += orderDetail.basicQuantity
 #
 #            if orderDetail.returnDetails?.length > 0
-#              (currentProductQuality -= currentDetail.basicQuality) for currentDetail in orderDetail.returnDetails
+#              (currentProductQuantity -= currentDetail.basicQuantity) for currentDetail in orderDetail.returnDetails
 #
-#        crossAvailable = currentProductQuality - currentDetail.basicQuality
+#        crossAvailable = currentProductQuantity - currentDetail.basicQuantity
 #        if crossAvailable < 0
 #          crossAvailable = Math.ceil(Math.abs(crossAvailable/currentDetail.conversion))*(-1)
 #        else

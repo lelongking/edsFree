@@ -6,7 +6,6 @@ lemon.defineHyper Template.overviewProductInventory,
 
   helpers:
     currentProduct: -> scope.currentProduct
-    upperGapQuality: -> Session.get('productManagementCurrentProduct').quantities[0].upperGapQuality ? 0
 
     importUnit: ->
       importUnitFound = {quality:0}
@@ -35,21 +34,24 @@ lemon.defineHyper Template.overviewProductInventory,
           (details.push {_id : unit._id, quality: 0}) for unit in scope.currentProduct.units
           Session.set('productManagementInventoryDetails', details)
 
-    "keyup [name='upperGapQuality']": (event, template) ->
-      $quantity = $(template.find("[name='upperGapQuality']"))
+    "keyup [name='normsQuantity']": (event, template) ->
+      $quantity = $(template.find("[name='normsQuantity']"))
 #      console.log Number($quantity.val())
 #      inventoryDetails = Session.get('productManagementInventoryDetails')
 #      (detailIndex = index if detail._id is @_id) for detail, index in inventoryDetails
 #
-      if isNaN(Number($quantity.val()))
-        $quantity.val(Session.get('productManagementCurrentProduct').quantities[0].upperGapQuantity)
-      else
-        Schema.products.update(Session.get('productManagementCurrentProduct')._id, $set:{'quantities.0.upperGapQuantity': Number($quantity.val())})
-
       if event.which is 13
         console.log 'Enter'
 #        inventoryDetails[detailIndex].quality = Number($quantity.val())
 #        Session.set('productManagementInventoryDetails', inventoryDetails)
+      else if isNaN(Number($quantity.val()))
+        $quantity.val(Session.get('productManagementCurrentProduct').quantities[0].normsQuantity)
+      else
+        Schema.products.update(
+          Session.get('productManagementCurrentProduct')._id
+          $set:{'quantities.0.normsQuantity': Number($quantity.val())}
+        )
+      event.stopPropagation()
 
 lemon.defineHyper Template.overviewProductInventoryDetail,
   rendered: -> $("[name=deliveryDate]").datepicker()
@@ -63,9 +65,9 @@ lemon.defineHyper Template.overviewProductInventoryDetail,
       quality
 
   events:
-    "keyup [name='unitQuality']": (event, template) ->
+    "keyup [name='unitQuantity']": (event, template) ->
       if User.hasManagerRoles()
-        $quantity = $(template.find("[name='unitQuality']"))
+        $quantity = $(template.find("[name='unitQuantity']"))
         inventoryDetails = Session.get('productManagementInventoryDetails')
         (detailIndex = index if detail._id is @_id) for detail, index in inventoryDetails
 

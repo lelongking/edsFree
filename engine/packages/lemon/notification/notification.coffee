@@ -55,15 +55,15 @@ sendAllUserHasPermissionWarehouseManagementByPayableExpire = (transaction, sende
       transaction._id,
       Apps.Merchant.notificationGroup.payableDate.key)
 
-sendAllUserHasPermissionWarehouseManagementAlertQuality = (product, sender)->
+sendAllUserHasPermissionWarehouseManagementAlertQuantity = (product, sender)->
   for warehouseManagement in allUserHasPermissionOf(profile.parentMerchant, Apps.Merchant.Permissions.warehouseManagement)
     unless sender.user is warehouseManagement.user
       sendNotificationOptional(
         sender.user,
         warehouseManagement.user,
-        Apps.Merchant.NotificationMessages.productAlertQuality(product.name, product.quality, product.place),
+        Apps.Merchant.NotificationMessages.productAlertQuantity(product.name, product.quality, product.place),
         product._id,
-        Apps.Merchant.notificationGroup.alertQuality.key)
+        Apps.Merchant.notificationGroup.alertQuantity.key)
 
 #---------------------------------------------------------------------------------------------------------------------------------------
 Schema.add 'notifications', "Notification", class Notification
@@ -94,6 +94,6 @@ Schema.add 'notifications', "Notification", class Notification
     if !profile then profile = Schema.userProfiles.findOne({user: Meteor.userId()})
     sendAllUserHasPermissionWarehouseManagementByPayableExpire(transaction, profile)
 
-  @productAlertQuality: (product, profile)->
+  @productAlertQuantity: (product, profile)->
     if !profile then profile = Schema.userProfiles.findOne({user: Meteor.userId()})
-    sendAllUserHasPermissionWarehouseManagementAlertQuality(product, profile)
+    sendAllUserHasPermissionWarehouseManagementAlertQuantity(product, profile)

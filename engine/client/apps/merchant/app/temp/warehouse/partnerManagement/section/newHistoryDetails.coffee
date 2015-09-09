@@ -1,7 +1,7 @@
 lemon.defineWidget Template.partnerManagementNewHistoryDetails,
-  quality: -> if @conversionQuality then @unitQuality else @importQuality
-  importPrice: -> if @conversionQuality then @unitPrice else @importPrice
-  totalPrice: -> if @conversionQuality then @unitQuality*@unitPrice else @importQuality*@importPrice
+  quality: -> if @conversionQuantity then @unitQuantity else @importQuantity
+  importPrice: -> if @conversionQuantity then @unitPrice else @importPrice
+  totalPrice: -> if @conversionQuantity then @unitQuantity*@unitPrice else @importQuantity*@importPrice
 
   receivableClass     : -> if @receivable then 'receive' else 'paid'
   finalReceivableClass: -> if @latestDebtBalance >= 0 then 'receive' else 'paid'

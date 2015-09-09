@@ -1,30 +1,30 @@
-subtractQualityOnSales = (branchProductId, saleDetail, productDetails, salesQuality)->
-  transactionQuality = 0
+subtractQuantityOnSales = (branchProductId, saleDetail, productDetails, salesQuantity)->
+  transactionQuantity = 0
   for productDetail in productDetails
     productDetail = Schema.productDetails.findOne(productDetail._id)
-    if productDetail.availableQuality > 0
-      requiredQuality = salesQuality - transactionQuality
-      if productDetail.availableQuality >= requiredQuality
-        takenQuality = requiredQuality
+    if productDetail.availableQuantity > 0
+      requiredQuantity = salesQuantity - transactionQuantity
+      if productDetail.availableQuantity >= requiredQuantity
+        takenQuantity = requiredQuantity
         Schema.saleDetails.update saleDetail._id, $set:{productDetail: productDetail._id}
       else
-        takenQuality = productDetail.availableQuality
+        takenQuantity = productDetail.availableQuantity
         newSaleDetail =
           sale              : saleDetail.sale
           product           : saleDetail.product
           branchProduct     : branchProductId
           productDetail     : productDetail._id
-          quality           : takenQuality
-          returnQuality     : 0
+          quality           : takenQuantity
+          returnQuantity     : 0
           price             : saleDetail.price
           discountPercent   : saleDetail.discountPercent
           export            : false
           status            : false
           unitPrice         : saleDetail.unitPrice
-          conversionQuality : saleDetail.conversionQuality
+          conversionQuantity : saleDetail.conversionQuantity
 
-        newSaleDetail.unitQuality  = takenQuality/newSaleDetail.conversionQuality
-        newSaleDetail.totalPrice   = takenQuality*saleDetail.price
+        newSaleDetail.unitQuantity  = takenQuantity/newSaleDetail.conversionQuantity
+        newSaleDetail.totalPrice   = takenQuantity*saleDetail.price
         newSaleDetail.discountCash = newSaleDetail.totalPrice*saleDetail.discountPercent/100
         newSaleDetail.finalPrice   = newSaleDetail.totalPrice - newSaleDetail.discountCash
 
@@ -35,87 +35,87 @@ subtractQualityOnSales = (branchProductId, saleDetail, productDetails, salesQual
 
         saleDetailOption =
           quality      : -newSaleDetail.quality
-          unitQuality  : -newSaleDetail.unitQuality
+          unitQuantity  : -newSaleDetail.unitQuantity
           totalPrice   : -newSaleDetail.totalPrice
           discountCash : -newSaleDetail.discountCash
           finalPrice   : -newSaleDetail.finalPrice
         Schema.saleDetails.update saleDetail._id, $unset:{productDetail: true}, $inc:saleDetailOption
 
-      Schema.productDetails.update productDetail._id, $set:{allowDelete: false}, $inc:{inStockQuality: -takenQuality, availableQuality: -takenQuality}
-      Schema.branchProductSummaries.update branchProductId, $inc:{inStockQuality: -takenQuality, availableQuality: -takenQuality}
+      Schema.productDetails.update productDetail._id, $set:{allowDelete: false}, $inc:{inStockQuantity: -takenQuantity, availableQuantity: -takenQuantity}
+      Schema.branchProductSummaries.update branchProductId, $inc:{inStockQuantity: -takenQuantity, availableQuantity: -takenQuantity}
 
-      transactionQuality += takenQuality
-      if transactionQuality == salesQuality then break
+      transactionQuantity += takenQuantity
+      if transactionQuantity == salesQuantity then break
 
 setOption = (type, smallerUnit, currentUnit, detail)->
   if type is 'saleDetail'
     option =
-      conversionQuality: detail.conversionQuality*smallerUnit.conversionQuality
-      price            : detail.price/smallerUnit.conversionQuality
-      quality          : detail.quality*smallerUnit.conversionQuality
-      returnQuality    : detail.returnQuality*smallerUnit.conversionQuality
+      conversionQuantity: detail.conversionQuantity*smallerUnit.conversionQuantity
+      price            : detail.price/smallerUnit.conversionQuantity
+      quality          : detail.quality*smallerUnit.conversionQuantity
+      returnQuantity    : detail.returnQuantity*smallerUnit.conversionQuantity
     option.unit = smallerUnit._id if smallerUnit._id is currentUnit._id
 
   else if type is 'productDetail'
     option =
-      conversionQuality: detail.conversionQuality*smallerUnit.conversionQuality
-      importQuality    : detail.importQuality*smallerUnit.conversionQuality
-      availableQuality : detail.availableQuality*smallerUnit.conversionQuality
-      inStockQuality   : detail.inStockQuality*smallerUnit.conversionQuality
+      conversionQuantity: detail.conversionQuantity*smallerUnit.conversionQuantity
+      importQuantity    : detail.importQuantity*smallerUnit.conversionQuantity
+      availableQuantity : detail.availableQuantity*smallerUnit.conversionQuantity
+      inStockQuantity   : detail.inStockQuantity*smallerUnit.conversionQuantity
     option.unit = smallerUnit._id if smallerUnit._id is currentUnit._id
 
   else if type is 'returnDetail'
     option =
-      conversionQuality: detail.conversionQuality*smallerUnit.conversionQuality
-      price            : detail.price/smallerUnit.conversionQuality
-      returnQuality    : detail.returnQuality*smallerUnit.conversionQuality
+      conversionQuantity: detail.conversionQuantity*smallerUnit.conversionQuantity
+      price            : detail.price/smallerUnit.conversionQuantity
+      returnQuantity    : detail.returnQuantity*smallerUnit.conversionQuantity
     option.unit = smallerUnit._id if smallerUnit._id is currentUnit._id
 
   return option
 
 
 Meteor.methods
-  calculateAllProductTotalQualityAndAvailableQuality: ->
+  calculateAllProductTotalQuantityAndAvailableQuantity: ->
     if profile = Schema.userProfiles.findOne({user: Meteor.userId()})
       Schema.products.find({parentMerchant: profile.parentMerchant}).forEach(
         (product) ->
-          productSalesQuality = {totalQuality: 0, availableQuality: 0, inStockQuality: 0}
+          productSalesQuantity = {totalQuantity: 0, availableQuantity: 0, inStockQuantity: 0}
           Schema.branchProductSummaries.find({product: product._id}).forEach(
             (branchProduct)->
-              optionProduct = {totalQuality: 0, availableQuality: 0, inStockQuality: 0}
+              optionProduct = {totalQuantity: 0, availableQuantity: 0, inStockQuantity: 0}
               Schema.productDetails.find({product: branchProduct.product, merchant: branchProduct.merchant}).forEach(
                 (productDetail)->
-                  optionProduct.totalQuality     += productDetail.importQuality
-                  optionProduct.availableQuality += productDetail.availableQuality
-                  optionProduct.inStockQuality   += productDetail.inStockQuality
+                  optionProduct.totalQuantity     += productDetail.importQuantity
+                  optionProduct.availableQuantity += productDetail.availableQuantity
+                  optionProduct.inStockQuantity   += productDetail.inStockQuantity
               )
               Schema.branchProductSummaries.update branchProduct._id, $set: optionProduct
 
-              productSalesQuality.totalQuality     += optionProduct.totalQuality
-              productSalesQuality.availableQuality += optionProduct.availableQuality
-              productSalesQuality.inStockQuality   += optionProduct.inStockQuality
+              productSalesQuantity.totalQuantity     += optionProduct.totalQuantity
+              productSalesQuantity.availableQuantity += optionProduct.availableQuantity
+              productSalesQuantity.inStockQuantity   += optionProduct.inStockQuantity
           )
-          console.log 'Product:' + product._id + ', Quality' + productSalesQuality
-          Schema.products.update product._id, $set: productSalesQuality
+          console.log 'Product:' + product._id + ', Quantity' + productSalesQuantity
+          Schema.products.update product._id, $set: productSalesQuantity
       )
 
 
-  calculateAllProductSalesQuality: ->
+  calculateAllProductSalesQuantity: ->
     if profile = Schema.userProfiles.findOne({user: Meteor.userId()})
       Schema.products.find({parentMerchant: profile.parentMerchant}).forEach(
         (product) ->
-          productSalesQuality = 0
+          productSalesQuantity = 0
           Schema.branchProductSummaries.find({product: product._id}).forEach(
             (branchProduct)->
-              salesQuality = 0
+              salesQuantity = 0
               Schema.saleDetails.find({product: branchProduct.product}).forEach(
-                (saleDetail)-> salesQuality += (saleDetail.quality - saleDetail.returnQuality)
+                (saleDetail)-> salesQuantity += (saleDetail.quality - saleDetail.returnQuantity)
               )
-              productSalesQuality += salesQuality
-              Schema.branchProductSummaries.update branchProduct._id, $set: {salesQuality: salesQuality}
+              productSalesQuantity += salesQuantity
+              Schema.branchProductSummaries.update branchProduct._id, $set: {salesQuantity: salesQuantity}
           )
-          console.log 'Product: ' + product._id + ', SaleQuality: ' + productSalesQuality
-          Schema.products.update product._id, $set: {salesQuality: productSalesQuality}
+          console.log 'Product: ' + product._id + ', SaleQuantity: ' + productSalesQuantity
+          Schema.products.update product._id, $set: {salesQuantity: productSalesQuantity}
       )
 
 
@@ -123,8 +123,8 @@ Meteor.methods
 #      allMerchant  = Schema.merchants.find({$or:[{_id: profile.parentMerchant }, {parent: profile.parentMerchant}]}).fetch()
 #      for merchant in allMerchant
 #        for product in Schema.products.find({merchant: merchant._id}).fetch()
-#          optionProduct ={salesQuality: 0}
-#          optionProduct.salesQuality += (saleDetail.quality - saleDetail.returnQuality) for saleDetail in Schema.saleDetails.find({product: product._id}).fetch()
+#          optionProduct ={salesQuantity: 0}
+#          optionProduct.salesQuantity += (saleDetail.quality - saleDetail.returnQuantity) for saleDetail in Schema.saleDetails.find({product: product._id}).fetch()
 #          Schema.products.update product._id, $set: optionProduct
 
   updateProductBasicDetailMode: (branchProductId, mode = false)->
@@ -140,41 +140,41 @@ Meteor.methods
         combinedImportDetails = importBasic.concat(importProductDetails)
 
         #kiem tra so luong
-        countSaleQuality = 0
-        countSaleQuality += (detail.quality - detail.returnQuality) for detail in saleDetails
+        countSaleQuantity = 0
+        countSaleQuantity += (detail.quality - detail.returnQuantity) for detail in saleDetails
 
-        countImportQuality = 0
-        countImportQuality += detail.importQuality for detail in combinedImportDetails
+        countImportQuantity = 0
+        countImportQuantity += detail.importQuantity for detail in combinedImportDetails
 
         #cap nhat du lieu san phan ban dau
-        totalQuality = 0
+        totalQuantity = 0
         for productDetail in combinedImportDetails
-          totalQuality += productDetail.importQuality
+          totalQuantity += productDetail.importQuantity
           Schema.productDetails.update productDetail._id, $set:{
-            availableQuality: productDetail.importQuality
-            inStockQuality  : productDetail.importQuality
+            availableQuantity: productDetail.importQuantity
+            inStockQuantity  : productDetail.importQuantity
             allowDelete     : false
           }
         Schema.branchProductSummaries.update branchProduct._id, $set: {
-          totalQuality    : totalQuality
-          availableQuality: totalQuality
-          inStockQuality  : totalQuality
+          totalQuantity    : totalQuantity
+          availableQuantity: totalQuantity
+          inStockQuantity  : totalQuantity
         }
 
         #tu dong tru san pham
-        if countSaleQuality > countImportQuality
+        if countSaleQuantity > countImportQuantity
           console.log "So luong nhap kho du."
         else
-          subtractQualityOnSales(branchProductId, detail, combinedImportDetails, (detail.quality - detail.returnQuality)) for detail in saleDetails
+          subtractQuantityOnSales(branchProductId, detail, combinedImportDetails, (detail.quality - detail.returnQuantity)) for detail in saleDetails
           Meteor.call 'checkProductValidation', branchProduct.product
-          productOption = {availableQuality: 0, inStockQuality: 0, totalQuality: 0, salesQuality: 0, returnQualityByDistributor: 0, returnQualityByCustomer: 0}
+          productOption = {availableQuantity: 0, inStockQuantity: 0, totalQuantity: 0, salesQuantity: 0, returnQuantityByDistributor: 0, returnQuantityByCustomer: 0}
           if newBranchProduct = Schema.branchProductSummaries.findOne(branchProductId)
-            productOption.totalQuality     = newBranchProduct.totalQuality     - branchProduct.totalQuality
-            productOption.inStockQuality   = newBranchProduct.inStockQuality   - branchProduct.inStockQuality
-            productOption.availableQuality = newBranchProduct.availableQuality - branchProduct.availableQuality
-            productOption.salesQuality     = newBranchProduct.salesQuality - branchProduct.salesQuality
-            productOption.returnQualityByDistributor = newBranchProduct.returnQualityByDistributor - branchProduct.returnQualityByDistributor
-            productOption.returnQualityByCustomer    = newBranchProduct.returnQualityByCustomer - branchProduct.returnQualityByCustomer
+            productOption.totalQuantity     = newBranchProduct.totalQuantity     - branchProduct.totalQuantity
+            productOption.inStockQuantity   = newBranchProduct.inStockQuantity   - branchProduct.inStockQuantity
+            productOption.availableQuantity = newBranchProduct.availableQuantity - branchProduct.availableQuantity
+            productOption.salesQuantity     = newBranchProduct.salesQuantity - branchProduct.salesQuantity
+            productOption.returnQuantityByDistributor = newBranchProduct.returnQuantityByDistributor - branchProduct.returnQuantityByDistributor
+            productOption.returnQuantityByCustomer    = newBranchProduct.returnQuantityByCustomer - branchProduct.returnQuantityByCustomer
             Schema.branchProductSummaries.update newBranchProduct._id, $set: {basicDetailModeEnabled: false}
             Schema.products.update branchProduct.product, $inc: productOption
 
@@ -182,8 +182,8 @@ Meteor.methods
 
 #          Schema.branchProductSummaries.find({product: branchProduct.product}).forEach(
 #            (branchProduct) ->
-#              productOption.inStockQuality   += branchProduct.inStockQuality
-#              productOption.availableQuality += branchProduct.availableQuality
+#              productOption.inStockQuantity   += branchProduct.inStockQuantity
+#              productOption.availableQuantity += branchProduct.availableQuantity
 #          )
 #          Schema.branchProductSummaries.update branchProduct._id, $set: {basicDetailModeEnabled: true}
 #          Schema.products.update branchProduct.product, $set: productOption
@@ -191,25 +191,25 @@ Meteor.methods
   checkProductValidation: (id)->
     if product = Schema.products.findOne(id)
       if branchProduct = Schema.branchProductSummaries.findOne({product: product._id})
-        branchProductOption = {availableQuality: 0, inStockQuality: 0, totalQuality: 0, salesQuality: 0, returnQualityByDistributor: 0, returnQualityByCustomer: 0}
+        branchProductOption = {availableQuantity: 0, inStockQuantity: 0, totalQuantity: 0, salesQuantity: 0, returnQuantityByDistributor: 0, returnQuantityByCustomer: 0}
         Schema.productDetails.find({product: product._id, merchant: product.merchant}).forEach(
           (productDetail)->
-            branchProductOption.totalQuality += productDetail.importQuality if productDetail.importQuality
+            branchProductOption.totalQuantity += productDetail.importQuantity if productDetail.importQuantity
         )
         Schema.saleDetails.find({product: product._id}).forEach(
-          (saleDetail)-> branchProductOption.salesQuality += saleDetail.quality
+          (saleDetail)-> branchProductOption.salesQuantity += saleDetail.quality
         )
         Schema.returnDetails.find({product: product._id}).forEach(
           (returnDetail) ->
             currentReturn = Schema.returns.findOne(returnDetail.return)
             if currentReturn.status is 2
-              branchProductOption.returnQualityByCustomer += returnDetail.returnQuality if currentReturn.customer
-              branchProductOption.returnQualityByDistributor += returnDetail.returnQuality if currentReturn.distributor
+              branchProductOption.returnQuantityByCustomer += returnDetail.returnQuantity if currentReturn.customer
+              branchProductOption.returnQuantityByDistributor += returnDetail.returnQuantity if currentReturn.distributor
         )
 
-        branchProductOption.totalQuality     = branchProductOption.totalQuality - branchProductOption.returnQualityByDistributor
-        branchProductOption.availableQuality = branchProductOption.totalQuality - branchProductOption.salesQuality + branchProductOption.returnQualityByCustomer
-        branchProductOption.inStockQuality   = branchProductOption.totalQuality - branchProductOption.salesQuality + branchProductOption.returnQualityByCustomer
+        branchProductOption.totalQuantity     = branchProductOption.totalQuantity - branchProductOption.returnQuantityByDistributor
+        branchProductOption.availableQuantity = branchProductOption.totalQuantity - branchProductOption.salesQuantity + branchProductOption.returnQuantityByCustomer
+        branchProductOption.inStockQuantity   = branchProductOption.totalQuantity - branchProductOption.salesQuantity + branchProductOption.returnQuantityByCustomer
         console.log product
         console.log branchProductOption
         Schema.branchProductSummaries.update branchProduct._id, $set:branchProductOption
@@ -218,22 +218,22 @@ Meteor.methods
     if product = Schema.products.findOne(productId)
       if product.basicDetailModeEnabled != mode
         productDetailList = []
-        totalImportQuality = 0
-        totalQuality = 0
+        totalImportQuantity = 0
+        totalQuantity = 0
         Schema.productDetails.find({product: product._id}).forEach(
           (detail) ->
             Schema.productDetails.update detail, $set:{allowDelete: false}
-            totalImportQuality += detail.importQuality
+            totalImportQuantity += detail.importQuantity
         )
         saleDetails = Schema.saleDetails.find({product: product._id}).fetch()
         if saleDetails.length > 0
-          totalQuality += (detail.quality - detail.returnQuality) for detail in saleDetails
+          totalQuantity += (detail.quality - detail.returnQuantity) for detail in saleDetails
 #          productGroup = _.chain(saleDetails)
 #          .groupBy("unit")
 #          .map (group, key) ->
 #            return {
 #            product: key
-#            quality: _.reduce(group, ((res, current) -> res + (current.quality - current.returnQuality) ), 0)
+#            quality: _.reduce(group, ((res, current) -> res + (current.quality - current.returnQuantity) ), 0)
 #            }
 #          .value()
 
@@ -245,11 +245,11 @@ Meteor.methods
 #                product           : product._id
 #                unitPrice         : product.importPrice ? 0
 #                importPrice       : product.importPrice ? 0
-#                unitQuality       : item.quality
-#                conversionQuality : 1
-#                importQuality     : item.quality
-#                availableQuality  : item.quality
-#                inStockQuality    : item.quality
+#                unitQuantity       : item.quality
+#                conversionQuantity : 1
+#                importQuantity     : item.quality
+#                availableQuantity  : item.quality
+#                inStockQuantity    : item.quality
 #            else
 #              productUnit = Schema.productUnits.findOne({_id: item.product, product: product._id})
 #                detailOption =
@@ -258,23 +258,23 @@ Meteor.methods
 #                  product           : product._id
 #                  unitPrice         : productUnit.importPrice
 #                  importPrice       : productUnit.importPrice
-#                  unitQuality       : item.quality/productUnit.conversionQuality
+#                  unitQuantity       : item.quality/productUnit.conversionQuantity
 #                  unit              : productUnit._id
-#                  conversionQuality : productUnit.conversionQuality
-#                  importQuality     : item.quality
-#                  availableQuality  : item.quality
-#                  inStockQuality    : item.quality
+#                  conversionQuantity : productUnit.conversionQuantity
+#                  importQuantity     : item.quality
+#                  availableQuantity  : item.quality
+#                  inStockQuantity    : item.quality
           detailOption =
             merchant          : product.merchant
             warehouse         : product.warehouse
             product           : product._id
             unitPrice         : product.importPrice ? 0
             importPrice       : product.importPrice ? 0
-            unitQuality       : totalQuality
-            conversionQuality : 1
-            importQuality     : totalQuality
-            availableQuality  : totalQuality
-            inStockQuality    : totalQuality
+            unitQuantity       : totalQuantity
+            conversionQuantity : 1
+            importQuantity     : totalQuantity
+            availableQuantity  : totalQuantity
+            inStockQuantity    : totalQuantity
 
           if detailOption
             productDetailId = Schema.productDetails.insert detailOption
@@ -283,13 +283,13 @@ Meteor.methods
               Schema.productUnits.update detailOption.unit, $set:{allowDelete: false} if detailOption.unit
 
           importBasic = Schema.productDetails.find({_id: {$in:productDetailList} }).fetch()
-          subtractQualityOnSales(detail, importBasic, (detail.quality - detail.returnQuality)) for detail in saleDetails
+          subtractQuantityOnSales(detail, importBasic, (detail.quality - detail.returnQuantity)) for detail in saleDetails
           Schema.products.update product._id, $set:{
             basicDetailModeEnabled: mode
             allowDelete     : false
-            totalQuality    : totalImportQuality + totalQuality
-            availableQuality: totalImportQuality
-            inStockQuality  : totalImportQuality
+            totalQuantity    : totalImportQuantity + totalQuantity
+            availableQuantity: totalImportQuantity
+            inStockQuantity  : totalImportQuantity
           }
 
   changedSmallerUnit: (productId, unitId)->
@@ -318,15 +318,15 @@ Meteor.methods
             productCode     : smallerUnit.productCode
             price           : smallerUnit.price
             importPrice     : smallerUnit.importPrice
-            salesQuality    : product.salesQuality*smallerUnit.conversionQuality
-            totalQuality    : product.totalQuality*smallerUnit.conversionQuality
-            availableQuality: product.availableQuality*smallerUnit.conversionQuality
-            inStockQuality  : product.inStockQuality*smallerUnit.conversionQuality
+            salesQuantity    : product.salesQuantity*smallerUnit.conversionQuantity
+            totalQuantity    : product.totalQuantity*smallerUnit.conversionQuantity
+            availableQuantity: product.availableQuantity*smallerUnit.conversionQuantity
+            inStockQuantity  : product.inStockQuantity*smallerUnit.conversionQuantity
 
           smallerUnitOption =
             productCode      : product.productCode
             unit             : product.basicUnit
-            conversionQuality: smallerUnit.conversionQuality
+            conversionQuantity: smallerUnit.conversionQuantity
             price            : product.price
             importPrice      : product.importPrice
             allowDelete      : product.allowDelete
@@ -354,7 +354,7 @@ Meteor.methods
               Schema.returnDetails.find({product: product._id, unit: productUnit._id}).forEach(
                 (detail) -> Schema.returnDetails.update detail._id, $set: setOption('returnDetail', smallerUnit, productUnit, detail))
 
-              Schema.productUnits.update productUnit._id, $set:{conversionQuality: productUnit.conversionQuality*smallerUnit.conversionQuality}
+              Schema.productUnits.update productUnit._id, $set:{conversionQuantity: productUnit.conversionQuantity*smallerUnit.conversionQuantity}
           )
 
           return smallerUnitOption
@@ -372,9 +372,9 @@ Meteor.methods
                 totalCogs = Math.round(saleDetail.quality * productDetail.importPrice)
               else
                 if saleDetail.unit
-                  totalCogs = Math.round((saleDetail.quality/saleDetail.conversionQuality) * Schema.productUnits.findOne(saleDetail.unit)?.importPrice)
+                  totalCogs = Math.round((saleDetail.quality/saleDetail.conversionQuantity) * Schema.productUnits.findOne(saleDetail.unit)?.importPrice)
                 else
-                  totalCogs = Math.round((saleDetail.quality/saleDetail.conversionQuality) * Schema.products.findOne(saleDetail.product)?.importPrice)
+                  totalCogs = Math.round((saleDetail.quality/saleDetail.conversionQuantity) * Schema.products.findOne(saleDetail.product)?.importPrice)
 
               Schema.saleDetails.update saleDetail._id, $set:{totalCogs: totalCogs}
           )
@@ -383,7 +383,7 @@ Meteor.methods
   calculateProductImportPrice: ->
     if profile = Schema.userProfiles.findOne({user: Meteor.userId()})
       Schema.productDetails.find({merchant: profile.currentMerchant}).forEach(
-        (detail) -> Schema.productDetails.update detail._id, $set:{importPrice: detail.unitPrice/detail.conversionQuality}
+        (detail) -> Schema.productDetails.update detail._id, $set:{importPrice: detail.unitPrice/detail.conversionQuantity}
       )
 
   createBranchProductSummaryBy: (productId)->
@@ -467,7 +467,7 @@ Meteor.methods
               (buildInProductUnit) ->
                 productUnit = Schema.productUnits.findOne({product: buildInProduct.product, buildInProductUnit: buildInProductUnit._id})
                 if productUnit
-                  optionUnset = {productCode: true, image: true, unit: true, conversionQuality: true}
+                  optionUnset = {productCode: true, image: true, unit: true, conversionQuantity: true}
                   Schema.productUnits.update productUnit._id, $unset: optionUnset
                 else
                   optionProductUnit =
@@ -495,7 +495,7 @@ Meteor.methods
       branchProfile = Schema.branchProfiles.findOne({merchant: profile.currentMerchant})
       branchProduct = Schema.branchProductSummaries.findOne({product: productId, merchant: profile.currentMerchant})
       if branchProduct and branchProfile
-        if branchProduct.inStockQuality == branchProduct.availableQuality == branchProduct.totalQuality == branchProduct.salesQuality == 0
+        if branchProduct.inStockQuantity == branchProduct.availableQuantity == branchProduct.totalQuantity == branchProduct.salesQuantity == 0
           Schema.branchProductUnits.remove {product: branchProduct.product, merchant: profile.currentMerchant}
           Schema.branchProductSummaries.remove {product: branchProduct.product, merchant: profile.currentMerchant}
           Meteor.call 'updateMetroSummaryBy', 'deleteBranchProduct', branchProduct.product, branchProduct.merchant

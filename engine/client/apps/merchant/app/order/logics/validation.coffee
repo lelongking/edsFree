@@ -13,7 +13,7 @@ Apps.Merchant.salesInit.push (scope) ->
     else
       return true
 
-  logics.sales.validation.checkProductInStockQuality = (order, orderDetails)->
+  logics.sales.validation.checkProductInStockQuantity = (order, orderDetails)->
     product_ids = _.union(_.pluck(orderDetails, 'product'))
     products = Schema.products.find({_id: {$in: product_ids}}).fetch()
 
@@ -28,31 +28,31 @@ Apps.Merchant.salesInit.push (scope) ->
     try
       for currentDetail in orderDetails
         currentProduct = _.findWhere(products, {_id: currentDetail.product})
-        if currentProduct.availableQuality < currentDetail.quality
+        if currentProduct.availableQuantity < currentDetail.quality
           throw {message: "lỗi", item: currentDetail}
 
       return {}
     catch e
       return {error: e}
 
-  scope.validation.getCrossProductQuality = (productId, branchProductId, orderId) ->
+  scope.validation.getCrossProductQuantity = (productId, branchProductId, orderId) ->
     currentProduct = Schema.products.findOne(productId)
     if branchProduct  = Schema.branchProductSummaries.findOne(branchProductId)
       currentProduct.price       = branchProduct.price if branchProduct.price
       currentProduct.importPrice = branchProduct.importPrice if branchProduct.importPrice
 
-      currentProduct.salesQuality     = branchProduct.salesQuality
-      currentProduct.totalQuality     = branchProduct.totalQuality
-      currentProduct.availableQuality = branchProduct.availableQuality
-      currentProduct.inStockQuality   = branchProduct.inStockQuality
-      currentProduct.returnQualityByCustomer    = branchProduct.returnQualityByCustomer
-      currentProduct.returnQualityByDistributor = branchProduct.returnQualityByDistributor
+      currentProduct.salesQuantity     = branchProduct.salesQuantity
+      currentProduct.totalQuantity     = branchProduct.totalQuantity
+      currentProduct.availableQuantity = branchProduct.availableQuantity
+      currentProduct.inStockQuantity   = branchProduct.inStockQuantity
+      currentProduct.returnQuantityByCustomer    = branchProduct.returnQuantityByCustomer
+      currentProduct.returnQuantityByDistributor = branchProduct.returnQuantityByDistributor
       currentProduct.basicDetailModeEnabled     = branchProduct.basicDetailModeEnabled
 
     sameProducts = Schema.orderDetails.find({product: productId, order: orderId}).fetch()
-    crossProductQuality = 0
-    crossProductQuality += item.quality for item in sameProducts
+    crossProductQuantity = 0
+    crossProductQuantity += item.quality for item in sameProducts
     return {
       product: currentProduct
-      quality: crossProductQuality
+      quality: crossProductQuantity
     }

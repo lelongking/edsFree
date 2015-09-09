@@ -97,7 +97,7 @@ Meteor.methods
 
       saleDetails = Schema.saleDetails.find({sale: currentSales._id}).fetch()
       if saleDetails.length > 0
-        (throw 'Phiếu bán đã trả hàng không thể xóa.' if saleDetail.returnQuality > 0) for saleDetail in saleDetails
+        (throw 'Phiếu bán đã trả hàng không thể xóa.' if saleDetail.returnQuantity > 0) for saleDetail in saleDetails
 
       if Schema.saleDetails.find({sale: currentSales._id}).count() > 0
         customerIncOption =
@@ -127,15 +127,15 @@ Meteor.methods
         (detail)->
           if branchProduct = Schema.branchProductSummaries.findOne(detail.branchProduct)
             if branchProduct.basicDetailModeEnabled is false
-              updateOption = {availableQuality: detail.quality, inStockQuality: detail.quality}
+              updateOption = {availableQuantity: detail.quality, inStockQuantity: detail.quality}
               Schema.productDetails.update detail.productDetail, $inc: updateOption
 
-              updateOption.salesQuality = -detail.quality
+              updateOption.salesQuantity = -detail.quality
               Schema.products.update detail.product, $inc: updateOption
               Schema.branchProductSummaries.update detail.branchProduct, $inc: updateOption
             else
-              Schema.products.update detail.product, $inc: {salesQuality: -detail.quality}
-              Schema.branchProductSummaries.update detail.branchProduct, $inc: {salesQuality: -detail.quality}
+              Schema.products.update detail.product, $inc: {salesQuantity: -detail.quality}
+              Schema.branchProductSummaries.update detail.branchProduct, $inc: {salesQuantity: -detail.quality}
 
           Schema.saleDetails.remove detail._id
       )

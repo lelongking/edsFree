@@ -1,10 +1,10 @@
-checkProductInStockQuality = (orderDetails)->
+checkProductInStockQuantity = (orderDetails)->
   details = _.chain(orderDetails)
   .groupBy("product")
   .map (group, key) ->
     return {
     product      : group[0].product
-    basicQuality : _.reduce( group, ((res, current) -> res + current.basicQuality), 0 )
+    basicQuantity : _.reduce( group, ((res, current) -> res + current.basicQuantity), 0 )
     }
   .value()
 
@@ -12,8 +12,8 @@ checkProductInStockQuality = (orderDetails)->
   if details.length > 0
     for currentDetail in details
       currentProduct = Document.Product.findOne(currentDetail.product)
-      console.log currentProduct.quantities[0].availableQuality
-      if currentProduct.quantities[0].availableQuality < currentDetail.basicQuality
+      console.log currentProduct.quantities[0].availableQuantity
+      if currentProduct.quantities[0].availableQuantity < currentDetail.basicQuantity
         result.errorItem.push detail for detail in _.where(orderDetails, {product: currentDetail.product})
         (result.valid = false; result.message = "sản phẩm không đủ số lượng") if result.valid
   else
@@ -21,18 +21,18 @@ checkProductInStockQuality = (orderDetails)->
 
   return result
 
-subtractQualityOnSales = (importDetails, saleDetail) ->
-  transactionQuality = 0
+subtractQuantityOnSales = (importDetails, saleDetail) ->
+  transactionQuantity = 0
   for importDetail in importDetails
-    requiredQuality = saleDetail.basicQuality - transactionQuality
-    takenQuality = if importDetail.availableQuality > requiredQuality then requiredQuality else importDetail.availableQuality
+    requiredQuantity = saleDetail.basicQuantity - transactionQuantity
+    takenQuantity = if importDetail.availableQuantity > requiredQuantity then requiredQuantity else importDetail.availableQuantity
 
-    updateProduct = {availableQuality: -takenQuality, inStockQuality: -takenQuality, saleQuality: takenQuality}
+    updateProduct = {availableQuantity: -takenQuantity, inStockQuantity: -takenQuantity, saleQuantity: takenQuantity}
 
-    transactionQuality += takenQuality
-    if transactionQuality == saleDetail.basicQuality then break
+    transactionQuantity += takenQuantity
+    if transactionQuantity == saleDetail.basicQuantity then break
 
-  return transactionQuality == saleDetail.basicQuality
+  return transactionQuantity == saleDetail.basicQuantity
 
 createTransaction = (customer, order)->
   transactionInsert =
@@ -67,44 +67,38 @@ createTransaction = (customer, order)->
 
   return transactionId
 
-updateSubtractQualityInProductUnit = (product, orderDetail) ->
+updateSubtractQuantityInProductUnit = (product, orderDetail) ->
   detailIndex = 0; updateProductQuery = {$inc:{}}
-  for unit, index in product.units
-    if unit._id is orderDetail.productUnit
-      updateProductQuery.$inc["units.#{index}.quality.saleQuality"]    = orderDetail.basicQuality
-      updateProductQuery.$inc["units.#{index}.quality.inOderQuality"]  = -orderDetail.basicQuality
-      updateProductQuery.$inc["units.#{index}.quality.inStockQuality"] = -orderDetail.basicQuality
-      break
+  updateProductQuery.$inc["quantities.#{detailIndex}.saleQuantity"]    = orderDetail.basicQuantity
+  updateProductQuery.$inc["quantities.#{detailIndex}.inOderQuantity"]  = -orderDetail.basicQuantity
+  updateProductQuery.$inc["quantities.#{detailIndex}.inStockQuantity"] = -orderDetail.basicQuantity
 
-  updateProductQuery.$inc["quantities.#{detailIndex}.saleQuality"]    = orderDetail.basicQuality
-  updateProductQuery.$inc["quantities.#{detailIndex}.inOderQuality"]  = -orderDetail.basicQuality
-  updateProductQuery.$inc["quantities.#{detailIndex}.inStockQuality"] = -orderDetail.basicQuality
   if Schema.products.update(product._id, updateProductQuery)
     if product.inventoryInitial
-      inStockQuality  = product.quantities[0].inStockQuality - orderDetail.basicQuality
-      upperGapQuality = product.quantities[0].upperGapQuality
-      optionQuality =
+      inStockQuantity = product.quantities[0].inStockQuantity - orderDetail.basicQuantity
+      normsQuantity   = product.quantities[0].normsQuantity
+      optionQuantity =
         notificationType: 'notify'
         product         : product._id
-        group           : Enums.getObject('NotificationGroups')['productQuality'].value
-      productQualityFound = Schema.notifications.findOne(optionQuality)
-      if inStockQuality > 0
-        if upperGapQuality > inStockQuality
-          optionQuality.message = "Sản phẩm #{product.name} sắp hết hàng. (còn #{inStockQuality}/#{upperGapQuality} #{product.units[0].name})"
-          if productQualityFound
-            Schema.notifications.update productQualityFound._id, $set:{message: optionQuality.message}
+        group           : Enums.getObject('NotificationGroups')['productQuantity'].value
+      productQuantityFound = Schema.notifications.findOne(optionQuantity)
+      if inStockQuantity > 0
+        if normsQuantity > inStockQuantity
+          optionQuantity.message = "Sản phẩm #{product.name} sắp hết hàng. (còn #{inStockQuantity}/#{normsQuantity} #{product.units[0].name})"
+          if productQuantityFound
+            Schema.notifications.update productQuantityFound._id, $set:{message: optionQuantity.message}
           else
-            Schema.notifications.insert optionQuality
+            Schema.notifications.insert optionQuantity
 
         else
-          Schema.notifications.remove(productQualityFound._id) if productQualityFound
+          Schema.notifications.remove(productQuantityFound._id) if productQuantityFound
 
       else
-        optionQuality.message = "Sản phẩm #{product.name} đã hết hàng."
-        if productQualityFound
-          Schema.notifications.update productQualityFound._id, $set:{message: optionQuality.message}
+        optionQuantity.message = "Sản phẩm #{product.name} đã hết hàng."
+        if productQuantityFound
+          Schema.notifications.update productQuantityFound._id, $set:{message: optionQuantity.message}
         else
-          Schema.notifications.insert optionQuality
+          Schema.notifications.insert optionQuantity
 
 
 
@@ -113,29 +107,29 @@ findAllImport = (productUnitId) ->
   basicImport = Schema.imports.find({
     importType : $in:[Enums.getValue('ImportTypes', 'inventorySuccess'), Enums.getValue('ImportTypes', 'success')]
     'details.productUnit' : productUnitId
-    'details.basicQualityAvailable': {$gt: 0}
+    'details.basicQuantityAvailable': {$gt: 0}
   }, {sort: {importType: 1} }).fetch()
   combinedImports = basicImport; console.log combinedImports
   combinedImports
 
-updateSubtractQualityInImport = (orderFound, orderDetail, detailIndex, combinedImports) ->
-  transactionQuality = 0
+updateSubtractQuantityInImport = (orderFound, orderDetail, detailIndex, combinedImports) ->
+  transactionQuantity = 0
   for currentImport in combinedImports #danh sach phieu Import
     for importDetail, index in currentImport.details #danh sach ImportDetail
       if importDetail.productUnit is orderDetail.productUnit #so sanh ProductUnit
-        requiredQuality = orderDetail.basicQuality - transactionQuality
+        requiredQuantity = orderDetail.basicQuantity - transactionQuantity
 
-        availableQuality = importDetail.basicQualityAvailable - requiredQuality
-        if availableQuality > 0
-          takenQuality = requiredQuality
-#          orderDetailNote = "còn #{availableQuality}, phiếu #{currentImport.importCode}"
+        availableQuantity = importDetail.basicQuantityAvailable - requiredQuantity
+        if availableQuantity > 0
+          takenQuantity = requiredQuantity
+#          orderDetailNote = "còn #{availableQuantity}, phiếu #{currentImport.importCode}"
         else
-          takenQuality = importDetail.basicQualityAvailable
+          takenQuantity = importDetail.basicQuantityAvailable
 #          orderDetailNote = "hết hàng, phiếu #{currentImport.importCode}"
 
         updateImport = $inc:{}
-        updateImport.$inc["details.#{index}.basicOrderQuality"]     = takenQuality
-        updateImport.$inc["details.#{index}.basicQualityAvailable"] = -takenQuality
+        updateImport.$inc["details.#{index}.basicOrderQuantity"]     = takenQuantity
+        updateImport.$inc["details.#{index}.basicQuantityAvailable"] = -takenQuantity
         Schema.imports.update currentImport._id, updateImport
 
         updateOrderQuery = {$push:{}, $inc:{}}
@@ -147,25 +141,25 @@ updateSubtractQualityInImport = (orderFound, orderDetail, detailIndex, combinedI
           provider    : currentImport.provider
           price       : importDetail.price
           conversion  : importDetail.conversion
-          quality     : takenQuality/importDetail.conversion
+          quality     : takenQuantity/importDetail.conversion
 #          note        : orderDetailNote
           createdAt   : new Date()
-          basicQuality          : takenQuality
-          basicQualityReturn    : 0
-          basicQualityAvailable : takenQuality
+          basicQuantity          : takenQuantity
+          basicQuantityReturn    : 0
+          basicQuantityAvailable : takenQuantity
 
         updateOrderQuery.$push["details.#{detailIndex}.imports"]                = importDetailOfOrder
-        updateOrderQuery.$inc["details.#{detailIndex}.basicImportQuality"]      = takenQuality
-        updateOrderQuery.$inc["details.#{detailIndex}.basicImportQualityDebit"] = -takenQuality
+        updateOrderQuery.$inc["details.#{detailIndex}.basicImportQuantity"]      = takenQuantity
+        updateOrderQuery.$inc["details.#{detailIndex}.basicImportQuantityDebit"] = -takenQuantity
 
-        if transactionQuality is orderDetail.basicQuality
+        if transactionQuantity is orderDetail.basicQuantity
           updateOrderQuery.$set = {}
           updateOrderQuery.$set["details.#{detailIndex}.importIsValid"] = true
         Schema.orders.update(orderFound._id, updateOrderQuery)
 
-        transactionQuality += takenQuality
-        break if transactionQuality is orderDetail.basicQuality
-    break if transactionQuality is orderDetail.basicQuality
+        transactionQuantity += takenQuantity
+        break if transactionQuantity is orderDetail.basicQuantity
+    break if transactionQuantity is orderDetail.basicQuantity
 
 Enums = Apps.Merchant.Enums
 Meteor.methods
@@ -240,13 +234,13 @@ Meteor.methods
 
     for productId, details of _.groupBy(orderFound.details, (item) -> item.product)
       if product = Schema.products.findOne(productId)
-        availableQuality = product.quantities[0].availableQuality ? 0
+        availableQuantity = product.quantities[0].availableQuantity ? 0
 
-        for item in details
-          saleQuality  = 0 unless saleQuality
-          saleQuality += item.basicQuality
+        for orderDetail in details
+          saleQuantity  = 0 unless saleQuantity
+          saleQuantity += orderDetail.basicQuantity
 
-        if product.inventoryInitial and (availableQuality - saleQuality) < 0
+        if product.inventoryInitial and (availableQuantity - saleQuantity) < 0
           return {valid: false, error: 'san pham khong du!'}
 
       else
@@ -285,18 +279,13 @@ Meteor.methods
     return {valid: false, error: 'order not found!'} if !orderFound
 
     for detail in orderFound.details
-      detailIndex = 0; updateQuery = {$inc:{}}
+      if product = Schema.products.findOne(detail.product)
+        updateQuery = $inc:
+          'quantities.0.inOderQuantity'    : detail.basicQuantity
+          'quantities.0.availableQuantity' : -detail.basicQuantity
 
-      product = Schema.products.findOne(detail.product)
-      for unit, index in product.units
-        if unit._id is detail.productUnit
-          updateQuery.$inc["units.#{index}.quality.inOderQuality"]    = detail.basicQuality
-          updateQuery.$inc["units.#{index}.quality.availableQuality"] = -detail.basicQuality
-          break
-
-      updateQuery.$inc["quantities.#{detailIndex}.inOderQuality"]    = detail.basicQuality
-      updateQuery.$inc["quantities.#{detailIndex}.availableQuality"] = -detail.basicQuality
-      Schema.products.update detail.product, updateQuery
+        console.log updateQuery
+        Schema.products.update product._id, updateQuery
 
     orderUpdate = $set:
       orderStatus    : Enums.getValue('OrderStatus', 'exportConfirm')
@@ -363,18 +352,11 @@ Meteor.methods
     return {valid: false, error: 'order not found!'} if !orderFound
 
     for detail, detailIndex in orderFound.details
-      updateQuery = {$inc:{}}
-
-      product = Schema.products.findOne(detail.product)
-      for unit, index in product.units
-        if unit._id is detail.productUnit
-          updateQuery.$inc["units.#{index}.quality.inOderQuality"]    = -detail.basicQuality
-          updateQuery.$inc["units.#{index}.quality.availableQuality"] = detail.basicQuality
-          break
-
-      updateQuery.$inc["quantities.0.inOderQuality"]    = -detail.basicQuality
-      updateQuery.$inc["quantities.0.availableQuality"] = detail.basicQuality
-      Schema.products.update detail.product, updateQuery
+      if product = Schema.products.findOne(detail.product)
+        updateQuery = $inc:
+          'quantities.0.inOderQuantity': -detail.basicQuantity
+          'quantities.0.availableQuantity':detail.basicQuantity
+        Schema.products.update product._id, updateQuery
 
     orderUpdate = $set:
       orderStatus     : Enums.getValue('OrderStatus', 'importConfirm')
@@ -409,17 +391,17 @@ Meteor.methods
 
       for orderDetail, detailIndex in orderFound.details
         if product = Schema.products.findOne({'units._id': orderDetail.productUnit})
-          updateSubtractQualityInProductUnit(product, orderDetail)
+          updateSubtractQuantityInProductUnit(product, orderDetail)
 
           if product.inventoryInitial
             combinedImports = findAllImport(orderDetail.productUnit)
-            updateSubtractQualityInImport(orderFound, orderDetail, detailIndex, combinedImports)
+            updateSubtractQuantityInImport(orderFound, orderDetail, detailIndex, combinedImports)
 
       updateOrderQuery = $set:
         orderStatus : Enums.getValue('OrderStatus', 'finish')
         transaction : transactionId
         successDate : new Date()
-        orderCode   :"#{Helpers.orderCodeCreate(customerFound.billNo)}/#{Helpers.orderCodeCreate(merchantFound.saleBill)}"
+        orderCode   :"#{Helpers.orderCodeCreate(customerFound.saleBillNo)}/#{Helpers.orderCodeCreate(merchantFound.saleBillNo)}"
 
       if Schema.orders.update(orderFound._id, updateOrderQuery)
         buyer = Schema.customers.findOne(orderFound.buyer)
@@ -432,8 +414,11 @@ Meteor.methods
           reads           : [Meteor.userId()]
         Schema.notifications.insert(optionNewOrder)
 
-        Schema.customers.update customerFound._id, {$inc: {billNo: 1},$addToSet:{orderSuccess: orderFound._id}, $pull: {orderWaiting: orderFound._id}}
-        Schema.merchants.update(merchantFound._id, $inc:{saleBill: 1})
+        Schema.customers.update customerFound._id, {
+          $inc: {saleBillNo: 1, transactionBillNo: 0}
+          $addToSet:{orderSuccess: orderFound._id}
+          $pull: {orderWaiting: orderFound._id}}
+        Schema.merchants.update(merchantFound._id, $inc:{saleBillNo: 1, transactionBillNo: 0})
 
 
     else

@@ -46,8 +46,8 @@ simpleSchema.customers = new SimpleSchema
   productTraded: type: [Object], defaultValue: []
   'productTraded.$.product'       : type: String
   'productTraded.$.productUnit'   : type: String
-  'productTraded.$.saleQuality'   : type: Number
-  'productTraded.$.returnQuality' : type: Number
+  'productTraded.$.saleQuantity'   : type: Number
+  'productTraded.$.returnQuantity' : type: Number
 
 Schema.add 'customers', "Customer", class Customer
   @transform: (doc) ->

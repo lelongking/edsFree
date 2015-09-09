@@ -39,7 +39,7 @@ Apps.Merchant.transportHistoryReactiveRun.push (scope) ->
       ]}, {sort: {'version.createdAt': -1}})
 
   if Session.get('currentTransportHistory')
-    scope.currentTransportDetailHistory      = Schema.transportDetails.find {transport: Session.get('currentTransportHistory')._id, lostQuality: {$gt: 0}}
+    scope.currentTransportDetailHistory      = Schema.transportDetails.find {transport: Session.get('currentTransportHistory')._id, lostQuantity: {$gt: 0}}
     scope.currentTransportProductLostHistory = Schema.productLosts.find {transport: Session.get('currentTransportHistory')._id}
 
 

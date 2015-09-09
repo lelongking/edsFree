@@ -17,7 +17,7 @@ Meteor.methods
   destroyBranch: (branchId)->
     myProfile = Schema.userProfiles.findOne({user: Meteor.userId()})
     if myProfile and branch = Schema.merchants.findOne({_id: branchId, parent: myProfile.parentMerchant})
-      if !Schema.products.findOne({merchant: branchId, totalQuality: {$gt: 0}})
+      if !Schema.products.findOne({merchant: branchId, totalQuantity: {$gt: 0}})
         Schema.warehouses.remove({merchant: branchId})
         Schema.metroSummaries.remove({merchant: branchId})
         Schema.merchants.remove({_id: branchId})

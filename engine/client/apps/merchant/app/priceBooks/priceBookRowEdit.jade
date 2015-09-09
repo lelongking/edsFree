@@ -7,14 +7,14 @@ template(name="priceBookRowEdit")
     td(align="center") {{momentFormat createdAt "DD/MM/YYYY"}}
 
     if isPriceBookType 'default'
-      td.number: input(name="editImportQuality" min="0")
-      td.number: input(name="editSaleQuality" min="0")
+      td.number: input(name="editImportQuantity" min="0")
+      td.number: input(name="editSaleQuantity" min="0")
     if isPriceBookType 'customer'
       td.number {{formatNumber salePrice}}
-      td.number: input(name="editSaleQuality" min="0")
+      td.number: input(name="editSaleQuantity" min="0")
     if isPriceBookType 'provider'
       td.number {{formatNumber importPrice}}
-      td.number: input(name="editImportQuality" min="0")
+      td.number: input(name="editImportQuantity" min="0")
 
 
 template(name="priceBookRowDisplay")

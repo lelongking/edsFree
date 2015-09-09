@@ -8,23 +8,23 @@ lemon.defineApp Template.customerReturn,
 
       if currentReturnDetails?.length > 0 and currentParentDetails?.length > 0
         for returnDetail in currentReturnDetails
-          currentProductQuality = 0
+          currentProductQuantity = 0
 
           for parentDetail in currentParentDetails
             if parentDetail.productUnit is returnDetail.productUnit
-              currentProductQuality += parentDetail.basicQuality
+              currentProductQuantity += parentDetail.basicQuantity
 
               if parentDetail.return?.length > 0
-                (currentProductQuality -= item.basicQuality) for item in parentDetail.return
+                (currentProductQuantity -= item.basicQuantity) for item in parentDetail.return
 
-          return 'disabled' if (currentProductQuality - returnDetail.basicQuality) < 0
+          return 'disabled' if (currentProductQuantity - returnDetail.basicQuantity) < 0
 
       else
         return 'disabled'
 
-    availableQuality: ->
+    availableQuantity: ->
       console.log @
-      @basicQualityAvailable/@conversion
+      @basicQuantityAvailable/@conversion
 
   created: ->
     CustomerSearch.search('')

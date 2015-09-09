@@ -12,8 +12,8 @@ template(name="productManagementSalesHistorySection")
           th.date(style="width:100px") HOẠT ĐỘNG
           th.date(style="width:80px") SỐ PHIẾU
           th.number(style="width:50px") SL
-          th.date(style="width:70px") ĐƠN VỊ
-          th.number(style="width:100px") GIÁ
+          th.date(style="width:80px") ĐƠN VỊ
+          th.number(style="width:80px") GIÁ
 
 
     .panel-body.debt-details
@@ -23,8 +23,8 @@ template(name="productManagementSalesHistorySection")
           th.date(style="width:100px")
           th.date(style="width:80px")
           th.number(style="width:50px")
-          th.date(style="width:70px")
-          th.number(style="width:110px")
+          th.date(style="width:80px")
+          th.number(style="width:90px")
 
 
         each allSaleDetails
@@ -90,12 +90,12 @@ template(name="productManagementSalesHistorySection")
     .panel-footer
       unless inventoryInitial
         .right-float
-          span.s5.note <b>TỔNG BÁN</b>/ TỔNG TỒN:
-          span.s3 <b>{{formatNumber saleQuality}}</b>
-          span.s5 /{{formatNumber inStockQuality}} <b>{{basicUnit}}</b>
+          span.s5.note <b>TỔNG BÁN</b>/ ĐẶT HÀNG:
+          span.s3 <b>{{formatNumber saleQuantity}}</b>
+          span.s5 /{{formatNumber inOderQuantity}} <b>{{unitName}}</b>
 
       else
         .right-float
           span.s5.note <b>TỔNG TỒN</b>/ TỔNG NHẬP:
-          span.s3 <b>{{formatNumber inStockQuality}}</b>
-          span.s5 /{{formatNumber importQuality}} <b>{{unitName}}</b>
+          span.s3 <b>{{formatNumber inStockQuantity}}</b>
+          span.s5 /{{formatNumber importQuantity}} <b>{{unitName}}</b>

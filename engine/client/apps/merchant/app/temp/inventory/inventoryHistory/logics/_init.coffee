@@ -39,7 +39,7 @@ Apps.Merchant.inventoryHistoryReactiveRun.push (scope) ->
     )
 
   if Session.get('currentInventoryHistory')
-    scope.currentInventoryDetailHistory      = Schema.inventoryDetails.find {inventory: Session.get('currentInventoryHistory')._id, lostQuality: {$gt: 0}}
+    scope.currentInventoryDetailHistory      = Schema.inventoryDetails.find {inventory: Session.get('currentInventoryHistory')._id, lostQuantity: {$gt: 0}}
     scope.currentInventoryProductLostHistory = Schema.productLosts.find {inventory: Session.get('currentInventoryHistory')._id}
 
 

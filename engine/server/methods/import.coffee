@@ -156,9 +156,9 @@ Meteor.methods
               if error then throw new Meteor.Error('importError', 'Sai thông tin sản phẩm nhập kho'); return
 
             incOption =
-              totalQuality    : importDetail.importQuality
-              availableQuality: importDetail.importQuality
-              inStockQuality  : importDetail.importQuality
+              totalQuantity    : importDetail.importQuantity
+              availableQuantity: importDetail.importQuantity
+              inStockQuantity  : importDetail.importQuantity
 
             setOption =
               provider    : importDetail.provider
@@ -227,11 +227,11 @@ Meteor.methods
                           partnerSaleDetail =
                             partnerSales      : partnerSales._id
                             buildInProduct    : productDetail.buildInProduct
-                            quality           : productDetail.importQuality
+                            quality           : productDetail.importQuantity
                             price             : productDetail.importPrice
-                            unitQuality       : productDetail.unitQuality
+                            unitQuantity       : productDetail.unitQuantity
                             unitPrice         : productDetail.unitPrice
-                            conversionQuality : productDetail.conversionQuality
+                            conversionQuantity : productDetail.conversionQuantity
                           partnerSaleDetail.buildInProductUnit = productDetail.buildInProductUnit if productDetail.unit
                           Schema.partnerSaleDetails.insert partnerSaleDetail
 
@@ -253,9 +253,9 @@ Meteor.methods
                     listDataOfPartner.branchProductUnitList.push productDetail.branchUnit if productDetail.branchUnit
 
                 incOption =
-                  totalQuality    : importDetail.importQuality
-                  availableQuality: importDetail.importQuality
-                  inStockQuality  : importDetail.importQuality
+                  totalQuantity    : importDetail.importQuantity
+                  availableQuantity: importDetail.importQuantity
+                  inStockQuantity  : importDetail.importQuantity
 
                 setOption =
                   provider    : importDetail.provider

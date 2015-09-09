@@ -40,13 +40,13 @@ Meteor.methods
     
         stockProductCount = 0; availableProductCount = 0
         for item in products.fetch()
-          stockProductCount += item.inStockQuality if item.inStockQuality > 0
-          availableProductCount += item.availableQuality
+          stockProductCount += item.inStockQuantity if item.inStockQuantity > 0
+          availableProductCount += item.availableQuantity
     
         inventoryProductCount = 0
         for inventory in inventoryCount.fetch()
           for detail in Schema.inventoryDetails.find({inventory: inventory._id}).fetch()
-            inventoryProductCount+= detail.lostQuality
+            inventoryProductCount+= detail.lostQuantity
     
         saleProductCount = 0
         for item in saleCount.fetch()
@@ -55,7 +55,7 @@ Meteor.methods
         importProductCount = 0
         for imports in importCount.fetch()
           for detail in Schema.importDetails.find({import: imports._id}).fetch()
-            importProductCount+= detail.importQuality
+            importProductCount+= detail.importQuantity
     
         deliveryProductCount = 0
         for delivery in deliveryCount.fetch()
@@ -65,7 +65,7 @@ Meteor.methods
         returnProductCount = 0
         for returns in returnCount.fetch()
           for detail in Schema.returnDetails.find({return: returns._id}).fetch()
-            returnProductCount += detail.returnQuality
+            returnProductCount += detail.returnQuantity
     
         returnCash = 0
         for item in returnCount.fetch()

@@ -21,14 +21,14 @@ template(name="inventoryHistoryDetail")
               li.order-detail
                 .product-name <b>{{productNameFromId product}}</b> {{skullsNameFromId product}}
                 .product-price
-                  span.individual-price * Mất: {{formatNumber lostQuality}}
+                  span.individual-price * Mất: {{formatNumber lostQuantity}}
                   //span.final-price {{formatNumber totalPrice}}
           else
             each inventoryDetails
               li.order-detail
                 .product-name <b>{{productNameFromId product}}</b> {{skullsNameFromId product}}
                 .product-price
-                  span.individual-price * Mất: {{formatNumber lostQuality}}
+                  span.individual-price * Mất: {{formatNumber lostQuantity}}
                   //span.final-price {{formatNumber totalPrice}}
 
         //.bill-summary

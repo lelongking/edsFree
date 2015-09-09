@@ -6,7 +6,7 @@ template(name="customerReturnRowEdit")
     if discountPercent
       span.super.s7.color-lime GIẢM GIÁ {{round discountPercent}}%
 
-  tr.editors.dual-border(class="{{crossReturnAvailableQuality.errorClass}}")
+  tr.editors.dual-border(class="{{crossReturnAvailableQuantity.errorClass}}")
     td.bill-name.has-commands
       |{{getProductName product}}
       .commands
@@ -14,7 +14,7 @@ template(name="customerReturnRowEdit")
 
     td.price.editable-field {{formatNumber price}}
 
-    td.quality: input.error-field(name="editQuality" min="0")
+    td.quality: input.error-field(name="editQuantity" min="0")
 
     td: span
       |{{getProductUnitName productUnit}}
@@ -31,7 +31,7 @@ template(name="customerReturnRowDisplay")
     if discountPercent
       span.super.s7.color-lime GIẢM GIÁ {{round discountPercent}}%
 
-  tr.detail-row.click-enable(class="{{crossReturnAvailableQuality.errorClass}}")
+  tr.detail-row.click-enable(class="{{crossReturnAvailableQuantity.errorClass}}")
     td.bill-name.has-commands
       |{{getProductName product}}
       .commands
@@ -41,8 +41,8 @@ template(name="customerReturnRowDisplay")
 
     td.quality.editable-field.error-field: span
       |{{formatNumber quality}}
-      if crossReturnAvailableQuality.invalid
-        span.super.s7.color-lime {{crossReturnAvailableQuality.crossAvailable}}
+      if crossReturnAvailableQuantity.invalid
+        span.super.s7.color-lime {{crossReturnAvailableQuantity.crossAvailable}}
 
     td: span
       |{{getProductUnitName productUnit}}

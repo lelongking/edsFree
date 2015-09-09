@@ -45,7 +45,7 @@ Meteor.methods
     countNewProduct          = 0
     countNotInventoryProduct = 0
     countUpperGapProduct     = 0
-    countNotQualityProduct   = 0
+    countNotQuantityProduct   = 0
     countLateExpireProduct   = 0
 #    Schema.products.find({}).forEach(
 #      (product) ->
@@ -61,7 +61,7 @@ Meteor.methods
 #            productExpireFound = Schema.notifications.findOne(optionExpire)
 #            countDate = moment(product.lastExpire).diff(toDate, 'days') if product.lastExpire
 #
-#            unless quality.inStockQuality > 0
+#            unless quality.inStockQuantity > 0
 #              Schema.notifications.remove(productExpireFound._id) if productExpireFound
 #
 #            else

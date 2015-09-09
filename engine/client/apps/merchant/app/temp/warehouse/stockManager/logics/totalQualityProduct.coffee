@@ -1,6 +1,6 @@
-logics.stockManager.totalQualityProduct = ->
+logics.stockManager.totalQuantityProduct = ->
   total = 0
   if logics.stockManager.availableProducts
     for item in logics.stockManager.availableProducts.fetch()
-      total += item.totalQuality
+      total += item.totalQuantity
   total

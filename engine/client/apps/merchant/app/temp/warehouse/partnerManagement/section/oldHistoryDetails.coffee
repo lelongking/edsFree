@@ -1,7 +1,7 @@
 lemon.defineWidget Template.partnerManagementOldHistoryDetails,
-  quality    : -> if @conversionQuality then @unitQuality else @importQuality
-  importPrice: -> if @conversionQuality then @unitPrice else @importPrice
-  totalPrice : -> if @conversionQuality then @unitQuality*@unitPrice else @importQuality*@importPrice
+  quality    : -> if @conversionQuantity then @unitQuantity else @importQuantity
+  importPrice: -> if @conversionQuantity then @unitPrice else @importPrice
+  totalPrice : -> if @conversionQuantity then @unitQuantity*@unitPrice else @importQuantity*@importPrice
   bill: -> if @partnerSale then 'Phiếu nhập' else 'Phiếu bán'
   description: ->
     if @description is 'Trả Tiền'

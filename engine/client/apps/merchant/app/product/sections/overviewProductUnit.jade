@@ -20,18 +20,18 @@ template(name="overviewProductUnit")
             .features(class="{{class}}")
               if isProduct
                 li: span {{barcode}} :
-                li: span {{saleQuality}} :
+                li: span {{saleQuantity}} :
                 li: span {{importPrice}} :
               else
                 +productUnitTableDetail this
 
 template(name="productUnitTableDetail")
   li: span {{barcode}}
-  li: span {{formatNumber saleQuality}} VNĐ
+  li: span {{formatNumber saleQuantity}} VNĐ
   if isEditImportPrice
     if isBase
       li(style="padding-top: 4px; padding-bottom: 2px;")
-        input.form-control.editable.dashed(name="editImportQuality" value="{{formatNumber importPrice}} VNĐ")
+        input.form-control.editable.dashed(name="editImportQuantity" value="{{formatNumber importPrice}} VNĐ")
     else
       li: span {{formatNumber importPrice}} VNĐ
   else

@@ -5,7 +5,7 @@ template(name="importRowEdit")
       .commands
         .lemon.rounded.tiny.btn.blue.animated.bounceIn.deleteImportDetail: span.icon-minus-4
     td: input(name="editExpireDate" min="0")
-    td.number: input(name="editImportQuality" min="0")
+    td.number: input(name="editImportQuantity" min="0")
     td(align="center") {{getProductUnitName productUnit}}
     td.editable-field.number {{formatNumber price}}
     td.note.number <b>{{formatNumber detailFinalPrice}}</b>

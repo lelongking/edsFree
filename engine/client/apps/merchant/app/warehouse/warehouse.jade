@@ -34,9 +34,9 @@ template(name="warehouse")
                   tr.detail-row
                     td {{count}}
                     td.first-column {{name}}
-                    td.number: input.number.upperGap(type="text" size="10" name="{{_id}}" placeholder="số tiền" value="{{upperQuality}}")
+                    td.number: input.number.upperGap(type="text" size="10" name="{{_id}}" placeholder="số tiền" value="{{upperQuantity}}")
                     td(style="padding-left: 5px;") {{unitName}}
-                    td.number {{allQuality}}
+                    td.number {{allQuantity}}
                     td(style="padding-left: 5px;") {{unitName}}
                     td.number {{formatNumber costPrice}} VND
                     td.number {{formatNumber revenue}} VND
@@ -46,9 +46,9 @@ template(name="warehouse")
                     tr.detail-row
                       td {{count}}
                       td.first-column {{name}}
-                      td.number: input.number.upperGap(type="text" size="10" name="{{_id}}" placeholder="số tiền" value="{{upperQuality}}")
+                      td.number: input.number.upperGap(type="text" size="10" name="{{_id}}" placeholder="số tiền" value="{{upperQuantity}}")
                       td(style="padding-left: 5px;") {{unitName}}
-                      td.number {{allQuality}}
+                      td.number {{allQuantity}}
                       td(style="padding-left: 5px;") {{unitName}}
                       td.number {{formatNumber costPrice}} VND
                       td.number {{formatNumber revenue}} VND

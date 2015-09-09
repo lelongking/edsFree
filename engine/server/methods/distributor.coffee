@@ -136,7 +136,7 @@ Meteor.methods
 
       productDetails = Schema.productDetails.find({import: currentImport._id}).fetch()
       for productDetail in productDetails
-        if productDetail.importQuality != productDetail.availableQuality or productDetail.importQuality !=  productDetail.inStockQuality
+        if productDetail.importQuantity != productDetail.availableQuantity or productDetail.importQuantity !=  productDetail.inStockQuantity
           throw 'Đã bán hàng khong thể xóa'
 
       if productDetails.length > 0
@@ -161,9 +161,9 @@ Meteor.methods
 
       for productDetail in productDetails
         optionInc =
-          totalQuality      : -productDetail.importQuality
-          availableQuality  : -productDetail.importQuality
-          inStockQuality    : -productDetail.importQuality
+          totalQuantity      : -productDetail.importQuantity
+          availableQuantity  : -productDetail.importQuantity
+          inStockQuantity    : -productDetail.importQuantity
         Schema.productDetails.remove productDetail._id
         Schema.products.update productDetail.product, $inc: optionInc
         Schema.branchProductSummaries.update productDetail.branchProduct, $inc: optionInc

@@ -17,4 +17,4 @@ lemon.defineApp Template.warehouse,
     "keyup input.upperGap":  (event, template) ->
       console.log @
       upperGap = Number(template.ui["$#{@_id}"].val())
-      Schema.products.update @_id, $set:{'quantities.0.upperGapQuality': upperGap}
+      Schema.products.update @_id, $set:{'quantities.0.normsQuantity': upperGap}

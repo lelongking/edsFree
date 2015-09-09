@@ -35,7 +35,7 @@ simpleSchema.products = new SimpleSchema
   #so luong san pham trong kho
   quantities                         : type: [Object]
   'quantities.$.warehouseId'         : type: String, optional: true
-  'quantities.$.upperGapQuantity'    : type: Number
+  'quantities.$.normsQuantity'       : type: Number
   'quantities.$.availableQuantity'   : type: Number
   'quantities.$.inOderQuantity'      : type: Number
 
@@ -73,14 +73,16 @@ Schema.add 'products', "Product", class Product
   @transform: (doc) ->
     doc.hasAvatar   = -> if doc.avatar then '' else 'missing'
     doc.avatarUrl   = -> if doc.avatar then AvatarImages.findOne(doc.avatar)?.url() else undefined
-    doc.unitName    = -> doc.units[0].name if doc.units.length > 0
-    doc.basicUnit   = -> doc.units[0] if doc.units.length > 0
-    doc.basicUnitId = -> doc.units[0]._id if doc.units.length > 0
+
+    if doc.units?.length > 0
+      doc.unitName    = -> doc.units[0].name
+      doc.basicUnit   = -> doc.units[0]
+      doc.basicUnitId = -> doc.units[0]._id
 
     if doc.quantities?.length > 0
       doc.allQuantity   = doc.quantities[0].inStockQuantity
-      doc.upperQuantity = doc.quantities[0].upperGapQuantity
-      doc.upperGapCount = doc.quantities[0].upperGapQuantity - doc.quantities[0].inStockQuantity
+      doc.normsQuantity = doc.quantities[0].normsQuantity
+      doc.normsCount    = doc.quantities[0].normsQuantity - doc.quantities[0].inStockQuantity
 
 
     doc.getPrice = (ownerId, priceType = 'sale') ->
@@ -196,24 +198,15 @@ Schema.add 'products', "Product", class Product
         Schema.products.update @_id, $set:{status: Enums.getValue('ProductStatuses', 'confirmed')}
 
     doc.submitInventory = (inventoryDetails)->
-      if User.hasManagerRoles()
-        isValid = false
-        (isValid = true if detail.quality > 0) for detail in inventoryDetails
-        console.log inventoryDetails
-        if isValid
-          importId = Import.insert(null,'Tồn kho đầu kỳ', null)
-          if importFound = Schema.imports.findOne(importId)
-            for detail in inventoryDetails
-              importFound.addImportDetail(detail._id, detail.quality, detail.expriceDay) if detail.quality > 0
+      if User.hasManagerRoles() and doc.inventoryInitial is false
+        for detail in inventoryDetails
+          if detail._id is doc.basicUnitId()
+            importDetail = {_id: detail._id, quantity: detail.quality , expireDay: detail.expriceDay, product: doc._id}
+            break
 
-            Meteor.call 'importInventory', importFound._id, (error, result) -> console.log error, result
-          #TODO: chua tinh tru kho khi ban hang truoc
-
-        Schema.products.update @_id, $set:{
-          inventoryInitial: true
-          allowDelete     : false
-          status          : Enums.getValue('ProductStatuses', 'confirmed')
-        }
+        console.log importDetail
+        if importDetail
+          Meteor.call 'productInventory', doc._id, importDetail, (error, result) -> console.log error, result
 
   @insert: (option = {})->
     if priceBookBasic   = Schema.priceBooks.findOne({priceBookType: 0, merchant: Merchant.getId()})
@@ -237,7 +230,7 @@ Schema.add 'products', "Product", class Product
 
 generateQuantity = (warehouseId)->
   quantity = [{
-    upperGapQuantity     : 0
+    normsQuantity     : 0
     availableQuantity    : 0
     inOderQuantity       : 0
     inStockQuantity      : 0

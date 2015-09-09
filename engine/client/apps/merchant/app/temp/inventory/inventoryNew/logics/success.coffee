@@ -11,18 +11,18 @@ logics.inventoryManager.successInventory = (warehouseId) ->
     temp = false
     for detail in Schema.inventoryDetails.find({inventory: inventory._id}).fetch()
       option =
-        realQuality : detail.realQuality-detail.saleQuality
-        saleQuality : 0
+        realQuantity : detail.realQuantity-detail.saleQuantity
+        saleQuantity : 0
         success     : true
         successDate : new Date
         status      : true
 
-      if detail.lostQuality > 0
+      if detail.lostQuantity > 0
         temp = true
         option.status = false
         updateProduct =
-          inStockQuality   : -detail.lostQuality
-          availableQuality : -detail.lostQuality
+          inStockQuantity   : -detail.lostQuantity
+          availableQuantity : -detail.lostQuantity
 
         Schema.productLosts.insert ProductLost.new(warehouse, detail)
         Schema.products.update detail.product, $inc: updateProduct, (error, result) -> console.log error if error

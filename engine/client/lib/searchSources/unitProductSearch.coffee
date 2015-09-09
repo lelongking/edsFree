@@ -11,7 +11,7 @@
     ]}
   productLists = []
   for product in Schema.products.find(selector, options).fetch()
-    quality = product.quantities[0].availableQuality
+    quality = product.quantities[0].availableQuantity
     for unit in product.units
       unit.unitName = unit.name
       unit.name     = product.name

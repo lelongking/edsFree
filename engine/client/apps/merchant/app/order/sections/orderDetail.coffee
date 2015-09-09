@@ -28,8 +28,8 @@ lemon.defineHyper Template.saleDetailSection,
 
       for key, value of productList
         if product = Schema.products.findOne(key)
-          availableQuality = product.quantities[0].availableQuality ? 0
-          (saleQuality  = 0 unless saleQuality; saleQuality += item.basicQuality) for item in value
+          availableQuantity = product.quantities[0].availableQuantity ? 0
+          (saleQuantity  = 0 unless saleQuantity; saleQuantity += item.basicQuantity) for item in value
 
           for detail in value
             item = @details[detail.index]
@@ -46,9 +46,9 @@ lemon.defineHyper Template.saleDetailSection,
                   item.unitName   = unit.name
                   item.isBase     = unit.isBase
                   item.conversion = unit.conversion
-                  item.finalPrice = item.quality * (item.price - item.discountCash)
+                  item.finalPrice = item.quality * item.conversion * (item.price - item.discountCash)
                   if product.inventoryInitial
-                    crossAvailable = Math.floor((availableQuality - saleQuality)/item.conversion)
+                    crossAvailable = Math.floor((availableQuantity - saleQuantity)/item.conversion)
                     item.crossAvailable = crossAvailable
                     item.isValid        = crossAvailable > 0
                     item.invalid        = crossAvailable < 0

@@ -5,9 +5,9 @@ template(name="inventoryProductThumbnail")
       .right-caption {{productNameFromId product}}
       .short-desc.quality
         .col.col-auto.pull-right(style="width:120px")
-        +iSpinEdit(options=realQualityOptions)
-      .full-desc.price {{status}} -- Tồn Kho: {{originalQuality}}
-      .single-price Đã Bán: {{saleQuality}} / Mất {{lostQuality}}
+        +iSpinEdit(options=realQuantityOptions)
+      .full-desc.price {{status}} -- Tồn Kho: {{originalQuantity}}
+      .single-price Đã Bán: {{saleQuantity}} / Mất {{lostQuantity}}
       .full-desc.trash: a(href="#")
         i.icon-reply-3(style="{{hideReply}}")
         i.icon-lock(style="{{hideLock}}")

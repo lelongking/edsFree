@@ -29,21 +29,21 @@ lemon.defineHyper Template.priceBookDetailDefault,
 numericOption = {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: " VNĐ", integerDigits:11, rightAlign: false}
 lemon.defineHyper Template.priceBookDefaultRowEdit,
   rendered: ->
-    @ui.$editSaleQuality.inputmask "numeric", numericOption
-    @ui.$editSaleQuality.val Template.currentData().salePrice
+    @ui.$editSaleQuantity.inputmask "numeric", numericOption
+    @ui.$editSaleQuantity.val Template.currentData().salePrice
 
-    @ui.$editImportQuality.inputmask "numeric", numericOption
-    @ui.$editImportQuality.val Template.currentData().importPrice
+    @ui.$editImportQuantity.inputmask "numeric", numericOption
+    @ui.$editImportQuantity.val Template.currentData().importPrice
 
-    @ui.$editSaleQuality.select()
+    @ui.$editSaleQuantity.select()
 
   events:
     "keyup": (event, template) ->
       product = Template.currentData()
 
-      salePrice = Math.abs(Helpers.Number(template.ui.$editSaleQuality.inputmask('unmaskedvalue')))
+      salePrice = Math.abs(Helpers.Number(template.ui.$editSaleQuantity.inputmask('unmaskedvalue')))
       salePrice = undefined if salePrice is product.salePrice
-      importPrice = Math.abs(Helpers.Number(template.ui.$editImportQuality.inputmask('unmaskedvalue')))
+      importPrice = Math.abs(Helpers.Number(template.ui.$editImportQuantity.inputmask('unmaskedvalue')))
       importPrice = undefined if importPrice is product.importPrice
 
       console.log product

@@ -7,25 +7,25 @@ Apps.Merchant.warehouseReactive = []
 findProductTrade =
   Schema.products.find(
     {$or: [
-      {'quantities.saleQuality'     : {$ne: 0}}
-      {'quantities.inStockQuality'  : {$ne: 0}}
+      {'quantities.saleQuantity'     : {$ne: 0}}
+      {'quantities.inStockQuantity'  : {$ne: 0}}
     ]}
     {
       sort:
-        allQuality           : -1
-        upperGapQualityCount : 1
+        allQuantity           : -1
+        normsQuantityCount : 1
     }
   )
 
 findProductNotTrade =
   Schema.products.find(
     {
-      'quantities.saleQuality'     : 0
-      'quantities.inStockQuality'  : 0
+      'quantities.saleQuantity'     : 0
+      'quantities.inStockQuantity'  : 0
     }
     {
       sort:
-        upperGapQualityCount : -1
+        normsQuantityCount : -1
     }
   )
 
@@ -39,7 +39,7 @@ Apps.Merchant.warehouseInit.push (scope) ->
         productCount += 1
         product.count = productCount
         basicUnitId   = product.basicUnitId()
-        quality       = product.quantities[0].inStockQuality
+        quality       = product.quantities[0].inStockQuantity
         quality       = 0 if quality < 0
         costPrice     = quality * product.getPrice(basicUnitId, undefined, 'import')
         revenue       = quality * product.getPrice(basicUnitId)
@@ -64,7 +64,7 @@ Apps.Merchant.warehouseInit.push (scope) ->
         productCount += 1
         product.count = productCount
         basicUnitId   = product.basicUnitId()
-        quality       = product.quantities[0].inStockQuality
+        quality       = product.quantities[0].inStockQuantity
         quality       = 0 if quality < 0
         costPrice     = quality * product.getPrice(basicUnitId, undefined, 'import')
         revenue       = quality * product.getPrice(basicUnitId)

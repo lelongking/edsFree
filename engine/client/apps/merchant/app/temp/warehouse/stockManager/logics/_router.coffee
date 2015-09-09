@@ -9,7 +9,7 @@ stockManagerRoute =
     logics.stockManager.reactiveRun()
 
     return {
-      totalQualityProduct: logics.stockManager.totalQualityProduct() ? 0
+      totalQuantityProduct: logics.stockManager.totalQuantityProduct() ? 0
       totalStockProduct  : logics.stockManager.totalStockProduct() ? 0
       totalProduct       : logics.stockManager.availableProducts?.count() ? 0
 

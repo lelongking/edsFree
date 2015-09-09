@@ -1,18 +1,18 @@
-subtractQualityOnSales = (stockingItems, sellingItem) ->
-  transactionQuality = 0
+subtractQuantityOnSales = (stockingItems, sellingItem) ->
+  transactionQuantity = 0
   for productDetail in stockingItems
-    requiredQuality = sellingItem.quality - transactionQuality
-    if productDetail.availableQuality > requiredQuality then  takenQuality = requiredQuality
-    else takenQuality = productDetail.availableQuality
+    requiredQuantity = sellingItem.quality - transactionQuantity
+    if productDetail.availableQuantity > requiredQuantity then  takenQuantity = requiredQuantity
+    else takenQuantity = productDetail.availableQuantity
 
-    Schema.partnerSaleDetails.update sellingItem._id, $push: {productDetail: {productDetail: productDetail._id, saleQuality: takenQuality}}
-    Schema.productDetails.update productDetail._id, $inc:{availableQuality: -takenQuality, inStockQuality:-takenQuality }
-    Schema.products.update productDetail.product  , $inc:{availableQuality: -takenQuality, inStockQuality:-takenQuality }
-    Schema.branchProductSummaries.update productDetail.branchProduct, $inc:{availableQuality: -takenQuality, inStockQuality:-takenQuality }
+    Schema.partnerSaleDetails.update sellingItem._id, $push: {productDetail: {productDetail: productDetail._id, saleQuantity: takenQuantity}}
+    Schema.productDetails.update productDetail._id, $inc:{availableQuantity: -takenQuantity, inStockQuantity:-takenQuantity }
+    Schema.products.update productDetail.product  , $inc:{availableQuantity: -takenQuantity, inStockQuantity:-takenQuantity }
+    Schema.branchProductSummaries.update productDetail.branchProduct, $inc:{availableQuantity: -takenQuantity, inStockQuantity:-takenQuantity }
 
-    transactionQuality += takenQuality
-    if transactionQuality == sellingItem.quality then break
-  return transactionQuality == sellingItem.quality
+    transactionQuantity += takenQuantity
+    if transactionQuantity == sellingItem.quality then break
+  return transactionQuantity == sellingItem.quality
 
 
 
@@ -141,7 +141,7 @@ Meteor.methods
               if branchProduct = Schema.branchProductSummaries.findOne({product: product._id, merchant: profile.currentMerchant})
                 if branchProduct.basicDetailModeEnabled is true
                   throw new Meteor.Error('partnerSubmitSale', 'Sản phẩm chưa kết sổ'); return
-                if branchProduct.availableQuality < saleDetail.quality
+                if branchProduct.availableQuantity < saleDetail.quality
                   throw new Meteor.Error('partnerSubmitSale', 'Số lượng sản phẩm không đủ'); return
               else
                 throw new Meteor.Error('partnerSubmitSale', 'Không tìm thấy sản phẩm'); return
@@ -153,14 +153,14 @@ Meteor.methods
                 saleDetailOptionUpdate.unit = productUnit._id
 
             importBasic = Schema.productDetails.find(
-              {import: {$exists: false}, product: branchProduct.product, availableQuality: {$gt: 0}, status: {$nin: ['unSubmit']}}, {sort: {'version.createdAt': 1}}
+              {import: {$exists: false}, product: branchProduct.product, availableQuantity: {$gt: 0}, status: {$nin: ['unSubmit']}}, {sort: {'version.createdAt': 1}}
             ).fetch()
             importProductDetails = Schema.productDetails.find(
-              {import: { $exists: true}, product: branchProduct.product, availableQuality: {$gt: 0}, status: {$nin: ['unSubmit']}}, {sort: {'version.createdAt': 1}}
+              {import: { $exists: true}, product: branchProduct.product, availableQuantity: {$gt: 0}, status: {$nin: ['unSubmit']}}, {sort: {'version.createdAt': 1}}
             ).fetch()
 
             combinedProductDetails = importBasic.concat(importProductDetails)
-            subtractQualityOnSales(combinedProductDetails, saleDetail)
+            subtractQuantityOnSales(combinedProductDetails, saleDetail)
             Schema.partnerSaleDetails.update saleDetail._id, $set: saleDetailOptionUpdate
 
           partnerSaleUpdate =
@@ -177,10 +177,10 @@ Meteor.methods
         if partnerImport = Schema.imports.findOne(partnerSale.partnerImport)
           ownerPartner = Schema.partners.findOne(myPartner.partner)
           for productDetail in Schema.productDetails.find({import: partnerSale.partnerImport, status: 'unSubmit'}).fetch()
-            quality = productDetail.importQuality
+            quality = productDetail.importQuantity
             incOption =
               $set: {allowDelete : false}
-              $inc: {totalQuality: quality, availableQuality: quality, inStockQuality: quality}
+              $inc: {totalQuantity: quality, availableQuantity: quality, inStockQuantity: quality}
             Schema.products.update productDetail.product, incOption
             Schema.branchProductSummaries.update productDetail.branchProduct, incOption
             Schema.productDetails.update productDetail._id, $set:{status: 'success'}

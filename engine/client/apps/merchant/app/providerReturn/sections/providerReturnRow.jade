@@ -6,13 +6,13 @@ template(name="providerReturnRowEdit")
     if discountPercent
       span.super.s7.color-lime GIẢM GIÁ {{round discountPercent}}%
 
-  tr.editors.dual-bimport(class="{{crossReturnAvailableQuality.errorClass}}")
+  tr.editors.dual-bimport(class="{{crossReturnAvailableQuantity.errorClass}}")
     td.bill-name.has-commands
       |{{getProductName product}}
       .commands
         .lemon.rounded.tiny.btn.blue.animated.bounceIn.deleteReturnDetail: span.icon-minus-4
 
-    td.quality: input.error-field(name="editQuality" min="0")
+    td.quality: input.error-field(name="editQuantity" min="0")
 
     td: span
       |{{getProductUnitName productUnit}}
@@ -30,7 +30,7 @@ template(name="providerReturnRowDisplay")
     if discountPercent
       span.super.s7.color-lime GIẢM GIÁ {{round discountPercent}}%
 
-  tr.detail-row.click-enable(class="{{crossReturnAvailableQuality.errorClass}}")
+  tr.detail-row.click-enable(class="{{crossReturnAvailableQuantity.errorClass}}")
     td.bill-name.has-commands
       |{{getProductName product}}
       .commands
@@ -38,8 +38,8 @@ template(name="providerReturnRowDisplay")
 
     td.quality.editable-field.error-field: span
       |{{formatNumber quality}}
-      if crossReturnAvailableQuality.invalid
-        span.super.s7.color-lime {{crossReturnAvailableQuality.crossAvailable}}
+      if crossReturnAvailableQuantity.invalid
+        span.super.s7.color-lime {{crossReturnAvailableQuantity.crossAvailable}}
 
     td: span
       |{{getProductUnitName productUnit}}

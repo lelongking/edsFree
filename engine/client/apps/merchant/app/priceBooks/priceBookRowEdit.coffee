@@ -9,29 +9,29 @@ lemon.defineHyper Template.priceBookRowEdit,
 
   rendered: ->
     if _.contains([0, 1, 2], Template.currentData().priceBookType)
-      @ui.$editSaleQuality.inputmask "numeric",
+      @ui.$editSaleQuantity.inputmask "numeric",
         {autoGroup: true, groupSeparator:",", radixPoint: ".", integerDigits:11, rightAlign: false}
-      @ui.$editSaleQuality.val Template.currentData().salePrice
+      @ui.$editSaleQuantity.val Template.currentData().salePrice
 
     if _.contains([0, 3, 4], Template.currentData().priceBookType)
-      @ui.$editImportQuality.inputmask "numeric",
+      @ui.$editImportQuantity.inputmask "numeric",
         {autoGroup: true, groupSeparator:",", radixPoint: ".", integerDigits:11, rightAlign: false}
-      @ui.$editImportQuality.val Template.currentData().importPrice
+      @ui.$editImportQuantity.val Template.currentData().importPrice
 
     if _.contains([0, 1, 2], Template.currentData().priceBookType)
-      @ui.$editSaleQuality.select()
+      @ui.$editSaleQuantity.select()
     else
-      @ui.$editImportQuality.select()
+      @ui.$editImportQuantity.select()
 
   events:
     "keyup": (event, template) ->
       product = Template.currentData()
       if _.contains([0, 1, 2], product.priceBookType)
-        salePrice = Math.abs(Helpers.Number(template.ui.$editSaleQuality.inputmask('unmaskedvalue')))
+        salePrice = Math.abs(Helpers.Number(template.ui.$editSaleQuantity.inputmask('unmaskedvalue')))
         salePrice = undefined if salePrice is product.salePrice
 
       if _.contains([0, 3, 4], product.priceBookType)
-        importPrice = Math.abs(Helpers.Number(template.ui.$editImportQuality.inputmask('unmaskedvalue')))
+        importPrice = Math.abs(Helpers.Number(template.ui.$editImportQuantity.inputmask('unmaskedvalue')))
         importPrice = undefined if importPrice is product.importPrice
 
       if event.which is 13

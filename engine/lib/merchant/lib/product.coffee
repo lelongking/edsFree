@@ -4,9 +4,9 @@ Apps.Merchant.checkValidSyncProductToGera = (product) ->
     isValid = true
     Schema.productUnits.find({product: product._id}).forEach(
       (productUnit) ->
-        if productUnit.buildInProduct or !productUnit.unit or !productUnit.productCode or !productUnit.conversionQuality
+        if productUnit.buildInProduct or !productUnit.unit or !productUnit.productCode or !productUnit.conversionQuantity
           isValid = false
-        else if productUnit.productCode.length < 11 or productUnit.conversionQuality <= 1
+        else if productUnit.productCode.length < 11 or productUnit.conversionQuantity <= 1
           isValid = false
     )
     if product.buildInProduct or !product.name or !product.productCode or !product.basicUnit
@@ -24,12 +24,12 @@ Apps.Agency.currentProductData = (merchantId, productId, sessionBranchProduct, s
       product.price       = branchProduct.price if branchProduct.price
       product.importPrice = branchProduct.importPrice if branchProduct.importPrice
 
-      product.salesQuality               = branchProduct.salesQuality
-      product.totalQuality               = branchProduct.totalQuality
-      product.availableQuality           = branchProduct.availableQuality
-      product.inStockQuality             = branchProduct.inStockQuality
-      product.returnQualityByCustomer    = branchProduct.returnQualityByCustomer
-      product.returnQualityByDistributor = branchProduct.returnQualityByDistributor
+      product.salesQuantity               = branchProduct.salesQuantity
+      product.totalQuantity               = branchProduct.totalQuantity
+      product.availableQuantity           = branchProduct.availableQuantity
+      product.inStockQuantity             = branchProduct.inStockQuantity
+      product.returnQuantityByCustomer    = branchProduct.returnQuantityByCustomer
+      product.returnQuantityByDistributor = branchProduct.returnQuantityByDistributor
 
       buildInProduct = Schema.buildInProducts.findOne(product.buildInProduct) if product.buildInProduct
       if buildInProduct

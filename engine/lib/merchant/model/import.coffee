@@ -39,13 +39,13 @@ simpleSchema.imports = new SimpleSchema
   'details.$.expire'        : {type: Date   , optional: true}
   'details.$.note'          : {type: String , optional: true}
 
-#------------ Quality Detail ------------
+#------------ Quantity Detail ------------
   'details.$.conversion'  : {type: Number, min: 1}
-  'details.$.basicQuality': {type: Number, min: 0}
-  'details.$.basicQualityReturn': {type: Number, min: 0}
-  'details.$.basicOrderQuality' : {type: Number, min: 0}
-  'details.$.basicOrderQualityReturn': {type: Number, min: 0} #(basicReturnQuality - basicImportQuality) if basicImportQuality < basicReturnQuality
-  'details.$.basicQualityAvailable'  : {type: Number, min: 0}
+  'details.$.basicQuantity': {type: Number, min: 0}
+  'details.$.basicQuantityReturn': {type: Number, min: 0}
+  'details.$.basicOrderQuantity' : {type: Number, min: 0}
+  'details.$.basicOrderQuantityReturn': {type: Number, min: 0} #(basicReturnQuantity - basicImportQuantity) if basicImportQuantity < basicReturnQuantity
+  'details.$.basicQuantityAvailable'  : {type: Number, min: 0}
 
 
 #------------ Method Import ------------
@@ -97,11 +97,11 @@ Schema.add 'imports', "Import", class Import
       productUnit = _.findWhere(product.units, {_id: productUnitId})
       return console.log('Khong tim thay ProductUnit') if !productUnit
 
-      price = product.getPrice(productUnitId, @provider, 'import')
+      price = product.getPrice(@provider, 'import')
       return console.log('Price not found..') if price is undefined
 
       return console.log("Price invalid (#{price})") if price < 0
-      return console.log("Quality invalid (#{quality})") if quality < 1
+      return console.log("Quantity invalid (#{quality})") if quality < 1
 
       detailFindQuery = {product: product._id, productUnit: productUnitId, price: price}
       detailFound = _.findWhere(@details, detailFindQuery)
@@ -109,11 +109,11 @@ Schema.add 'imports', "Import", class Import
       if detailFound
         detailIndex   = _.indexOf(@details, detailFound)
         updateQuery   = {$inc:{}}
-        basicQuality  = quality * productUnit.conversion
+        basicQuantity  = quality * productUnit.conversion
 
-        updateQuery.$inc["details.#{detailIndex}.quality"]               = quality
-        updateQuery.$inc["details.#{detailIndex}.basicQuality"]          = basicQuality
-        updateQuery.$inc["details.#{detailIndex}.basicQualityAvailable"] = basicQuality
+        updateQuery.$inc["details.#{detailIndex}.quality"]                = quality
+        updateQuery.$inc["details.#{detailIndex}.basicQuantity"]          = basicQuantity
+        updateQuery.$inc["details.#{detailIndex}.basicQuantityAvailable"] = basicQuantity
         recalculationImport(@_id) if Schema.imports.update(@_id, updateQuery, callback)
 
       else
@@ -122,11 +122,11 @@ Schema.add 'imports', "Import", class Import
 
         detailFindQuery.quality      = quality
         detailFindQuery.conversion   = productUnit.conversion
-        detailFindQuery.basicQuality            = quality * productUnit.conversion
-        detailFindQuery.basicQualityAvailable   = quality * productUnit.conversion
-        detailFindQuery.basicQualityReturn      = 0
-        detailFindQuery.basicOrderQuality       = 0
-        detailFindQuery.basicOrderQualityReturn = 0
+        detailFindQuery.basicQuantity            = quality * productUnit.conversion
+        detailFindQuery.basicQuantityAvailable   = quality * productUnit.conversion
+        detailFindQuery.basicQuantityReturn      = 0
+        detailFindQuery.basicOrderQuantity       = 0
+        detailFindQuery.basicOrderQuantityReturn = 0
 
         if Schema.imports.update(@_id, { $push: {details: detailFindQuery} }, callback)
           recalculationImport(@_id); product.unitDenyDelete(productUnitId)
@@ -148,10 +148,10 @@ Schema.add 'imports', "Import", class Import
       predicate.$set["details.#{updateIndex}.expire"] = expire if expire isnt undefined
 
       if quality isnt undefined
-        basicQuality = quality * updateInstance.conversion
+        basicQuantity = quality * updateInstance.conversion
         predicate.$set["details.#{updateIndex}.quality"]               = quality
-        predicate.$set["details.#{updateIndex}.basicQuality"]          = basicQuality
-        predicate.$set["details.#{updateIndex}.availableBasicQuality"] = basicQuality
+        predicate.$set["details.#{updateIndex}.basicQuantity"]          = basicQuantity
+        predicate.$set["details.#{updateIndex}.availableBasicQuantity"] = basicQuantity
 
       if _.keys(predicate.$set).length > 0
         recalculationImport(@_id) if Schema.imports.update(@_id, predicate, callback)
@@ -219,7 +219,7 @@ Schema.add 'imports', "Import", class Import
 recalculationImport = (orderId) ->
   if importFound = Schema.imports.findOne(orderId)
     totalPrice = 0; discountCash = importFound.discountCash ? 0
-    (totalPrice += detail.quality * detail.price) for detail in importFound.details
+    (totalPrice += detail.quality * detail.conversion * detail.price) for detail in importFound.details
     discountCash = totalPrice if importFound.discountCash > totalPrice
     Schema.imports.update importFound._id, $set:{
       totalPrice  : totalPrice

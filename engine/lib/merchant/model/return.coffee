@@ -32,7 +32,7 @@ simpleSchema.returns = new SimpleSchema
   'details.$.product'       : type: String
   'details.$.productUnit'   : type: String
   'details.$.quality'       : {type: Number, min: 0}
-  'details.$.basicQuality'  : {type: Number, min: 0}
+  'details.$.basicQuantity'  : {type: Number, min: 0}
   'details.$.conversion'    : {type: Number, min: 1}
   'details.$.price'         : {type: Number, min: 0}
   'details.$.discountCash'  : simpleSchema.DefaultNumber()
@@ -46,7 +46,7 @@ simpleSchema.returns = new SimpleSchema
 
   'details.$.imports.$.conversion'        : type: Number, min: 1
   'details.$.imports.$.qualityReturn'     : type: Number, min: 0
-  'details.$.imports.$.basicQualityReturn': type: Number, min: 0
+  'details.$.imports.$.basicQuantityReturn': type: Number, min: 0
 
   'details.$.imports.$.price'       : type: Number
   'details.$.imports.$.note'        : type: String, optional: true
@@ -116,22 +116,22 @@ Schema.add 'returns', "Return", class Return
         return console.log('Price not found..') if price is undefined
 
         return console.log("Price invalid (#{price})") if price < 0
-        return console.log("Quality invalid (#{quality})") if quality < 1
+        return console.log("Quantity invalid (#{quality})") if quality < 1
 
         detailFindQuery = {detailId: detailId, product: product._id, productUnit: productUnitId, price: price}
         detailFound = _.findWhere(@details, detailFindQuery)
 
         if detailFound
           detailIndex = _.indexOf(@details, detailFound)
-          updateQuery = {$inc:{}}; basicQuality = quality * productUnit.conversion
+          updateQuery = {$inc:{}}; basicQuantity = quality * productUnit.conversion
           updateQuery.$inc["details.#{detailIndex}.quality"]          = quality
-          updateQuery.$inc["details.#{detailIndex}.basicQuality"]     = basicQuality
+          updateQuery.$inc["details.#{detailIndex}.basicQuantity"]     = basicQuantity
           recalculationReturn(@_id) if Schema.returns.update(@_id, updateQuery, callback)
 
         else
           detailFindQuery.quality       = quality
           detailFindQuery.conversion    = productUnit.conversion
-          detailFindQuery.basicQuality  = quality * productUnit.conversion
+          detailFindQuery.basicQuantity  = quality * productUnit.conversion
           recalculationReturn(@_id) if Schema.returns.update(@_id, { $push: {details: detailFindQuery} }, callback)
 
     doc.editReturnDetail = (detailId, quality, discountCash, price, callback) ->
@@ -147,9 +147,9 @@ Schema.add 'returns', "Return", class Return
       predicate.$set["details.#{updateIndex}.price"] = price if price isnt undefined
 
       if quality isnt undefined
-        basicQuality = quality * updateInstance.conversion
+        basicQuantity = quality * updateInstance.conversion
         predicate.$set["details.#{updateIndex}.quality"] = quality
-        predicate.$set["details.#{updateIndex}.basicQuality"]     = basicQuality
+        predicate.$set["details.#{updateIndex}.basicQuantity"]     = basicQuantity
 
       if _.keys(predicate.$set).length > 0
         recalculationReturn(@_id) if Schema.returns.update(@_id, predicate, callback)
@@ -172,47 +172,47 @@ Schema.add 'returns', "Return", class Return
 
       productUpdateList = []; orderUpdateOption = $inc:{}, $set:{}
       for returnDetail in currentReturn.details
-        currentProductQuality = 0; findProductUnit = false
+        currentProductQuantity = 0; findProductUnit = false
         productUpdateList.push(updateProductQuery(returnDetail, currentReturn.returnType))
 
         for orderDetail, index in orderFound.details
           console.log orderDetail
           if orderDetail.productUnit is returnDetail.productUnit
-            findProductUnit = true; currentProductQuality += orderDetail.basicQualityAvailable
+            findProductUnit = true; currentProductQuantity += orderDetail.basicQuantityAvailable
 
-            orderUpdateOption.$inc["details.#{index}.basicQualityReturn"]    = returnDetail.basicQuality
-            orderUpdateOption.$inc["details.#{index}.basicQualityAvailable"] = -returnDetail.basicQuality
+            orderUpdateOption.$inc["details.#{index}.basicQuantityReturn"]    = returnDetail.basicQuantity
+            orderUpdateOption.$inc["details.#{index}.basicQuantityAvailable"] = -returnDetail.basicQuantity
 
-            basicImportQualityReturn = orderDetail.basicImportQuality - (orderDetail.basicQuality - returnDetail.basicQuality)
-            if basicImportQualityReturn < 0
-              orderUpdateOption.$set["details.#{index}.basicImportQualityDebit"]  = basicImportQualityReturn
-              orderUpdateOption.$set["details.#{index}.basicImportQualityReturn"] = 0
+            basicImportQuantityReturn = orderDetail.basicImportQuantity - (orderDetail.basicQuantity - returnDetail.basicQuantity)
+            if basicImportQuantityReturn < 0
+              orderUpdateOption.$set["details.#{index}.basicImportQuantityDebit"]  = basicImportQuantityReturn
+              orderUpdateOption.$set["details.#{index}.basicImportQuantityReturn"] = 0
             else
-              orderUpdateOption.$set["details.#{index}.basicImportQualityDebit"]   = 0
-              orderUpdateOption.$set["details.#{index}.basicImportQualityReturn"]  = Math.abs(basicImportQualityReturn)
+              orderUpdateOption.$set["details.#{index}.basicImportQuantityDebit"]   = 0
+              orderUpdateOption.$set["details.#{index}.basicImportQuantityReturn"]  = Math.abs(basicImportQuantityReturn)
 
-              returnQuality = 0
+              returnQuantity = 0
               for detail, indexDetail in orderDetail.imports
-                orderUpdateOption.$inc["details.#{index}.imports.#{indexDetail}.basicQualityReturn"]    = basicImportQualityReturn
-                orderUpdateOption.$inc["details.#{index}.imports.#{indexDetail}.basicQualityAvailable"] = -basicImportQualityReturn
+                orderUpdateOption.$inc["details.#{index}.imports.#{indexDetail}.basicQuantityReturn"]    = basicImportQuantityReturn
+                orderUpdateOption.$inc["details.#{index}.imports.#{indexDetail}.basicQuantityAvailable"] = -basicImportQuantityReturn
 
-                requiredQuality = basicImportQualityReturn - returnQuality
-                availableQuality = detail.basicQualityAvailable - requiredQuality
+                requiredQuantity = basicImportQuantityReturn - returnQuantity
+                availableQuantity = detail.basicQuantityAvailable - requiredQuantity
 
-                if availableQuality > 0
-                  takenQuality = requiredQuality
+                if availableQuantity > 0
+                  takenQuantity = requiredQuantity
                 else
-                  takenQuality = detail.basicQualityAvailable
+                  takenQuantity = detail.basicQuantityAvailable
 
                 for importDetail, indexImportDetail in Schema.imports.findOne(detail._id).details
                   if importDetail._id is detail.detailId
                     updateImport = $inc:{}
-                    updateImport.$inc["details.#{indexImportDetail}.basicQualityAvailable"]   = takenQuality
-                    updateImport.$inc["details.#{indexImportDetail}.basicOrderQualityReturn"] = takenQuality
+                    updateImport.$inc["details.#{indexImportDetail}.basicQuantityAvailable"]   = takenQuantity
+                    updateImport.$inc["details.#{indexImportDetail}.basicOrderQuantityReturn"] = takenQuantity
                     Schema.imports.update detail._id, updateImport
 
         return console.log('ReturnDetail Khong Chinh Xac.') unless findProductUnit
-        return console.log('So luong tra qua lon') if (currentProductQuality - returnDetail.basicQuality) < 0
+        return console.log('So luong tra qua lon') if (currentProductQuantity - returnDetail.basicQuantity) < 0
 
       if transactionId = createTransactionByCustomer(currentReturn)
         Schema.products.update(product._id, product.updateOption) for product in productUpdateList
@@ -235,18 +235,18 @@ Schema.add 'returns', "Return", class Return
 
       productUpdateList = []; importUpdateOption = $inc:{}
       for returnDetail in currentReturn.details
-        currentProductQuality = 0; findProductUnit = false
+        currentProductQuantity = 0; findProductUnit = false
         productUpdateList.push(updateProductQuery(returnDetail, currentReturn.returnType))
 
         for importDetail, index in importFound.details
           if importDetail.productUnit is returnDetail.productUnit
-            findProductUnit = true; currentProductQuality += importDetail.basicQualityAvailable
+            findProductUnit = true; currentProductQuantity += importDetail.basicQuantityAvailable
 
-            importUpdateOption.$inc["details.#{index}.basicQualityReturn"]    = returnDetail.basicQuality
-            importUpdateOption.$inc["details.#{index}.basicQualityAvailable"] = -returnDetail.basicQuality
+            importUpdateOption.$inc["details.#{index}.basicQuantityReturn"]    = returnDetail.basicQuantity
+            importUpdateOption.$inc["details.#{index}.basicQuantityAvailable"] = -returnDetail.basicQuantity
 
         return console.log('ReturnDetail Khong Chinh Xac.') unless findProductUnit
-        return console.log('So luong tra qua lon') if (currentProductQuality - returnDetail.basicQuality) < 0
+        return console.log('So luong tra qua lon') if (currentProductQuantity - returnDetail.basicQuantity) < 0
 
       if transactionId = createTransactionByProvider(currentReturn)
         Schema.products.update(product._id, product.updateOption) for product in productUpdateList
@@ -331,26 +331,26 @@ updateProductQuery = (returnDetail, returnType)->
   if returnType is Enums.getValue('ReturnTypes', 'provider')
     for unit, index in product.units
       if unit._id is returnDetail.productUnit
-        productUpdate.$inc["units.#{index}.quality.inStockQuality"]      = -returnDetail.basicQuality
-        productUpdate.$inc["units.#{index}.quality.availableQuality"]    = -returnDetail.basicQuality
-        productUpdate.$inc["units.#{index}.quality.returnImportQuality"] = returnDetail.basicQuality
+        productUpdate.$inc["units.#{index}.quality.inStockQuantity"]      = -returnDetail.basicQuantity
+        productUpdate.$inc["units.#{index}.quality.availableQuantity"]    = -returnDetail.basicQuantity
+        productUpdate.$inc["units.#{index}.quality.returnImportQuantity"] = returnDetail.basicQuantity
         break
 
-    productUpdate.$inc["quantities.#{detailIndex}.inStockQuality"]      = -returnDetail.basicQuality
-    productUpdate.$inc["quantities.#{detailIndex}.availableQuality"]    = -returnDetail.basicQuality
-    productUpdate.$inc["quantities.#{detailIndex}.returnImportQuality"] = returnDetail.basicQuality
+    productUpdate.$inc["quantities.#{detailIndex}.inStockQuantity"]      = -returnDetail.basicQuantity
+    productUpdate.$inc["quantities.#{detailIndex}.availableQuantity"]    = -returnDetail.basicQuantity
+    productUpdate.$inc["quantities.#{detailIndex}.returnImportQuantity"] = returnDetail.basicQuantity
 
   else if returnType is Enums.getValue('ReturnTypes', 'customer')
     for unit, index in product.units
       if unit._id is returnDetail.productUnit
-        productUpdate.$inc["units.#{index}.quality.inStockQuality"]    = returnDetail.basicQuality
-        productUpdate.$inc["units.#{index}.quality.returnSaleQuality"] = returnDetail.basicQuality
-        productUpdate.$inc["units.#{index}.quality.availableQuality"]  = returnDetail.basicQuality
+        productUpdate.$inc["units.#{index}.quality.inStockQuantity"]    = returnDetail.basicQuantity
+        productUpdate.$inc["units.#{index}.quality.returnSaleQuantity"] = returnDetail.basicQuantity
+        productUpdate.$inc["units.#{index}.quality.availableQuantity"]  = returnDetail.basicQuantity
         break
 
-    productUpdate.$inc["quantities.#{detailIndex}.inStockQuality"]    = returnDetail.basicQuality
-    productUpdate.$inc["quantities.#{detailIndex}.returnSaleQuality"] = returnDetail.basicQuality
-    productUpdate.$inc["quantities.#{detailIndex}.availableQuality"]  = returnDetail.basicQuality
+    productUpdate.$inc["quantities.#{detailIndex}.inStockQuantity"]    = returnDetail.basicQuantity
+    productUpdate.$inc["quantities.#{detailIndex}.returnSaleQuantity"] = returnDetail.basicQuantity
+    productUpdate.$inc["quantities.#{detailIndex}.availableQuantity"]  = returnDetail.basicQuantity
 
   return {_id: returnDetail.product, updateOption: productUpdate}
 

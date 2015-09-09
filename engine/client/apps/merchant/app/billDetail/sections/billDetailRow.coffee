@@ -1,15 +1,15 @@
 scope = logics.billDetail
 lemon.defineHyper Template.billDetailRowEdit,
   rendered: ->
-    @ui.$editQuality.inputmask "numeric",
+    @ui.$editQuantity.inputmask "numeric",
       {autoGroup: true, groupSeparator:",", radixPoint: ".", integerDigits:11, rightAlign: false}
     @ui.$editDiscountCash.inputmask "integer",
       {autoGroup: true, groupSeparator:",", radixPoint: ".", integerDigits:11}
 
-    @ui.$editQuality.val Template.currentData().quality
+    @ui.$editQuantity.val Template.currentData().quality
     @ui.$editDiscountCash.val Template.currentData().discountCash
 
-    @ui.$editQuality.select()
+    @ui.$editQuantity.select()
 
   events:
     "click .deleteOrderDetail": (event, template) -> scope.currentBillHistory.removeDetail(@_id)
@@ -25,10 +25,10 @@ lemon.defineHyper Template.billDetailRowEdit,
         discountCash = Template.currentData().price
         template.ui.$editDiscountCash.val(discountCash)
 
-      quality = Number(template.ui.$editQuality.inputmask('unmaskedvalue'))
+      quality = Number(template.ui.$editQuantity.inputmask('unmaskedvalue'))
       if quality < 0
         quality = Math.abs(quality)
-        template.ui.$editQuality.val(quality)
+        template.ui.$editQuantity.val(quality)
 
 
       if event.which is 13

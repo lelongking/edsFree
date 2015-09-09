@@ -9,7 +9,7 @@ Apps.Merchant.checkProductExpireDate = (profile, value)->
     productDetails = Schema.productDetails.find({$and:[
       {warehouse: {$in:_.pluck(allWarehouse, '_id')}}
       {expire:{$lte: expireDate}}
-      {inStockQuality:{$gt: 0}}
+      {inStockQuantity:{$gt: 0}}
     ]}).fetch()
 
     Schema.expiringProducts.remove({merchant: {$in: _.union(_.pluck(productDetails, 'merchant'))}})

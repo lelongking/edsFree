@@ -20,7 +20,7 @@ lemon.defineHyper Template.overviewProductUnit,
         name        : scope.currentProduct.name
         barcode     : 'Mã Vạch'
         importPrice : 'Giá Nhập'
-        saleQuality : 'Giá Bán'
+        saleQuantity : 'Giá Bán'
       unitTable.push(product)
 
       for unit in scope.currentProduct.units
@@ -33,7 +33,7 @@ lemon.defineHyper Template.overviewProductUnit,
           name        : unit.name
           barcode     : unit.barcode
           importPrice : scope.currentProduct.priceBooks[0].importPrice * unit.conversion
-          saleQuality : scope.currentProduct.priceBooks[0].salePrice * unit.conversion
+          saleQuantity : scope.currentProduct.priceBooks[0].salePrice * unit.conversion
         unitTable.push(productUnit)
       return unitTable
 
@@ -48,9 +48,9 @@ lemon.defineHyper Template.productUnitTableDetail,
     isEditImportPrice: -> scope.currentProduct.status isnt Enums.getValue('ProductStatuses', 'confirmed')
 
   events:
-    "keyup [name='editImportQuality']": (event, template) ->
+    "keyup [name='editImportQuantity']": (event, template) ->
       if User.hasManagerRoles()
-        $importPrice  = template.ui.$editImportQuality
+        $importPrice  = template.ui.$editImportQuantity
         console.log accounting.parse($importPrice.val()), @_id
         if event.which is 13
           updateOption = {importPrice: accounting.parse($importPrice.val())}

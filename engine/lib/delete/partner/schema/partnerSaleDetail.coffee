@@ -21,7 +21,7 @@ simpleSchema.partnerSaleDetails = new SimpleSchema
     type: String
     optional: true
 
-  unitQuality:
+  unitQuantity:
     type: Number
     optional: true
     decimal: true
@@ -30,7 +30,7 @@ simpleSchema.partnerSaleDetails = new SimpleSchema
     type: Number
     optional: true
 
-  conversionQuality:
+  conversionQuantity:
     type: Number
     optional: true
 #----------------------------------------
@@ -46,7 +46,7 @@ simpleSchema.partnerSaleDetails = new SimpleSchema
     blackbox: true
     optional: true
 
-  returnQuality:
+  returnQuantity:
     type: Number
     optional: true
 

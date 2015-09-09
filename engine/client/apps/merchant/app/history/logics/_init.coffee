@@ -15,7 +15,7 @@ Apps.Merchant.basicHistoryReactive.push (scope) ->
 #        for detail in order.details
 #          console.log detail
 #          listProduct[detail.product]  = 0 unless listProduct[detail.product]
-#          listProduct[detail.product] += detail.basicQuality
+#          listProduct[detail.product] += detail.basicQuantity
 #
 #      scope.products = []
 #      for key, value of listProduct

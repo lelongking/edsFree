@@ -1,15 +1,15 @@
-calculateOriginalQuality = (context) ->
-  if context.lock == context.submit == false then return (Schema.productDetails.findOne(context.productDetail))?.inStockQuality ? 0
-  if context.lock != context.submit == false then return context.lockOriginalQuality
+calculateOriginalQuantity = (context) ->
+  if context.lock == context.submit == false then return (Schema.productDetails.findOne(context.productDetail))?.inStockQuantity ? 0
+  if context.lock != context.submit == false then return context.lockOriginalQuantity
   if context.lock == context.submit != false
-    product = (Schema.productDetails.findOne(context.productDetail))?.inStockQuality ? 0
-    if context.originalQuality != product
-      Schema.inventoryDetails.update context._id, $set: {originalQuality: product}
+    product = (Schema.productDetails.findOne(context.productDetail))?.inStockQuantity ? 0
+    if context.originalQuantity != product
+      Schema.inventoryDetails.update context._id, $set: {originalQuantity: product}
     else
       product
 
-calculateSaleQuality = (context) ->
-  if context.lock == context.submit == false then return context.saleQuality
+calculateSaleQuantity = (context) ->
+  if context.lock == context.submit == false then return context.saleQuantity
   if context.lock != context.submit == false
     saleDetails = Schema.saleDetails.find(
       $and:
@@ -22,9 +22,9 @@ calculateSaleQuality = (context) ->
     count = 0
     for detail in saleDetails
       count += detail.quality
-    if count != context.saleQuality
-      realQuality = context.realQuality - (count - context.saleQuality)
-      Schema.inventoryDetails.update context._id, $set: {saleQuality: count, realQuality: realQuality}
+    if count != context.saleQuantity
+      realQuantity = context.realQuantity - (count - context.saleQuantity)
+      Schema.inventoryDetails.update context._id, $set: {saleQuantity: count, realQuantity: realQuantity}
     return count
 
   if context.lock == context.submit != false
@@ -38,23 +38,23 @@ calculateSaleQuality = (context) ->
     count = 0
     for detail in saleDetails
       count += detail.quality
-    if count != context.saleQuality then (Schema.inventoryDetails.update context._id, $set: {saleQuality: count})
+    if count != context.saleQuantity then (Schema.inventoryDetails.update context._id, $set: {saleQuantity: count})
     return count
 
-calculateLostQuality = (context) ->
-  if context.lock == context.submit == false then return context.lostQuality
-  if context.lock != context.submit == false then return context.lostQuality
-  if context.lock == context.submit != false then return context.lostQuality
+calculateLostQuantity = (context) ->
+  if context.lock == context.submit == false then return context.lostQuantity
+  if context.lock != context.submit == false then return context.lostQuantity
+  if context.lock == context.submit != false then return context.lostQuantity
 
 calculateDate = (context) ->
   if context.lock == context.submit == false then return context.version.createdAt
   if context.lock != context.submit == false then return context.lockDate
   if context.lock == context.submit != false then return context.submitDate
 
-calculateRealQuality = (context) ->
+calculateRealQuantity = (context) ->
   if context.lock == context.submit == false then return 0
   if context.lock != context.submit == false
-    context.realQuality
+    context.realQuantity
 
 
 
@@ -68,21 +68,21 @@ calculateRealQuality = (context) ->
     count = 0
     for detail in saleDetails
       count += detail.qualityExport
-    if count != context.saleQuality
-      Schema.inventoryDetails.update context._id, $set: {saleQuality: count}
+    if count != context.saleQuantity
+      Schema.inventoryDetails.update context._id, $set: {saleQuantity: count}
     return count
 
 lemon.defineWidget Template.inventoryProductThumbnail,
   colorClass: ->
     if @lock == @submit == false then return 'lime'
-    if @lostQuality > 0 then 'pumpkin' else 'belize-hole'
+    if @lostQuantity > 0 then 'pumpkin' else 'belize-hole'
 
   productDetail: -> Schema.productDetails.findOne(@productDetail)
   expireDate: (date)-> if date then date.toDateString() else ''
 
-  originalQuality: -> calculateOriginalQuality(@)
-  saleQuality: -> calculateSaleQuality(@)
-#  lostQuality: -> calculateLostQuality(@)
+  originalQuantity: -> calculateOriginalQuantity(@)
+  saleQuantity: -> calculateSaleQuantity(@)
+#  lostQuantity: -> calculateLostQuantity(@)
   date: -> calculateDate(@)
   status: ->
     if @lock == @submit == false then return 'New'
@@ -98,22 +98,22 @@ lemon.defineWidget Template.inventoryProductThumbnail,
       return "display: none"
 
 
-  realQualityOptions: ->
+  realQuantityOptions: ->
     {
       parentContext: @
       reactiveSetter: (val) ->
         if @parentContext.lock != @parentContext.submit == false  and @parentContext.success == false
           option={}
-          maxQuality = @parentContext.lockOriginalQuality - @parentContext.saleQuality
-          if val < maxQuality
-            option.realQuality = val
-            option.lostQuality = maxQuality - val
+          maxQuantity = @parentContext.lockOriginalQuantity - @parentContext.saleQuantity
+          if val < maxQuantity
+            option.realQuantity = val
+            option.lostQuantity = maxQuantity - val
           else
-            option.realQuality = maxQuality
-            option.lostQuality = 0
+            option.realQuantity = maxQuantity
+            option.lostQuantity = 0
           Schema.inventoryDetails.update @parentContext._id, $set: option
-      reactiveValue: -> @parentContext.realQuality ? 0
-      reactiveMax: -> @parentContext.lockOriginalQuality - @parentContext.saleQuality
+      reactiveValue: -> @parentContext.realQuantity ? 0
+      reactiveMax: -> @parentContext.lockOriginalQuantity - @parentContext.saleQuantity
       reactiveMin: -> 0
       reactiveStep: -> 1
     }
@@ -125,10 +125,10 @@ lemon.defineWidget Template.inventoryProductThumbnail,
         Schema.inventoryDetails.update @_id, $set: {
           lock: true
           lockDate: new Date
-          lockOriginalQuality: productDetail.inStockQuality
-          realQuality    : productDetail.inStockQuality
-          saleQuality    : 0
-          lostQuality    : 0
+          lockOriginalQuantity: productDetail.inStockQuantity
+          realQuantity    : productDetail.inStockQuantity
+          saleQuantity    : 0
+          lostQuantity    : 0
         }
 
     "click .icon-ok-6": (event, template)->
@@ -143,5 +143,5 @@ lemon.defineWidget Template.inventoryProductThumbnail,
       if @lock == @submit != @success == false
         Schema.inventoryDetails.update @_id, $set: {
           submit      : false
-          realQuality : @lockOriginalQuality - @saleQuality - @lostQuality
+          realQuantity : @lockOriginalQuantity - @saleQuantity - @lostQuantity
         }

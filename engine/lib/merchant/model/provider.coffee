@@ -9,6 +9,11 @@ simpleSchema.providers = new SimpleSchema
   representative : simpleSchema.OptionalString
   manufacturer   : simpleSchema.OptionalString
 
+  saleBillNo        : type: Number, defaultValue: 0 #số phiếu bán
+  importBillNo      : type: Number, defaultValue: 0 #số phiếu nhap
+  returnBillNo      : type: Number, defaultValue: 0 #số phiếu tra hang
+  transactionBillNo : type: Number, defaultValue: 0 #số phiếu thu chi
+
   beginCash : simpleSchema.DefaultNumber()
   debtCash  : simpleSchema.DefaultNumber()
   loanCash  : simpleSchema.DefaultNumber()

@@ -33,16 +33,16 @@ lemon.defineHyper Template.priceBookCustomerRowEdit,
     isGroup: -> Session.get("currentPriceBook").priceBookType is 2
 
   rendered: ->
-    @ui.$editSaleQuality.inputmask "numeric",
+    @ui.$editSaleQuantity.inputmask "numeric",
       {autoGroup: true, groupSeparator:",", radixPoint: ".", suffix: " VNĐ", integerDigits:11, rightAlign: false}
-    @ui.$editSaleQuality.val Template.currentData().salePrice
+    @ui.$editSaleQuantity.val Template.currentData().salePrice
 
-    @ui.$editSaleQuality.select()
+    @ui.$editSaleQuantity.select()
 
   events:
     "keyup": (event, template) ->
       product = Template.currentData()
-      salePrice = Math.abs(Helpers.Number(template.ui.$editSaleQuality.inputmask('unmaskedvalue')))
+      salePrice = Math.abs(Helpers.Number(template.ui.$editSaleQuantity.inputmask('unmaskedvalue')))
       salePrice = undefined if salePrice is product.salePrice
 
       if event.which is 13

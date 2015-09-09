@@ -35,16 +35,16 @@ Template.registerHelper 'getProductUnitName', (unitId)->
     productUnit.name
 
 
-Template.registerHelper 'crossReturnAvailableQuality', ->
-  currentDetail = @; currentProductQuality = 0
+Template.registerHelper 'crossReturnAvailableQuantity', ->
+  currentDetail = @; currentProductQuantity = 0
   currentParent = Session.get('currentReturnParent')
 
   if currentDetail and currentParent
     for orderDetail in currentParent
       if orderDetail.productUnit is currentDetail.productUnit
-        currentProductQuality += orderDetail.basicQualityAvailable
+        currentProductQuantity += orderDetail.basicQuantityAvailable
 
-    crossAvailable = currentProductQuality - currentDetail.basicQuality
+    crossAvailable = currentProductQuantity - currentDetail.basicQuantity
 
     if crossAvailable < 0
       crossAvailable = Math.ceil(Math.abs(crossAvailable/currentDetail.conversion))*(-1)
@@ -96,13 +96,13 @@ Template.registerHelper 'allowAction', (val) -> if val then '' else 'disabled'
 
 
 
-Template.registerHelper 'crossBillAvailableQuality', ->
-  cross = logics.sales.validation.getCrossProductQuality(@product, @branchProduct, @order)
-  crossAvailable = if cross.product then (cross.product.availableQuality - cross.quality) else 0
+Template.registerHelper 'crossBillAvailableQuantity', ->
+  cross = logics.sales.validation.getCrossProductQuantity(@product, @branchProduct, @order)
+  crossAvailable = if cross.product then (cross.product.availableQuantity - cross.quality) else 0
   if crossAvailable < 0
-    crossAvailable = Math.ceil(Math.abs(crossAvailable/@conversionQuality))*(-1)
+    crossAvailable = Math.ceil(Math.abs(crossAvailable/@conversionQuantity))*(-1)
   else
-    Math.ceil(Math.abs(crossAvailable/@conversionQuality))
+    Math.ceil(Math.abs(crossAvailable/@conversionQuantity))
 
   if cross.product.basicDetailModeEnabled is true
     return {

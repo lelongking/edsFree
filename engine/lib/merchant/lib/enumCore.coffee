@@ -36,7 +36,7 @@ Apps.Merchant.Enums.GroupTypes = [
 #----------Notification---------->
 Apps.Merchant.Enums.NotificationGroups = [
   _id    : 0
-  value  : 'productQuality'
+  value  : 'productQuantity'
   display: 'sap het ton kho'
 ,
   _id    : 1
