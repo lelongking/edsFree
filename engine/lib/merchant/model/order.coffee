@@ -119,7 +119,7 @@ Schema.add 'orders', "Order", class Order
 
         for instance, index in @details
           product = Schema.products.findOne(instance.product)
-          productPrice  = product.getPrice(instance.productUnit, customer._id, 'sale')
+          productPrice  = product.getPrice(customer._id, 'sale')
           totalPrice   += instance.quality * productPrice
           discountCash += instance.quality * instance.discountCash
           predicate.$set["details.#{index}.price"] = productPrice
@@ -183,7 +183,7 @@ Schema.add 'orders', "Order", class Order
       productUnit = _.findWhere(product.units, {_id: productUnitId})
       return console.log('Khong tim thay ProductUnit') if !productUnit
 
-      price = product.getPrice(productUnitId, @buyer, 'sale')
+      price = product.getPrice(@buyer, 'sale')
       return console.log('Price not found..') if price is undefined
 
       return console.log("Price invalid (#{price})") if price < 0

@@ -36,7 +36,7 @@ template(name="priceBookDetailCustomer")
                .commands: .lemon.rounded.tiny.btn.blue.animated.bounceIn.deleteUnitPrice: span.icon-minus-4
               td.date {{productUnitName}}
               td.number {{formatNumber basicSale}} VNĐ
-              td.number {{formatNumber discountSalePrice}} VNĐ
+              td.number {{formatNumber saleDiscount}} VNĐ
               td.number {{formatNumber salePrice}} VNĐ
 
     .panel-footer
@@ -44,3 +44,14 @@ template(name="priceBookDetailCustomer")
         span.s5 TỔNG NỢ:
         span.s3 <b>{{formatNumber finalDebtBalance}}</b> VNĐ
         //h3 Tổng tiền: {{formatNumber totalPurchases}} VNĐ
+
+
+template(name="priceBookCustomerRowEdit")
+  tr.editors.dual-border
+    if isGroup
+      td.command
+    td.first-column {{productName}}
+    td.date {{productUnitName}}
+    td.number {{formatNumber basicSale}} VNĐ
+    td.number {{formatNumber saleDiscount}} VNĐ
+    td.number: input(name="editSaleQuality" min="0")

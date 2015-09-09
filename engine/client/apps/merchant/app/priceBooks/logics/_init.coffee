@@ -42,7 +42,34 @@ Apps.Merchant.priceBookInit.push (scope) ->
 
 
 
+  scope.findAllProductUnits = (priceBook)->
+    productLists = []
+    lists = Schema.products.find(
+      {_id: {$in: priceBook.products} ,'priceBooks._id': priceBook._id}
+      {sort: {name: 1}}
+    ).fetch()
 
+    for product in lists
+      productPriceBook = _.findWhere(product.priceBooks, {_id: priceBook._id})
+      basicUnit = _.findWhere(product.units, {isBase: true})
+
+      if basicUnit and productPriceBook
+        product.productName     = product.name
+        product.productUnitName = basicUnit.name
+        product.priceBookType   = priceBook.priceBookType
+
+        product.basicSale    = productPriceBook.basicSale
+        product.salePrice    = productPriceBook.salePrice
+        product.saleDiscount = productPriceBook.basicSale - productPriceBook.salePrice
+
+        product.basicImport    = productPriceBook.basicImport
+        product.importPrice    = productPriceBook.importPrice
+        product.importDiscount = productPriceBook.basicImport - productPriceBook.importPrice
+
+        productLists.push(product)
+
+    scope.allProductUnits = productLists
+    return productLists
 
 #  scope.checkAllowUpdateOverview = (template) ->
 #    Session.set "priceBookManagementShowEditCommand",

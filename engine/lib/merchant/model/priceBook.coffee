@@ -17,193 +17,78 @@ simpleSchema.priceBooks = new SimpleSchema
 
 Schema.add 'priceBooks', "PriceBook", class PriceBook
   @transform: (doc) ->
-    doc.remove = ->
-      if @allowDelete is true and @isBase is false
-        if Schema.priceBooks.remove @_id
-          products = Schema.products.find({'units.priceBooks.priceBook': @_id, merchant: Merchant.getId()}).fetch()
-          for product in products
-            unitDeleteQuery = $pullAll: {}
-            for unit, unitIndex in product.units
-              unitPrice = []
-
-              for priceBook, index in unit.priceBooks
-                if priceBook.priceBook is @_id
-                  unitPrice.push priceBook
-
-              unitDeleteQuery.$pullAll["units.#{unitIndex}.priceBooks"] = unitPrice
-            Schema.products.update(product._id, unitDeleteQuery)
+    doc.remove = -> #ok
+      if doc.allowDelete is true and doc.isBase is false
+        if Schema.priceBooks.remove doc._id
+          Schema.products.find({'priceBooks._id': doc._id, merchant: Merchant.getId()}).forEach(
+            (product)->
+              for priceBook, index in product.priceBooks
+                if priceBook._id is doc._id
+                  Schema.products.update product._id, $pull: {priceBooks: priceBook}
+                  break
+          )
 
           basicPrice = Schema.priceBooks.findOne({isBase: true, merchant: Merchant.getId()})
           Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentPriceBook': basicPrice._id}})
 
-    doc.updateProductPrice = (productId, salePrice, importPrice) ->
-      priceBookId       = @_id
-      priceBookType     = @priceBookType
-      priceBookIndex    = undefined
-      productUnitIndex  = undefined
-      unitUpdateQuery   = $set:{}
+    doc.updatePriceOfProduct = (productId, salePrice, importPrice) -> #ok
+      priceBookId = @_id; priceBookIsBase = @isBase; priceBookType = @priceBookType; unitUpdateQuery = $set:{}
       if product = Schema.products.findOne({_id: productId, 'priceBooks._id': priceBookId, merchant: Merchant.getId()})
-        if @isBase
-          for item, index in product.priceBooks
-            priceBookQuery = "priceBooks.#{index}"
-            if salePrice isnt undefined and salePrice >= 0 and salePrice isnt @salePrice
+        for item, index in product.priceBooks
+          priceBookQuery = "priceBooks.#{index}"
+          if priceBookIsBase
+            if salePrice isnt undefined and salePrice >= 0 and salePrice isnt item.salePrice
               unitUpdateQuery.$set["#{priceBookQuery}.basicSale"] = salePrice
               unitUpdateQuery.$set["#{priceBookQuery}.salePrice"] = salePrice if item._id is priceBookId
 
-            if importPrice isnt undefined and importPrice >= 0 and importPrice isnt @importPrice
+            if importPrice isnt undefined and importPrice >= 0 and importPrice isnt item.importPrice
               unitUpdateQuery.$set["#{priceBookQuery}.basicImport"] = importPrice
               unitUpdateQuery.$set["#{priceBookQuery}.importPrice"] = importPrice if item._id is priceBookId
 
-          Schema.products.update(product._id, unitUpdateQuery) unless _.isEmpty(unitUpdateQuery.$set)
+          else if item._id is priceBookId
+            if _.contains([0, 1, 2], priceBookType) and salePrice and salePrice >= 0 and salePrice isnt item.salePrice
+              unitUpdateQuery.$set["#{priceBookQuery}.salePrice"] = salePrice
+
+            if _.contains([0, 3, 4], priceBookType) and importPrice and importPrice >= 0 and importPrice isnt item.importPrice
+              unitUpdateQuery.$set["#{priceBookQuery}.importPrice"] = importPrice
+
+            break
+
+        console.log unitUpdateQuery
+        Schema.products.update(product._id, unitUpdateQuery) unless _.isEmpty(unitUpdateQuery.$set)
 
 
-#        else
-#          if priceBookIndex isnt undefined
-#            console.log 'update'
-#            unitUpdateQuery = $set:{}; priceBookQuery = "units.#{productUnitIndex}.priceBooks.#{priceBookIndex}"
-#
-#            if _.contains([0, 1, 2], priceBookType)
-#              if salePrice and salePrice >= 0
-#                unitUpdateQuery.$set["#{priceBookQuery}.salePrice"]         = salePrice
-#                unitUpdateQuery.$set["#{priceBookQuery}.discountSalePrice"] = priceBookFound.basicSale - salePrice
-#                unitUpdateQuery.$set["#{priceBookQuery}.updateSalePriceAt"] = new Date()
-#
-#            if _.contains([0, 3, 4], priceBookType)
-#              if importPrice and importPrice >= 0
-#                unitUpdateQuery.$set["#{priceBookQuery}.importPrice"]         = importPrice
-#                unitUpdateQuery.$set["#{priceBookQuery}.discountImportPrice"] = priceBookFound.basicImport - importPrice
-#                unitUpdateQuery.$set["#{priceBookQuery}.updateImportPriceAt"] = new Date()
-#
-#            Schema.products.update(product._id, unitUpdateQuery, callback) unless _.isEmpty(unitUpdateQuery.$set)
-#
-#          else
-#            console.log 'insert'
-#            unitUpdateQuery = $push: {}; priceBook = {priceBook: priceBookId}
-#            if _.contains([1, 2], priceBookType)
-#              if salePrice and salePrice >= 0 and salePrice isnt priceBookFound.salePrice
-#                priceBook.salePrice = salePrice
-#                unitUpdateQuery.$push["units.#{productUnitIndex}.priceBooks"] = priceBook
-#
-#            if _.contains([3, 4], priceBookType)
-#              if importPrice and importPrice >= 0 and importPrice isnt priceBookFound.importPrice
-#                priceBook.importPrice = importPrice
-#                unitUpdateQuery.$push["units.#{productUnitIndex}.priceBooks"] = priceBook
-#
-#            Schema.products.update(product._id, unitUpdateQuery, callback) unless _.isEmpty(unitUpdateQuery.$push)
+    doc.deletePriceOfProduct = (productId)-> #ok
+      console.log product
+      if product = Schema.products.findOne({_id: productId, 'priceBooks._id': @_id, merchant: Merchant.getId()})
+        for item, index in product.priceBooks
+          if item._id is @_id
+            priceBookDetail = item
+            break
 
+        if priceBookDetail
+          Schema.products.update product._id, $pull: {priceBooks: priceBookDetail}
+          Schema.priceBooks.update @_id, $pull: {products:product._id}
 
-
-
-    doc.updateProductUnitPrice = (productUnitId, salePrice, importPrice, callback) ->
-      priceBookId = @_id; priceBookType = @priceBookType; priceBookIndex = undefined; productUnitIndex = undefined
-      product = Schema.products.findOne({'units._id': productUnitId, merchant: Merchant.getId()})
-
-      for unit, i in product.units
-        if unit._id is productUnitId
-          productUnitIndex = i
-
-          for item, index in unit.priceBooks
-            if item.priceBook is priceBookId
-              priceBookIndex = index
-              priceBookFound = item
-
-      if productUnitIndex >= 0
-        if @isBase
-          if priceBookFound
-            unitUpdateQuery = $set:{}; priceBookQuery = "units.#{productUnitIndex}.priceBooks"
-
-            for item, index in product.units[productUnitIndex].priceBooks
-              if salePrice isnt undefined and salePrice >= 0 and salePrice isnt priceBookFound.salePrice
-                unitUpdateQuery.$set["#{priceBookQuery}.#{index}.basicSale"]         = salePrice
-                unitUpdateQuery.$set["#{priceBookQuery}.#{index}.discountSalePrice"] = salePrice - item.salePrice
-                if item.priceBook is priceBookId
-                  unitUpdateQuery.$set["#{priceBookQuery}.#{index}.salePrice"]         = salePrice
-                  unitUpdateQuery.$set["#{priceBookQuery}.#{index}.discountSalePrice"] = 0
-                  unitUpdateQuery.$set["#{priceBookQuery}.#{index}.updateSalePriceAt"] = new Date()
-
-              console.log importPrice, item, priceBookFound.importPrice
-              if importPrice isnt undefined and importPrice >= 0 and importPrice isnt priceBookFound.importPrice
-                unitUpdateQuery.$set["#{priceBookQuery}.#{index}.basicImport"]         = importPrice
-                unitUpdateQuery.$set["#{priceBookQuery}.#{index}.discountImportPrice"] = importPrice - (item.importPrice ? 0)
-                if item.priceBook is priceBookId
-                  unitUpdateQuery.$set["#{priceBookQuery}.#{index}.importPrice"]         = importPrice
-                  unitUpdateQuery.$set["#{priceBookQuery}.#{index}.discountImportPrice"] = 0
-                  unitUpdateQuery.$set["#{priceBookQuery}.#{index}.updateImportPriceAt"] = new Date()
-
-            console.log unitUpdateQuery
-            Schema.products.update(product._id, unitUpdateQuery) unless _.isEmpty(unitUpdateQuery.$set)
-
-        else
-          if priceBookIndex isnt undefined
-            console.log 'update'
-            unitUpdateQuery = $set:{}; priceBookQuery = "units.#{productUnitIndex}.priceBooks.#{priceBookIndex}"
-
-            if _.contains([0, 1, 2], priceBookType)
-              if salePrice and salePrice >= 0
-                unitUpdateQuery.$set["#{priceBookQuery}.salePrice"]         = salePrice
-                unitUpdateQuery.$set["#{priceBookQuery}.discountSalePrice"] = priceBookFound.basicSale - salePrice
-                unitUpdateQuery.$set["#{priceBookQuery}.updateSalePriceAt"] = new Date()
-
-            if _.contains([0, 3, 4], priceBookType)
-              if importPrice and importPrice >= 0
-                unitUpdateQuery.$set["#{priceBookQuery}.importPrice"]         = importPrice
-                unitUpdateQuery.$set["#{priceBookQuery}.discountImportPrice"] = priceBookFound.basicImport - importPrice
-                unitUpdateQuery.$set["#{priceBookQuery}.updateImportPriceAt"] = new Date()
-
-            Schema.products.update(product._id, unitUpdateQuery, callback) unless _.isEmpty(unitUpdateQuery.$set)
-
-          else
-            console.log 'insert'
-            unitUpdateQuery = $push: {}; priceBook = {priceBook: priceBookId}
-            if _.contains([1, 2], priceBookType)
-              if salePrice and salePrice >= 0 and salePrice isnt priceBookFound.salePrice
-                priceBook.salePrice = salePrice
-                unitUpdateQuery.$push["units.#{productUnitIndex}.priceBooks"] = priceBook
-
-            if _.contains([3, 4], priceBookType)
-              if importPrice and importPrice >= 0 and importPrice isnt priceBookFound.importPrice
-                priceBook.importPrice = importPrice
-                unitUpdateQuery.$push["units.#{productUnitIndex}.priceBooks"] = priceBook
-
-            Schema.products.update(product._id, unitUpdateQuery, callback) unless _.isEmpty(unitUpdateQuery.$push)
-
-    doc.deleteUnitPrice = (productUnitId)->
-      product = Schema.products.findOne({'units._id': productUnitId, merchant: Merchant.getId()})
-      for unit, i in product.units
-        if unit._id is productUnitId
-          productUnitIndex = i
-
-          for item, index in unit.priceBooks
-            priceBookDetail = item if item.priceBook is @_id
-
-      if priceBookDetail
-        unitDeleteQuery = $pull: {}
-        unitDeleteQuery.$pull["units.#{productUnitIndex}.priceBooks"] = priceBookDetail
-        Schema.products.update(product._id, unitDeleteQuery)
-
-        for item, index in @products
-          productUnit = item if item.unit is productUnitId
-        Schema.priceBooks.update @_id, $pull: {products:productUnit} if productUnit
-
-    doc.selectedPriceProduct = (productId)->
+    doc.selectedPriceProduct = (productId)-> #ok
       if userId = Meteor.userId()
         if @priceBookType isnt 1
           userUpdate = $addToSet:{}; userUpdate.$addToSet["sessions.productUnitSelected.#{@_id}"] = productId
           Meteor.users.update(userId, userUpdate)
 
-    doc.unSelectedPriceProduct = (productId)->
+    doc.unSelectedPriceProduct = (productId)-> #ok
       if userId = Meteor.userId()
         userUpdate = $pull:{}; userUpdate.$pull["sessions.productUnitSelected.#{@_id}"] = productId
         Meteor.users.update(userId, userUpdate)
 
-    doc.changePriceProductTo = (ownerId, model) ->
+    doc.changePriceProductTo = (ownerId, model) -> #ok
       if ownerId and (user = Meteor.users.findOne(Meteor.userId()))
         merchantId = user.profile.merchant
 
         if model is 'customers'
           console.log 'is customer: ' + ownerId
           if customerFound = Schema.customers.findOne({_id: ownerId, merchant: merchantId})
-            productUnitList = []; productUnitSelected = user.sessions.productUnitSelected[@_id]
+            productUnitList = []; productIdSelected = user.sessions.productUnitSelected[@_id]
 
             if !(priceBookOfGroup = PriceBook.findOneByOwner(customerFound._id, model))
               insertOption = {name: customerFound.name, owner: customerFound._id, priceBookType: 1}
@@ -213,7 +98,7 @@ Schema.add 'priceBooks', "PriceBook", class PriceBook
         else if model is 'customerGroups'
           console.log 'is customerGroup: ' + ownerId
           if customerGroupFound = Schema.customerGroups.findOne({_id: ownerId, merchant: merchantId})
-            productUnitList = []; productUnitSelected = user.sessions.productUnitSelected[@_id]
+            productUnitList = []; productIdSelected = user.sessions.productUnitSelected[@_id]
 
             if !(priceBookOfGroup = PriceBook.findOneByOwner(customerGroupFound._id, model))
               insertOption = {name: customerGroupFound.name, owner: customerGroupFound._id, priceBookType: 2}
@@ -223,48 +108,43 @@ Schema.add 'priceBooks', "PriceBook", class PriceBook
 
         #phải có bảng giá và không trùng với bản giá sẽ cập nhật và không trùng với bản giá gốc
         if priceBookOfGroup and priceBookOfGroup._id isnt @_id and priceBookOfGroup.isBase isnt true
-          console.log 'units:' + productUnitSelected
-          for productUnitId in productUnitSelected
-            query = findUnitIndexAndPriceBookIndex(productUnitId, @_id, priceBookOfGroup._id)
+          console.log 'productIds:' + productIdSelected
+          for productId in productIdSelected
+            query = findProductIndexAndPriceBookIndex(productId, @_id, priceBookOfGroup._id)
             console.log query
-            if query.productUnitIndex >= 0
-              #cả hai bản giá đều chưa có giá của unit
-              if query.priceBookFromIndex isnt undefined and query.priceBookToIndex isnt undefined
+
+            #cả hai bản giá đều chưa có giá của unit
+            if query.priceBookFromIndex isnt undefined and query.priceBookToIndex isnt undefined
 
 
-              #bản giá cập nhật không có giá của unit dc chon
-              else if query.priceBookFromIndex isnt undefined #lấy giá từ bảng gốc thêm vào bản cập nhật
-                priceBook =
-                  priceBook           : priceBookOfGroup._id
-                  basicSale           : query.basicSale
-                  salePrice           : query.salePrice
-                  discountSalePrice   : query.discountSalePrice
-                  updateImportPriceAt : new Date()
+            #bản giá cập nhật không có giá của unit dc chon
+            else if query.priceBookFromIndex isnt undefined #lấy giá từ bảng gốc thêm vào bản cập nhật
+              priceBook = { _id : priceBookOfGroup._id }
+              priceBook.basicSale   = query.basicSale if query.basicSale
+              priceBook.salePrice   = query.salePrice if query.salePrice
+              priceBook.basicImport = query.basicImport if query.basicImport
+              priceBook.importPrice = query.importPrice if query.importPrice
 
-                unitUpdateQuery = $push: {}
-                unitUpdateQuery.$push["units.#{query.productUnitIndex}.priceBooks"] = priceBook
-                console.log unitUpdateQuery
+              console.log priceBook
+              Schema.products.update query.productId, $push: { priceBooks: priceBook }
+              Schema.priceBooks.update priceBookOfGroup._id, $push: {products: query.productId}
+#              Schema.priceBooks.update @_id, $pull: {products: query.productId}
 
-                unless _.isEmpty(unitUpdateQuery.$push)
-                  Schema.products.update(query.productId, unitUpdateQuery)
-                  Schema.priceBooks.update @_id, $pull: {products:{_id:query.productId, unit: productUnitId}}
-                  Schema.priceBooks.update priceBookOfGroup._id, $push: {products:{_id:query.productId, unit: productUnitId}}
-
-  #                  cập nhật lại giá của bản giá cập nhật theo bản giá gốc
-  #                unitUpdateQuery = $set:{}
-  #                unitUpdateQuery.$set["units.#{productUnitIndex}.priceBooks.#{query.priceBookToIndex}.salePrice"] = query.salePrice
-  #                unitUpdateQuery.$set["units.#{productUnitIndex}.priceBooks.#{query.priceBookToIndex}.discountSalePricesss"] = query.discountSalePrice
-  #                Schema.products.update(query.productId, unitUpdateQuery) unless _.isEmpty(unitUpdateQuery.$set)
+#                  cập nhật lại giá của bản giá cập nhật theo bản giá gốc
+#                unitUpdateQuery = $set:{}
+#                unitUpdateQuery.$set["units.#{productUnitIndex}.priceBooks.#{query.priceBookToIndex}.salePrice"] = query.salePrice
+#                unitUpdateQuery.$set["units.#{productUnitIndex}.priceBooks.#{query.priceBookToIndex}.discountSalePricesss"] = query.discountSalePrice
+#                Schema.products.update(query.productId, unitUpdateQuery) unless _.isEmpty(unitUpdateQuery.$set)
 
 
 
-              #bản giá nguồn không có giá của unit dc chon, bản giá cập nhật có giá của unit
-              else if query.priceBookToIndex isnt undefined #không làm gi hết.
+            #bản giá nguồn không có giá của unit dc chon, bản giá cập nhật có giá của unit
+            else if query.priceBookToIndex isnt undefined #không làm gi hết.
 
-              #cả hai bản giá đều có gia của unit
-              else #không làm gi hết.
+            #cả hai bản giá đều có gia của unit
+            else #không làm gi hết.
 
-              productUnitList.push productUnitId
+            productUnitList.push productId
 
           userUpdate = $set:{}
           userUpdate.$set["sessions.productUnitSelected.#{@_id}"] = []
@@ -337,39 +217,29 @@ Schema.add 'priceBooks', "PriceBook", class PriceBook
     Meteor.users.update(Meteor.userId(), {$set: {'sessions.currentPriceBook': priceBookId}})
 
 #Dang FIx------------------------------------------->
-findUnitIndexAndPriceBookIndex = (unitId, priceBookFormId, priceBookToId, merchantId = Merchant.getId())->
+findProductIndexAndPriceBookIndex = (productId, priceBookFormId, priceBookToId, merchantId = Merchant.getId())-> #ok
   query =
     productId          : undefined
-    productUnitIndex   : undefined
     priceBookFromIndex : undefined
     priceBookToIndex   : undefined
 
     basicSale          : undefined
     salePrice          : undefined
-    discountSalePrice  : 0
-
     basicImport        : undefined
     importPrice        : undefined
-    discountImportPrice: 0
 
-  if productFound = Schema.products.findOne({'units._id': unitId, merchant: merchantId})
-    for unit, i in productFound.units
-      if unit._id is unitId
-        query.productUnitIndex = i
+  if productFound = Schema.products.findOne({_id: productId, merchant: merchantId})
+    for item, index in productFound.priceBooks
+      if item._id is priceBookFormId
+        query.priceBookFromIndex = index
+        query.basicSale          = item.basicSale if item.basicSale
+        query.salePrice          = item.salePrice if item.salePrice
 
-        for item, index in unit.priceBooks
-          if item.priceBook is priceBookFormId
-            query.priceBookFromIndex = index
-            query.basicSale          = item.basicSale if item.basicSale
-            query.salePrice          = item.salePrice if item.salePrice
-            query.discountSalePrice  = item.discountSalePrice if item.discountSalePrice
+        query.basicImport        = item.basicImport if item.basicImport
+        query.importPrice        = item.importPrice if item.importPrice
 
-            query.basicImport        = item.basicImport if item.basicImport
-            query.importPrice        = item.importPrice if item.importPrice
-            query.discountImportPrice= item.discountImportPrice if item.discountImportPrice
-
-          if item.priceBook is priceBookToId
-            query.priceBookToIndex = index
+      if item._id is priceBookToId
+        query.priceBookToIndex = index
 
 
     query.productId = productFound._id

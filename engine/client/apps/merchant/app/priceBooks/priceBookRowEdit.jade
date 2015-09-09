@@ -36,22 +36,5 @@ template(name="priceBookRowDisplay")
       td.number {{formatNumber importPrice}} VNĐ
 
 
-template(name="priceBookDefaultRowEdit")
-  tr.editors.dual-border
-    td.command
-    td.first-column {{productName}}
-    td.date {{productUnitName}}
-    td.number {{barcode}}
-    td.date {{momentFormat createdAt "DD/MM/YYYY"}}
-    td.number: input(name="editImportQuality" min="0")
-    td.number: input(name="editSaleQuality" min="0")
 
-template(name="priceBookCustomerRowEdit")
-  tr.editors.dual-border
-    if isGroup
-      td.command
-    td.first-column {{productName}}
-    td.date {{productUnitName}}
-    td.number {{formatNumber salePrice}} VNĐ
-    td.number {{formatNumber discountSalePrice}} VNĐ
-    td.number: input(name="editSaleQuality" min="0")
+
