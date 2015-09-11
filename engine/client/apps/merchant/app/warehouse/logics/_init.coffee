@@ -38,11 +38,10 @@ Apps.Merchant.warehouseInit.push (scope) ->
       (product) ->
         productCount += 1
         product.count = productCount
-        basicUnitId   = product.basicUnitId()
         quality       = product.quantities[0].inStockQuantity
         quality       = 0 if quality < 0
-        costPrice     = quality * product.getPrice(basicUnitId, undefined, 'import')
-        revenue       = quality * product.getPrice(basicUnitId)
+        costPrice     = quality * product.getPrice(undefined, 'import')
+        revenue       = quality * product.getPrice()
 
         product.costPrice = costPrice ? 0
         product.revenue   = revenue ? 0
@@ -63,11 +62,10 @@ Apps.Merchant.warehouseInit.push (scope) ->
       (product) ->
         productCount += 1
         product.count = productCount
-        basicUnitId   = product.basicUnitId()
         quality       = product.quantities[0].inStockQuantity
         quality       = 0 if quality < 0
-        costPrice     = quality * product.getPrice(basicUnitId, undefined, 'import')
-        revenue       = quality * product.getPrice(basicUnitId)
+        costPrice     = quality * product.getPrice(undefined, 'import')
+        revenue       = quality * product.getPrice()
 
         product.costPrice = costPrice ? 0
         product.revenue   = revenue ? 0

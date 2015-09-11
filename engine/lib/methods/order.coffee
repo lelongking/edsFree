@@ -41,12 +41,15 @@ createTransaction = (customer, order)->
 #    description      : 'Phiếu Bán'
     transactionType  : Enums.getValue('TransactionTypes', 'customer')
     receivable       : true
+    isRoot           : true
     owner            : customer._id
     parent           : order._id
+    isUseCode        : order.depositCash > 0
     beforeDebtBalance: customer.totalCash
     debtBalanceChange: order.finalPrice
     paidBalanceChange: order.depositCash
     latestDebtBalance: customer.totalCash + order.finalPrice - order.depositCash
+
 
   transactionInsert.dueDay    = order.dueDay if order.dueDay
   transactionInsert.owedCash  = Math.abs(order.finalPrice - order.depositCash)
@@ -55,6 +58,9 @@ createTransaction = (customer, order)->
     transactionInsert.status = Enums.getValue('TransactionStatuses', 'closed')
   else
     transactionInsert.status = Enums.getValue('TransactionStatuses', 'tracking')
+
+  if transactionInsert.isUseCode
+    console.log 'insertCode'
 
   if transactionId = Schema.transactions.insert(transactionInsert)
     customerUpdate =
@@ -103,10 +109,10 @@ updateSubtractQuantityInProductUnit = (product, orderDetail) ->
 
 
 
-findAllImport = (productUnitId) ->
+findAllImport = (productId) ->
   basicImport = Schema.imports.find({
-    importType : $in:[Enums.getValue('ImportTypes', 'inventorySuccess'), Enums.getValue('ImportTypes', 'success')]
-    'details.productUnit' : productUnitId
+    importType                      : $in:[Enums.getValue('ImportTypes', 'inventorySuccess'), Enums.getValue('ImportTypes', 'success')]
+    'details.product'               : productId
     'details.basicQuantityAvailable': {$gt: 0}
   }, {sort: {importType: 1} }).fetch()
   combinedImports = basicImport; console.log combinedImports
@@ -116,7 +122,7 @@ updateSubtractQuantityInImport = (orderFound, orderDetail, detailIndex, combined
   transactionQuantity = 0
   for currentImport in combinedImports #danh sach phieu Import
     for importDetail, index in currentImport.details #danh sach ImportDetail
-      if importDetail.productUnit is orderDetail.productUnit #so sanh ProductUnit
+      if importDetail.product is orderDetail.product #so sanh ProductUnit
         requiredQuantity = orderDetail.basicQuantity - transactionQuantity
 
         availableQuantity = importDetail.basicQuantityAvailable - requiredQuantity
@@ -166,10 +172,10 @@ Meteor.methods
   customerToOrder: (customerId)->
     try
       user = Meteor.users.findOne(Meteor.userId())
-      throw {valid: false, error: 'user not found!'} if !user
+      throw {valid: false, error: 'user not found!'} unless user
 
       customer = Schema.customers.findOne({_id: customerId, merchant: user.profile.merchant})
-      throw {valid: false, error: 'customer not found!'} if !customer
+      throw {valid: false, error: 'customer not found!'} unless customer
 
       orderFound = Schema.orders.findOne({
         seller      : user._id
@@ -187,10 +193,92 @@ Meteor.methods
     catch error
       throw new Meteor.Error('customerToOrder', error)
 
+  deleteOrder: (orderId)->
+    user = Meteor.users.findOne(Meteor.userId())
+    return {valid: false, error: 'user not found!'} unless user
+    return {valid: false, error: 'user not permission!'} unless User.hasManagerRoles()
+
+    query =
+      seller      : user._id
+      buyer       : $exists: true
+      merchant    : user.profile.merchant
+      orderType   : Enums.getValue('OrderTypes', 'success')
+      orderStatus : Enums.getValue('OrderStatus', 'finish')
+
+    currentOrderQuery = _.clone(query)
+    currentOrderQuery._id = orderId
+
+    currentOrderFound = Schema.orders.findOne currentOrderQuery
+    return {valid: false, error: 'order not found!'} unless currentOrderFound
+    return {valid: false, error: 'order not delete!'} unless currentOrderFound.allowDelete
+
+    customerFound = Schema.customers.findOne(currentOrderFound.buyer)
+    return {valid: false, error: 'customer not found!'} unless customerFound
+
+    merchantFound = Schema.merchants.findOne(user.profile.merchant)
+    return {valid: false, error: 'merchant not found!'} unless merchantFound
+
+#    lastOrderQuery = _.clone(query)
+#    lastOrderQuery.successDate = {$gt:currentOrderFound.successDate}
+#    lastOrderFound = Schema.orders.findOne lastOrderQuery
+#
+#    console.log currentOrderFound._id, lastOrderFound?._id
+
+    productLists = []
+    for item in currentOrderFound.details
+      product = Schema.products.findOne(item.product)
+      return {valid: false, error: 'product not found!'} unless product
+      productLists.push(product)
+
+
+    for orderDetail in currentOrderFound.details
+      product = _.findWhere(productLists, {_id: orderDetail.product})
+
+      updateProductQuery =
+        $inc:
+          'quantities.0.saleQuantity'     : -orderDetail.basicQuantity
+          'quantities.0.availableQuantity': orderDetail.basicQuantity
+          'quantities.0.inStockQuantity'  : orderDetail.basicQuantity
+      console.log updateProductQuery
+      Schema.products.update product._id, updateProductQuery
+
+      if product.inventoryInitial
+        #da nhap ton dau ky
+        for orderImportDetail in orderDetail.imports
+
+          #tim Import
+          if currentImport = Schema.imports.findOne(orderImportDetail._id)
+
+            #tim ImportDetail
+            for importDetail, index in currentImport.details
+
+              #so sanh ImportDetail giong voi orderImportDetail
+              if importDetail._id is orderImportDetail.detailId
+
+               #cap nhat lai Imports
+                updateImport = $inc:{}
+                updateImport.$inc["details.#{index}.basicOrderQuantity"]     = -orderImportDetail.basicQuantity
+                updateImport.$inc["details.#{index}.basicQuantityAvailable"] = orderImportDetail.basicQuantity
+                console.log updateImport
+                Schema.imports.update currentImport._id, updateImport
+
+    if Schema.orders.remove(currentOrderFound._id)
+      Meteor.call 'deleteTransaction', currentOrderFound.transaction
+
+#    if lastOrderFound
+#    else
+
+
+
+
+
+
+
+
 Meteor.methods
   orderSellerConfirm: (orderId)->
     user = Meteor.users.findOne(Meteor.userId())
-    return {valid: false, error: 'user not found!'} if !user
+    return {valid: false, error: 'user not found!'} unless user
 
     orderQuery =
       _id         : orderId
@@ -200,11 +288,11 @@ Meteor.methods
       orderStatus : Enums.getValue('OrderStatus', 'initialize')
     orderFound = Schema.orders.findOne orderQuery
 
-    return {valid: false, error: 'order not found!'} if !orderFound
+    return {valid: false, error: 'order not found!'} unless orderFound
 
     for detail, detailIndex in orderFound.details
       product = Schema.products.findOne({'units._id': detail.productUnit})
-      return {valid: false, error: 'productUnit not found!'} if !product
+      return {valid: false, error: 'productUnit not found!'} unless product
 
     orderUpdate = $set:
       orderType      : Enums.getValue('OrderTypes', 'tracking')
@@ -222,7 +310,7 @@ Meteor.methods
 
   orderAccountConfirm: (orderId)->
     user = Meteor.users.findOne(Meteor.userId())
-    return {valid: false, error: 'user not found!'} if !user
+    return {valid: false, error: 'user not found!'} unless user
 
     orderQuery =
       _id         : orderId
@@ -230,7 +318,7 @@ Meteor.methods
       orderType   : Enums.getValue('OrderTypes', 'tracking')
       orderStatus : Enums.getValue('OrderStatus', 'sellerConfirm')
     orderFound = Schema.orders.findOne orderQuery
-    return {valid: false, error: 'order not found!'} if !orderFound
+    return {valid: false, error: 'order not found!'} unless orderFound
 
     for productId, details of _.groupBy(orderFound.details, (item) -> item.product)
       if product = Schema.products.findOne(productId)
@@ -268,7 +356,7 @@ Meteor.methods
 
   orderExportConfirm: (orderId)->
     user = Meteor.users.findOne(Meteor.userId())
-    return {valid: false, error: 'user not found!'} if !user
+    return {valid: false, error: 'user not found!'} unless user
 
     orderQuery =
       _id         : orderId
@@ -276,7 +364,7 @@ Meteor.methods
       orderType   : Enums.getValue('OrderTypes', 'tracking')
       orderStatus : Enums.getValue('OrderStatus', 'accountingConfirm')
     orderFound = Schema.orders.findOne orderQuery
-    return {valid: false, error: 'order not found!'} if !orderFound
+    return {valid: false, error: 'order not found!'} unless orderFound
 
     for detail in orderFound.details
       if product = Schema.products.findOne(detail.product)
@@ -295,7 +383,7 @@ Meteor.methods
 
   orderSuccessConfirm: (orderId, success = true)->
     user = Meteor.users.findOne(Meteor.userId())
-    return {valid: false, error: 'user not found!'} if !user
+    return {valid: false, error: 'user not found!'} unless user
 
     orderQuery =
       _id         : orderId
@@ -303,7 +391,7 @@ Meteor.methods
       orderType   : Enums.getValue('OrderTypes', 'tracking')
       orderStatus : Enums.getValue('OrderStatus', 'exportConfirm')
     orderFound = Schema.orders.findOne orderQuery
-    return {valid: false, error: 'order not found!'} if !orderFound
+    return {valid: false, error: 'order not found!'} unless orderFound
 
     if success
       orderUpdate = $set:
@@ -318,7 +406,7 @@ Meteor.methods
 
   orderUndoConfirm: (orderId)->
     user = Meteor.users.findOne(Meteor.userId())
-    return {valid: false, error: 'user not found!'} if !user
+    return {valid: false, error: 'user not found!'} unless user
 
     orderQuery =
       _id         : orderId
@@ -332,7 +420,7 @@ Meteor.methods
         Enums.getValue('OrderStatus', 'fail')
       ]}
     orderFound = Schema.orders.findOne orderQuery
-    return {valid: false, error: 'order not found!'} if !orderFound
+    return {valid: false, error: 'order not found!'} unless orderFound
 
     orderUpdate = $set:
       orderType   : Enums.getValue('OrderTypes', 'tracking')
@@ -341,7 +429,7 @@ Meteor.methods
 
   orderImportConfirm: (orderId)->
     user = Meteor.users.findOne(Meteor.userId())
-    return {valid: false, error: 'user not found!'} if !user
+    return {valid: false, error: 'user not found!'} unless user
 
     orderQuery =
       _id         : orderId
@@ -349,7 +437,7 @@ Meteor.methods
       orderType   : Enums.getValue('OrderTypes', 'fail')
       orderStatus : Enums.getValue('OrderStatus', 'fail')
     orderFound = Schema.orders.findOne orderQuery
-    return {valid: false, error: 'order not found!'} if !orderFound
+    return {valid: false, error: 'order not found!'} unless orderFound
 
     for detail, detailIndex in orderFound.details
       if product = Schema.products.findOne(detail.product)
@@ -366,7 +454,7 @@ Meteor.methods
 
   orderFinishConfirm: (orderId)->
     user = Meteor.users.findOne(Meteor.userId())
-    return {valid: false, error: 'user not found!'} if !user
+    return {valid: false, error: 'user not found!'} unless user
 
     orderQuery =
       _id         : orderId
@@ -374,27 +462,27 @@ Meteor.methods
       orderType   : {$in:[Enums.getValue('OrderTypes', 'success'), Enums.getValue('OrderTypes', 'fail')]}
       orderStatus : {$in:[Enums.getValue('OrderStatus', 'success'), Enums.getValue('OrderStatus', 'importConfirm')]}
     orderFound = Schema.orders.findOne orderQuery
-    return {valid: false, error: 'order not found!'} if !orderFound
+    return {valid: false, error: 'order not found!'} unless orderFound
 
     customerFound = Schema.customers.findOne(orderFound.buyer)
-    return {valid: false, error: 'customer not found!'} if !customerFound
+    return {valid: false, error: 'customer not found!'} unless customerFound
 
     merchantFound = Schema.merchants.findOne(user.profile.merchant)
-    return {valid: false, error: 'merchant not found!'} if !merchantFound
+    return {valid: false, error: 'merchant not found!'} unless merchantFound
 
     if orderFound.orderType is Enums.getValue('OrderTypes', 'success')
       customerFound = Schema.customers.findOne(orderFound.buyer)
-      return {valid: false, error: 'customer not found!'} if !customerFound
+      return {valid: false, error: 'customer not found!'} unless customerFound
 
       transactionId = createTransaction(customerFound, orderFound)
-      return {valid: false, error: 'customer not found!'} if !transactionId
+      return {valid: false, error: 'customer not found!'} unless transactionId
 
       for orderDetail, detailIndex in orderFound.details
         if product = Schema.products.findOne({'units._id': orderDetail.productUnit})
           updateSubtractQuantityInProductUnit(product, orderDetail)
 
           if product.inventoryInitial
-            combinedImports = findAllImport(orderDetail.productUnit)
+            combinedImports = findAllImport(orderDetail.product)
             updateSubtractQuantityInImport(orderFound, orderDetail, detailIndex, combinedImports)
 
       updateOrderQuery = $set:
@@ -431,7 +519,7 @@ Meteor.methods
 Meteor.methods
   orderSuccessConfirmed: (orderId)->
     user = Meteor.users.findOne(Meteor.userId())
-    return {valid: false, error: 'user not found!'} if !user
+    return {valid: false, error: 'user not found!'} unless user
 
     orderQuery =
       _id       : orderId
@@ -439,7 +527,7 @@ Meteor.methods
       merchant  : user.profile.merchant
       orderType : $in: [Enums.getValue('OrderTypes', 'export'),Enums.getValue('OrderTypes', 'import')]
     orderFound = Schema.orders.findOne orderQuery
-    return {valid: false, error: 'order not found!'} if !orderFound
+    return {valid: false, error: 'order not found!'} unless orderFound
 
     if orderFound.paymentsDelivery is Enums.getValue('DeliveryTypes', 'delivery') and
       (orderFound.delivery.status is Enums.getValue('DeliveryStatus', 'unDelivered') or

@@ -13,10 +13,10 @@ Apps.Merchant.customerManagementReactive.push (scope) ->
 
 
 Apps.Merchant.customerManagementInit.push (scope) ->
-  Schema.transactions.find().forEach(
-    (transaction)->
-      Schema.transactions.update transaction._id, $set:{isBeginCash: true}
-  )
+#  Schema.transactions.find().forEach(
+#    (transaction)->
+#      Schema.transactions.update transaction._id, $set:{isBeginCash: true}
+#  )
   scope.resetShowEditCommand = -> Session.set "customerManagementShowEditCommand"
   scope.transactionFind = (parentId)-> Schema.transactions.find({parent: parentId}, {sort: {'version.createdAt': 1}})
   scope.findOldDebtCustomer = ->

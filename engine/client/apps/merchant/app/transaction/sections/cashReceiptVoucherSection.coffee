@@ -7,9 +7,10 @@ lemon.defineApp Template.cashReceiptVoucherTransactionHistorySection,
   helpers:
     details: ->
       Schema.transactions.find({
-        merchant          : Merchant.getId()
-        transactionType   : Enums.getValue('TransactionTypes', 'customer')
-        paidBalanceChange : {$gt: 0}
+        merchant        : Merchant.getId()
+        transactionType : Enums.getValue('TransactionTypes', 'customer')
+        isUseCode       : true
+        isBeginCash     : false
       },{$sort:{'version.createdAt':1}}).map(
         (transaction)->
           transaction.ownerName = Schema.customers.findOne(transaction.owner).name
@@ -19,13 +20,18 @@ lemon.defineApp Template.cashReceiptVoucherTransactionHistorySection,
 
     detailCount: ->
       Schema.transactions.find({
-        merchant          : Merchant.getId()
-        transactionType   : Enums.getValue('TransactionTypes', 'customer')
-        paidBalanceChange : {$gt: 0}
+        merchant        : Merchant.getId()
+        transactionType : Enums.getValue('TransactionTypes', 'customer')
+        isBeginCash     : false
+        isUseCode       : true
       }).count()
 
 
-
+    transactionCash: ->
+      if @status is Enums.getValue('TransactionStatuses', 'tracking')
+        @debtBalanceChange
+      else if @status is Enums.getValue('TransactionStatuses', 'closed')
+        @paidBalanceChange
 
 
 #  events:

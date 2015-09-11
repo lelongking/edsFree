@@ -9,18 +9,18 @@ template(name="customerManagementSalesHistorySection")
       .show-on-print
         table.lemon-grid: tr
           th(style="width:auto") SẢN PHẨM
-          th.number(style="width:50px") SL
-          th.date(style="width:100px") ĐƠN VỊ
-          th.number(style="width:180px") ĐƠN GIÁ
-          th.number(style="width:175px") THÀNH TIỀN
+          th(style="width:50px") SL
+          th(style="width:100px") ĐƠN VỊ
+          th.number(style="width:120px") ĐƠN GIÁ
+          th.number(style="width:150px") THÀNH TIỀN
 
       .hide-on-print
         table.lemon-grid: tr
           th(style="width:auto") SẢN PHẨM
-          th.number(style="width:50px") SL
-          th.date(style="width:100px") ĐƠN VỊ
+          th(style="width:50px") SL
+          th(style="width:100px") ĐƠN VỊ
           th.number(style="width:120px") ĐƠN GIÁ
-          th.number(style="width:175px") THÀNH TIỀN
+          th.number(style="width:140px") THÀNH TIỀN
 
     .panel-body.debt-details
       table.lemon-grid.safe
@@ -28,8 +28,8 @@ template(name="customerManagementSalesHistorySection")
           th(style="width:auto")
           th(style="width:50px")
           th(style="width:100px")
-          th.hide-on-print(style="width:120px")
-          th(style="width:182px")
+          th(style="width:120px")
+          th(style="width:150px")
 
         if hasOldDebts
           tr.header-row
@@ -40,12 +40,11 @@ template(name="customerManagementSalesHistorySection")
 
           each oldDebts
             tr.paid-row.top(class="{{transactionClass}}" style="border-bottom: none;")
-              td.has-commands(style="border-left: solid 2px #d35400;")
+              td.has-commands(colspan="3" style="border-left: solid 2px #d35400;")
                 .bill-header {{description}}
                 if isManager
                   if isDelete
                     .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
-              td.number(colspan="2")
               td.number(style="color: #666;")
                 if showBeforeDebtBalance
                   span.icon-feather-1.s5 <b>{{formatNumberBeforeDebtBalance}}</b>

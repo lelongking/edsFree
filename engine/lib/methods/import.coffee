@@ -23,6 +23,30 @@ Meteor.methods
     catch error
       throw new Meteor.Error('providerToImport', error)
 
+  deleteImport: (importId)->
+    user = Meteor.users.findOne(Meteor.userId())
+    return {valid: false, error: 'user not found!'} unless user
+    return {valid: false, error: 'user not permission!'} unless User.hasManagerRoles()
+
+    query =
+      seller     : user._id
+      provider   : $exists: true
+      merchant   : user.profile.merchant
+      importType : Enums.getValue('ImportTypes', 'success')
+
+    currentImportQuery = _.clone(query)
+    currentImportQuery._id = importId
+
+    currentImportFound = Schema.imports.findOne(currentImportQuery)
+    return {valid: false, error: 'import not found!'} unless currentImportFound
+    return {valid: false, error: 'import not delete!'} unless currentImportFound.allowDelete
+
+    providerFound = Schema.providers.findOne(currentImportFound.provider)
+    return {valid: false, error: 'provider not found!'} unless providerFound
+
+    merchantFound = Schema.merchants.findOne(user.profile.merchant)
+    return {valid: false, error: 'merchant not found!'} unless merchantFound
+
 
   importAccountingConfirmed: (importId)->
     user = Meteor.users.findOne(Meteor.userId())
@@ -44,6 +68,7 @@ Meteor.methods
 #      description     :
       transactionType  : Enums.getValue('TransactionTypes', 'provider')
       receivable       : true
+      isRoot           : true
       owner            : providerFound._id
       parent           : importFound._id
       beforeDebtBalance: providerFound.totalCash

@@ -57,7 +57,7 @@ findOrderByCustomer = (customerId) ->
   orderLists
 
 
-formatCustomerSearch = (item) ->
-  if item
-    name = "#{item.name} "; desc = if item.description then "(#{item.description})" else ""
-    name + desc
+formatCustomerSearch = (item) -> item.name if item
+#  if item
+#    name = "#{item.name} "; desc = if item.description then "(#{item.description})" else ""
+#    name + desc

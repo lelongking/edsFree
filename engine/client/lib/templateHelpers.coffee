@@ -2,7 +2,7 @@ Template.registerHelper 'getSession', (sessionName)-> Session.get(sessionName)
 Template.registerHelper 'sellerName', -> Session.get('myProfile')?.name ? 'Nhân Viên'
 
 Template.registerHelper 'isRowEditing', -> Session.get("editingId") is @_id
-Template.registerHelper 'totalPrice', -> if @totalPrice then @totalPrice else @price * @quality
+Template.registerHelper 'totalPrice', -> if @totalPrice then @totalPrice else @price * @quality * @conversion
 
 Template.registerHelper 'firstName', -> Helpers.firstName(@name ? @)
 Template.registerHelper 'avatarUrl', -> if @avatar then AvatarImages.findOne(@avatar)?.url() else undefined

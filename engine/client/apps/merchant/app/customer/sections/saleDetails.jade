@@ -8,16 +8,19 @@ template(name="customerManagementSaleDetails")
       //.commands
       //  if showDeleteSales
       //    .lemon.rounded.tiny.btn.red.deleteSales: span.icon-minus-4
-  tr(style="background-color: {{isColor}};")
-
+  tr
 
   each details
-    tr.detail-row
-      td.first-column {{getProductName product}}
-      td.number {{quality}}
-      td.date {{getProductUnitName productUnit}}
-      td.number {{formatNumber price}}
-      td.last-column.number {{formatNumber totalPrice}}
+    with detail
+      tr.detail-row
+        td.first-column {{productName}}
+        td {{quality}}
+        td: span
+          | {{productUnitName}}
+          unless isBase
+            span.super.s7.color-lime {{formatNumber basicQuantity}} {{basicUnitName}}
+        td.number {{formatNumber price}}
+        td.last-column.number {{formatNumber totalPrice}}
 
 
   if discountCash
@@ -49,13 +52,11 @@ template(name="customerManagementSaleDetails")
 
   each transactions
     tr.paid-row.top(class="{{transactionClass}}" style="border-bottom: none;")
-      td.has-commands
-        span {{description}}
-        if allowDelete
-          if isManager
-            if isDelete
-              .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
-      td.number(colspan="2")
+      td.has-commands(colspan="3")
+        span ok {{description}}
+        if isManager
+          if isDelete
+            .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4
       td.number.border-top(style="color: #666;")
         if showBeforeDebtBalance
           span.icon-feather-1.s5 <b>{{formatNumberBeforeDebtBalance}}</b>

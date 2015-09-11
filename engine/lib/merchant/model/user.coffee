@@ -105,12 +105,11 @@ Meteor.users.attachSchema new SimpleSchema
 
 class @User
   @hasManagerRoles: ->
-    if Session.get('myProfile')?.roles isnt 'seller' then true
-    else if Session.get('myProfile')?.roles is undefined then false
-    else false
+    myProfile = Meteor.users.findOne(Meteor.userId())?.profile
+    return false if !myProfile or !myProfile.roles
+    myProfile.roles isnt 'seller'
 
   @hasAdminRoles: ->
-    if Session.get('myProfile')
-      Session.get('myProfile').roles is 'admin'
-    else
-      false
+    myProfile = Meteor.users.findOne(Meteor.userId())?.profile
+    return false if !myProfile or !myProfile.roles
+    myProfile.roles is 'admin'
