@@ -36,15 +36,12 @@ Template.registerHelper 'getProductUnitName', (unitId)->
 
 
 Template.registerHelper 'crossReturnAvailableQuantity', ->
-  currentDetail = @; currentProductQuantity = 0
-  currentParent = Session.get('currentReturnParent')
-
+  currentDetail = @; currentParent = Session.get('currentReturnParent')
   if currentDetail and currentParent
+
     for orderDetail in currentParent
       if orderDetail.productUnit is currentDetail.productUnit
-        currentProductQuantity += orderDetail.basicQuantityAvailable
-
-    crossAvailable = currentProductQuantity - currentDetail.basicQuantity
+        crossAvailable = orderDetail.availableBasicQuantity - currentDetail.returnQuantities
 
     if crossAvailable < 0
       crossAvailable = Math.ceil(Math.abs(crossAvailable/currentDetail.conversion))*(-1)

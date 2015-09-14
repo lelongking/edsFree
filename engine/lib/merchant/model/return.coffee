@@ -32,7 +32,7 @@ simpleSchema.returns = new SimpleSchema
   'details.$.product'       : type: String
   'details.$.productUnit'   : type: String
   'details.$.quality'       : {type: Number, min: 0}
-  'details.$.basicQuantity'  : {type: Number, min: 0}
+  'details.$.basicQuantity' : {type: Number, min: 0}
   'details.$.conversion'    : {type: Number, min: 1}
   'details.$.price'         : {type: Number, min: 0}
   'details.$.discountCash'  : simpleSchema.DefaultNumber()
@@ -44,13 +44,28 @@ simpleSchema.returns = new SimpleSchema
   'details.$.imports.$.productUnit' : type: String, optional: true
   'details.$.imports.$.provider'    : type: String, optional: true
 
-  'details.$.imports.$.conversion'        : type: Number, min: 1
-  'details.$.imports.$.qualityReturn'     : type: Number, min: 0
+  'details.$.imports.$.price'              : type: Number, min: 0
+  'details.$.imports.$.conversion'         : type: Number, min: 1
+  'details.$.imports.$.qualityReturn'      : type: Number, min: 0
   'details.$.imports.$.basicQuantityReturn': type: Number, min: 0
+  'details.$.imports.$.note'               : type: String, optional: true
+  'details.$.imports.$.createdAt'          : type: Date
 
-  'details.$.imports.$.price'       : type: Number
-  'details.$.imports.$.note'        : type: String, optional: true
-  'details.$.imports.$.createdAt'   : type: Date
+
+
+  'details.$.orders': type: [Object], optional: true #Import Detail
+  'details.$.orders.$._id'         : type: String, optional: true
+  'details.$.orders.$.detailId'    : type: String, optional: true
+  'details.$.orders.$.product'     : type: String, optional: true
+  'details.$.orders.$.productUnit' : type: String, optional: true
+  'details.$.orders.$.buyer'       : type: String, optional: true
+
+  'details.$.orders.$.price'              : type: Number, min: 0
+  'details.$.orders.$.conversion'         : type: Number, min: 1
+  'details.$.orders.$.qualityReturn'      : type: Number, min: 0
+  'details.$.orders.$.basicQuantityReturn': type: Number, min: 0
+  'details.$.orders.$.note'               : type: String, optional: true
+  'details.$.orders.$.createdAt'          : type: Date
 
 Schema.add 'returns', "Return", class Return
   @transform: (doc) ->
@@ -169,54 +184,107 @@ Schema.add 'returns', "Return", class Return
       return console.log('Return không đúng.') unless @returnType is Enums.getValue('ReturnTypes', 'customer')
       return console.log('Return rỗng.') if @details.length is 0
       return console.log('Phieu Order Khong Chinh Xac.') if (orderFound = Schema.orders.findOne(@parent)) is undefined
+      return console.log('Order rỗng.') if orderFound.details.length is 0
 
-      productUpdateList = []; orderUpdateOption = $inc:{}, $set:{}
+      #so luong tra cua return
+      productReturnQuantities = {}
       for returnDetail in currentReturn.details
-        currentProductQuantity = 0; findProductUnit = false
-        productUpdateList.push(updateProductQuery(returnDetail, currentReturn.returnType))
+        productReturnQuantities[returnDetail.product] = 0 unless productReturnQuantities[returnDetail.product]
+        productReturnQuantities[returnDetail.product] += returnDetail.basicQuantity
 
+      #so luong ton cua order
+      productOrderQuantities = {}
+      for orderDetail in orderFound.details
+        productOrderQuantities[orderDetail.product] = 0 unless productOrderQuantities[orderDetail.product]
+        productOrderQuantities[orderDetail.product] += orderDetail.basicQuantityAvailable
+
+      #so sanh so luong
+      for product, quantities of productReturnQuantities
+        return console.log('So luong tra qua lon') if productOrderQuantities[product] < quantities
+
+      #cap nhat vao product and import
+      orderUpdateOption = $inc:{}; importUpdateOption = {}
+      for product, quantities of productReturnQuantities
+        takenReturnQuantity = 0
         for orderDetail, index in orderFound.details
-          console.log orderDetail
-          if orderDetail.productUnit is returnDetail.productUnit
-            findProductUnit = true; currentProductQuantity += orderDetail.basicQuantityAvailable
+          break if takenReturnQuantity is quantities
 
-            orderUpdateOption.$inc["details.#{index}.basicQuantityReturn"]    = returnDetail.basicQuantity
-            orderUpdateOption.$inc["details.#{index}.basicQuantityAvailable"] = -returnDetail.basicQuantity
-
-            basicImportQuantityReturn = orderDetail.basicImportQuantity - (orderDetail.basicQuantity - returnDetail.basicQuantity)
-            if basicImportQuantityReturn < 0
-              orderUpdateOption.$set["details.#{index}.basicImportQuantityDebit"]  = basicImportQuantityReturn
-              orderUpdateOption.$set["details.#{index}.basicImportQuantityReturn"] = 0
+          #tim orderDetail
+          if orderDetail.product is product
+            availableReturnQuantity = quantities - takenReturnQuantity
+            if orderDetail.basicQuantityAvailable < availableReturnQuantity
+              returnQuantity       = orderDetail.basicQuantityAvailable
+              takenReturnQuantity += orderDetail.basicQuantityAvailable
             else
-              orderUpdateOption.$set["details.#{index}.basicImportQuantityDebit"]   = 0
-              orderUpdateOption.$set["details.#{index}.basicImportQuantityReturn"]  = Math.abs(basicImportQuantityReturn)
+              returnQuantity       = availableReturnQuantity
+              takenReturnQuantity += availableReturnQuantity
 
-              returnQuantity = 0
+            #cap nhat orderDetail
+            orderUpdateOption.$inc["details.#{index}.basicQuantityReturn"]        = returnQuantity
+            orderUpdateOption.$inc["details.#{index}.basicImportQuantityReturn"]  = returnQuantity
+            orderUpdateOption.$inc["details.#{index}.basicQuantityAvailable"]     = -returnQuantity
+
+
+            if orderDetail.basicImportQuantityDebit >= returnQuantity
+              console.log 'this is import debit'
+              orderUpdateOption.$inc["details.#{index}.basicImportQuantityDebit"] = -returnQuantity
+            else
+              orderUpdateOption.$inc["details.#{index}.basicImportQuantityDebit"] = -orderDetail.basicImportQuantityDebit
+              console.log 'this is import not debit'
+              console.log returnQuantity, orderDetail.basicImportQuantityDebit
+
+              #cap nhat importDetail cua orderDetail
+              returnImportQuantities = returnQuantity - orderDetail.basicImportQuantityDebit
+              takenImportQuantity = 0
               for detail, indexDetail in orderDetail.imports
-                orderUpdateOption.$inc["details.#{index}.imports.#{indexDetail}.basicQuantityReturn"]    = basicImportQuantityReturn
-                orderUpdateOption.$inc["details.#{index}.imports.#{indexDetail}.basicQuantityAvailable"] = -basicImportQuantityReturn
+                break if takenImportQuantity is returnImportQuantities
 
-                requiredQuantity = basicImportQuantityReturn - returnQuantity
-                availableQuantity = detail.basicQuantityAvailable - requiredQuantity
+                #tim importDetail
+                if detail.product is product
+                  availableImportReturnQuantity = returnImportQuantities - takenImportQuantity
+                  if detail.basicQuantityAvailable < availableImportReturnQuantity
+                    importReturnQuantity = detail.basicQuantityAvailable
+                    takenImportQuantity += detail.basicQuantityAvailable
+                  else
+                    importReturnQuantity = availableImportReturnQuantity
+                    takenImportQuantity += availableImportReturnQuantity
 
-                if availableQuantity > 0
-                  takenQuantity = requiredQuantity
-                else
-                  takenQuantity = detail.basicQuantityAvailable
+                  updateImportDetail = "details.#{index}.imports.#{indexDetail}"
+                  orderUpdateOption.$inc["#{updateImportDetail}.basicQuantityReturn"]    = importReturnQuantity
+                  orderUpdateOption.$inc["#{updateImportDetail}.basicQuantityAvailable"] = -importReturnQuantity
 
-                for importDetail, indexImportDetail in Schema.imports.findOne(detail._id).details
-                  if importDetail._id is detail.detailId
-                    updateImport = $inc:{}
-                    updateImport.$inc["details.#{indexImportDetail}.basicQuantityAvailable"]   = takenQuantity
-                    updateImport.$inc["details.#{indexImportDetail}.basicOrderQuantityReturn"] = takenQuantity
-                    Schema.imports.update detail._id, updateImport
+                  #cap nhat Import
+                  for importDetail, indexImportDetail in Schema.imports.findOne(detail._id).details
+                    if importDetail._id is detail.detailId
+                      importUpdateOption[detail._id] = {$inc:{}} unless importUpdateOption[detail._id]
 
-        return console.log('ReturnDetail Khong Chinh Xac.') unless findProductUnit
-        return console.log('So luong tra qua lon') if (currentProductQuantity - returnDetail.basicQuantity) < 0
+                      if importUpdateOption[detail._id].$inc["details.#{indexImportDetail}.basicQuantityAvailable"] is undefined
+                        importUpdateOption[detail._id].$inc["details.#{indexImportDetail}.basicQuantityAvailable"] = 0
+                      importUpdateOption[detail._id].$inc["details.#{indexImportDetail}.basicQuantityAvailable"] -= takenImportQuantity
+
+                      if importUpdateOption[detail._id].$inc["details.#{indexImportDetail}.basicOrderQuantityReturn"] is undefined
+                        importUpdateOption[detail._id].$inc["details.#{indexImportDetail}.basicOrderQuantityReturn"] = 0
+                      importUpdateOption[detail._id].$inc["details.#{indexImportDetail}.basicOrderQuantityReturn"] += takenImportQuantity
+
+                      if importDetail.basicOrderQuantity < (importDetail.basicOrderQuantityReturn + takenImportQuantity)
+                        console.log('Import Detail Error, ko du so luong'); return
+
 
       if transactionId = createTransactionByCustomer(currentReturn)
-        Schema.products.update(product._id, product.updateOption) for product in productUpdateList
+        for productId, quantities of productReturnQuantities
+          productUpdate =
+            $inc:
+              'quantities.0.inStockQuantity'    : quantities
+              'quantities.0.returnSaleQuantity' : quantities
+              'quantities.0.availableQuantity'  : quantities
+          Schema.products.update productId, productUpdate
+
+        for importId, importUpdate of importUpdateOption
+          Schema.imports.update importId, importUpdate
+
+        orderUpdateOption.$set = {allowDelete: false}
         Schema.orders.update @parent, orderUpdateOption
+
         Schema.returns.update @_id, $set:{
           returnStatus: Enums.getValue('ReturnStatus', 'success')
           transaction : transactionId

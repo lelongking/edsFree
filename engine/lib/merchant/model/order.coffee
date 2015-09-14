@@ -55,8 +55,8 @@ simpleSchema.orders = new SimpleSchema
   'details.$.isExport'      : simpleSchema.DefaultBoolean(false)
   'details.$.importIsValid' : type: Boolean, optional: true
 
-  'details.$.conversion'  : type: Number, min: 1
-  'details.$.basicQuantity': type: Number, min: 0
+  'details.$.conversion'    : type: Number, min: 1
+  'details.$.basicQuantity' : type: Number, min: 0
   'details.$.basicQuantityReturn'   : type: Number, min: 0
   'details.$.basicQuantityAvailable': type: Number, min: 0 #basicQuantity - basicReturnQuantity
 
@@ -74,7 +74,7 @@ simpleSchema.orders = new SimpleSchema
 
   'details.$.imports.$.conversion'  : type: Number, min: 1
   'details.$.imports.$.quality'     : type: Number, min: 0
-  'details.$.imports.$.basicQuantity': type: Number, min: 0
+  'details.$.imports.$.basicQuantity'         : type: Number, min: 0
   'details.$.imports.$.basicQuantityReturn'   : type: Number, min: 0
   'details.$.imports.$.basicQuantityAvailable': type: Number, min: 0
 

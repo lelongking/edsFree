@@ -141,7 +141,6 @@ Meteor.methods
         updateQuery.$set = {lastExpire: detail.expire} if detail.expire
         Schema.products.update detail.product, updateQuery
 
-      #Todo: tim phieu ban chua tru kho, roi tru kho tai day, cap nhat ghi chu
       orderFounds = Schema.orders.find({
         merchant                : Merchant.getId()
         'detail.$.productUnit'  : detail.productUnit

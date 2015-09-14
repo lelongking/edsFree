@@ -19,7 +19,7 @@ template(name="customerReturnRowEdit")
     td: span
       |{{getProductUnitName productUnit}}
       unless showConversion
-        span.super.s7.color-lime {{conversion}} {{getProductBasicName productUnit}}
+        span.super.s7.color-lime {{basicQuantity}} {{getProductBasicName productUnit}}
 
     td.number.note <b>{{formatNumber calculateFinalPrice}}</b>
 
@@ -47,6 +47,6 @@ template(name="customerReturnRowDisplay")
     td: span
       |{{getProductUnitName productUnit}}
       unless showConversion
-        span.super.s7.color-lime {{conversion}} {{getProductBasicName productUnit}}
+        span.super.s7.color-lime {{basicQuantity}} {{getProductBasicName productUnit}}
 
     td.number.final-price <b>{{formatNumber calculateFinalPrice}}</b>

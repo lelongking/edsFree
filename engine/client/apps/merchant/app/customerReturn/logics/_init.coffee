@@ -9,11 +9,28 @@ Apps.Merchant.customerReturnInit.push (scope) ->
 Apps.Merchant.customerReturnReactiveRun.push (scope) ->
   if Session.get('mySession')
     scope.currentCustomerReturn = Schema.returns.findOne(Session.get('mySession').currentCustomerReturn)
+    productQuantities = {}
+    for detail in scope.currentCustomerReturn.details
+      productQuantities[detail.product] = 0 unless productQuantities[detail.product]
+      productQuantities[detail.product] += detail.basicQuantity
+
+    for detail in scope.currentCustomerReturn.details
+      detail.returnQuantities = productQuantities[detail.product]
+
     Session.set 'currentCustomerReturn', scope.currentCustomerReturn
 
     #load danh sach san pham cua phieu ban
-    parent = Schema.orders.findOne(Session.get('currentCustomerReturn')?.parent)
-    Session.set 'currentReturnParent', parent?.details
+    if parent = Schema.orders.findOne(Session.get('currentCustomerReturn')?.parent)
+      productQuantities = {}
+      for detail in parent.details
+        productQuantities[detail.product] = 0 unless productQuantities[detail.product]
+        productQuantities[detail.product] += detail.basicQuantityAvailable
+
+      for detail in parent.details
+        detail.availableBasicQuantity = productQuantities[detail.product]
+        detail.availableQuantity      = Math.floor(productQuantities[detail.product]/detail.conversion)
+
+      Session.set 'currentReturnParent', parent.details
 
   #readonly 2 Select Khach Hang va Phieu Ban
   if customerReturn = Session.get('currentCustomerReturn')
