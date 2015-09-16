@@ -4,8 +4,10 @@ template(name="customerManagement")
       .dual-detail-wrapper
         .dual-detail
           .nano: .nano-content
+            //+customerManagementOverViewPrint
             +customerManagementOverviewSection currentCustomer
             +customerManagementSalesHistorySection currentCustomer
+
 
       .dual-addon
         .search-filter.icon-search-8

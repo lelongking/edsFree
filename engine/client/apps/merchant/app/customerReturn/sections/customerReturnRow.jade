@@ -12,7 +12,7 @@ template(name="customerReturnRowEdit")
       .commands
         .lemon.rounded.tiny.btn.blue.animated.bounceIn.deleteReturnDetail: span.icon-minus-4
 
-    td.price.editable-field {{formatNumber price}}
+    td.price: input.error-field(name="editPrice" min="0")
 
     td.quality: input.error-field(name="editQuantity" min="0")
 

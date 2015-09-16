@@ -292,6 +292,7 @@ Schema.add 'returns', "Return", class Return
           successDate : new Date()
         }
 
+    doc.deleteCustomerReturn = ->
 
     doc.submitProviderReturn = ->
       currentReturn = Schema.returns.findOne(@_id)
@@ -431,6 +432,7 @@ createTransactionByCustomer = (currentReturn)->
       transactionType  : Enums.getValue('TransactionTypes', 'return')
       receivable       : false #khach hang da tra
       owner            : customer._id
+      isRoot           : true
       parent           : currentReturn._id
       beforeDebtBalance: customer.totalCash
       debtBalanceChange: currentReturn.depositCash
@@ -455,6 +457,7 @@ createTransactionByProvider = (currentReturn)->
       transactionType  : Enums.getValue('TransactionTypes', 'return')
       receivable       : false #nha cung cap da tra
       owner            : provider._id
+      isRoot           : true
       parent           : currentReturn._id
       beforeDebtBalance: provider.totalCash
       debtBalanceChange: currentReturn.depositCash

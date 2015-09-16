@@ -53,7 +53,7 @@ template(name="customerManagementSaleDetails")
   each transactions
     tr.paid-row.top(class="{{transactionClass}}" style="border-bottom: none;")
       td.has-commands(colspan="3")
-        span ok {{description}}
+        span {{description}}
         if isManager
           if isDelete
             .commands: .lemon.rounded.tiny.btn.red.deleteTransaction: span.icon-minus-4

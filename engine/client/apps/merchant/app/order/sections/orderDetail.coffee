@@ -4,7 +4,11 @@ scope = logics.sales
 lemon.defineHyper Template.saleDetailSection,
   helpers:
     buyer: -> Session.get('currentBuyer')
-    billNo: -> Helpers.orderCodeCreate(Session.get('currentBuyer')?.billNo ? '0000')
+    billNo: ->
+      customerBillNo = Helpers.orderCodeCreate(Session.get('currentBuyer')?.saleBillNo ? '00')
+      merchantBillNo = Helpers.orderCodeCreate(Session.get('merchant')?.saleBillNo ? '00')
+      customerBillNo + '/' + merchantBillNo
+
     customerOldDebt: -> if customer = Session.get('currentBuyer') then customer.totalCash else 0
 
     dueDate: ->

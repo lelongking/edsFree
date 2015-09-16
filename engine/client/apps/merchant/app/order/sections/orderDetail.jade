@@ -2,7 +2,7 @@ template(name="saleDetailSection")
    .section.top.panel.panel-default.printable-area
       .panel-heading
          .hide-on-print
-            span <b>{{timeHM}}<sup>{{timeS}}</sup></b>, ngày <b>{{timeDMY}}</b> <b>{{fullDay}}</b>
+            span Số Phiếu: <b>{{billNo}}</b> , ngày <b>{{timeDMY}}</b> <b>{{fullDay}}</b> - <b>{{timeHM}}<sup>{{timeS}}</sup></b>
          .show-on-print
             +merchantPrintingHeader
             .bill-info

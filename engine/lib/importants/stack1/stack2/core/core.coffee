@@ -7,6 +7,18 @@ Apps.Merchant.Enums =
   getObject : (key, value = 'value') -> _.indexBy(Apps.Merchant.Enums[key], value)
   getValue  : (key, value) -> (_.indexBy(Apps.Merchant.Enums[key], 'value'))[value]?._id
 
+
+Helpers.JSON2CSV = (objArray, maxLength = 5) ->
+  str = ''; i = 0
+  while i < maxLength
+    line = ''
+    for item in objArray
+      line += if item[i] isnt undefined then item[i] + ',' else ','
+    line = line.slice(0, -1)
+    str += line + '\r\n'
+    i++
+  str
+
 Helpers.Searchify = (source) ->
   source.toLowerCase()
   .replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a")

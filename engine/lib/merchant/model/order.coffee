@@ -275,6 +275,10 @@ Schema.add 'orders', "Order", class Order
           orderStatus : Enums.getValue('OrderStatus', 'initialize')
         }) then Order.insert()
 
+        if User.hasManagerRoles
+          Meteor.call 'orderAccountConfirm', orderId, (error, result) ->
+            Meteor.call 'orderExportConfirm', orderId, (error, result) ->
+
 
     doc.addDelivery = (option, callback) ->
       return console.log('Order không tồn tại.') if (!self = Schema.orders.findOne doc._id)

@@ -6,6 +6,13 @@ arrangeSideBar = (context) ->
   msgListHeight = $(window).height() - brandingHeight - messengerHeight
   $("ul.messenger-list").css("height", "#{msgListHeight}px") if msgListHeight > 150
 
+#  metroWrapperHeight = $(".dual-detail.metro").outerHeight()
+#  if metroWrapperHeight > 500
+#    metroTopHeight = (metroWrapperHeight - 500)/2
+#  else
+#    metroTopHeight = 0
+#  $(".metro-inner-wrapper").css("top", "#{metroTopHeight}px")
+
 startHomeTracker = ->
   Apps.Merchant.homeTracker = Tracker.autorun ->
     Router.go('/') if !Meteor.userId()

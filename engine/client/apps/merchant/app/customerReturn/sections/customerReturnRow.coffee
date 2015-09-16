@@ -5,6 +5,10 @@ lemon.defineHyper Template.customerReturnRowEdit,
       {autoGroup: true, groupSeparator:",", radixPoint: ".", integerDigits:11, rightAlign: false}
     @ui.$editQuantity.val Template.currentData().quality
 
+    @ui.$editPrice.inputmask "numeric",
+      {autoGroup: true, groupSeparator:",", radixPoint: ".", integerDigits:11, rightAlign: false}
+    @ui.$editPrice.val Template.currentData().price
+
     @ui.$editQuantity.select()
 
   events:
@@ -17,12 +21,18 @@ lemon.defineHyper Template.customerReturnRowEdit,
         quality = Math.abs(quality)
         template.ui.$editQuantity.val(quality)
 
+      price = Number(template.ui.$editPrice.inputmask('unmaskedvalue'))
+      if price < 0
+        price = Math.abs(price)
+        template.ui.$editPrice.val(quality)
+
       if event.which is 13
         discountCash = undefined if discountCash is Template.currentData().price
         quality      = undefined if quality is Template.currentData().quality
+        price        = undefined if price is Template.currentData().price
 
-        if quality isnt undefined or discountCash isnt undefined
-          scope.currentCustomerReturn.editReturnDetail(rowId, quality, discountCash)
+        if quality isnt undefined or discountCash isnt undefined or price isnt undefined
+          scope.currentCustomerReturn.editReturnDetail(rowId, quality, discountCash, price)
 
         nextRow = details.getNextBy("_id", rowId)
         Session.set("editingId", if nextRow then nextRow._id else undefined)

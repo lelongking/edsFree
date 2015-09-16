@@ -290,16 +290,30 @@ Meteor.methods
 
     return {valid: false, error: 'order not found!'} unless orderFound
 
+    buyer = Schema.customers.findOne(orderFound.buyer)
+    return {valid: false, error: 'buyer not found!'} unless buyer
+
+    merchant = Schema.merchants.findOne(user.profile.merchant)
+    return {valid: false, error: 'merchant not found!'} unless merchant
+
     for detail, detailIndex in orderFound.details
       product = Schema.products.findOne({'units._id': detail.productUnit})
       return {valid: false, error: 'productUnit not found!'} unless product
+
+    customerBillNo = Helpers.orderCodeCreate(buyer.saleBillNo ? '00')
+    merchantBillNo = Helpers.orderCodeCreate(merchant.saleBillNo ? '00')
 
     orderUpdate = $set:
       orderType      : Enums.getValue('OrderTypes', 'tracking')
       orderStatus    : Enums.getValue('OrderStatus', 'sellerConfirm')
       sellerConfirmAt: new Date()
+      orderCode      : customerBillNo + '/' + merchantBillNo
+    console.log orderUpdate
+
     if Schema.orders.update(orderFound._id, orderUpdate)
-      buyer = Schema.customers.findOne(orderFound.buyer)
+      Schema.customers.update(buyer._id, $inc: {saleBillNo: 1})
+      Schema.merchants.update(merchant._id, $inc: {saleBillNo: 1})
+
       optionNewOrder =
         notificationType: 'notify'
         group           : Enums.getObject('NotificationGroups')['newOrder'].value
@@ -350,8 +364,8 @@ Meteor.methods
         reads           : [Meteor.userId()]
       Schema.notifications.insert(optionNewOrder)
 
-    updateUserId = if orderFound.staff then orderFound.staff else orderFound.seller
-    Meteor.users.update(updateUserId, $inc:{'profile.turnoverCash': orderFound.finalPrice})
+#    updateUserId = if orderFound.staff then orderFound.staff else orderFound.seller
+#    Meteor.users.update(updateUserId, $inc:{'profile.turnoverCash': orderFound.finalPrice})
 
 
   orderExportConfirm: (orderId)->
@@ -489,7 +503,7 @@ Meteor.methods
         orderStatus : Enums.getValue('OrderStatus', 'finish')
         transaction : transactionId
         successDate : new Date()
-        orderCode   :"#{Helpers.orderCodeCreate(customerFound.saleBillNo)}/#{Helpers.orderCodeCreate(merchantFound.saleBillNo)}"
+#        orderCode   :"#{Helpers.orderCodeCreate(customerFound.saleBillNo)}/#{Helpers.orderCodeCreate(merchantFound.saleBillNo)}"
 
       if Schema.orders.update(orderFound._id, updateOrderQuery)
         buyer = Schema.customers.findOne(orderFound.buyer)
@@ -503,13 +517,14 @@ Meteor.methods
         Schema.notifications.insert(optionNewOrder)
 
         Schema.customers.update customerFound._id, {
-          $inc: {saleBillNo: 1, transactionBillNo: 0}
+          $inc: {saleBillNo: 0, transactionBillNo: 0}
           $addToSet:{orderSuccess: orderFound._id}
           $pull: {orderWaiting: orderFound._id}}
-        Schema.merchants.update(merchantFound._id, $inc:{saleBillNo: 1, transactionBillNo: 0})
+        Schema.merchants.update(merchantFound._id, $inc:{saleBillNo: 0, transactionBillNo: 0})
 
 
     else
+      Schema.customers.update customerFound._id, $inc: {saleBillNo: -1}
       orderUpdate = $set:
         orderStatus : Enums.getValue('OrderStatus', 'finish')
       Schema.orders.update orderFound._id, orderUpdate

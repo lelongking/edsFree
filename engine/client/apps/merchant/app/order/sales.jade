@@ -90,6 +90,7 @@ template(name="sales")
         type='submit' style="margin-right: 5px;" class="{{getSession 'currentOrderIsDisabled'}}") HOÀN TẤT
       .editor-wrapper.pull-right
         button.flat.btn.blue.pull-right.print-command(type='submit'): span.icon-print-6
-
+      .editor-wrapper.pull-right
+        button.flat.btn.blue.pull-right.export-command: span.icon-export-outline
 
     +tabComponent(options=tabOptions)

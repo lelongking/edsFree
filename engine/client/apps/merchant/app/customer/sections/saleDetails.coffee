@@ -25,11 +25,15 @@ lemon.defineWidget Template.customerManagementSaleDetails,
   events:
     "click .deleteTransaction": (event, template) ->
       event.stopPropagation()
+      console.log @
       if @isRoot
         if User.hasManagerRoles()
-          if @allowDelete
-            Meteor.call 'deleteOrder', @parent
-          else
-            console.log 'Order co Return'
+          if Schema.orders.findOne(@parent)
+            if @allowDelete then Meteor.call('deleteOrder', @parent) else console.log 'Order co Return'
+          else if Schema.returns.findOne(@parent)
+            if @allowDelete then Meteor.call('deleteReturn', @parent, @owner) else console.log 'Return loi'
+
+
+
       else
         Meteor.call 'deleteTransaction', @_id

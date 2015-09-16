@@ -16,7 +16,7 @@ simpleSchema.transactions = new SimpleSchema
   receivable      : type: Boolean , defaultValue: true  #true(no),false(tra)  ban hang (true), khach hang tra (false), nhap kho (true), tra NCC (false)
   isBeginCash     : type: Boolean , defaultValue: false # transaction la no dau ky
   isUseCode       : type: Boolean , defaultValue: false # transaction co Ma Phieu
-  isRoot          : type: Boolean , defaultValue: false # transaction cua order hoac import
+  isRoot          : type: Boolean , defaultValue: false # transaction cua order hoac import or return
 
 
   beforeDebtBalance: type: Number, defaultValue: 0
